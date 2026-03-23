@@ -9,15 +9,18 @@ export interface Logger {
 }
 
 /**
- * Default logger implementation using console.
+ * Default logger implementation using console with timestamps.
  */
 export const defaultLogger: Logger = {
-  info: (msg, ...args) => console.info(msg, ...args),
-  warn: (msg, ...args) => console.warn(msg, ...args),
-  error: (msg, ...args) => console.error(msg, ...args),
+  info: (msg, ...args) =>
+    console.info(`[${new Date().toISOString()}] [INFO] ${msg}`, ...args),
+  warn: (msg, ...args) =>
+    console.warn(`[${new Date().toISOString()}] [WARN] ${msg}`, ...args),
+  error: (msg, ...args) =>
+    console.error(`[${new Date().toISOString()}] [ERROR] ${msg}`, ...args),
   debug: (msg, ...args) => {
     if (process.env.DEBUG) {
-      console.debug(msg, ...args);
+      console.debug(`[${new Date().toISOString()}] [DEBUG] ${msg}`, ...args);
     }
   },
 };

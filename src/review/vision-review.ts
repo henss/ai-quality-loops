@@ -43,10 +43,6 @@ export interface VisionReviewOptions {
   orchestrator?: { prepareForOllama: () => Promise<void> };
 }
 
-const OLLAMA_URL =
-  process.env.OLLAMA_HOST || process.env.OLLAMA_URL || "http://127.0.0.1:11434";
-const VISION_MODEL = process.env.VISION_MODEL || "llama3.2-vision";
-
 /**
  * Run a visual audit of a page using a vision-capable LLM.
  *
@@ -54,6 +50,10 @@ const VISION_MODEL = process.env.VISION_MODEL || "llama3.2-vision";
  * @returns The review feedback as a Markdown string.
  */
 export async function runVisionReview(options: VisionReviewOptions): Promise<string> {
+  const OLLAMA_URL =
+    process.env.OLLAMA_HOST || process.env.OLLAMA_URL || "http://127.0.0.1:11434";
+  const VISION_MODEL = process.env.VISION_MODEL || "llama3.2-vision";
+
   const { urlOrPath } = options;
   const expertType = options.expert || "UI/UX";
   const outputPath = options.outputPath;

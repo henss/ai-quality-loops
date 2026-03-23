@@ -33,10 +33,6 @@ export interface ExpertReviewOptions {
   orchestrator?: { prepareForOllama: () => Promise<void> };
 }
 
-const DEFAULT_MODEL = process.env.AI_MODEL || "llama3.2";
-const OLLAMA_URL =
-  process.env.OLLAMA_HOST || process.env.OLLAMA_URL || "http://127.0.0.1:11434";
-
 /**
  * Run a text-based expert review using an LLM persona.
  *
@@ -44,6 +40,10 @@ const OLLAMA_URL =
  * @returns The review feedback as a Markdown string.
  */
 export async function runExpertReview(options: ExpertReviewOptions): Promise<string> {
+  const DEFAULT_MODEL = process.env.AI_MODEL || "llama3.2";
+  const OLLAMA_URL =
+    process.env.OLLAMA_HOST || process.env.OLLAMA_URL || "http://127.0.0.1:11434";
+
   const expertType = options.expert;
   const contentInput = options.content;
   const modelId = options.modelId || DEFAULT_MODEL;

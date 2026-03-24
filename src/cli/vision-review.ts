@@ -1,10 +1,11 @@
 import { cac } from "cac";
 import { runVisionReview } from "../review/vision-review.js";
 import * as dotenv from "dotenv";
+import { getDefaultVisionReviewModel } from "../shared/models.js";
 
 dotenv.config();
 
-const VISION_MODEL = process.env.VISION_MODEL || "llama3.2-vision";
+const VISION_MODEL = getDefaultVisionReviewModel();
 
 async function main() {
   const cli = cac("vision-review");

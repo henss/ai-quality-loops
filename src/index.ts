@@ -1,4 +1,5 @@
 export * from "./shared/ollama.js";
+export * from "./shared/models.js";
 export * from "./shared/io.js";
 export * from "./shared/logger.js";
 export * from "./utils/screenshot.js";

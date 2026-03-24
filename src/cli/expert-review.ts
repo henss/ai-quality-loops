@@ -1,10 +1,11 @@
 import { cac } from "cac";
 import { runExpertReview } from "../review/expert-review.js";
 import * as dotenv from "dotenv";
+import { getDefaultExpertReviewModel } from "../shared/models.js";
 
 dotenv.config();
 
-const DEFAULT_MODEL = process.env.AI_MODEL || "llama3.2";
+const DEFAULT_MODEL = getDefaultExpertReviewModel();
 
 async function main() {
   const cli = cac("expert-review");

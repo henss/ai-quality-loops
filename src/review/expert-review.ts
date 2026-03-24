@@ -5,6 +5,10 @@ import { fileURLToPath } from "node:url";
 import { readJson } from "../shared/io.js";
 import { getLogger } from "../shared/logger.js";
 import { generateTextWithOllama } from "../shared/ollama.js";
+import {
+  getDefaultExpertReviewModel,
+  getDefaultOllamaUrl,
+} from "../shared/models.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -17,7 +21,7 @@ export interface ExpertReviewOptions {
   expert: string;
   /** The content to review (raw text or path to a file) */
   content: string;
-  /** The Ollama model ID to use (default: env.AI_MODEL or 'llama3.2') */
+  /** The Ollama model ID to use (default: env.AI_MODEL or 'qwen3.5:27b') */
   modelId?: string;
   /** Path to save the review result (optional) */
   outputPath?: string;
@@ -40,9 +44,8 @@ export interface ExpertReviewOptions {
  * @returns The review feedback as a Markdown string.
  */
 export async function runExpertReview(options: ExpertReviewOptions): Promise<string> {
-  const DEFAULT_MODEL = process.env.AI_MODEL || "llama3.2";
-  const OLLAMA_URL =
-    process.env.OLLAMA_HOST || process.env.OLLAMA_URL || "http://127.0.0.1:11434";
+  const DEFAULT_MODEL = getDefaultExpertReviewModel();
+  const OLLAMA_URL = getDefaultOllamaUrl();
 
   const expertType = options.expert;
   const contentInput = options.content;

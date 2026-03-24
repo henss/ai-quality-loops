@@ -6,6 +6,10 @@ import {fileURLToPath} from "node:url";
 import {readJson} from "../shared/io.js";
 import {getLogger} from "../shared/logger.js";
 import {callOllamaVision, imageToBase64} from "../shared/ollama.js";
+import {
+  getDefaultOllamaUrl,
+  getDefaultVisionReviewModel,
+} from "../shared/models.js";
 import {takeScreenshot} from "../utils/screenshot.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -27,7 +31,7 @@ export interface VisionReviewOptions {
     height?: number;
     /** Specific section IDs to capture (optional) */
     sections?: string[];
-    /** The vision-capable Ollama model ID to use (default: env.VISION_MODEL or 'llama3.2-vision') */
+    /** The vision-capable Ollama model ID to use (default: env.VISION_MODEL or 'qwen3-vl:30b') */
     model?: string;
     /** Path to the persona Markdown library (optional) */
     promptLibraryPath?: string;
@@ -50,9 +54,9 @@ export interface VisionReviewOptions {
  * @returns The review feedback as a Markdown string.
  */
 export async function runVisionReview(options: VisionReviewOptions): Promise<string> {
-    const OLLAMA_URL =
-    process.env.OLLAMA_HOST || process.env.OLLAMA_URL || "http://127.0.0.1:11434";
-  const VISION_MODEL = process.env.VISION_MODEL || "llama3.2-vision";const {urlOrPath} = options;
+    const OLLAMA_URL = getDefaultOllamaUrl();
+    const VISION_MODEL = getDefaultVisionReviewModel();
+    const {urlOrPath} = options;
     const expertType = options.expert || "UI/UX";
     const outputPath = options.outputPath;
     const width = options.width || 1280;

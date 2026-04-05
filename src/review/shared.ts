@@ -30,6 +30,13 @@ export interface ReviewEnvelopeSection {
   fenced?: boolean;
 }
 
+export interface ReviewMaterialInput {
+  heading: string;
+  body?: string;
+  items?: Array<string | null | undefined | false>;
+  fenced?: boolean;
+}
+
 export interface BuildReviewEnvelopeOptions {
   personaPrompt: string;
   context?: Record<string, unknown>;
@@ -142,6 +149,31 @@ export async function writeReviewOutput(
   await fs.mkdir(path.dirname(absoluteOutputPath), { recursive: true });
   await fs.writeFile(absoluteOutputPath, content);
   return absoluteOutputPath;
+}
+
+export function prepareReviewMaterialSections(
+  materials: ReviewMaterialInput[],
+): ReviewEnvelopeSection[] {
+  return materials.flatMap((material) => {
+    const body = material.body?.trim();
+    const itemLines = (material.items || [])
+      .filter((item): item is string => Boolean(item && item.trim()))
+      .map((item) => `- ${item.trim()}`)
+      .join("\n");
+
+    const combinedBody = [body, itemLines].filter(Boolean).join("\n\n").trim();
+    if (!combinedBody) {
+      return [];
+    }
+
+    return [
+      {
+        heading: material.heading,
+        body: combinedBody,
+        fenced: material.fenced,
+      },
+    ];
+  });
 }
 
 export function buildReviewEnvelope({

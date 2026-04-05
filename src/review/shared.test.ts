@@ -7,6 +7,7 @@ import {
   loadReviewContent,
   loadPersonaPrompt,
   loadReviewContext,
+  prepareReviewMaterialSections,
   resolvePersonaName,
   resolvePromptLibraryPath,
   writeReviewOutput,
@@ -147,5 +148,35 @@ describe("Review shared utilities", () => {
     expect(prompt.endsWith("Provide your critical feedback in Markdown.")).toBe(
       true,
     );
+  });
+
+  it("prepares reusable review material sections from mixed bodies and item lists", () => {
+    const sections = prepareReviewMaterialSections([
+      {
+        heading: "CONTENT TO REVIEW",
+        body: "example payload",
+        fenced: true,
+      },
+      {
+        heading: "REVIEW INPUT MATERIAL",
+        items: ["Source: https://example.com", undefined, "Attached image count: 2"],
+      },
+      {
+        heading: "EMPTY",
+      },
+    ]);
+
+    expect(sections).toEqual([
+      {
+        heading: "CONTENT TO REVIEW",
+        body: "example payload",
+        fenced: true,
+      },
+      {
+        heading: "REVIEW INPUT MATERIAL",
+        body: "- Source: https://example.com\n- Attached image count: 2",
+        fenced: undefined,
+      },
+    ]);
   });
 });

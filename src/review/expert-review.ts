@@ -8,6 +8,7 @@ import {
   buildReviewEnvelope,
   loadReviewContent,
   loadPersonaPrompt,
+  prepareReviewMaterialSections,
   loadReviewContext,
   writeReviewOutput,
 } from "./shared.js";
@@ -74,13 +75,13 @@ export async function runExpertReview(options: ExpertReviewOptions): Promise<str
     context: brand,
     taskInstructions:
       "Analyze the provided content based on your persona and identify the most important issues, risks, and improvement opportunities.",
-    sections: [
+    sections: prepareReviewMaterialSections([
       {
         heading: "CONTENT TO REVIEW",
         body: contentText,
         fenced: true,
       },
-    ],
+    ]),
     outputInstructions: "Provide your critical feedback based on your persona. Output in Markdown.",
   });
 

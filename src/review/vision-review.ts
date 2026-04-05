@@ -12,6 +12,7 @@ import { takeScreenshot } from "../utils/screenshot.js";
 import {
   buildReviewEnvelope,
   loadPersonaPrompt,
+  prepareReviewMaterialSections,
   loadReviewContext,
   writeReviewOutput,
 } from "./shared.js";
@@ -169,6 +170,21 @@ export async function runVisionReview(options: VisionReviewOptions): Promise<str
           : 'The screenshots represent a "full page" capture, scrolling down from the hero section.',
         "Focus your analysis on the visual design, layout, usability, hierarchy, and consistency through the lens of your persona.",
       ].join("\n"),
+      sections: prepareReviewMaterialSections([
+        {
+          heading: "REVIEW INPUT MATERIAL",
+          items: [
+            `Source: ${urlOrPath}`,
+            `Attached image count: ${screenshotPaths.length}`,
+            sectionList.length > 0
+              ? `Capture mode: targeted section screenshots`
+              : "Capture mode: full-page screenshot",
+            sectionList.length > 0
+              ? `Captured sections: ${sectionList.join(", ")}`
+              : undefined,
+          ],
+        },
+      ]),
     });
 
     const text = await callOllamaVision({

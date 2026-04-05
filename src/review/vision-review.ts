@@ -20,6 +20,7 @@ import {
   prepareReviewMetadataItems,
   prepareReviewMaterialSections,
   loadReviewContext,
+  type ReviewRedactionOptions,
   summarizeReviewOutputReference,
   writeReviewOutput,
 } from "./shared.js";
@@ -28,7 +29,7 @@ import { prepareVisionCaptureTarget } from "./vision-capture-target.js";
 /**
  * Options for the Vision Review engine.
  */
-export interface VisionReviewOptions {
+export interface VisionReviewOptions extends ReviewRedactionOptions {
   /** URL or local path to the page to review */
   urlOrPath: string;
   /** The type of expert to use (must match a name in the persona library) */
@@ -74,7 +75,9 @@ export async function runVisionReview(options: VisionReviewOptions): Promise<str
   const visionModel = options.model || VISION_MODEL;
   const sectionList = options.sections || [];
   const ollamaUrl = options.ollamaUrl || OLLAMA_URL;
-  const sanitizedSource = sanitizeReviewSurfaceValue(urlOrPath);
+  const sanitizedSource = sanitizeReviewSurfaceValue(urlOrPath, {
+    extraRedactions: options.extraRedactions,
+  });
   const summarizedSectionLabels = sectionList.map((_, index) => `section-${index + 1}`);
 
   // 1. Take Screenshots
@@ -93,7 +96,12 @@ export async function runVisionReview(options: VisionReviewOptions): Promise<str
       tempFiles.push(p);
     } catch (err) {
       getLogger().error(
-        `Failed to take screenshot of ${label}: ${summarizeReviewSurfaceError(err)}`,
+        `Failed to take screenshot of ${label}: ${summarizeReviewSurfaceError(
+          err,
+          {
+            extraRedactions: options.extraRedactions,
+          },
+        )}`,
       );
     }
   };
@@ -162,6 +170,7 @@ export async function runVisionReview(options: VisionReviewOptions): Promise<str
     const finalPrompt = buildReviewEnvelope({
       personaPrompt,
       context: brand,
+      extraRedactions: options.extraRedactions,
       taskInstructions: [
         `You are reviewing screenshots captured from this source: ${sanitizedSource}.`,
         sectionList.length > 0
@@ -173,35 +182,45 @@ export async function runVisionReview(options: VisionReviewOptions): Promise<str
         {
           heading: "REVIEW INPUT MATERIAL",
           items: [
-            ...prepareReviewEvidenceDescriptorItems([
+            ...prepareReviewEvidenceDescriptorItems(
+              [
+                {
+                  label: "Source",
+                  value: urlOrPath,
+                },
+              ],
               {
-                label: "Source",
-                value: urlOrPath,
+                extraRedactions: options.extraRedactions,
               },
-            ]),
-            ...prepareReviewMetadataItems([
+            ),
+            ...prepareReviewMetadataItems(
+              [
+                {
+                  label: "Attached image count",
+                  value: screenshotPaths.length,
+                  sanitizeValue: false,
+                },
+                {
+                  label: "Capture mode",
+                  value:
+                    sectionList.length > 0
+                      ? "targeted section screenshots"
+                      : "full-page screenshot",
+                  sanitizeValue: false,
+                },
+                {
+                  label: "Captured section references",
+                  value:
+                    sectionList.length > 0
+                      ? summarizedSectionLabels.join(", ")
+                      : undefined,
+                  sanitizeValue: false,
+                },
+              ],
               {
-                label: "Attached image count",
-                value: screenshotPaths.length,
-                sanitizeValue: false,
+                extraRedactions: options.extraRedactions,
               },
-              {
-                label: "Capture mode",
-                value:
-                  sectionList.length > 0
-                    ? "targeted section screenshots"
-                    : "full-page screenshot",
-                sanitizeValue: false,
-              },
-              {
-                label: "Captured section references",
-                value:
-                  sectionList.length > 0
-                    ? summarizedSectionLabels.join(", ")
-                    : undefined,
-                sanitizeValue: false,
-              },
-            ]),
+            ),
           ],
         },
       ]),
@@ -222,14 +241,22 @@ export async function runVisionReview(options: VisionReviewOptions): Promise<str
     if (outputPath) {
       const absoluteOutputPath = await writeReviewOutput(outputPath, text);
       getLogger().info(
-        `Review saved to: ${summarizeReviewOutputReference(absoluteOutputPath)}`,
+        `Review saved to: ${summarizeReviewOutputReference(
+          absoluteOutputPath,
+          process.cwd(),
+          {
+            extraRedactions: options.extraRedactions,
+          },
+        )}`,
       );
     }
 
     return text;
   } catch (error) {
     getLogger().error(
-      `Error during Vision review: ${summarizeReviewSurfaceError(error)}`,
+      `Error during Vision review: ${summarizeReviewSurfaceError(error, {
+        extraRedactions: options.extraRedactions,
+      })}`,
     );
     throw error;
   } finally {

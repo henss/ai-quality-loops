@@ -12,6 +12,7 @@ import {
   prepareReviewEvidenceDescriptorItems,
   prepareReviewMaterialSections,
   loadReviewContext,
+  type ReviewRedactionOptions,
   summarizeReviewInputReference,
   summarizeReviewOutputReference,
   writeReviewOutput,
@@ -20,7 +21,7 @@ import {
 /**
  * Options for the Expert Review engine.
  */
-export interface ExpertReviewOptions {
+export interface ExpertReviewOptions extends ReviewRedactionOptions {
   /** The type of expert to use (must match a name in the persona library) */
   expert: string;
   /** The content to review (raw text or path to a file) */
@@ -57,7 +58,13 @@ export async function runExpertReview(options: ExpertReviewOptions): Promise<str
   const outputPath = options.outputPath;
   const ollamaUrl = (options.ollamaUrl || OLLAMA_URL).replace(/\/$/, "");
   const contentText = await loadReviewContent(contentInput);
-  const summarizedContentSource = await summarizeReviewInputReference(contentInput);
+  const summarizedContentSource = await summarizeReviewInputReference(
+    contentInput,
+    process.cwd(),
+    {
+      extraRedactions: options.extraRedactions,
+    },
+  );
 
   const { personaName, personaPrompt } = await loadPersonaPrompt({
     expert: expertType,
@@ -78,17 +85,23 @@ export async function runExpertReview(options: ExpertReviewOptions): Promise<str
   const finalPrompt = buildReviewEnvelope({
     personaPrompt,
     context: brand,
+    extraRedactions: options.extraRedactions,
     taskInstructions:
       "Analyze the provided content based on your persona and identify the most important issues, risks, and improvement opportunities.",
     sections: prepareReviewMaterialSections([
       {
         heading: "REVIEW INPUT MATERIAL",
-        items: prepareReviewEvidenceDescriptorItems([
+        items: prepareReviewEvidenceDescriptorItems(
+          [
+            {
+              label: "Content source",
+              descriptor: summarizedContentSource,
+            },
+          ],
           {
-            label: "Content source",
-            descriptor: summarizedContentSource,
+            extraRedactions: options.extraRedactions,
           },
-        ]),
+        ),
       },
       {
         heading: "CONTENT TO REVIEW",
@@ -114,14 +127,22 @@ export async function runExpertReview(options: ExpertReviewOptions): Promise<str
     if (outputPath) {
       const absoluteOutputPath = await writeReviewOutput(outputPath, text);
       getLogger().info(
-        `Review saved to: ${summarizeReviewOutputReference(absoluteOutputPath)}`,
+        `Review saved to: ${summarizeReviewOutputReference(
+          absoluteOutputPath,
+          process.cwd(),
+          {
+            extraRedactions: options.extraRedactions,
+          },
+        )}`,
       );
     }
 
     return text;
   } catch (error) {
     getLogger().error(
-      `Error during Expert review: ${summarizeReviewSurfaceError(error)}`,
+      `Error during Expert review: ${summarizeReviewSurfaceError(error, {
+        extraRedactions: options.extraRedactions,
+      })}`,
     );
     throw error;
   }

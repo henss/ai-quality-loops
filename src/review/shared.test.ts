@@ -228,6 +228,27 @@ describe("Review shared utilities", () => {
     ]);
   });
 
+  it("applies extra redactions to review metadata items", () => {
+    expect(
+      prepareReviewMetadataItems(
+        [
+          {
+            label: "Tenant",
+            value: "acme-internal-42",
+          },
+        ],
+        {
+          extraRedactions: [
+            {
+              pattern: /\bacme-internal-\d+\b/g,
+              replacement: "[Project identifier redacted]",
+            },
+          ],
+        },
+      ),
+    ).toEqual(["Tenant: [Project identifier redacted]"]);
+  });
+
   it("prepares review evidence descriptors from raw surfaces or pre-summarized values", () => {
     expect(
       prepareReviewEvidenceDescriptorItems([
@@ -247,6 +268,29 @@ describe("Review shared utilities", () => {
     ).toEqual([
       "Source: Remote URL (host: example.com, path segments: 2, query redacted, fragment redacted)",
       "Content source: Inline content",
+    ]);
+  });
+
+  it("applies extra redactions to review evidence descriptors", () => {
+    expect(
+      prepareReviewEvidenceDescriptorItems(
+        [
+          {
+            label: "Structured identifier",
+            value: "tenant/acme-internal-42",
+          },
+        ],
+        {
+          extraRedactions: [
+            {
+              pattern: /\bacme-internal-\d+\b/g,
+              replacement: "[Project identifier redacted]",
+            },
+          ],
+        },
+      ),
+    ).toEqual([
+      "Structured identifier: tenant/[Project identifier redacted]",
     ]);
   });
 
@@ -332,5 +376,26 @@ describe("Review shared utilities", () => {
       tenantLabel: "[Project identifier redacted]",
       note: "Escalate [Project identifier redacted] through the shared review flow",
     });
+  });
+
+  it("threads extra redactions through the review envelope context", () => {
+    const prompt = buildReviewEnvelope({
+      personaPrompt: "You are a careful reviewer.",
+      context: {
+        tenantLabel: "acme-internal-42",
+      },
+      taskInstructions: "Inspect the supplied material.",
+      extraRedactions: [
+        {
+          pattern: /\bacme-internal-\d+\b/g,
+          replacement: "[Project identifier redacted]",
+        },
+      ],
+    });
+
+    expect(prompt).toContain(
+      '"tenantLabel": "[Project identifier redacted]"',
+    );
+    expect(prompt).not.toContain("acme-internal-42");
   });
 });

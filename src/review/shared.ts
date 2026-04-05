@@ -60,6 +60,7 @@ export interface BuildReviewEnvelopeOptions {
   taskInstructions: string;
   sections?: ReviewEnvelopeSection[];
   outputInstructions?: string;
+  extraRedactions?: ReviewSurfaceRedactionRule[];
 }
 
 export interface SanitizeReviewContextOptions {
@@ -67,6 +68,10 @@ export interface SanitizeReviewContextOptions {
   maxArrayItems?: number;
   maxStringLength?: number;
   sensitiveKeyPattern?: RegExp;
+  extraRedactions?: ReviewSurfaceRedactionRule[];
+}
+
+export interface ReviewRedactionOptions {
   extraRedactions?: ReviewSurfaceRedactionRule[];
 }
 
@@ -254,13 +259,16 @@ export async function loadReviewContent(
 export async function summarizeReviewInputReference(
   input: string,
   cwd = process.cwd(),
+  options: ReviewRedactionOptions = {},
 ): Promise<string> {
   const resolvedInput = path.isAbsolute(input) ? input : path.resolve(cwd, input);
 
   try {
     const stats = await fs.stat(resolvedInput);
     if (stats.isFile()) {
-      return sanitizeReviewSurfaceValue(resolvedInput);
+      return sanitizeReviewSurfaceValue(resolvedInput, {
+        extraRedactions: options.extraRedactions,
+      });
     }
   } catch {
     // Fall back to a generic inline-content descriptor below.
@@ -272,12 +280,15 @@ export async function summarizeReviewInputReference(
 export function summarizeReviewOutputReference(
   outputPath: string,
   cwd = process.cwd(),
+  options: ReviewRedactionOptions = {},
 ): string {
   const resolvedOutputPath = path.isAbsolute(outputPath)
     ? outputPath
     : path.resolve(cwd, outputPath);
 
-  return sanitizeReviewSurfaceValue(resolvedOutputPath);
+  return sanitizeReviewSurfaceValue(resolvedOutputPath, {
+    extraRedactions: options.extraRedactions,
+  });
 }
 
 export async function writeReviewOutput(
@@ -320,6 +331,7 @@ export function prepareReviewMaterialSections(
 
 export function prepareReviewMetadataItems(
   items: ReviewMetadataItemInput[],
+  options: ReviewRedactionOptions = {},
 ): string[] {
   return items.flatMap((item) => {
     if (item.value === undefined || item.value === null || item.value === false) {
@@ -331,7 +343,9 @@ export function prepareReviewMetadataItems(
     const formattedValue =
       item.sanitizeValue === false
         ? rawValue
-        : sanitizeReviewSurfaceValue(rawValue);
+        : sanitizeReviewSurfaceValue(rawValue, {
+            extraRedactions: options.extraRedactions,
+          });
 
     return `${item.label}: ${formattedValue}`;
   });
@@ -339,13 +353,15 @@ export function prepareReviewMetadataItems(
 
 export function prepareReviewEvidenceDescriptorItems(
   items: ReviewEvidenceDescriptorItemInput[],
+  options: ReviewRedactionOptions = {},
 ): string[] {
   return items.flatMap((item) => {
     const descriptor =
       item.descriptor?.trim() ||
       (item.value
         ? sanitizeReviewSurfaceValue(item.value, {
-            maxLength: item.maxLength,
+            ...(item.maxLength === undefined ? {} : { maxLength: item.maxLength }),
+            extraRedactions: options.extraRedactions,
           })
         : "");
 
@@ -363,8 +379,11 @@ export function buildReviewEnvelope({
   taskInstructions,
   sections = [],
   outputInstructions = "Provide your critical feedback in Markdown.",
+  extraRedactions = [],
 }: BuildReviewEnvelopeOptions): string {
-  const sanitizedContext = sanitizeReviewContext(context || {});
+  const sanitizedContext = sanitizeReviewContext(context || {}, {
+    extraRedactions,
+  });
   const blocks: string[] = [personaPrompt.trim(), "", "## CONTEXT"];
 
   blocks.push(JSON.stringify(sanitizedContext, null, 2));

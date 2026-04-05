@@ -45,6 +45,97 @@ export interface BuildReviewEnvelopeOptions {
   outputInstructions?: string;
 }
 
+export interface SanitizeReviewContextOptions {
+  maxDepth?: number;
+  maxArrayItems?: number;
+  maxStringLength?: number;
+  sensitiveKeyPattern?: RegExp;
+}
+
+const DEFAULT_SANITIZE_REVIEW_CONTEXT_OPTIONS: Required<SanitizeReviewContextOptions> =
+  {
+    maxDepth: 4,
+    maxArrayItems: 10,
+    maxStringLength: 500,
+    sensitiveKeyPattern:
+      /(secret|token|password|passwd|pwd|api[-_]?key|auth|authorization|cookie|session|credential|private[-_]?key)/i,
+  };
+
+function truncateContextString(value: string, maxStringLength: number): string {
+  if (value.length <= maxStringLength) {
+    return value;
+  }
+
+  return `${value.slice(0, maxStringLength)}... [truncated ${value.length - maxStringLength} chars]`;
+}
+
+export function sanitizeReviewContext(
+  value: unknown,
+  options: SanitizeReviewContextOptions = {},
+): unknown {
+  const config = {
+    ...DEFAULT_SANITIZE_REVIEW_CONTEXT_OPTIONS,
+    ...options,
+  };
+
+  const visit = (current: unknown, depth: number): unknown => {
+    if (current === null || current === undefined) {
+      return current;
+    }
+
+    if (
+      typeof current === "boolean" ||
+      typeof current === "number" ||
+      typeof current === "bigint"
+    ) {
+      return current;
+    }
+
+    if (typeof current === "string") {
+      return truncateContextString(current, config.maxStringLength);
+    }
+
+    if (Array.isArray(current)) {
+      if (depth >= config.maxDepth) {
+        return `[Truncated array: max depth ${config.maxDepth} reached]`;
+      }
+
+      const limitedItems = current
+        .slice(0, config.maxArrayItems)
+        .map((item) => visit(item, depth + 1));
+      const remainingCount = current.length - limitedItems.length;
+
+      if (remainingCount > 0) {
+        limitedItems.push(`[${remainingCount} more item(s) truncated]`);
+      }
+
+      return limitedItems;
+    }
+
+    if (typeof current === "object") {
+      if (depth >= config.maxDepth) {
+        return `[Truncated object: max depth ${config.maxDepth} reached]`;
+      }
+
+      const sanitizedEntries = Object.entries(current)
+        .filter(([, entryValue]) => entryValue !== undefined)
+        .map(([key, entryValue]) => {
+          if (config.sensitiveKeyPattern.test(key)) {
+            return [key, "[REDACTED]"] as const;
+          }
+
+          return [key, visit(entryValue, depth + 1)] as const;
+        });
+
+      return Object.fromEntries(sanitizedEntries);
+    }
+
+    return String(current);
+  };
+
+  return visit(value, 0);
+}
+
 export function resolvePersonaName(
   expert: string,
   expertMap?: Record<string, string>,
@@ -183,9 +274,10 @@ export function buildReviewEnvelope({
   sections = [],
   outputInstructions = "Provide your critical feedback in Markdown.",
 }: BuildReviewEnvelopeOptions): string {
+  const sanitizedContext = sanitizeReviewContext(context || {});
   const blocks: string[] = [personaPrompt.trim(), "", "## CONTEXT"];
 
-  blocks.push(JSON.stringify(context || {}, null, 2));
+  blocks.push(JSON.stringify(sanitizedContext, null, 2));
   blocks.push("", "## TASK", taskInstructions.trim());
 
   for (const section of sections) {

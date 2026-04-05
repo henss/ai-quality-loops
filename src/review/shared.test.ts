@@ -10,6 +10,7 @@ import {
   prepareReviewMaterialSections,
   resolvePersonaName,
   resolvePromptLibraryPath,
+  sanitizeReviewContext,
   writeReviewOutput,
 } from "./shared.js";
 
@@ -125,7 +126,7 @@ describe("Review shared utilities", () => {
   it("builds a reusable review envelope with generic sections", () => {
     const prompt = buildReviewEnvelope({
       personaPrompt: "You are a careful reviewer.",
-      context: { project: "demo" },
+      context: { project: "demo", apiToken: "super-secret" },
       taskInstructions: "Inspect the supplied material.",
       sections: [
         {
@@ -141,7 +142,9 @@ describe("Review shared utilities", () => {
     });
 
     expect(prompt).toContain("You are a careful reviewer.");
-    expect(prompt).toContain("## CONTEXT\n{\n  \"project\": \"demo\"\n}");
+    expect(prompt).toContain("## CONTEXT");
+    expect(prompt).toContain("\"project\": \"demo\"");
+    expect(prompt).toContain("\"apiToken\": \"[REDACTED]\"");
     expect(prompt).toContain("## TASK\nInspect the supplied material.");
     expect(prompt).toContain("## CONTENT TO REVIEW\n---\nexample payload\n---");
     expect(prompt).toContain("## EVIDENCE\nimage_01.png");
@@ -178,5 +181,55 @@ describe("Review shared utilities", () => {
         fenced: undefined,
       },
     ]);
+  });
+
+  it("sanitizes review context by redacting sensitive keys and trimming oversized values", () => {
+    const sanitized = sanitizeReviewContext({
+      project: "demo",
+      apiKey: "secret-value",
+      nested: {
+        sessionToken: "another-secret",
+        note: "x".repeat(20),
+      },
+      list: ["keep", "drop-1", "drop-2"],
+    }, {
+      maxArrayItems: 1,
+      maxStringLength: 8,
+    });
+
+    expect(sanitized).toEqual({
+      project: "demo",
+      apiKey: "[REDACTED]",
+      nested: {
+        sessionToken: "[REDACTED]",
+        note: "xxxxxxxx... [truncated 12 chars]",
+      },
+      list: ["keep", "[2 more item(s) truncated]"],
+    });
+  });
+
+  it("cuts off deep review context structures before they bloat prompts", () => {
+    const sanitized = sanitizeReviewContext(
+      {
+        one: {
+          two: {
+            three: {
+              four: {
+                value: "too deep",
+              },
+            },
+          },
+        },
+      },
+      { maxDepth: 3 },
+    );
+
+    expect(sanitized).toEqual({
+      one: {
+        two: {
+          three: "[Truncated object: max depth 3 reached]",
+        },
+      },
+    });
   });
 });

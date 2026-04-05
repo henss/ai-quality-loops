@@ -10,6 +10,7 @@ import {
 } from "../shared/models.js";
 import { takeScreenshot } from "../utils/screenshot.js";
 import {
+  buildReviewEnvelope,
   loadPersonaPrompt,
   loadReviewContext,
   writeReviewOutput,
@@ -158,24 +159,17 @@ export async function runVisionReview(options: VisionReviewOptions): Promise<str
       screenshotPaths.map((p) => imageToBase64(p)),
     );
 
-    const finalPrompt = `
-${personaPrompt}
-
-## CONTEXT
-${JSON.stringify(brand || {}, null, 2)}
-
-## TASK
-You are looking at a screenshot of a website (${urlOrPath}).
-The screenshot is a "full page" capture, scrolling down from the hero section.
-
-Please focus your analysis on the visual design, layout, and usability.
-
-Analyze the visual design, layout, and usability based on your persona.
-
-How is the visual hierarchy and consistency?
-
-Provide your critical feedback in Markdown.
-`;
+    const finalPrompt = buildReviewEnvelope({
+      personaPrompt,
+      context: brand,
+      taskInstructions: [
+        `You are reviewing screenshots captured from: ${urlOrPath}.`,
+        sectionList.length > 0
+          ? `The screenshots focus on these sections: ${sectionList.join(", ")}.`
+          : 'The screenshots represent a "full page" capture, scrolling down from the hero section.',
+        "Focus your analysis on the visual design, layout, usability, hierarchy, and consistency through the lens of your persona.",
+      ].join("\n"),
+    });
 
     const text = await callOllamaVision({
       ollamaUrl,

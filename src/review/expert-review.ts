@@ -6,6 +6,7 @@ import {
   getDefaultOllamaUrl,
 } from "../shared/models.js";
 import {
+  buildReviewEnvelope,
   loadPersonaPrompt,
   loadReviewContext,
   writeReviewOutput,
@@ -80,19 +81,20 @@ export async function runExpertReview(options: ExpertReviewOptions): Promise<str
     await options.orchestrator.prepareForOllama();
   }
 
-  const finalPrompt = `
-${personaPrompt}
-
-## CONTEXT
-${JSON.stringify(brand || {}, null, 2)}
-
-## CONTENT TO REVIEW
----
-${contentText}
----
-
-Provide your critical feedback based on your persona. Output in Markdown.
-`;
+  const finalPrompt = buildReviewEnvelope({
+    personaPrompt,
+    context: brand,
+    taskInstructions:
+      "Analyze the provided content based on your persona and identify the most important issues, risks, and improvement opportunities.",
+    sections: [
+      {
+        heading: "CONTENT TO REVIEW",
+        body: contentText,
+        fenced: true,
+      },
+    ],
+    outputInstructions: "Provide your critical feedback based on your persona. Output in Markdown.",
+  });
 
   try {
     const text = await generateTextWithOllama({

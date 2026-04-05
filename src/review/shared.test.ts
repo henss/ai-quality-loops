@@ -3,6 +3,7 @@ import * as fs from "node:fs/promises";
 import * as path from "node:path";
 import * as os from "node:os";
 import {
+  buildReviewEnvelope,
   loadPersonaPrompt,
   loadReviewContext,
   resolvePersonaName,
@@ -105,5 +106,33 @@ describe("Review shared utilities", () => {
         Reviewer: "MY CUSTOM REVIEWER",
       }),
     ).toBe("MY CUSTOM REVIEWER");
+  });
+
+  it("builds a reusable review envelope with generic sections", () => {
+    const prompt = buildReviewEnvelope({
+      personaPrompt: "You are a careful reviewer.",
+      context: { project: "demo" },
+      taskInstructions: "Inspect the supplied material.",
+      sections: [
+        {
+          heading: "CONTENT TO REVIEW",
+          body: "example payload",
+          fenced: true,
+        },
+        {
+          heading: "EVIDENCE",
+          body: "image_01.png",
+        },
+      ],
+    });
+
+    expect(prompt).toContain("You are a careful reviewer.");
+    expect(prompt).toContain("## CONTEXT\n{\n  \"project\": \"demo\"\n}");
+    expect(prompt).toContain("## TASK\nInspect the supplied material.");
+    expect(prompt).toContain("## CONTENT TO REVIEW\n---\nexample payload\n---");
+    expect(prompt).toContain("## EVIDENCE\nimage_01.png");
+    expect(prompt.endsWith("Provide your critical feedback in Markdown.")).toBe(
+      true,
+    );
   });
 });

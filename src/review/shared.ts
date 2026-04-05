@@ -24,6 +24,20 @@ export interface LoadedPersonaPrompt {
   promptLibraryPath: string;
 }
 
+export interface ReviewEnvelopeSection {
+  heading: string;
+  body: string;
+  fenced?: boolean;
+}
+
+export interface BuildReviewEnvelopeOptions {
+  personaPrompt: string;
+  context?: Record<string, unknown>;
+  taskInstructions: string;
+  sections?: ReviewEnvelopeSection[];
+  outputInstructions?: string;
+}
+
 export function resolvePersonaName(
   expert: string,
   expertMap?: Record<string, string>,
@@ -110,4 +124,30 @@ export async function writeReviewOutput(
   await fs.mkdir(path.dirname(absoluteOutputPath), { recursive: true });
   await fs.writeFile(absoluteOutputPath, content);
   return absoluteOutputPath;
+}
+
+export function buildReviewEnvelope({
+  personaPrompt,
+  context,
+  taskInstructions,
+  sections = [],
+  outputInstructions = "Provide your critical feedback in Markdown.",
+}: BuildReviewEnvelopeOptions): string {
+  const blocks: string[] = [personaPrompt.trim(), "", "## CONTEXT"];
+
+  blocks.push(JSON.stringify(context || {}, null, 2));
+  blocks.push("", "## TASK", taskInstructions.trim());
+
+  for (const section of sections) {
+    blocks.push("", `## ${section.heading}`);
+    if (section.fenced) {
+      blocks.push("---", section.body, "---");
+    } else {
+      blocks.push(section.body);
+    }
+  }
+
+  blocks.push("", outputInstructions.trim());
+
+  return blocks.join("\n").trim();
 }

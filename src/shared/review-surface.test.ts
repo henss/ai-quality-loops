@@ -81,6 +81,19 @@ describe("sanitizeReviewSurfaceValue", () => {
       'Share findings with Email address or "Email link (query redacted)"',
     );
   });
+
+  it("supports caller-provided extra redaction rules for project-local identifiers", () => {
+    expect(
+      sanitizeReviewSurfaceValue("Escalate with tenant acme-internal-42", {
+        extraRedactions: [
+          {
+            pattern: /\bacme-internal-\d+\b/g,
+            replacement: "[Project identifier redacted]",
+          },
+        ],
+      }),
+    ).toBe("Escalate with tenant [Project identifier redacted]");
+  });
 });
 
 describe("summarizeReviewSurfaceError", () => {
@@ -119,6 +132,23 @@ describe("summarizeReviewSurfaceError", () => {
 
     expect(summarizeReviewSurfaceError(error)).toBe(
       "Error: Notify Email address or Email link (query redacted)",
+    );
+  });
+
+  it("applies caller-provided extra redaction rules to error summaries", () => {
+    const error = new Error("Unknown tenant acme-internal-42 failed validation");
+
+    expect(
+      summarizeReviewSurfaceError(error, {
+        extraRedactions: [
+          {
+            pattern: /\bacme-internal-\d+\b/g,
+            replacement: "[Project identifier redacted]",
+          },
+        ],
+      }),
+    ).toBe(
+      "Error: Unknown tenant [Project identifier redacted] failed validation",
     );
   });
 

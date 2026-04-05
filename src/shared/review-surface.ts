@@ -2,20 +2,29 @@ import path from "node:path";
 
 export interface SanitizeReviewSurfaceValueOptions {
   maxLength?: number;
+  extraRedactions?: ReviewSurfaceRedactionRule[];
 }
 
 export interface SummarizeReviewSurfaceErrorOptions {
   maxMessageLength?: number;
+  extraRedactions?: ReviewSurfaceRedactionRule[];
+}
+
+export interface ReviewSurfaceRedactionRule {
+  pattern: RegExp;
+  replacement: string | ((match: string) => string);
 }
 
 const DEFAULT_SANITIZE_REVIEW_SURFACE_VALUE_OPTIONS: Required<SanitizeReviewSurfaceValueOptions> =
   {
     maxLength: 160,
+    extraRedactions: [],
   };
 
 const DEFAULT_SUMMARIZE_REVIEW_SURFACE_ERROR_OPTIONS: Required<SummarizeReviewSurfaceErrorOptions> =
   {
     maxMessageLength: 160,
+    extraRedactions: [],
   };
 
 function truncateSurfaceValue(value: string, maxLength: number): string {
@@ -102,6 +111,18 @@ function sanitizeQuotedSurfaceSegment(match: string, quote: string, candidate: s
   return match;
 }
 
+function applyExtraRedactions(
+  value: string,
+  extraRedactions: ReviewSurfaceRedactionRule[],
+): string {
+  return extraRedactions.reduce((currentValue, rule) => {
+    const { pattern, replacement } = rule;
+    return currentValue.replace(pattern, (match) =>
+      typeof replacement === "function" ? replacement(match) : replacement,
+    );
+  }, value);
+}
+
 function replaceSensitiveSurfaceSegments(value: string): string {
   return value
     .replace(
@@ -167,7 +188,10 @@ export function sanitizeReviewSurfaceValue(
   }
 
   return truncateSurfaceValue(
-    replaceSensitiveSurfaceSegments(trimmed),
+    applyExtraRedactions(
+      replaceSensitiveSurfaceSegments(trimmed),
+      config.extraRedactions,
+    ),
     config.maxLength,
   );
 }
@@ -185,6 +209,7 @@ export function summarizeReviewSurfaceError(
     const summaryParts = [error.name];
     const sanitizedMessage = sanitizeReviewSurfaceValue(error.message, {
       maxLength: config.maxMessageLength,
+      extraRedactions: config.extraRedactions,
     });
 
     if (sanitizedMessage && sanitizedMessage !== "[empty]") {
@@ -197,6 +222,7 @@ export function summarizeReviewSurfaceError(
   if (typeof error === "string") {
     return sanitizeReviewSurfaceValue(error, {
       maxLength: config.maxMessageLength,
+      extraRedactions: config.extraRedactions,
     });
   }
 
@@ -206,5 +232,6 @@ export function summarizeReviewSurfaceError(
 
   return sanitizeReviewSurfaceValue(String(error), {
     maxLength: config.maxMessageLength,
+    extraRedactions: config.extraRedactions,
   });
 }

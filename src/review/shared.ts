@@ -3,7 +3,10 @@ import fsSync from "node:fs";
 import * as path from "node:path";
 import { fileURLToPath } from "node:url";
 import { readJson } from "../shared/io.js";
-import { sanitizeReviewSurfaceValue } from "../shared/review-surface.js";
+import {
+  type ReviewSurfaceRedactionRule,
+  sanitizeReviewSurfaceValue,
+} from "../shared/review-surface.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -64,6 +67,7 @@ export interface SanitizeReviewContextOptions {
   maxArrayItems?: number;
   maxStringLength?: number;
   sensitiveKeyPattern?: RegExp;
+  extraRedactions?: ReviewSurfaceRedactionRule[];
 }
 
 const DEFAULT_SANITIZE_REVIEW_CONTEXT_OPTIONS: Required<SanitizeReviewContextOptions> =
@@ -71,6 +75,7 @@ const DEFAULT_SANITIZE_REVIEW_CONTEXT_OPTIONS: Required<SanitizeReviewContextOpt
     maxDepth: 4,
     maxArrayItems: 10,
     maxStringLength: 500,
+    extraRedactions: [],
     sensitiveKeyPattern:
       /(secret|token|password|passwd|pwd|api[-_]?key|auth|authorization|cookie|session|credential|private[-_]?key)/i,
   };
@@ -108,6 +113,7 @@ export function sanitizeReviewContext(
     if (typeof current === "string") {
       return sanitizeReviewSurfaceValue(current, {
         maxLength: config.maxStringLength,
+        extraRedactions: config.extraRedactions,
       });
     }
 

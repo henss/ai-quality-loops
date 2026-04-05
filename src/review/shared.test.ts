@@ -308,4 +308,27 @@ describe("Review shared utilities", () => {
       },
     });
   });
+  it("supports caller-provided extra redactions when sanitizing review context", () => {
+    const sanitized = sanitizeReviewContext(
+      {
+        project: "demo",
+        tenantLabel: "acme-internal-42",
+        note: "Escalate acme-internal-42 through the shared review flow",
+      },
+      {
+        extraRedactions: [
+          {
+            pattern: /\bacme-internal-\d+\b/g,
+            replacement: "[Project identifier redacted]",
+          },
+        ],
+      },
+    );
+
+    expect(sanitized).toEqual({
+      project: "demo",
+      tenantLabel: "[Project identifier redacted]",
+      note: "Escalate [Project identifier redacted] through the shared review flow",
+    });
+  });
 });

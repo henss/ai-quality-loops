@@ -8,6 +8,7 @@ import {
   getDefaultOllamaUrl,
   getDefaultVisionReviewModel,
 } from "../shared/models.js";
+import { sanitizeReviewSurfaceValue } from "../shared/review-surface.js";
 import { takeScreenshot } from "../utils/screenshot.js";
 import {
   buildReviewEnvelope,
@@ -66,6 +67,8 @@ export async function runVisionReview(options: VisionReviewOptions): Promise<str
   const visionModel = options.model || VISION_MODEL;
   const sectionList = options.sections || [];
   const ollamaUrl = options.ollamaUrl || OLLAMA_URL;
+  const sanitizedSource = sanitizeReviewSurfaceValue(urlOrPath);
+  const summarizedSectionLabels = sectionList.map((_, index) => `section-${index + 1}`);
 
   // 1. Take Screenshots
   const screenshotPaths: string[] = [];
@@ -90,7 +93,9 @@ export async function runVisionReview(options: VisionReviewOptions): Promise<str
       /\.(png|jpe?g|webp)$/i.test(urlOrPath) && fsSync.existsSync(urlOrPath);
     if (isLocalImage) {
       screenshotPaths.push(path.resolve(urlOrPath));
-      getLogger().info(`Using existing image file for review: ${urlOrPath}`);
+      getLogger().info(
+        `Using existing image file for review: ${sanitizedSource}`,
+      );
     } else {
       if (options.customCss && urlOrPath.endsWith(".html")) {
         const htmlContent = await fs.readFile(urlOrPath, "utf-8");
@@ -107,8 +112,8 @@ export async function runVisionReview(options: VisionReviewOptions): Promise<str
       }
 
       if (sectionList.length > 0) {
-        for (const section of sectionList) {
-          await capture(`${urlOrPath}#${section}`, section, {
+        for (const [index, section] of sectionList.entries()) {
+          await capture(`${urlOrPath}#${section}`, summarizedSectionLabels[index], {
             width,
             height,
           });
@@ -164,9 +169,9 @@ export async function runVisionReview(options: VisionReviewOptions): Promise<str
       personaPrompt,
       context: brand,
       taskInstructions: [
-        `You are reviewing screenshots captured from: ${urlOrPath}.`,
+        `You are reviewing screenshots captured from this source: ${sanitizedSource}.`,
         sectionList.length > 0
-          ? `The screenshots focus on these sections: ${sectionList.join(", ")}.`
+          ? `The screenshots focus on ${sectionList.length} explicitly targeted section(s): ${summarizedSectionLabels.join(", ")}.`
           : 'The screenshots represent a "full page" capture, scrolling down from the hero section.',
         "Focus your analysis on the visual design, layout, usability, hierarchy, and consistency through the lens of your persona.",
       ].join("\n"),
@@ -174,13 +179,13 @@ export async function runVisionReview(options: VisionReviewOptions): Promise<str
         {
           heading: "REVIEW INPUT MATERIAL",
           items: [
-            `Source: ${urlOrPath}`,
+            `Source: ${sanitizedSource}`,
             `Attached image count: ${screenshotPaths.length}`,
             sectionList.length > 0
               ? `Capture mode: targeted section screenshots`
               : "Capture mode: full-page screenshot",
             sectionList.length > 0
-              ? `Captured sections: ${sectionList.join(", ")}`
+              ? `Captured section references: ${summarizedSectionLabels.join(", ")}`
               : undefined,
           ],
         },

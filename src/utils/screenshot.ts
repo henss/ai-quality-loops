@@ -1,6 +1,7 @@
 import { execa } from "execa";
 import path from "node:path";
 import fs from "node:fs";
+import { sanitizeReviewSurfaceValue } from "../shared/review-surface.js";
 
 const CHROME_PATH =
   process.env.CHROME_PATH ||
@@ -39,7 +40,7 @@ export async function takeScreenshot(
   }
 
   console.info(
-    `[Screenshot] Capturing ${targetUrl} to ${absoluteOutputPath}... using ${chromePath}`,
+    `[Screenshot] Capturing ${sanitizeReviewSurfaceValue(targetUrl)} to ${sanitizeReviewSurfaceValue(absoluteOutputPath)}... using ${sanitizeReviewSurfaceValue(chromePath)}`,
   );
 
   try {

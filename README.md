@@ -27,6 +27,7 @@ The library works out-of-the-box with default example personas in `personas/univ
 - Prompt and error sanitization also summarizes inline `data:` URLs so embedded image or text payloads are not copied verbatim into prompts, logs, or saved review notes.
 - Saved-review log messages also summarize output artifact paths instead of echoing absolute local filesystem locations.
 - Review and screenshot error logs also summarize embedded local paths and remote URLs before they are emitted, including quoted or space-containing file paths, keeping failure diagnostics generic without exposing raw directory layout or query-string detail.
+- Screenshot capture utilities also accept caller-provided `extraRedactions` rules, so embedding projects can redact private structured identifiers from browser-command logs or launch failures without expanding the library's built-in heuristic set.
 - CLI failure output also emits only sanitized error summaries instead of raw stacks, so command-line review runs do not re-expose private paths or URL query details during failures.
 - Review flows also attach prompt-safe provenance bullets such as `Content source` or `Capture mode`, using sanitized descriptors instead of raw local paths or sensitive URL details.
 - `CHROME_PATH`: (Optional) Path to your browser executable (defaults to Edge on Windows).

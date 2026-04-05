@@ -131,10 +131,15 @@ export async function runVisionReview(options: VisionReviewOptions): Promise<str
           await capture(`${captureTarget}#${section}`, summarizedSectionLabels[index], {
             width,
             height,
+            extraRedactions: options.extraRedactions,
           });
         }
       } else {
-        await capture(captureTarget, "full", { width, height: 6000 });
+        await capture(captureTarget, "full", {
+          width,
+          height: 6000,
+          extraRedactions: options.extraRedactions,
+        });
       }
     }
   } finally {

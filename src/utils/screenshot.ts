@@ -2,6 +2,7 @@ import { execa } from "execa";
 import path from "node:path";
 import fs from "node:fs";
 import {
+  type ReviewSurfaceRedactionRule,
   sanitizeReviewSurfaceValue,
   summarizeReviewSurfaceError,
 } from "../shared/review-surface.js";
@@ -21,11 +22,17 @@ const CHROME_PATH =
 export async function takeScreenshot(
   urlOrPath: string,
   outputPath: string,
-  options: { width?: number; height?: number; chromePath?: string } = {},
+  options: {
+    width?: number;
+    height?: number;
+    chromePath?: string;
+    extraRedactions?: ReviewSurfaceRedactionRule[];
+  } = {},
 ): Promise<string> {
   const width = options.width || 1280;
   const height = options.height || 720;
   const chromePath = options.chromePath || CHROME_PATH;
+  const extraRedactions = options.extraRedactions || [];
 
   let targetUrl = urlOrPath;
   if (!urlOrPath.startsWith("http") && !urlOrPath.startsWith("file://")) {
@@ -43,7 +50,7 @@ export async function takeScreenshot(
   }
 
   console.info(
-    `[Screenshot] Capturing ${sanitizeReviewSurfaceValue(targetUrl)} to ${sanitizeReviewSurfaceValue(absoluteOutputPath)}... using ${sanitizeReviewSurfaceValue(chromePath)}`,
+    `[Screenshot] Capturing ${sanitizeReviewSurfaceValue(targetUrl, { extraRedactions })} to ${sanitizeReviewSurfaceValue(absoluteOutputPath, { extraRedactions })}... using ${sanitizeReviewSurfaceValue(chromePath, { extraRedactions })}`,
   );
 
   try {
@@ -63,7 +70,7 @@ export async function takeScreenshot(
 
     if (fs.existsSync(absoluteOutputPath)) {
       console.info(
-        `[Screenshot] Success: ${sanitizeReviewSurfaceValue(absoluteOutputPath)} (${fs.statSync(absoluteOutputPath).size} bytes)`,
+        `[Screenshot] Success: ${sanitizeReviewSurfaceValue(absoluteOutputPath, { extraRedactions })} (${fs.statSync(absoluteOutputPath).size} bytes)`,
       );
       return absoluteOutputPath;
     } else {
@@ -73,7 +80,9 @@ export async function takeScreenshot(
     }
   } catch (error) {
     console.error(
-      `[Screenshot] Failed to capture screenshot: ${summarizeReviewSurfaceError(error)}`,
+      `[Screenshot] Failed to capture screenshot: ${summarizeReviewSurfaceError(error, {
+        extraRedactions,
+      })}`,
     );
     throw error;
   }

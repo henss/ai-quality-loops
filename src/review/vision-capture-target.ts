@@ -8,12 +8,27 @@ export interface PreparedVisionCaptureTarget {
   cleanup: () => Promise<void>;
 }
 
-function extractLocalHtmlPath(target: string): string | undefined {
-  const withoutFragment = target.split("#", 1)[0];
+function splitTargetFragment(target: string): {
+  baseTarget: string;
+  fragment?: string;
+} {
+  const hashIndex = target.indexOf("#");
+  if (hashIndex < 0) {
+    return { baseTarget: target };
+  }
 
-  if (/^file:\/\//i.test(withoutFragment)) {
+  return {
+    baseTarget: target.slice(0, hashIndex),
+    fragment: target.slice(hashIndex),
+  };
+}
+
+function extractLocalHtmlPath(target: string): string | undefined {
+  const { baseTarget } = splitTargetFragment(target);
+
+  if (/^file:\/\//i.test(baseTarget)) {
     try {
-      const parsed = new URL(withoutFragment);
+      const parsed = new URL(baseTarget);
       const filePath = decodeURIComponent(parsed.pathname);
       const normalizedPath =
         process.platform === "win32" && /^\/[a-zA-Z]:/.test(filePath)
@@ -27,11 +42,11 @@ function extractLocalHtmlPath(target: string): string | undefined {
     }
   }
 
-  if (!withoutFragment.endsWith(".html")) {
+  if (!baseTarget.endsWith(".html")) {
     return undefined;
   }
 
-  const resolvedPath = path.resolve(withoutFragment);
+  const resolvedPath = path.resolve(baseTarget);
   return fsSync.existsSync(resolvedPath) ? resolvedPath : undefined;
 }
 
@@ -49,6 +64,8 @@ export async function prepareVisionCaptureTarget(
   target: string,
   customCss?: string,
 ): Promise<PreparedVisionCaptureTarget> {
+  const { fragment } = splitTargetFragment(target);
+
   if (!customCss) {
     return {
       target,
@@ -73,10 +90,9 @@ export async function prepareVisionCaptureTarget(
   await fs.writeFile(tempHtmlPath, injectCustomCss(originalHtml, customCss), "utf-8");
 
   return {
-    target: tempHtmlPath,
+    target: `${tempHtmlPath}${fragment || ""}`,
     cleanup: async () => {
       await fs.rm(tempHtmlPath, { force: true });
     },
   };
 }
-

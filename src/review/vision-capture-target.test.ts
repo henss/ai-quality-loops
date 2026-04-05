@@ -56,5 +56,46 @@ describe("prepareVisionCaptureTarget", () => {
 
     await prepared.cleanup();
   });
-});
 
+  it("preserves hash fragments when rewriting a local html path", async () => {
+    const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "aiql-vision-target-"));
+    createdDirs.push(tempDir);
+    const sourcePath = path.join(tempDir, "page.html");
+    await fs.writeFile(sourcePath, "<html><body>Anchored</body></html>", "utf-8");
+
+    const prepared = await prepareVisionCaptureTarget(
+      `${sourcePath}#hero-section`,
+      "body { outline: 1px solid red; }",
+    );
+
+    expect(prepared.target.endsWith("#hero-section")).toBe(true);
+    const preparedHtmlPath = prepared.target.split("#", 1)[0];
+    await expect(fs.readFile(preparedHtmlPath, "utf-8")).resolves.toContain(
+      "outline: 1px solid red",
+    );
+
+    await prepared.cleanup();
+    await expect(fs.access(preparedHtmlPath)).rejects.toThrow();
+  });
+
+  it("preserves hash fragments when rewriting a file url", async () => {
+    const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "aiql-vision-target-"));
+    createdDirs.push(tempDir);
+    const sourcePath = path.join(tempDir, "page.html");
+    await fs.writeFile(sourcePath, "<html><body>Anchored</body></html>", "utf-8");
+
+    const fileUrl = `file://${sourcePath.replace(/\\/g, "/")}#capture-target`;
+    const prepared = await prepareVisionCaptureTarget(
+      fileUrl,
+      "body { background: black; }",
+    );
+
+    expect(prepared.target.endsWith("#capture-target")).toBe(true);
+    const preparedHtmlPath = prepared.target.split("#", 1)[0];
+    await expect(fs.readFile(preparedHtmlPath, "utf-8")).resolves.toContain(
+      "background: black",
+    );
+
+    await prepared.cleanup();
+  });
+});

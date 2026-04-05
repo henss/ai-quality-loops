@@ -113,6 +113,24 @@ export async function loadReviewContext(
   }
 }
 
+export async function loadReviewContent(
+  input: string,
+  cwd = process.cwd(),
+): Promise<string> {
+  const resolvedInput = path.isAbsolute(input) ? input : path.resolve(cwd, input);
+
+  try {
+    const stats = await fs.stat(resolvedInput);
+    if (stats.isFile()) {
+      return await fs.readFile(resolvedInput, "utf-8");
+    }
+  } catch {
+    return input;
+  }
+
+  return input;
+}
+
 export async function writeReviewOutput(
   outputPath: string,
   content: string,

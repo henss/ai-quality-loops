@@ -4,6 +4,7 @@ import * as path from "node:path";
 import * as os from "node:os";
 import {
   buildReviewEnvelope,
+  loadReviewContent,
   loadPersonaPrompt,
   loadReviewContext,
   resolvePersonaName,
@@ -87,6 +88,18 @@ describe("Review shared utilities", () => {
     await expect(
       loadReviewContext(path.join(tempDir, "missing.json"), tempDir),
     ).resolves.toEqual({});
+  });
+
+  it("loads review content from a relative file path and otherwise preserves raw text", async () => {
+    const contentPath = path.join(tempDir, "draft.md");
+    await fs.writeFile(contentPath, "# Review me");
+
+    await expect(loadReviewContent("draft.md", tempDir)).resolves.toBe(
+      "# Review me",
+    );
+    await expect(loadReviewContent("inline review text", tempDir)).resolves.toBe(
+      "inline review text",
+    );
   });
 
   it("writes review output to nested paths using the current working directory", async () => {

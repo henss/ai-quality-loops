@@ -1,4 +1,3 @@
-import * as fs from "node:fs/promises";
 import { getLogger } from "../shared/logger.js";
 import { generateTextWithOllama } from "../shared/ollama.js";
 import {
@@ -7,6 +6,7 @@ import {
 } from "../shared/models.js";
 import {
   buildReviewEnvelope,
+  loadReviewContent,
   loadPersonaPrompt,
   loadReviewContext,
   writeReviewOutput,
@@ -51,19 +51,7 @@ export async function runExpertReview(options: ExpertReviewOptions): Promise<str
   const modelId = options.modelId || DEFAULT_MODEL;
   const outputPath = options.outputPath;
   const ollamaUrl = (options.ollamaUrl || OLLAMA_URL).replace(/\/$/, "");
-
-  // Load content
-  const loadContent = async (input: string) => {
-    try {
-      const stats = await fs.stat(input).catch(() => null);
-      if (stats && stats.isFile()) {
-        return await fs.readFile(input, "utf-8");
-      }
-    } catch (e) {}
-    return input;
-  };
-
-  const contentText = await loadContent(contentInput);
+  const contentText = await loadReviewContent(contentInput);
 
   const { personaName, personaPrompt } = await loadPersonaPrompt({
     expert: expertType,

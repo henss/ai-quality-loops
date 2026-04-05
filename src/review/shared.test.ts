@@ -8,6 +8,7 @@ import {
   loadPersonaPrompt,
   loadReviewContext,
   prepareReviewEvidenceDescriptorItems,
+  prepareReviewInputMaterialSections,
   prepareReviewMetadataItems,
   prepareReviewMaterialSections,
   resolvePersonaName,
@@ -291,6 +292,46 @@ describe("Review shared utilities", () => {
       ),
     ).toEqual([
       "Structured identifier: tenant/[Project identifier redacted]",
+    ]);
+  });
+
+  it("builds one reusable prompt-safe review input material section", () => {
+    expect(
+      prepareReviewInputMaterialSections({
+        evidenceDescriptors: [
+          {
+            label: "Source",
+            value: "https://example.com/private/reports?token=secret#hero",
+          },
+        ],
+        metadataItems: [
+          {
+            label: "Attached image count",
+            value: 2,
+            sanitizeValue: false,
+          },
+          {
+            label: "Tenant",
+            value: "acme-internal-42",
+          },
+        ],
+        extraRedactions: [
+          {
+            pattern: /\bacme-internal-\d+\b/g,
+            replacement: "[Project identifier redacted]",
+          },
+        ],
+      }),
+    ).toEqual([
+      {
+        heading: "REVIEW INPUT MATERIAL",
+        body: [
+          "- Source: Remote URL (host: example.com, path segments: 2, query redacted, fragment redacted)",
+          "- Attached image count: 2",
+          "- Tenant: [Project identifier redacted]",
+        ].join("\n"),
+        fenced: undefined,
+      },
     ]);
   });
 

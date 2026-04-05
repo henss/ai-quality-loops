@@ -16,8 +16,7 @@ import { takeScreenshot } from "../utils/screenshot.js";
 import {
   buildReviewEnvelope,
   loadPersonaPrompt,
-  prepareReviewEvidenceDescriptorItems,
-  prepareReviewMetadataItems,
+  prepareReviewInputMaterialSections,
   prepareReviewMaterialSections,
   loadReviewContext,
   type ReviewRedactionOptions,
@@ -183,52 +182,38 @@ export async function runVisionReview(options: VisionReviewOptions): Promise<str
           : 'The screenshots represent a "full page" capture, scrolling down from the hero section.',
         "Focus your analysis on the visual design, layout, usability, hierarchy, and consistency through the lens of your persona.",
       ].join("\n"),
-      sections: prepareReviewMaterialSections([
-        {
-          heading: "REVIEW INPUT MATERIAL",
-          items: [
-            ...prepareReviewEvidenceDescriptorItems(
-              [
-                {
-                  label: "Source",
-                  value: urlOrPath,
-                },
-              ],
-              {
-                extraRedactions: options.extraRedactions,
-              },
-            ),
-            ...prepareReviewMetadataItems(
-              [
-                {
-                  label: "Attached image count",
-                  value: screenshotPaths.length,
-                  sanitizeValue: false,
-                },
-                {
-                  label: "Capture mode",
-                  value:
-                    sectionList.length > 0
-                      ? "targeted section screenshots"
-                      : "full-page screenshot",
-                  sanitizeValue: false,
-                },
-                {
-                  label: "Captured section references",
-                  value:
-                    sectionList.length > 0
-                      ? summarizedSectionLabels.join(", ")
-                      : undefined,
-                  sanitizeValue: false,
-                },
-              ],
-              {
-                extraRedactions: options.extraRedactions,
-              },
-            ),
-          ],
-        },
-      ]),
+      sections: prepareReviewInputMaterialSections({
+        evidenceDescriptors: [
+          {
+            label: "Source",
+            value: urlOrPath,
+          },
+        ],
+        metadataItems: [
+          {
+            label: "Attached image count",
+            value: screenshotPaths.length,
+            sanitizeValue: false,
+          },
+          {
+            label: "Capture mode",
+            value:
+              sectionList.length > 0
+                ? "targeted section screenshots"
+                : "full-page screenshot",
+            sanitizeValue: false,
+          },
+          {
+            label: "Captured section references",
+            value:
+              sectionList.length > 0
+                ? summarizedSectionLabels.join(", ")
+                : undefined,
+            sanitizeValue: false,
+          },
+        ],
+        extraRedactions: options.extraRedactions,
+      }),
     });
 
     const text = await callOllamaVision({

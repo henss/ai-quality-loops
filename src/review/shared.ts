@@ -54,6 +54,12 @@ export interface ReviewEvidenceDescriptorItemInput {
   maxLength?: number;
 }
 
+export interface ReviewInputMaterialSectionOptions extends ReviewRedactionOptions {
+  heading?: string;
+  evidenceDescriptors?: ReviewEvidenceDescriptorItemInput[];
+  metadataItems?: ReviewMetadataItemInput[];
+}
+
 export interface BuildReviewEnvelopeOptions {
   personaPrompt: string;
   context?: Record<string, unknown>;
@@ -371,6 +377,25 @@ export function prepareReviewEvidenceDescriptorItems(
 
     return `${item.label}: ${descriptor}`;
   });
+}
+
+export function prepareReviewInputMaterialSections(
+  options: ReviewInputMaterialSectionOptions = {},
+): ReviewEnvelopeSection[] {
+  const items = [
+    ...prepareReviewEvidenceDescriptorItems(
+      options.evidenceDescriptors || [],
+      options,
+    ),
+    ...prepareReviewMetadataItems(options.metadataItems || [], options),
+  ];
+
+  return prepareReviewMaterialSections([
+    {
+      heading: options.heading || "REVIEW INPUT MATERIAL",
+      items,
+    },
+  ]);
 }
 
 export function buildReviewEnvelope({

@@ -9,7 +9,7 @@ import {
   buildReviewEnvelope,
   loadReviewContent,
   loadPersonaPrompt,
-  prepareReviewEvidenceDescriptorItems,
+  prepareReviewInputMaterialSections,
   prepareReviewMaterialSections,
   loadReviewContext,
   type ReviewRedactionOptions,
@@ -88,27 +88,22 @@ export async function runExpertReview(options: ExpertReviewOptions): Promise<str
     extraRedactions: options.extraRedactions,
     taskInstructions:
       "Analyze the provided content based on your persona and identify the most important issues, risks, and improvement opportunities.",
-    sections: prepareReviewMaterialSections([
-      {
-        heading: "REVIEW INPUT MATERIAL",
-        items: prepareReviewEvidenceDescriptorItems(
-          [
-            {
-              label: "Content source",
-              descriptor: summarizedContentSource,
-            },
-          ],
+    sections: [
+      ...prepareReviewInputMaterialSections({
+        evidenceDescriptors: [
           {
-            extraRedactions: options.extraRedactions,
+            label: "Content source",
+            descriptor: summarizedContentSource,
           },
-        ),
-      },
+        ],
+        extraRedactions: options.extraRedactions,
+      }),
       {
         heading: "CONTENT TO REVIEW",
         body: contentText,
         fenced: true,
       },
-    ]),
+    ],
     outputInstructions: "Provide your critical feedback based on your persona. Output in Markdown.",
   });
 

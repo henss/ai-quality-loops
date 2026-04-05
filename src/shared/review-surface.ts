@@ -2,12 +2,12 @@ import path from "node:path";
 
 export interface SanitizeReviewSurfaceValueOptions {
   maxLength?: number;
-  extraRedactions?: ReviewSurfaceRedactionRule[];
+  extraRedactions?: ReviewSurfaceRedactions;
 }
 
 export interface SummarizeReviewSurfaceErrorOptions {
   maxMessageLength?: number;
-  extraRedactions?: ReviewSurfaceRedactionRule[];
+  extraRedactions?: ReviewSurfaceRedactions;
 }
 
 export interface ReviewSurfaceRedactionRule {
@@ -15,13 +15,21 @@ export interface ReviewSurfaceRedactionRule {
   replacement: string | ((match: string) => string);
 }
 
+export type ReviewSurfaceRedactions = ReadonlyArray<
+  Readonly<ReviewSurfaceRedactionRule>
+>;
+
 export function defineReviewSurfaceRedactions(
   rules: Iterable<ReviewSurfaceRedactionRule>,
-): ReviewSurfaceRedactionRule[] {
-  return Array.from(rules, (rule) => ({
-    pattern: rule.pattern,
-    replacement: rule.replacement,
-  }));
+): ReviewSurfaceRedactions {
+  return Object.freeze(
+    Array.from(rules, (rule) =>
+      Object.freeze({
+        pattern: rule.pattern,
+        replacement: rule.replacement,
+      }),
+    ),
+  );
 }
 
 const DEFAULT_SANITIZE_REVIEW_SURFACE_VALUE_OPTIONS: Required<SanitizeReviewSurfaceValueOptions> =
@@ -147,7 +155,7 @@ function sanitizeQuotedSurfaceSegment(match: string, quote: string, candidate: s
 
 function applyExtraRedactions(
   value: string,
-  extraRedactions: ReviewSurfaceRedactionRule[],
+  extraRedactions: ReviewSurfaceRedactions,
 ): string {
   return extraRedactions.reduce((currentValue, rule) => {
     const { pattern, replacement } = rule;

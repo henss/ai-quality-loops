@@ -2,7 +2,7 @@ import { execa } from "execa";
 import path from "node:path";
 import fs from "node:fs";
 import {
-  type ReviewSurfaceRedactionRule,
+  type ReviewSurfaceRedactions,
   sanitizeReviewSurfaceValue,
   summarizeReviewSurfaceError,
 } from "../shared/review-surface.js";
@@ -26,7 +26,7 @@ export async function takeScreenshot(
     width?: number;
     height?: number;
     chromePath?: string;
-    extraRedactions?: ReviewSurfaceRedactionRule[];
+    extraRedactions?: ReviewSurfaceRedactions;
   } = {},
 ): Promise<string> {
   const width = options.width || 1280;

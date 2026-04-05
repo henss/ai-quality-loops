@@ -4,7 +4,7 @@ import * as path from "node:path";
 import { fileURLToPath } from "node:url";
 import { readJson } from "../shared/io.js";
 import {
-  type ReviewSurfaceRedactionRule,
+  type ReviewSurfaceRedactions,
   sanitizeReviewSurfaceValue,
 } from "../shared/review-surface.js";
 
@@ -60,7 +60,7 @@ export interface BuildReviewEnvelopeOptions {
   taskInstructions: string;
   sections?: ReviewEnvelopeSection[];
   outputInstructions?: string;
-  extraRedactions?: ReviewSurfaceRedactionRule[];
+  extraRedactions?: ReviewSurfaceRedactions;
 }
 
 export interface SanitizeReviewContextOptions {
@@ -68,11 +68,11 @@ export interface SanitizeReviewContextOptions {
   maxArrayItems?: number;
   maxStringLength?: number;
   sensitiveKeyPattern?: RegExp;
-  extraRedactions?: ReviewSurfaceRedactionRule[];
+  extraRedactions?: ReviewSurfaceRedactions;
 }
 
 export interface ReviewRedactionOptions {
-  extraRedactions?: ReviewSurfaceRedactionRule[];
+  extraRedactions?: ReviewSurfaceRedactions;
 }
 
 const DEFAULT_SANITIZE_REVIEW_CONTEXT_OPTIONS: Required<SanitizeReviewContextOptions> =

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   defineReviewSurfaceRedactions,
+  type ReviewSurfaceRedactions,
   sanitizeReviewSurfaceValue,
   summarizeReviewSurfaceError,
 } from "./review-surface.js";
@@ -18,6 +19,33 @@ describe("defineReviewSurfaceRedactions", () => {
 
     expect(reusableRules).toEqual(sourceRules);
     expect(reusableRules).not.toBe(sourceRules);
+    expect(
+      sanitizeReviewSurfaceValue("Escalate with tenant acme-internal-42", {
+        extraRedactions: reusableRules,
+      }),
+    ).toBe("Escalate with tenant [Project identifier redacted]");
+  });
+
+  it("returns an immutable reusable bundle boundary", () => {
+    const reusableRules = defineReviewSurfaceRedactions([
+      {
+        pattern: /\bacme-internal-\d+\b/g,
+        replacement: "[Project identifier redacted]",
+      },
+    ]);
+
+    expect(Object.isFrozen(reusableRules)).toBe(true);
+    expect(Object.isFrozen(reusableRules[0])).toBe(true);
+  });
+
+  it("exposes the reusable bundle type as a readonly public boundary", () => {
+    const reusableRules: ReviewSurfaceRedactions = defineReviewSurfaceRedactions([
+      {
+        pattern: /\bacme-internal-\d+\b/g,
+        replacement: "[Project identifier redacted]",
+      },
+    ]);
+
     expect(
       sanitizeReviewSurfaceValue("Escalate with tenant acme-internal-42", {
         extraRedactions: reusableRules,

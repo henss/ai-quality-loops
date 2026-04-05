@@ -4,6 +4,7 @@ export * from "./shared/io.js";
 export * from "./shared/logger.js";
 export {
   defineReviewSurfaceRedactions,
+  type ReviewSurfaceRedactions,
   type ReviewSurfaceRedactionRule,
 } from "./shared/review-surface.js";
 export * from "./utils/screenshot.js";

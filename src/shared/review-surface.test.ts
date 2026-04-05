@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { sanitizeReviewSurfaceValue } from "./review-surface.js";
+import {
+  sanitizeReviewSurfaceValue,
+  summarizeReviewSurfaceError,
+} from "./review-surface.js";
 
 describe("sanitizeReviewSurfaceValue", () => {
   it("summarizes remote URLs without exposing query strings or fragments", () => {
@@ -26,5 +29,44 @@ describe("sanitizeReviewSurfaceValue", () => {
     expect(sanitizeReviewSurfaceValue("x".repeat(12), { maxLength: 5 })).toBe(
       "xxxxx... [truncated 7 chars]",
     );
+  });
+
+  it("scrubs embedded remote URLs and local paths from longer plain text", () => {
+    expect(
+      sanitizeReviewSurfaceValue(
+        "Compare https://example.com/private/reports?token=secret with D:\\workspace\\private\\review.html",
+      ),
+    ).toBe(
+      "Compare Remote URL (host: example.com, path segments: 2, query redacted) with Local file path (.html file)",
+    );
+  });
+});
+
+describe("summarizeReviewSurfaceError", () => {
+  it("summarizes error messages without exposing raw URL query strings", () => {
+    const error = new Error(
+      "Request failed for https://example.com/private/reports?token=secret#hero",
+    );
+
+    expect(summarizeReviewSurfaceError(error)).toBe(
+      "Error: Request failed for Remote URL (host: example.com, path segments: 2, query redacted, fragment redacted)",
+    );
+  });
+
+  it("summarizes error messages without exposing raw local file paths", () => {
+    const error = new Error("Failed to open D:\\workspace\\private\\review.html");
+
+    expect(summarizeReviewSurfaceError(error)).toBe(
+      "Error: Failed to open Local file path (.html file)",
+    );
+  });
+
+  it("handles non-error values generically", () => {
+    expect(
+      summarizeReviewSurfaceError({
+        toString: () => "https://example.com/private?token=secret",
+      }),
+    ).toBe("Remote URL (host: example.com, path segments: 1, query redacted)");
+    expect(summarizeReviewSurfaceError(undefined)).toBe("Unknown error");
   });
 });

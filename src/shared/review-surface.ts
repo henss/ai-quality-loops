@@ -4,9 +4,18 @@ export interface SanitizeReviewSurfaceValueOptions {
   maxLength?: number;
 }
 
+export interface SummarizeReviewSurfaceErrorOptions {
+  maxMessageLength?: number;
+}
+
 const DEFAULT_SANITIZE_REVIEW_SURFACE_VALUE_OPTIONS: Required<SanitizeReviewSurfaceValueOptions> =
   {
     maxLength: 160,
+  };
+
+const DEFAULT_SUMMARIZE_REVIEW_SURFACE_ERROR_OPTIONS: Required<SummarizeReviewSurfaceErrorOptions> =
+  {
+    maxMessageLength: 160,
   };
 
 function truncateSurfaceValue(value: string, maxLength: number): string {
@@ -47,6 +56,18 @@ function sanitizeRemoteUrlDescriptor(value: string): string {
   }
 }
 
+function replaceSensitiveSurfaceSegments(value: string): string {
+  return value
+    .replace(
+      /https?:\/\/[^\s)"'`]+/gi,
+      (match) => sanitizeRemoteUrlDescriptor(match),
+    )
+    .replace(
+      /(?:file:\/\/[^\s)"'`]+|[a-zA-Z]:[\\/][^\s)"'`]+|\\\\[^\s)"'`]+|(?:\.{1,2}[\\/]|\/)[^\s)"'`]+)/g,
+      (match) => sanitizeLocalPathDescriptor(match),
+    );
+}
+
 export function sanitizeReviewSurfaceValue(
   value: string,
   options: SanitizeReviewSurfaceValueOptions = {},
@@ -72,10 +93,50 @@ export function sanitizeReviewSurfaceValue(
     trimmed.startsWith("./") ||
     trimmed.startsWith("../") ||
     trimmed.startsWith("/") ||
-    trimmed.includes("\\")
+    /^[^ \t\r\n]+(?:\\[^ \t\r\n]+)+$/.test(trimmed)
   ) {
     return sanitizeLocalPathDescriptor(trimmed);
   }
 
-  return truncateSurfaceValue(trimmed, config.maxLength);
+  return truncateSurfaceValue(
+    replaceSensitiveSurfaceSegments(trimmed),
+    config.maxLength,
+  );
+}
+
+export function summarizeReviewSurfaceError(
+  error: unknown,
+  options: SummarizeReviewSurfaceErrorOptions = {},
+): string {
+  const config = {
+    ...DEFAULT_SUMMARIZE_REVIEW_SURFACE_ERROR_OPTIONS,
+    ...options,
+  };
+
+  if (error instanceof Error) {
+    const summaryParts = [error.name];
+    const sanitizedMessage = sanitizeReviewSurfaceValue(error.message, {
+      maxLength: config.maxMessageLength,
+    });
+
+    if (sanitizedMessage && sanitizedMessage !== "[empty]") {
+      summaryParts.push(sanitizedMessage);
+    }
+
+    return summaryParts.join(": ");
+  }
+
+  if (typeof error === "string") {
+    return sanitizeReviewSurfaceValue(error, {
+      maxLength: config.maxMessageLength,
+    });
+  }
+
+  if (error === null || error === undefined) {
+    return "Unknown error";
+  }
+
+  return sanitizeReviewSurfaceValue(String(error), {
+    maxLength: config.maxMessageLength,
+  });
 }

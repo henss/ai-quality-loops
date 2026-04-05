@@ -8,7 +8,10 @@ import {
   getDefaultOllamaUrl,
   getDefaultVisionReviewModel,
 } from "../shared/models.js";
-import { sanitizeReviewSurfaceValue } from "../shared/review-surface.js";
+import {
+  sanitizeReviewSurfaceValue,
+  summarizeReviewSurfaceError,
+} from "../shared/review-surface.js";
 import { takeScreenshot } from "../utils/screenshot.js";
 import {
   buildReviewEnvelope,
@@ -89,7 +92,9 @@ export async function runVisionReview(options: VisionReviewOptions): Promise<str
       screenshotPaths.push(p);
       tempFiles.push(p);
     } catch (err) {
-      getLogger().error(`Failed to take screenshot of ${label}:`, err);
+      getLogger().error(
+        `Failed to take screenshot of ${label}: ${summarizeReviewSurfaceError(err)}`,
+      );
     }
   };
 
@@ -223,7 +228,9 @@ export async function runVisionReview(options: VisionReviewOptions): Promise<str
 
     return text;
   } catch (error) {
-    getLogger().error("Error during Vision review:", error);
+    getLogger().error(
+      `Error during Vision review: ${summarizeReviewSurfaceError(error)}`,
+    );
     throw error;
   } finally {
     // Cleanup temporary screenshots.

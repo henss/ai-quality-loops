@@ -4,6 +4,7 @@ import {
   getDefaultExpertReviewModel,
   getDefaultOllamaUrl,
 } from "../shared/models.js";
+import { summarizeReviewSurfaceError } from "../shared/review-surface.js";
 import {
   buildReviewEnvelope,
   loadReviewContent,
@@ -119,7 +120,9 @@ export async function runExpertReview(options: ExpertReviewOptions): Promise<str
 
     return text;
   } catch (error) {
-    getLogger().error("Error during Expert review:", error);
+    getLogger().error(
+      `Error during Expert review: ${summarizeReviewSurfaceError(error)}`,
+    );
     throw error;
   }
 }

@@ -1,7 +1,10 @@
 import { execa } from "execa";
 import path from "node:path";
 import fs from "node:fs";
-import { sanitizeReviewSurfaceValue } from "../shared/review-surface.js";
+import {
+  sanitizeReviewSurfaceValue,
+  summarizeReviewSurfaceError,
+} from "../shared/review-surface.js";
 
 const CHROME_PATH =
   process.env.CHROME_PATH ||
@@ -69,7 +72,9 @@ export async function takeScreenshot(
       );
     }
   } catch (error) {
-    console.error(`[Screenshot] Failed to capture screenshot:`, error);
+    console.error(
+      `[Screenshot] Failed to capture screenshot: ${summarizeReviewSurfaceError(error)}`,
+    );
     throw error;
   }
 }

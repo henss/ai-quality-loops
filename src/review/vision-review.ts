@@ -13,6 +13,7 @@ import { takeScreenshot } from "../utils/screenshot.js";
 import {
   buildReviewEnvelope,
   loadPersonaPrompt,
+  prepareReviewEvidenceDescriptorItems,
   prepareReviewMetadataItems,
   prepareReviewMaterialSections,
   loadReviewContext,
@@ -165,34 +166,37 @@ export async function runVisionReview(options: VisionReviewOptions): Promise<str
       sections: prepareReviewMaterialSections([
         {
           heading: "REVIEW INPUT MATERIAL",
-          items: prepareReviewMetadataItems([
-            {
-              label: "Source",
-              value: sanitizedSource,
-              sanitizeValue: false,
-            },
-            {
-              label: "Attached image count",
-              value: screenshotPaths.length,
-              sanitizeValue: false,
-            },
-            {
-              label: "Capture mode",
-              value:
-                sectionList.length > 0
-                  ? "targeted section screenshots"
-                  : "full-page screenshot",
-              sanitizeValue: false,
-            },
-            {
-              label: "Captured section references",
-              value:
-                sectionList.length > 0
-                  ? summarizedSectionLabels.join(", ")
-                  : undefined,
-              sanitizeValue: false,
-            },
-          ]),
+          items: [
+            ...prepareReviewEvidenceDescriptorItems([
+              {
+                label: "Source",
+                value: urlOrPath,
+              },
+            ]),
+            ...prepareReviewMetadataItems([
+              {
+                label: "Attached image count",
+                value: screenshotPaths.length,
+                sanitizeValue: false,
+              },
+              {
+                label: "Capture mode",
+                value:
+                  sectionList.length > 0
+                    ? "targeted section screenshots"
+                    : "full-page screenshot",
+                sanitizeValue: false,
+              },
+              {
+                label: "Captured section references",
+                value:
+                  sectionList.length > 0
+                    ? summarizedSectionLabels.join(", ")
+                    : undefined,
+                sanitizeValue: false,
+              },
+            ]),
+          ],
         },
       ]),
     });

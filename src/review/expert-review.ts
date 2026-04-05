@@ -8,7 +8,7 @@ import {
   buildReviewEnvelope,
   loadReviewContent,
   loadPersonaPrompt,
-  prepareReviewMetadataItems,
+  prepareReviewEvidenceDescriptorItems,
   prepareReviewMaterialSections,
   loadReviewContext,
   summarizeReviewInputReference,
@@ -81,11 +81,10 @@ export async function runExpertReview(options: ExpertReviewOptions): Promise<str
     sections: prepareReviewMaterialSections([
       {
         heading: "REVIEW INPUT MATERIAL",
-        items: prepareReviewMetadataItems([
+        items: prepareReviewEvidenceDescriptorItems([
           {
             label: "Content source",
-            value: summarizedContentSource,
-            sanitizeValue: false,
+            descriptor: summarizedContentSource,
           },
         ]),
       },

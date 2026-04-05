@@ -7,6 +7,7 @@ import {
   loadReviewContent,
   loadPersonaPrompt,
   loadReviewContext,
+  prepareReviewEvidenceDescriptorItems,
   prepareReviewMetadataItems,
   prepareReviewMaterialSections,
   resolvePersonaName,
@@ -217,6 +218,28 @@ describe("Review shared utilities", () => {
     ).toEqual([
       "Source: Remote URL (host: example.com, path segments: 2, query redacted, fragment redacted)",
       "Image count: 2",
+    ]);
+  });
+
+  it("prepares review evidence descriptors from raw surfaces or pre-summarized values", () => {
+    expect(
+      prepareReviewEvidenceDescriptorItems([
+        {
+          label: "Source",
+          value: "https://example.com/private/reports?token=secret#hero",
+        },
+        {
+          label: "Content source",
+          descriptor: "Inline content",
+        },
+        {
+          label: "Skipped",
+          value: undefined,
+        },
+      ]),
+    ).toEqual([
+      "Source: Remote URL (host: example.com, path segments: 2, query redacted, fragment redacted)",
+      "Content source: Inline content",
     ]);
   });
 

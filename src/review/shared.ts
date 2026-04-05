@@ -44,6 +44,13 @@ export interface ReviewMetadataItemInput {
   sanitizeValue?: boolean;
 }
 
+export interface ReviewEvidenceDescriptorItemInput {
+  label: string;
+  value?: string | null | undefined;
+  descriptor?: string | null | undefined;
+  maxLength?: number;
+}
+
 export interface BuildReviewEnvelopeOptions {
   personaPrompt: string;
   context?: Record<string, unknown>;
@@ -310,6 +317,26 @@ export function prepareReviewMetadataItems(
         : sanitizeReviewSurfaceValue(rawValue);
 
     return `${item.label}: ${formattedValue}`;
+  });
+}
+
+export function prepareReviewEvidenceDescriptorItems(
+  items: ReviewEvidenceDescriptorItemInput[],
+): string[] {
+  return items.flatMap((item) => {
+    const descriptor =
+      item.descriptor?.trim() ||
+      (item.value
+        ? sanitizeReviewSurfaceValue(item.value, {
+            maxLength: item.maxLength,
+          })
+        : "");
+
+    if (!descriptor) {
+      return [];
+    }
+
+    return `${item.label}: ${descriptor}`;
   });
 }
 

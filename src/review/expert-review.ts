@@ -1,17 +1,15 @@
 import * as fs from "node:fs/promises";
-import fsSync from "node:fs";
-import * as path from "node:path";
-import { fileURLToPath } from "node:url";
-import { readJson } from "../shared/io.js";
 import { getLogger } from "../shared/logger.js";
 import { generateTextWithOllama } from "../shared/ollama.js";
 import {
   getDefaultExpertReviewModel,
   getDefaultOllamaUrl,
 } from "../shared/models.js";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+import {
+  loadPersonaPrompt,
+  loadReviewContext,
+  writeReviewOutput,
+} from "./shared.js";
 
 /**
  * Options for the Expert Review engine.
@@ -66,55 +64,12 @@ export async function runExpertReview(options: ExpertReviewOptions): Promise<str
 
   const contentText = await loadContent(contentInput);
 
-  // Load Expert Prompt
-  let promptLibraryPath =
-    options.promptLibraryPath || process.env.PROMPT_LIBRARY_PATH;
-  if (!promptLibraryPath) {
-    const defaultInCwd = path.resolve(process.cwd(), "personas.md");
-    if (fsSync.existsSync(defaultInCwd)) {
-      promptLibraryPath = defaultInCwd;
-    } else {
-      promptLibraryPath = path.resolve(__dirname, "../../personas/universal.md");
-    }
-  } else {
-    promptLibraryPath = path.resolve(promptLibraryPath);
-  }
-
-  if (!fsSync.existsSync(promptLibraryPath)) {
-    throw new Error(`Persona library not found at: ${promptLibraryPath}`);
-  }
-
-  const promptLibrary = await fs.readFile(promptLibraryPath, "utf-8");
-
-  const expertMap: Record<string, string> = options.expertMap || {
-    "UI/UX": "SKEPTICAL UI/UX CRITIC",
-    Efficiency: "REPOSITORY & AI EFFICIENCY SPECIALIST",
-  };
-
-  const personaName = expertMap[expertType] || expertType;
-  const escapedPersona = personaName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  const personaRegex = new RegExp(
-    `(?:### LLM COMMITTEE PERSONA: \\d+\\. |#{1,3} )${escapedPersona}[\\s\\S]*?(?=(?:### LLM COMMITTEE PERSONA|#{1,3} [^\\n]+)|$)`,
-    "i",
-  );
-  const personaMatch = promptLibrary.match(personaRegex);
-
-  if (!personaMatch) {
-    throw new Error(`Could not find persona prompt for: ${personaName}`);
-  }
-
-  const personaPrompt = personaMatch[0].trim();
-
-  // Load brand context
-  const brandPath =
-    options.contextPath ||
-    (process.env.CONTEXT_PATH
-      ? path.resolve(process.env.CONTEXT_PATH)
-      : path.resolve(process.cwd(), "context.json"));
-  let brand: any = {};
-  try {
-    brand = await readJson<any>(brandPath);
-  } catch (err) {}
+  const { personaName, personaPrompt } = await loadPersonaPrompt({
+    expert: expertType,
+    promptLibraryPath: options.promptLibraryPath,
+    expertMap: options.expertMap,
+  });
+  const brand = await loadReviewContext(options.contextPath);
 
   getLogger().info(
     `[Expert Review] Using Expert: ${personaName} | Model: ${modelId}`,
@@ -152,11 +107,7 @@ Provide your critical feedback based on your persona. Output in Markdown.
     getLogger().info("---------------------\n");
 
     if (outputPath) {
-      const absoluteOutputPath = path.isAbsolute(outputPath)
-        ? outputPath
-        : path.resolve(process.cwd(), outputPath);
-      await fs.mkdir(path.dirname(absoluteOutputPath), { recursive: true });
-      await fs.writeFile(absoluteOutputPath, text);
+      const absoluteOutputPath = await writeReviewOutput(outputPath, text);
       getLogger().info(`Review saved to: ${absoluteOutputPath}`);
     }
 

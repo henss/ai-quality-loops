@@ -17,6 +17,7 @@ import {
   loadReviewContext,
   writeReviewOutput,
 } from "./shared.js";
+import { prepareVisionCaptureTarget } from "./vision-capture-target.js";
 
 /**
  * Options for the Vision Review engine.
@@ -73,6 +74,7 @@ export async function runVisionReview(options: VisionReviewOptions): Promise<str
   // 1. Take Screenshots
   const screenshotPaths: string[] = [];
   const tempFiles: string[] = [];
+  let cleanupCaptureTarget: (() => Promise<void>) | undefined;
 
   const capture = async (target: string, label: string, capOptions: any) => {
     const p = path.resolve(
@@ -97,46 +99,30 @@ export async function runVisionReview(options: VisionReviewOptions): Promise<str
         `Using existing image file for review: ${sanitizedSource}`,
       );
     } else {
-      if (options.customCss && urlOrPath.endsWith(".html")) {
-        const htmlContent = await fs.readFile(urlOrPath, "utf-8");
-        if (!htmlContent.includes('id="custom-vision-fix"')) {
-          const fix = `
-  <style id="custom-vision-fix">
-    ${options.customCss}
-  </style>
-`;
-          const updated = htmlContent.replace("</head>", `${fix}</head>`);
-          await fs.writeFile(urlOrPath, updated);
-          getLogger().info("Applied custom CSS fix to HTML file");
-        }
+      const preparedTarget = await prepareVisionCaptureTarget(
+        urlOrPath,
+        options.customCss,
+      );
+      cleanupCaptureTarget = preparedTarget.cleanup;
+      const captureTarget = preparedTarget.target;
+
+      if (captureTarget !== urlOrPath) {
+        getLogger().info("Prepared a temporary styled HTML capture target");
       }
 
       if (sectionList.length > 0) {
         for (const [index, section] of sectionList.entries()) {
-          await capture(`${urlOrPath}#${section}`, summarizedSectionLabels[index], {
+          await capture(`${captureTarget}#${section}`, summarizedSectionLabels[index], {
             width,
             height,
           });
         }
       } else {
-        await capture(urlOrPath, "full", { width, height: 6000 });
+        await capture(captureTarget, "full", { width, height: 6000 });
       }
     }
   } finally {
-    // CLEANUP HTML FIX if we edited it
-    if (options.customCss && urlOrPath.endsWith(".html")) {
-      try {
-        const htmlContent = await fs.readFile(urlOrPath, "utf-8");
-        if (htmlContent.includes('id="custom-vision-fix"')) {
-          const cleaned = htmlContent.replace(
-            /<style id="custom-vision-fix">[\s\S]*?<\/style>/,
-            "",
-          );
-          await fs.writeFile(urlOrPath, cleaned);
-          console.log("Cleaned up custom CSS fix in HTML file");
-        }
-      } catch {}
-    }
+    await cleanupCaptureTarget?.();
   }
 
   if (screenshotPaths.length === 0) {

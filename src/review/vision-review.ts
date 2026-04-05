@@ -13,6 +13,7 @@ import { takeScreenshot } from "../utils/screenshot.js";
 import {
   buildReviewEnvelope,
   loadPersonaPrompt,
+  prepareReviewMetadataItems,
   prepareReviewMaterialSections,
   loadReviewContext,
   writeReviewOutput,
@@ -164,16 +165,34 @@ export async function runVisionReview(options: VisionReviewOptions): Promise<str
       sections: prepareReviewMaterialSections([
         {
           heading: "REVIEW INPUT MATERIAL",
-          items: [
-            `Source: ${sanitizedSource}`,
-            `Attached image count: ${screenshotPaths.length}`,
-            sectionList.length > 0
-              ? `Capture mode: targeted section screenshots`
-              : "Capture mode: full-page screenshot",
-            sectionList.length > 0
-              ? `Captured section references: ${summarizedSectionLabels.join(", ")}`
-              : undefined,
-          ],
+          items: prepareReviewMetadataItems([
+            {
+              label: "Source",
+              value: sanitizedSource,
+              sanitizeValue: false,
+            },
+            {
+              label: "Attached image count",
+              value: screenshotPaths.length,
+              sanitizeValue: false,
+            },
+            {
+              label: "Capture mode",
+              value:
+                sectionList.length > 0
+                  ? "targeted section screenshots"
+                  : "full-page screenshot",
+              sanitizeValue: false,
+            },
+            {
+              label: "Captured section references",
+              value:
+                sectionList.length > 0
+                  ? summarizedSectionLabels.join(", ")
+                  : undefined,
+              sanitizeValue: false,
+            },
+          ]),
         },
       ]),
     });

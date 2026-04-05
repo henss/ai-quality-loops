@@ -8,8 +8,10 @@ import {
   buildReviewEnvelope,
   loadReviewContent,
   loadPersonaPrompt,
+  prepareReviewMetadataItems,
   prepareReviewMaterialSections,
   loadReviewContext,
+  summarizeReviewInputReference,
   writeReviewOutput,
 } from "./shared.js";
 
@@ -53,6 +55,7 @@ export async function runExpertReview(options: ExpertReviewOptions): Promise<str
   const outputPath = options.outputPath;
   const ollamaUrl = (options.ollamaUrl || OLLAMA_URL).replace(/\/$/, "");
   const contentText = await loadReviewContent(contentInput);
+  const summarizedContentSource = await summarizeReviewInputReference(contentInput);
 
   const { personaName, personaPrompt } = await loadPersonaPrompt({
     expert: expertType,
@@ -76,6 +79,16 @@ export async function runExpertReview(options: ExpertReviewOptions): Promise<str
     taskInstructions:
       "Analyze the provided content based on your persona and identify the most important issues, risks, and improvement opportunities.",
     sections: prepareReviewMaterialSections([
+      {
+        heading: "REVIEW INPUT MATERIAL",
+        items: prepareReviewMetadataItems([
+          {
+            label: "Content source",
+            value: summarizedContentSource,
+            sanitizeValue: false,
+          },
+        ]),
+      },
       {
         heading: "CONTENT TO REVIEW",
         body: contentText,

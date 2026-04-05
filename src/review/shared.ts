@@ -38,6 +38,12 @@ export interface ReviewMaterialInput {
   fenced?: boolean;
 }
 
+export interface ReviewMetadataItemInput {
+  label: string;
+  value?: string | number | boolean | null | undefined;
+  sanitizeValue?: boolean;
+}
+
 export interface BuildReviewEnvelopeOptions {
   personaPrompt: string;
   context?: Record<string, unknown>;
@@ -232,6 +238,24 @@ export async function loadReviewContent(
   return input;
 }
 
+export async function summarizeReviewInputReference(
+  input: string,
+  cwd = process.cwd(),
+): Promise<string> {
+  const resolvedInput = path.isAbsolute(input) ? input : path.resolve(cwd, input);
+
+  try {
+    const stats = await fs.stat(resolvedInput);
+    if (stats.isFile()) {
+      return sanitizeReviewSurfaceValue(resolvedInput);
+    }
+  } catch {
+    // Fall back to a generic inline-content descriptor below.
+  }
+
+  return "Inline content";
+}
+
 export async function writeReviewOutput(
   outputPath: string,
   content: string,
@@ -267,6 +291,25 @@ export function prepareReviewMaterialSections(
         fenced: material.fenced,
       },
     ];
+  });
+}
+
+export function prepareReviewMetadataItems(
+  items: ReviewMetadataItemInput[],
+): string[] {
+  return items.flatMap((item) => {
+    if (item.value === undefined || item.value === null || item.value === false) {
+      return [];
+    }
+
+    const rawValue =
+      typeof item.value === "string" ? item.value : String(item.value);
+    const formattedValue =
+      item.sanitizeValue === false
+        ? rawValue
+        : sanitizeReviewSurfaceValue(rawValue);
+
+    return `${item.label}: ${formattedValue}`;
   });
 }
 

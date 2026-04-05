@@ -7,10 +7,12 @@ import {
   loadReviewContent,
   loadPersonaPrompt,
   loadReviewContext,
+  prepareReviewMetadataItems,
   prepareReviewMaterialSections,
   resolvePersonaName,
   resolvePromptLibraryPath,
   sanitizeReviewContext,
+  summarizeReviewInputReference,
   writeReviewOutput,
 } from "./shared.js";
 
@@ -104,6 +106,18 @@ describe("Review shared utilities", () => {
     );
   });
 
+  it("summarizes review input references without exposing raw file paths", async () => {
+    const contentPath = path.join(tempDir, "draft.md");
+    await fs.writeFile(contentPath, "# Review me");
+
+    await expect(summarizeReviewInputReference("draft.md", tempDir)).resolves.toBe(
+      "Local file path (.md file)",
+    );
+    await expect(
+      summarizeReviewInputReference("inline review text", tempDir),
+    ).resolves.toBe("Inline content");
+  });
+
   it("writes review output to nested paths using the current working directory", async () => {
     const writtenPath = await writeReviewOutput(
       "reviews/output.md",
@@ -180,6 +194,29 @@ describe("Review shared utilities", () => {
         body: "- Source: https://example.com\n- Attached image count: 2",
         fenced: undefined,
       },
+    ]);
+  });
+
+  it("prepares sanitized review metadata items for prompt-safe provenance", () => {
+    expect(
+      prepareReviewMetadataItems([
+        {
+          label: "Source",
+          value: "https://example.com/private/reports?token=secret#hero",
+        },
+        {
+          label: "Image count",
+          value: 2,
+          sanitizeValue: false,
+        },
+        {
+          label: "Skipped",
+          value: undefined,
+        },
+      ]),
+    ).toEqual([
+      "Source: Remote URL (host: example.com, path segments: 2, query redacted, fragment redacted)",
+      "Image count: 2",
     ]);
   });
 

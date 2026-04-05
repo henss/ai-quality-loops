@@ -36,6 +36,15 @@ describe("sanitizeReviewSurfaceValue", () => {
     ).toBe("Email link (query redacted)");
   });
 
+  it("summarizes direct data urls without exposing payloads", () => {
+    expect(
+      sanitizeReviewSurfaceValue("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA"),
+    ).toBe("Data URL (media type: image/png, base64 payload redacted)");
+    expect(
+      sanitizeReviewSurfaceValue("data:text/plain,private-review-notes"),
+    ).toBe("Data URL (media type: text/plain, payload redacted)");
+  });
+
   it("truncates oversized plain labels", () => {
     expect(sanitizeReviewSurfaceValue("x".repeat(12), { maxLength: 5 })).toBe(
       "xxxxx... [truncated 7 chars]",
@@ -69,6 +78,16 @@ describe("sanitizeReviewSurfaceValue", () => {
       ),
     ).toBe(
       "Browser path Local file path (.exe file) failed while rendering Local file path (.html file)",
+    );
+  });
+
+  it("scrubs embedded data urls from longer plain text", () => {
+    expect(
+      sanitizeReviewSurfaceValue(
+        'Compare "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA" with data:text/plain,private-review-notes',
+      ),
+    ).toBe(
+      'Compare "Data URL (media type: image/png, base64 payload redacted)" with Data URL (media type: text/plain, payload redacted)',
     );
   });
 
@@ -132,6 +151,16 @@ describe("summarizeReviewSurfaceError", () => {
 
     expect(summarizeReviewSurfaceError(error)).toBe(
       "Error: Notify Email address or Email link (query redacted)",
+    );
+  });
+
+  it("summarizes error messages without exposing data url payloads", () => {
+    const error = new Error(
+      "Inline evidence data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA failed validation",
+    );
+
+    expect(summarizeReviewSurfaceError(error)).toBe(
+      "Error: Inline evidence Data URL (media type: image/png, base64 payload redacted) failed validation",
     );
   });
 

@@ -84,7 +84,32 @@ function sanitizeMailtoDescriptor(value: string): string {
   }
 }
 
+function sanitizeDataUrlDescriptor(value: string): string {
+  const match = value.match(/^data:([^,]*),/i);
+
+  if (!match) {
+    return "Data URL";
+  }
+
+  const descriptor = match[1] || "";
+  const [rawMediaType] = descriptor.split(";", 1);
+  const mediaType = rawMediaType.trim();
+  const parts = ["Data URL"];
+
+  if (mediaType) {
+    parts.push(`media type: ${mediaType}`);
+  }
+
+  parts.push(/;base64/i.test(descriptor) ? "base64 payload redacted" : "payload redacted");
+
+  return `${parts[0]} (${parts.slice(1).join(", ")})`;
+}
+
 function sanitizeQuotedSurfaceSegment(match: string, quote: string, candidate: string): string {
+  if (/^data:/i.test(candidate)) {
+    return `${quote}${sanitizeDataUrlDescriptor(candidate)}${quote}`;
+  }
+
   if (/^mailto:/i.test(candidate)) {
     return `${quote}${sanitizeMailtoDescriptor(candidate)}${quote}`;
   }
@@ -126,10 +151,11 @@ function applyExtraRedactions(
 function replaceSensitiveSurfaceSegments(value: string): string {
   return value
     .replace(
-      /(["'`])((?:mailto:|https?:\/\/|file:\/\/|[a-zA-Z]:[\\/]|\\\\|(?:\.{1,2}[\\/]|\/)|[^\s"'`]+@[^\s"'`]+\.[^\s"'`]+)[^"'`\r\n]*)\1/g,
+      /(["'`])((?:data:|mailto:|https?:\/\/|file:\/\/|[a-zA-Z]:[\\/]|\\\\|(?:\.{1,2}[\\/]|\/)|[^\s"'`]+@[^\s"'`]+\.[^\s"'`]+)[^"'`\r\n]*)\1/g,
       (match, quote: string, candidate: string) =>
         sanitizeQuotedSurfaceSegment(match, quote, candidate),
     )
+    .replace(/data:[^\s)"'`]+/gi, (match) => sanitizeDataUrlDescriptor(match))
     .replace(/mailto:[^\s)"'`]+/gi, (match) => sanitizeMailtoDescriptor(match))
     .replace(
       /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/gi,
@@ -140,12 +166,14 @@ function replaceSensitiveSurfaceSegments(value: string): string {
       (match) => sanitizeRemoteUrlDescriptor(match),
     )
     .replace(
-      /(?:file:\/\/[^\r\n"'`]+?\.[a-z0-9]{1,8}|[a-zA-Z]:[\\/][^\r\n"'`]+?\.[a-z0-9]{1,8}|\\\\[^\r\n"'`]+?\.[a-z0-9]{1,8}|(?:\.{1,2}[\\/]|\/)[^\r\n"'`]+?\.[a-z0-9]{1,8})/gi,
-      (match) => sanitizeLocalPathDescriptor(match),
+      /(^|[\s(])((?:file:\/\/[^\r\n"'`]+?\.[a-z0-9]{1,8}|[a-zA-Z]:[\\/][^\r\n"'`]+?\.[a-z0-9]{1,8}|\\\\[^\r\n"'`]+?\.[a-z0-9]{1,8}|(?:\.{1,2}[\\/]|\/)[^\r\n"'`]+?\.[a-z0-9]{1,8}))/gim,
+      (_match, prefix: string, candidate: string) =>
+        `${prefix}${sanitizeLocalPathDescriptor(candidate)}`,
     )
     .replace(
-      /(?:file:\/\/[^\s)"'`]+|[a-zA-Z]:[\\/][^\s)"'`]+|\\\\[^\s)"'`]+|(?:\.{1,2}[\\/]|\/)[^\s)"'`]+)/g,
-      (match) => sanitizeLocalPathDescriptor(match),
+      /(^|[\s(])((?:file:\/\/[^\s)"'`]+|[a-zA-Z]:[\\/][^\s)"'`]+|\\\\[^\s)"'`]+|(?:\.{1,2}[\\/]|\/)[^\s)"'`]+))/gm,
+      (_match, prefix: string, candidate: string) =>
+        `${prefix}${sanitizeLocalPathDescriptor(candidate)}`,
     );
 }
 
@@ -161,6 +189,10 @@ export function sanitizeReviewSurfaceValue(
 
   if (!trimmed) {
     return "[empty]";
+  }
+
+  if (/^data:/i.test(trimmed)) {
+    return sanitizeDataUrlDescriptor(trimmed);
   }
 
   if (/^mailto:/i.test(trimmed)) {

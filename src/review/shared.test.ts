@@ -256,6 +256,7 @@ describe("Review shared utilities", () => {
       apiKey: "secret-value",
       reviewerEmail: "reviewer@example.com",
       escalationContact: "mailto:security@example.com?subject=private",
+      embeddedImage: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA",
       docsUrl: "https://example.com/private/reports?token=secret#hero",
       localMockupPath: "D:\\workspace\\private\\mockups\\review.html",
       nested: {
@@ -273,6 +274,7 @@ describe("Review shared utilities", () => {
       apiKey: "[REDACTED]",
       reviewerEmail: "Email address",
       escalationContact: "Email link (query redacted)",
+      embeddedImage: "Data URL (media type: image/png, base64 payload redacted)",
       docsUrl:
         "Remote URL (host: example.com, path segments: 2, query redacted, fragment redacted)",
       localMockupPath: "Local file path (.html file)",

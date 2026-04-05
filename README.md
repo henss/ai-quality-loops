@@ -24,6 +24,7 @@ The library works out-of-the-box with default example personas in `personas/univ
 - For project-local identifiers that should not become default open-source heuristics, the shared sanitizers also accept caller-provided `extraRedactions` rules so private labels can be redacted by the embedding project without widening the library's built-in pattern set.
 - Review metadata such as source URLs, local paths, and capture labels is summarized before it is embedded in prompts or review logs, so private directory layouts, query strings, and raw section identifiers are not echoed by default.
 - Prompt and error sanitization also summarizes embedded email addresses and `mailto:` links so reviewer contacts or escalation aliases are not echoed verbatim in shared review artifacts.
+- Prompt and error sanitization also summarizes inline `data:` URLs so embedded image or text payloads are not copied verbatim into prompts, logs, or saved review notes.
 - Saved-review log messages also summarize output artifact paths instead of echoing absolute local filesystem locations.
 - Review and screenshot error logs also summarize embedded local paths and remote URLs before they are emitted, including quoted or space-containing file paths, keeping failure diagnostics generic without exposing raw directory layout or query-string detail.
 - CLI failure output also emits only sanitized error summaries instead of raw stacks, so command-line review runs do not re-expose private paths or URL query details during failures.

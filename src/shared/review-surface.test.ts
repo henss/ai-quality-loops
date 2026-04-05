@@ -25,6 +25,17 @@ describe("sanitizeReviewSurfaceValue", () => {
     expect(sanitizeReviewSurfaceValue("section-hero")).toBe("section-hero");
   });
 
+  it("summarizes raw email addresses and mailto links", () => {
+    expect(sanitizeReviewSurfaceValue("reviewer@example.com")).toBe(
+      "Email address",
+    );
+    expect(
+      sanitizeReviewSurfaceValue(
+        "mailto:reviewer@example.com?subject=Private%20Review",
+      ),
+    ).toBe("Email link (query redacted)");
+  });
+
   it("truncates oversized plain labels", () => {
     expect(sanitizeReviewSurfaceValue("x".repeat(12), { maxLength: 5 })).toBe(
       "xxxxx... [truncated 7 chars]",
@@ -60,6 +71,16 @@ describe("sanitizeReviewSurfaceValue", () => {
       "Browser path Local file path (.exe file) failed while rendering Local file path (.html file)",
     );
   });
+
+  it("scrubs embedded email addresses and mailto links from longer plain text", () => {
+    expect(
+      sanitizeReviewSurfaceValue(
+        'Share findings with reviewer@example.com or "mailto:security@example.com?subject=private"',
+      ),
+    ).toBe(
+      'Share findings with Email address or "Email link (query redacted)"',
+    );
+  });
 });
 
 describe("summarizeReviewSurfaceError", () => {
@@ -88,6 +109,16 @@ describe("summarizeReviewSurfaceError", () => {
 
     expect(summarizeReviewSurfaceError(error)).toBe(
       'Error: Failed to launch "Local file path (.exe file)" for "Local file path (.html file)"',
+    );
+  });
+
+  it("summarizes error messages without exposing email addresses", () => {
+    const error = new Error(
+      "Notify reviewer@example.com or mailto:security@example.com?subject=private",
+    );
+
+    expect(summarizeReviewSurfaceError(error)).toBe(
+      "Error: Notify Email address or Email link (query redacted)",
     );
   });
 

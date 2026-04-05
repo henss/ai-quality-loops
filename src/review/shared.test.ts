@@ -254,6 +254,8 @@ describe("Review shared utilities", () => {
     const sanitized = sanitizeReviewContext({
       project: "demo",
       apiKey: "secret-value",
+      reviewerEmail: "reviewer@example.com",
+      escalationContact: "mailto:security@example.com?subject=private",
       docsUrl: "https://example.com/private/reports?token=secret#hero",
       localMockupPath: "D:\\workspace\\private\\mockups\\review.html",
       nested: {
@@ -269,6 +271,8 @@ describe("Review shared utilities", () => {
     expect(sanitized).toEqual({
       project: "demo",
       apiKey: "[REDACTED]",
+      reviewerEmail: "Email address",
+      escalationContact: "Email link (query redacted)",
       docsUrl:
         "Remote URL (host: example.com, path segments: 2, query redacted, fragment redacted)",
       localMockupPath: "Local file path (.html file)",

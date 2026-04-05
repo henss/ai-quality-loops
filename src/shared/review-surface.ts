@@ -56,7 +56,34 @@ function sanitizeRemoteUrlDescriptor(value: string): string {
   }
 }
 
+function sanitizeEmailDescriptor(): string {
+  return "Email address";
+}
+
+function sanitizeMailtoDescriptor(value: string): string {
+  try {
+    const parsed = new URL(value);
+    const parts = ["Email link"];
+
+    if (parsed.search) {
+      parts.push("query redacted");
+    }
+
+    return parts.length === 1 ? parts[0] : `${parts[0]} (${parts[1]})`;
+  } catch {
+    return "Email link";
+  }
+}
+
 function sanitizeQuotedSurfaceSegment(match: string, quote: string, candidate: string): string {
+  if (/^mailto:/i.test(candidate)) {
+    return `${quote}${sanitizeMailtoDescriptor(candidate)}${quote}`;
+  }
+
+  if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(candidate)) {
+    return `${quote}${sanitizeEmailDescriptor()}${quote}`;
+  }
+
   if (/^https?:\/\//i.test(candidate)) {
     return `${quote}${sanitizeRemoteUrlDescriptor(candidate)}${quote}`;
   }
@@ -78,9 +105,14 @@ function sanitizeQuotedSurfaceSegment(match: string, quote: string, candidate: s
 function replaceSensitiveSurfaceSegments(value: string): string {
   return value
     .replace(
-      /(["'`])((?:https?:\/\/|file:\/\/|[a-zA-Z]:[\\/]|\\\\|(?:\.{1,2}[\\/]|\/))[^"'`\r\n]+)\1/g,
+      /(["'`])((?:mailto:|https?:\/\/|file:\/\/|[a-zA-Z]:[\\/]|\\\\|(?:\.{1,2}[\\/]|\/)|[^\s"'`]+@[^\s"'`]+\.[^\s"'`]+)[^"'`\r\n]*)\1/g,
       (match, quote: string, candidate: string) =>
         sanitizeQuotedSurfaceSegment(match, quote, candidate),
+    )
+    .replace(/mailto:[^\s)"'`]+/gi, (match) => sanitizeMailtoDescriptor(match))
+    .replace(
+      /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/gi,
+      () => sanitizeEmailDescriptor(),
     )
     .replace(
       /https?:\/\/[^\s)"'`]+/gi,
@@ -108,6 +140,14 @@ export function sanitizeReviewSurfaceValue(
 
   if (!trimmed) {
     return "[empty]";
+  }
+
+  if (/^mailto:/i.test(trimmed)) {
+    return sanitizeMailtoDescriptor(trimmed);
+  }
+
+  if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
+    return sanitizeEmailDescriptor();
   }
 
   if (/^https?:\/\//i.test(trimmed)) {

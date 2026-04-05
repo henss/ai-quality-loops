@@ -2,6 +2,7 @@ import { cac } from "cac";
 import { runExpertReview } from "../review/expert-review.js";
 import * as dotenv from "dotenv";
 import { getDefaultExpertReviewModel } from "../shared/models.js";
+import { reportCliError } from "../shared/cli-errors.js";
 
 dotenv.config();
 
@@ -30,20 +31,19 @@ async function main() {
         process.exit(1);
       }
 
-      try {
-        await runExpertReview({
-          expert: expertType,
-          content: contentInput,
-          modelId,
-          outputPath,
-        });
-      } catch (err) {
-        process.exit(1);
-      }
+      await runExpertReview({
+        expert: expertType,
+        content: contentInput,
+        modelId,
+        outputPath,
+      });
     });
 
   cli.help();
   cli.parse();
 }
 
-main().catch(console.error);
+main().catch((error) => {
+  reportCliError(error);
+  process.exit(1);
+});

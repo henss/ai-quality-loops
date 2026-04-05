@@ -1,6 +1,7 @@
 import { cac } from "cac";
 import { takeScreenshot } from "../utils/screenshot.js";
 import * as dotenv from "dotenv";
+import { reportCliError } from "../shared/cli-errors.js";
 
 dotenv.config();
 
@@ -25,4 +26,7 @@ async function main() {
   cli.parse();
 }
 
-main().catch(console.error);
+main().catch((error) => {
+  reportCliError(error);
+  process.exit(1);
+});

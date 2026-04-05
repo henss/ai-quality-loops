@@ -15,6 +15,15 @@ export interface ReviewSurfaceRedactionRule {
   replacement: string | ((match: string) => string);
 }
 
+export function defineReviewSurfaceRedactions(
+  rules: Iterable<ReviewSurfaceRedactionRule>,
+): ReviewSurfaceRedactionRule[] {
+  return Array.from(rules, (rule) => ({
+    pattern: rule.pattern,
+    replacement: rule.replacement,
+  }));
+}
+
 const DEFAULT_SANITIZE_REVIEW_SURFACE_VALUE_OPTIONS: Required<SanitizeReviewSurfaceValueOptions> =
   {
     maxLength: 160,

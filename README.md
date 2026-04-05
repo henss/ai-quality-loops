@@ -22,6 +22,7 @@ The library works out-of-the-box with default example personas in `personas/univ
 - `PROMPT_LIBRARY_PATH`: Path to your personas Markdown file (defaults to `personas.md` in your project, then falls back to the library's `universal.md`).
 - `CONTEXT_PATH`: Path to your brand/project context JSON (defaults to `context.json`). Review prompts sanitize this context before injection by redacting common secret-bearing keys, summarizing URL/path-like metadata, and truncating oversized plain-text values.
 - For project-local identifiers that should not become default open-source heuristics, the shared review entrypoints and sanitizers accept caller-provided `extraRedactions` rules so private labels can be redacted by the embedding project without widening the library's built-in pattern set.
+- If you want to reuse the same literal rule array across multiple entrypoints, the package root now exports `defineReviewSurfaceRedactions(...)` and the `ReviewSurfaceRedactionRule` type. This boundary stays intentionally narrow: the library helps you reuse explicit rules, but project-specific preset bundles should remain in the embedding app instead of becoming package policy.
 - Review metadata such as source URLs, local paths, and capture labels is summarized before it is embedded in prompts or review logs, so private directory layouts, query strings, and raw section identifiers are not echoed by default.
 - Prompt and error sanitization also summarizes embedded email addresses and `mailto:` links so reviewer contacts or escalation aliases are not echoed verbatim in shared review artifacts.
 - Prompt and error sanitization also summarizes inline `data:` URLs so embedded image or text payloads are not copied verbatim into prompts, logs, or saved review notes.
@@ -57,26 +58,41 @@ setLogger({
 ### Expert Text Review
 
 ```typescript
-import { runExpertReview } from 'ai-quality-loops';
+import {
+  defineReviewSurfaceRedactions,
+  runExpertReview
+} from 'ai-quality-loops';
+
+const extraRedactions = defineReviewSurfaceRedactions([
+  {
+    pattern: /\bacme-internal-\d+\b/g,
+    replacement: '[Project identifier redacted]'
+  }
+]);
 
 await runExpertReview({
   expert: 'UI/UX', // Name of the persona in your library
   content: 'Path to file or raw text to review',
   modelId: 'llama3.2',
   outputPath: './reviews/ux-review.md',
-  extraRedactions: [
-    {
-      pattern: /\bacme-internal-\d+\b/g,
-      replacement: '[Project identifier redacted]'
-    }
-  ]
+  extraRedactions
 });
 ```
 
 ### Visual Audit (Vision Review)
 
 ```typescript
-import { runVisionReview } from 'ai-quality-loops';
+import {
+  defineReviewSurfaceRedactions,
+  runVisionReview
+} from 'ai-quality-loops';
+
+const extraRedactions = defineReviewSurfaceRedactions([
+  {
+    pattern: /\bacme-internal-\d+\b/g,
+    replacement: '[Project identifier redacted]'
+  }
+]);
 
 await runVisionReview({
   urlOrPath: 'https://example.com',
@@ -84,12 +100,7 @@ await runVisionReview({
   outputPath: './reviews/vision-ux.md',
   width: 1280,
   height: 720,
-  extraRedactions: [
-    {
-      pattern: /\bacme-internal-\d+\b/g,
-      replacement: '[Project identifier redacted]'
-    }
-  ]
+  extraRedactions
 });
 ```
 

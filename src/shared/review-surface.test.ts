@@ -1,8 +1,30 @@
 import { describe, expect, it } from "vitest";
 import {
+  defineReviewSurfaceRedactions,
   sanitizeReviewSurfaceValue,
   summarizeReviewSurfaceError,
 } from "./review-surface.js";
+
+describe("defineReviewSurfaceRedactions", () => {
+  it("returns a reusable copy of caller-provided rules", () => {
+    const sourceRules = [
+      {
+        pattern: /\bacme-internal-\d+\b/g,
+        replacement: "[Project identifier redacted]",
+      },
+    ];
+
+    const reusableRules = defineReviewSurfaceRedactions(sourceRules);
+
+    expect(reusableRules).toEqual(sourceRules);
+    expect(reusableRules).not.toBe(sourceRules);
+    expect(
+      sanitizeReviewSurfaceValue("Escalate with tenant acme-internal-42", {
+        extraRedactions: reusableRules,
+      }),
+    ).toBe("Escalate with tenant [Project identifier redacted]");
+  });
+});
 
 describe("sanitizeReviewSurfaceValue", () => {
   it("summarizes remote URLs without exposing query strings or fragments", () => {

@@ -56,11 +56,39 @@ function sanitizeRemoteUrlDescriptor(value: string): string {
   }
 }
 
+function sanitizeQuotedSurfaceSegment(match: string, quote: string, candidate: string): string {
+  if (/^https?:\/\//i.test(candidate)) {
+    return `${quote}${sanitizeRemoteUrlDescriptor(candidate)}${quote}`;
+  }
+
+  if (
+    /^file:\/\//i.test(candidate) ||
+    /^[a-zA-Z]:[\\/]/.test(candidate) ||
+    /^\\\\/.test(candidate) ||
+    candidate.startsWith("./") ||
+    candidate.startsWith("../") ||
+    candidate.startsWith("/")
+  ) {
+    return `${quote}${sanitizeLocalPathDescriptor(candidate)}${quote}`;
+  }
+
+  return match;
+}
+
 function replaceSensitiveSurfaceSegments(value: string): string {
   return value
     .replace(
+      /(["'`])((?:https?:\/\/|file:\/\/|[a-zA-Z]:[\\/]|\\\\|(?:\.{1,2}[\\/]|\/))[^"'`\r\n]+)\1/g,
+      (match, quote: string, candidate: string) =>
+        sanitizeQuotedSurfaceSegment(match, quote, candidate),
+    )
+    .replace(
       /https?:\/\/[^\s)"'`]+/gi,
       (match) => sanitizeRemoteUrlDescriptor(match),
+    )
+    .replace(
+      /(?:file:\/\/[^\r\n"'`]+?\.[a-z0-9]{1,8}|[a-zA-Z]:[\\/][^\r\n"'`]+?\.[a-z0-9]{1,8}|\\\\[^\r\n"'`]+?\.[a-z0-9]{1,8}|(?:\.{1,2}[\\/]|\/)[^\r\n"'`]+?\.[a-z0-9]{1,8})/gi,
+      (match) => sanitizeLocalPathDescriptor(match),
     )
     .replace(
       /(?:file:\/\/[^\s)"'`]+|[a-zA-Z]:[\\/][^\s)"'`]+|\\\\[^\s)"'`]+|(?:\.{1,2}[\\/]|\/)[^\s)"'`]+)/g,

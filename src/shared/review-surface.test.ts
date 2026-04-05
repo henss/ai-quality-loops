@@ -40,6 +40,26 @@ describe("sanitizeReviewSurfaceValue", () => {
       "Compare Remote URL (host: example.com, path segments: 2, query redacted) with Local file path (.html file)",
     );
   });
+
+  it("scrubs embedded quoted local paths with spaces from longer plain text", () => {
+    expect(
+      sanitizeReviewSurfaceValue(
+        'Open "D:\\Program Files\\Private Browser\\browser.exe" before loading "./private mocks/review page.html"',
+      ),
+    ).toBe(
+      'Open "Local file path (.exe file)" before loading "Local file path (.html file)"',
+    );
+  });
+
+  it("scrubs embedded unquoted local paths with spaces when a file extension is present", () => {
+    expect(
+      sanitizeReviewSurfaceValue(
+        "Browser path D:\\Program Files\\Private Browser\\browser.exe failed while rendering /tmp/private mocks/review page.html",
+      ),
+    ).toBe(
+      "Browser path Local file path (.exe file) failed while rendering Local file path (.html file)",
+    );
+  });
 });
 
 describe("summarizeReviewSurfaceError", () => {
@@ -58,6 +78,16 @@ describe("summarizeReviewSurfaceError", () => {
 
     expect(summarizeReviewSurfaceError(error)).toBe(
       "Error: Failed to open Local file path (.html file)",
+    );
+  });
+
+  it("summarizes error messages without exposing embedded quoted local paths with spaces", () => {
+    const error = new Error(
+      'Failed to launch "C:\\Program Files\\Private Browser\\browser.exe" for "D:\\private mocks\\review page.html"',
+    );
+
+    expect(summarizeReviewSurfaceError(error)).toBe(
+      'Error: Failed to launch "Local file path (.exe file)" for "Local file path (.html file)"',
     );
   });
 

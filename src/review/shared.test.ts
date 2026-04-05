@@ -14,6 +14,7 @@ import {
   resolvePromptLibraryPath,
   sanitizeReviewContext,
   summarizeReviewInputReference,
+  summarizeReviewOutputReference,
   writeReviewOutput,
 } from "./shared.js";
 
@@ -117,6 +118,12 @@ describe("Review shared utilities", () => {
     await expect(
       summarizeReviewInputReference("inline review text", tempDir),
     ).resolves.toBe("Inline content");
+  });
+
+  it("summarizes review output references without exposing raw file paths", () => {
+    expect(
+      summarizeReviewOutputReference("reviews/output.md", tempDir),
+    ).toBe("Local file path (.md file)");
   });
 
   it("writes review output to nested paths using the current working directory", async () => {

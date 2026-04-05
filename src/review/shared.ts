@@ -263,6 +263,17 @@ export async function summarizeReviewInputReference(
   return "Inline content";
 }
 
+export function summarizeReviewOutputReference(
+  outputPath: string,
+  cwd = process.cwd(),
+): string {
+  const resolvedOutputPath = path.isAbsolute(outputPath)
+    ? outputPath
+    : path.resolve(cwd, outputPath);
+
+  return sanitizeReviewSurfaceValue(resolvedOutputPath);
+}
+
 export async function writeReviewOutput(
   outputPath: string,
   content: string,

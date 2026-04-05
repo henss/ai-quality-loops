@@ -17,6 +17,7 @@ import {
   prepareReviewMetadataItems,
   prepareReviewMaterialSections,
   loadReviewContext,
+  summarizeReviewOutputReference,
   writeReviewOutput,
 } from "./shared.js";
 import { prepareVisionCaptureTarget } from "./vision-capture-target.js";
@@ -215,7 +216,9 @@ export async function runVisionReview(options: VisionReviewOptions): Promise<str
 
     if (outputPath) {
       const absoluteOutputPath = await writeReviewOutput(outputPath, text);
-      getLogger().info(`Review saved to: ${absoluteOutputPath}`);
+      getLogger().info(
+        `Review saved to: ${summarizeReviewOutputReference(absoluteOutputPath)}`,
+      );
     }
 
     return text;

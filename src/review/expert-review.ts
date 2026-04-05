@@ -12,6 +12,7 @@ import {
   prepareReviewMaterialSections,
   loadReviewContext,
   summarizeReviewInputReference,
+  summarizeReviewOutputReference,
   writeReviewOutput,
 } from "./shared.js";
 
@@ -111,7 +112,9 @@ export async function runExpertReview(options: ExpertReviewOptions): Promise<str
 
     if (outputPath) {
       const absoluteOutputPath = await writeReviewOutput(outputPath, text);
-      getLogger().info(`Review saved to: ${absoluteOutputPath}`);
+      getLogger().info(
+        `Review saved to: ${summarizeReviewOutputReference(absoluteOutputPath)}`,
+      );
     }
 
     return text;

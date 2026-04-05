@@ -60,7 +60,7 @@ export async function takeScreenshot(
 
     if (fs.existsSync(absoluteOutputPath)) {
       console.info(
-        `[Screenshot] Success: ${absoluteOutputPath} (${fs.statSync(absoluteOutputPath).size} bytes)`,
+        `[Screenshot] Success: ${sanitizeReviewSurfaceValue(absoluteOutputPath)} (${fs.statSync(absoluteOutputPath).size} bytes)`,
       );
       return absoluteOutputPath;
     } else {

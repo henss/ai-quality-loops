@@ -3,6 +3,7 @@ import fsSync from "node:fs";
 import * as path from "node:path";
 import { fileURLToPath } from "node:url";
 import { readJson } from "../shared/io.js";
+import { sanitizeReviewSurfaceValue } from "../shared/review-surface.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -92,7 +93,9 @@ export function sanitizeReviewContext(
     }
 
     if (typeof current === "string") {
-      return truncateContextString(current, config.maxStringLength);
+      return sanitizeReviewSurfaceValue(current, {
+        maxLength: config.maxStringLength,
+      });
     }
 
     if (Array.isArray(current)) {

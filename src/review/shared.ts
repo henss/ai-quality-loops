@@ -81,6 +81,10 @@ export interface ReviewRedactionOptions {
   extraRedactions?: ReviewSurfaceRedactions;
 }
 
+export interface SummarizeReviewPathReferenceOptions extends ReviewRedactionOptions {
+  cwd?: string;
+}
+
 const DEFAULT_SANITIZE_REVIEW_CONTEXT_OPTIONS: Required<SanitizeReviewContextOptions> =
   {
     maxDepth: 4,
@@ -272,7 +276,8 @@ export async function summarizeReviewInputReference(
   try {
     const stats = await fs.stat(resolvedInput);
     if (stats.isFile()) {
-      return sanitizeReviewSurfaceValue(resolvedInput, {
+      return summarizeReviewPathReference(resolvedInput, {
+        cwd,
         extraRedactions: options.extraRedactions,
       });
     }
@@ -283,16 +288,27 @@ export async function summarizeReviewInputReference(
   return "Inline content";
 }
 
+export function summarizeReviewPathReference(
+  referencePath: string,
+  options: SummarizeReviewPathReferenceOptions = {},
+): string {
+  const cwd = options.cwd || process.cwd();
+  const resolvedReferencePath = path.isAbsolute(referencePath)
+    ? referencePath
+    : path.resolve(cwd, referencePath);
+
+  return sanitizeReviewSurfaceValue(resolvedReferencePath, {
+    extraRedactions: options.extraRedactions,
+  });
+}
+
 export function summarizeReviewOutputReference(
   outputPath: string,
   cwd = process.cwd(),
   options: ReviewRedactionOptions = {},
 ): string {
-  const resolvedOutputPath = path.isAbsolute(outputPath)
-    ? outputPath
-    : path.resolve(cwd, outputPath);
-
-  return sanitizeReviewSurfaceValue(resolvedOutputPath, {
+  return summarizeReviewPathReference(outputPath, {
+    cwd,
     extraRedactions: options.extraRedactions,
   });
 }

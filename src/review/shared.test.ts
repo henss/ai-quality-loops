@@ -16,6 +16,7 @@ import {
   sanitizeReviewContext,
   summarizeReviewInputReference,
   summarizeReviewOutputReference,
+  summarizeReviewPathReference,
   writeReviewOutput,
 } from "./shared.js";
 
@@ -124,6 +125,14 @@ describe("Review shared utilities", () => {
   it("summarizes review output references without exposing raw file paths", () => {
     expect(
       summarizeReviewOutputReference("reviews/output.md", tempDir),
+    ).toBe("Local file path (.md file)");
+  });
+
+  it("summarizes review path references through one shared prompt-safe helper", () => {
+    expect(
+      summarizeReviewPathReference("reviews/output.md", {
+        cwd: tempDir,
+      }),
     ).toBe("Local file path (.md file)");
   });
 

@@ -81,3 +81,13 @@ export async function fileExists(p: string): Promise<boolean> {
 export async function ensureDir(dirPath: string): Promise<void> {
   await fs.mkdir(dirPath, { recursive: true });
 }
+
+/**
+ * Resolves a path relative to the provided cwd unless it is already absolute.
+ */
+export function resolveFromCwd(
+  targetPath: string,
+  cwd = process.cwd(),
+): string {
+  return path.isAbsolute(targetPath) ? targetPath : path.resolve(cwd, targetPath);
+}

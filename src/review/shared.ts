@@ -2,7 +2,7 @@ import * as fs from "node:fs/promises";
 import fsSync from "node:fs";
 import * as path from "node:path";
 import { fileURLToPath } from "node:url";
-import { readJson } from "../shared/io.js";
+import { readJson, resolveFromCwd } from "../shared/io.js";
 import {
   type ReviewSurfaceRedactions,
   sanitizeReviewSurfaceValue,
@@ -185,12 +185,12 @@ export function resolvePromptLibraryPath(
   cwd = process.cwd(),
 ): string {
   if (promptLibraryPath) {
-    return path.resolve(promptLibraryPath);
+    return resolveFromCwd(promptLibraryPath);
   }
 
   const envPath = process.env.PROMPT_LIBRARY_PATH;
   if (envPath) {
-    return path.resolve(envPath);
+    return resolveFromCwd(envPath);
   }
 
   const defaultInCwd = path.resolve(cwd, "personas.md");
@@ -252,7 +252,7 @@ export async function loadReviewContent(
   input: string,
   cwd = process.cwd(),
 ): Promise<string> {
-  const resolvedInput = path.isAbsolute(input) ? input : path.resolve(cwd, input);
+  const resolvedInput = resolveFromCwd(input, cwd);
 
   try {
     const stats = await fs.stat(resolvedInput);
@@ -271,7 +271,7 @@ export async function summarizeReviewInputReference(
   cwd = process.cwd(),
   options: ReviewRedactionOptions = {},
 ): Promise<string> {
-  const resolvedInput = path.isAbsolute(input) ? input : path.resolve(cwd, input);
+  const resolvedInput = resolveFromCwd(input, cwd);
 
   try {
     const stats = await fs.stat(resolvedInput);
@@ -293,9 +293,7 @@ export function summarizeReviewPathReference(
   options: SummarizeReviewPathReferenceOptions = {},
 ): string {
   const cwd = options.cwd || process.cwd();
-  const resolvedReferencePath = path.isAbsolute(referencePath)
-    ? referencePath
-    : path.resolve(cwd, referencePath);
+  const resolvedReferencePath = resolveFromCwd(referencePath, cwd);
 
   return sanitizeReviewSurfaceValue(resolvedReferencePath, {
     extraRedactions: options.extraRedactions,
@@ -318,9 +316,7 @@ export async function writeReviewOutput(
   content: string,
   cwd = process.cwd(),
 ): Promise<string> {
-  const absoluteOutputPath = path.isAbsolute(outputPath)
-    ? outputPath
-    : path.resolve(cwd, outputPath);
+  const absoluteOutputPath = resolveFromCwd(outputPath, cwd);
   await fs.mkdir(path.dirname(absoluteOutputPath), { recursive: true });
   await fs.writeFile(absoluteOutputPath, content);
   return absoluteOutputPath;

@@ -2,7 +2,14 @@ import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
 import * as os from "node:os";
-import { readJson, writeJson, fileExists, ensureDir, writeText } from "./io.js";
+import {
+  readJson,
+  writeJson,
+  fileExists,
+  ensureDir,
+  writeText,
+  resolveFromCwd,
+} from "./io.js";
 
 describe("IO Utilities", () => {
   let tempDir: string;
@@ -45,5 +52,18 @@ describe("IO Utilities", () => {
     const read = await readJson<any>(testJson);
     expect(read._generated).toBeDefined();
     expect(read.foo).toBe("bar");
+  });
+
+  it("resolves relative paths from the provided cwd", () => {
+    expect(resolveFromCwd("nested/file.txt", tempDir)).toBe(
+      path.join(tempDir, "nested/file.txt"),
+    );
+  });
+
+  it("keeps absolute paths unchanged", () => {
+    const absolutePath = path.join(tempDir, "absolute.txt");
+    expect(resolveFromCwd(absolutePath, path.join(tempDir, "other"))).toBe(
+      absolutePath,
+    );
   });
 });

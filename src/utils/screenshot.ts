@@ -6,6 +6,7 @@ import {
   sanitizeReviewSurfaceValue,
   summarizeReviewSurfaceError,
 } from "../shared/review-surface.js";
+import { resolveFromCwd } from "../shared/io.js";
 
 const CHROME_PATH =
   process.env.CHROME_PATH ||
@@ -36,13 +37,11 @@ export async function takeScreenshot(
 
   let targetUrl = urlOrPath;
   if (!urlOrPath.startsWith("http") && !urlOrPath.startsWith("file://")) {
-    const absolutePath = path.resolve(urlOrPath);
+    const absolutePath = resolveFromCwd(urlOrPath);
     targetUrl = `file://${absolutePath.replace(/\\/g, "/")}`;
   }
 
-  const absoluteOutputPath = path.isAbsolute(outputPath)
-    ? outputPath
-    : path.resolve(process.cwd(), outputPath);
+  const absoluteOutputPath = resolveFromCwd(outputPath);
 
   const outputDir = path.dirname(absoluteOutputPath);
   if (!fs.existsSync(outputDir)) {

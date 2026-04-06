@@ -36,6 +36,8 @@
     "build": "tsc",
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
+    "verify:session": "pnpm typecheck && pnpm test && pnpm check:agent-surface",
+    "orchestrator:outcome:record": "tsx scripts/orchestrator-outcome-record.ts",
     "git-hooks:install": "powershell -ExecutionPolicy Bypass -File .\\scripts\\install-git-hooks.ps1",
     "check:agent-surface": "tsx scripts/check-agent-surface.ts",
     "check:agent-surface:staged": "tsx scripts/check-agent-surface.ts --staged",

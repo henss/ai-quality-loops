@@ -56,6 +56,16 @@ function yamlList(values: string[], indent = ""): string[] {
 async function main() {
   const args = parseArgs(process.argv.slice(2));
   const outputPath = path.resolve(getRequiredArg(args, "output"));
+  const sourcePath = getOptionalArg(args, "source");
+  if (sourcePath) {
+    const resolvedSourcePath = path.resolve(sourcePath);
+    const sourceMarkdown = await fs.readFile(resolvedSourcePath, "utf8");
+    await fs.mkdir(path.dirname(outputPath), { recursive: true });
+    await fs.writeFile(outputPath, sourceMarkdown, "utf8");
+    process.stdout.write(`${outputPath}\n`);
+    return;
+  }
+
   const title = getRequiredArg(args, "title");
   const summary = getRequiredArg(args, "summary");
   const tracker = getRequiredArg(args, "tracker");

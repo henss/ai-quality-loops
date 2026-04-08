@@ -104,6 +104,21 @@ await runVisionReview({
 });
 ```
 
+### Section Discovery For Targeted Vision Captures
+
+Use `vision-sections` before `vision-review --sections ...` or before authoring a batch-review manifest when you need to discover fragment-compatible DOM ids from a rendered page.
+
+```bash
+vision-sections https://example.com
+vision-sections ./site/index.html --json
+```
+
+The command stays generic on purpose:
+
+- It renders the page with the same browser-based capture stack used by screenshot-backed reviews.
+- It lists valid `#id` fragment targets and prints a manifest-ready `sections` array suggestion.
+- It does not guess which sections you should review or add project-specific selector heuristics to the shared package surface.
+
 ### Manifest-Driven Batch Reviews
 
 Use `batch-review` when you want to run the same expert or vision audit across multiple targets without rebuilding the outer loop in each embedding repo.
@@ -151,6 +166,8 @@ The manifest is intentionally narrow:
 - `reviews[]` defines sequential review targets using `target`, `mode`, and optional overrides like `expert`, `model`, `outputPath`, `sections`, `css`, `width`, and `height`.
 - `outputDir` is an optional shared convenience. When a review omits `outputPath`, the runner derives a stable Markdown filename inside that directory.
 - The first slice is sequential only. Concurrency, scheduling, and repo-specific policy routing stay outside the shared open-source boundary.
+
+When a vision review needs targeted captures, run `vision-sections <target>` first and copy the suggested ids into the manifest's `sections` array.
 
 ### Review Preflight CLI
 

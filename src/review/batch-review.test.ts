@@ -6,12 +6,22 @@ import { getLogger, setLogger, silentLogger } from "../shared/logger.js";
 import type { ExpertReviewOptions } from "./expert-review.js";
 import type { VisionReviewOptions } from "./vision-review.js";
 import {
+  deriveBatchReviewPreflightOptions,
   formatBatchReviewSummary,
   loadBatchReviewManifest,
   normalizeBatchReviewManifest,
+  runBatchReviewManifestPreflight,
   runBatchReviewManifest,
   type BatchReviewManifest,
 } from "./batch-review.js";
+
+function createFetchResponse(body: unknown, ok = true, status = 200): Response {
+  return {
+    ok,
+    status,
+    json: vi.fn().mockResolvedValue(body),
+  } as unknown as Response;
+}
 
 describe("batch review manifest", () => {
   let tempDir: string;
@@ -247,5 +257,128 @@ describe("batch review manifest", () => {
         ],
       }),
     ).toThrow("requires an expert persona");
+  });
+
+  it("derives combined preflight requirements across manifest entries", () => {
+    const preflight = deriveBatchReviewPreflightOptions([
+      {
+        index: 0,
+        mode: "vision",
+        target: "https://example.com",
+        expert: "UI/UX",
+        model: "qwen3-vl:30b",
+        promptLibraryPath: "./personas-a.md",
+        contextPath: "./context-a.json",
+        ollamaUrl: "http://127.0.0.1:11434",
+      },
+      {
+        index: 1,
+        mode: "expert",
+        target: "./README.md",
+        expert: "Efficiency",
+        model: "qwen3.5:32b",
+        promptLibraryPath: "./personas-b.md",
+        contextPath: "./context-b.json",
+        ollamaUrl: "http://127.0.0.1:22434",
+      },
+      {
+        index: 2,
+        mode: "vision",
+        target: "https://example.com/pricing",
+        expert: "UI/UX",
+        model: "qwen3-vl:30b",
+        promptLibraryPath: "./personas-a.md",
+        contextPath: "./context-a.json",
+        ollamaUrl: "http://127.0.0.1:11434",
+      },
+    ]);
+
+    expect(preflight).toEqual({
+      mode: "both",
+      personaRequirements: [
+        { expert: "UI/UX", promptLibraryPath: "./personas-a.md" },
+        { expert: "Efficiency", promptLibraryPath: "./personas-b.md" },
+      ],
+      modelRequirements: [
+        {
+          name: "expert-model",
+          model: "qwen3.5:32b",
+          ollamaUrl: "http://127.0.0.1:22434",
+        },
+        {
+          name: "vision-model",
+          model: "qwen3-vl:30b",
+          ollamaUrl: "http://127.0.0.1:11434",
+        },
+      ],
+      contextPaths: ["./context-a.json", "./context-b.json"],
+    });
+  });
+
+  it("runs manifest preflight before execution using combined manifest requirements", async () => {
+    const promptLibraryPath = path.join(tempDir, "personas.md");
+    const contextPath = path.join(tempDir, "context.json");
+    const browserPath = path.join(tempDir, "browser.exe");
+    const manifestPath = path.join(tempDir, "manifest.json");
+    await fs.writeFile(
+      promptLibraryPath,
+      [
+        "# SKEPTICAL UI/UX CRITIC",
+        "Prompt",
+        "",
+        "# REPOSITORY & AI EFFICIENCY SPECIALIST",
+        "Prompt",
+      ].join("\n"),
+    );
+    await fs.writeFile(contextPath, JSON.stringify({ project: "demo" }));
+    await fs.writeFile(browserPath, "");
+    await fs.writeFile(
+      manifestPath,
+      JSON.stringify(
+        {
+          defaults: {
+            mode: "vision",
+            expert: "UI/UX",
+            promptLibraryPath,
+            contextPath,
+          },
+          reviews: [
+            {
+              target: "https://example.com",
+              model: "qwen3-vl:30b",
+            },
+            {
+              mode: "expert",
+              expert: "Efficiency",
+              target: "./README.md",
+              model: "qwen3.5:32b",
+            },
+          ],
+        },
+        null,
+        2,
+      ),
+    );
+
+    const result = await runBatchReviewManifestPreflight({
+      manifestPath,
+      cwd: tempDir,
+      browserPath,
+      fetchImpl: vi.fn().mockResolvedValue(
+        createFetchResponse({
+          models: [{ name: "qwen3-vl:30b" }, { name: "qwen3.5:32b" }],
+        }),
+      ),
+    });
+
+    expect(result.ok).toBe(true);
+    expect(result.mode).toBe("both");
+    expect(result.checks.filter((check) => check.name === "persona")).toHaveLength(2);
+    expect(
+      result.checks.filter((check) => check.name === "vision-model"),
+    ).toHaveLength(1);
+    expect(
+      result.checks.filter((check) => check.name === "expert-model"),
+    ).toHaveLength(1);
   });
 });

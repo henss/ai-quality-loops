@@ -1,6 +1,9 @@
 import * as fs from "node:fs/promises";
 import { getDefaultExpertReviewModel, getDefaultOllamaUrl, getDefaultVisionReviewModel } from "../shared/models.js";
-import { summarizeReviewSurfaceError } from "../shared/review-surface.js";
+import {
+  sanitizeReviewSurfaceValue,
+  summarizeReviewSurfaceError,
+} from "../shared/review-surface.js";
 import { resolveBrowserPath } from "../utils/screenshot.js";
 import {
   loadPersonaPrompt,
@@ -29,6 +32,17 @@ export interface ReviewPreflightResult {
   checks: ReviewPreflightCheck[];
 }
 
+export interface ReviewPreflightPersonaRequirement {
+  expert: string;
+  promptLibraryPath?: string;
+}
+
+export interface ReviewPreflightModelRequirement {
+  name: "expert-model" | "vision-model";
+  model: string;
+  ollamaUrl?: string;
+}
+
 export interface RunReviewPreflightOptions {
   mode?: ReviewPreflightMode;
   expert?: string;
@@ -40,6 +54,9 @@ export interface RunReviewPreflightOptions {
   browserPath?: string;
   cwd?: string;
   fetchImpl?: typeof fetch;
+  personaRequirements?: ReviewPreflightPersonaRequirement[];
+  modelRequirements?: ReviewPreflightModelRequirement[];
+  contextPaths?: string[];
 }
 
 interface OllamaTag {
@@ -89,12 +106,110 @@ async function listInstalledOllamaModels(
   return names;
 }
 
+function uniqueBy<T>(values: T[], getKey: (value: T) => string): T[] {
+  const seen = new Set<string>();
+  const unique: T[] = [];
+
+  for (const value of values) {
+    const key = getKey(value);
+    if (seen.has(key)) {
+      continue;
+    }
+
+    seen.add(key);
+    unique.push(value);
+  }
+
+  return unique;
+}
+
+function getPersonaRequirements(
+  options: RunReviewPreflightOptions,
+  mode: ReviewPreflightMode,
+): ReviewPreflightPersonaRequirement[] {
+  const requirements =
+    options.personaRequirements && options.personaRequirements.length > 0
+      ? options.personaRequirements
+      : shouldCheckExpert(mode) || shouldCheckVision(mode)
+        ? [
+            {
+              expert: options.expert || "UI/UX",
+              promptLibraryPath: options.promptLibraryPath,
+            },
+          ]
+        : [];
+
+  return uniqueBy(
+    requirements.filter((requirement) => requirement.expert.trim().length > 0),
+    (requirement) => `${requirement.expert}::${requirement.promptLibraryPath || ""}`,
+  );
+}
+
+function getModelRequirements(
+  options: RunReviewPreflightOptions,
+  mode: ReviewPreflightMode,
+): ReviewPreflightModelRequirement[] {
+  const requirements =
+    options.modelRequirements && options.modelRequirements.length > 0
+      ? options.modelRequirements
+      : [
+          ...(shouldCheckExpert(mode)
+            ? [
+                {
+                  name: "expert-model" as const,
+                  model: options.expertModel || getDefaultExpertReviewModel(),
+                  ollamaUrl: options.ollamaUrl,
+                },
+              ]
+            : []),
+          ...(shouldCheckVision(mode)
+            ? [
+                {
+                  name: "vision-model" as const,
+                  model: options.visionModel || getDefaultVisionReviewModel(),
+                  ollamaUrl: options.ollamaUrl,
+                },
+              ]
+            : []),
+        ];
+
+  return uniqueBy(
+    requirements.filter((requirement) => requirement.model.trim().length > 0),
+    (requirement) =>
+      `${requirement.name}::${requirement.model}::${(requirement.ollamaUrl || "").replace(/\/$/, "")}`,
+  );
+}
+
+function getContextPaths(
+  options: RunReviewPreflightOptions,
+): { paths: string[]; explicitlyConfigured: boolean } {
+  if (options.contextPaths && options.contextPaths.length > 0) {
+    return {
+      paths: uniqueBy(
+        options.contextPaths.filter((contextPath) => contextPath.trim().length > 0),
+        (contextPath) => contextPath,
+      ),
+      explicitlyConfigured: true,
+    };
+  }
+
+  if (options.contextPath) {
+    return { paths: [options.contextPath], explicitlyConfigured: true };
+  }
+
+  if (process.env.CONTEXT_PATH) {
+    return { paths: [process.env.CONTEXT_PATH], explicitlyConfigured: true };
+  }
+
+  return { paths: [], explicitlyConfigured: false };
+}
+
 async function runContextCheck(
-  contextPath: string | undefined,
+  contextPath: string,
   cwd: string,
+  explicitlyConfigured: boolean,
 ): Promise<ReviewPreflightCheck> {
   const resolvedContextPath = resolveReviewContextPath(contextPath, cwd);
-  const explicitlyConfigured = Boolean(contextPath || process.env.CONTEXT_PATH);
 
   if (!(await pathExists(resolvedContextPath))) {
     return explicitlyConfigured
@@ -134,38 +249,48 @@ export async function runReviewPreflight(
 ): Promise<ReviewPreflightResult> {
   const mode = options.mode || "both";
   const cwd = options.cwd || process.cwd();
-  const expert = options.expert || "UI/UX";
-  const expertModel = options.expertModel || getDefaultExpertReviewModel();
-  const visionModel = options.visionModel || getDefaultVisionReviewModel();
-  const ollamaUrl = (options.ollamaUrl || getDefaultOllamaUrl()).replace(/\/$/, "");
   const fetchImpl = options.fetchImpl || fetch;
   const checks: ReviewPreflightCheck[] = [];
+  const personaRequirements = getPersonaRequirements(options, mode);
+  const modelRequirements = getModelRequirements(options, mode).map(
+    (requirement) => ({
+      ...requirement,
+      ollamaUrl: (requirement.ollamaUrl || getDefaultOllamaUrl()).replace(/\/$/, ""),
+    }),
+  );
+  const { paths: contextPaths, explicitlyConfigured } = getContextPaths(options);
 
-  const requiredModels = new Map<ReviewPreflightCheckName, string>();
-  if (shouldCheckExpert(mode)) {
-    requiredModels.set("expert-model", expertModel);
-  }
-  if (shouldCheckVision(mode)) {
-    requiredModels.set("vision-model", visionModel);
-  }
-
-  let installedModels = new Set<string>();
-  try {
-    installedModels = await listInstalledOllamaModels(ollamaUrl, fetchImpl);
-    checks.push({
-      name: "ollama",
-      status: "pass",
-      summary: `Ollama is reachable and returned ${installedModels.size} installed model(s).`,
-    });
-  } catch (error) {
-    checks.push({
-      name: "ollama",
-      status: "fail",
-      summary: `Ollama is not reachable: ${summarizeReviewSurfaceError(error)}.`,
-    });
+  const modelsByOllamaUrl = new Map<string, ReviewPreflightModelRequirement[]>();
+  for (const requirement of modelRequirements) {
+    const existing = modelsByOllamaUrl.get(requirement.ollamaUrl);
+    if (existing) {
+      existing.push(requirement);
+    } else {
+      modelsByOllamaUrl.set(requirement.ollamaUrl, [requirement]);
+    }
   }
 
-  for (const [name, model] of requiredModels.entries()) {
+  const installedModelsByOllamaUrl = new Map<string, Set<string>>();
+  for (const [ollamaUrl] of modelsByOllamaUrl.entries()) {
+    try {
+      const installedModels = await listInstalledOllamaModels(ollamaUrl, fetchImpl);
+      installedModelsByOllamaUrl.set(ollamaUrl, installedModels);
+      checks.push({
+        name: "ollama",
+        status: "pass",
+        summary: `Ollama endpoint ${sanitizeReviewSurfaceValue(ollamaUrl)} is reachable and returned ${installedModels.size} installed model(s).`,
+      });
+    } catch (error) {
+      checks.push({
+        name: "ollama",
+        status: "fail",
+        summary: `Ollama endpoint ${sanitizeReviewSurfaceValue(ollamaUrl)} is not reachable: ${summarizeReviewSurfaceError(error)}.`,
+      });
+    }
+  }
+
+  for (const requirement of modelRequirements) {
+    const { name, model, ollamaUrl } = requirement;
     if (!model.trim()) {
       checks.push({
         name,
@@ -175,12 +300,12 @@ export async function runReviewPreflight(
       continue;
     }
 
-    const ollamaCheck = checks.find((check) => check.name === "ollama");
-    if (ollamaCheck?.status !== "pass") {
+    const installedModels = installedModelsByOllamaUrl.get(ollamaUrl);
+    if (!installedModels) {
       checks.push({
         name,
         status: "skip",
-        summary: "Skipped because Ollama reachability failed.",
+        summary: `Skipped because Ollama reachability failed for ${sanitizeReviewSurfaceValue(ollamaUrl)}.`,
       });
       continue;
     }
@@ -223,25 +348,37 @@ export async function runReviewPreflight(
     });
   }
 
-  try {
-    await loadPersonaPrompt({
-      expert,
-      promptLibraryPath: options.promptLibraryPath,
-    });
-    checks.push({
-      name: "persona",
-      status: "pass",
-      summary: `Persona "${expert}" resolved successfully.`,
-    });
-  } catch (error) {
-    checks.push({
-      name: "persona",
-      status: "fail",
-      summary: `Persona check failed: ${summarizeReviewSurfaceError(error)}.`,
-    });
+  for (const requirement of personaRequirements) {
+    try {
+      await loadPersonaPrompt({
+        expert: requirement.expert,
+        promptLibraryPath: requirement.promptLibraryPath,
+      });
+      checks.push({
+        name: "persona",
+        status: "pass",
+        summary: `Persona "${requirement.expert}" resolved successfully.`,
+      });
+    } catch (error) {
+      checks.push({
+        name: "persona",
+        status: "fail",
+        summary: `Persona "${requirement.expert}" failed to resolve: ${summarizeReviewSurfaceError(error)}.`,
+      });
+    }
   }
 
-  checks.push(await runContextCheck(options.contextPath, cwd));
+  if (contextPaths.length === 0) {
+    checks.push({
+      name: "context",
+      status: "skip",
+      summary: "No context file configured.",
+    });
+  } else {
+    for (const contextPath of contextPaths) {
+      checks.push(await runContextCheck(contextPath, cwd, explicitlyConfigured));
+    }
+  }
 
   return {
     ok: checks.every((check) => check.status !== "fail"),

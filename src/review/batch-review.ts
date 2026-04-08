@@ -7,6 +7,12 @@ import {
   summarizeReviewSurfaceError,
 } from "../shared/review-surface.js";
 import {
+  runReviewPreflight,
+  type ReviewPreflightMode,
+  type ReviewPreflightResult,
+  type RunReviewPreflightOptions,
+} from "./preflight.js";
+import {
   runExpertReview,
   type ExpertReviewOptions,
 } from "./expert-review.js";
@@ -82,6 +88,13 @@ export interface RunBatchReviewManifestOptions {
   cwd?: string;
   runExpertReviewImpl?: (options: ExpertReviewOptions) => Promise<string>;
   runVisionReviewImpl?: (options: VisionReviewOptions) => Promise<string>;
+}
+
+export interface RunBatchReviewManifestPreflightOptions {
+  manifestPath: string;
+  cwd?: string;
+  browserPath?: string;
+  fetchImpl?: typeof fetch;
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -301,6 +314,96 @@ export function normalizeBatchReviewManifest(
       contextPath: entry.contextPath ?? manifest.defaults?.contextPath,
       ollamaUrl: entry.ollamaUrl ?? manifest.defaults?.ollamaUrl,
     };
+  });
+}
+
+function uniqueDefined(values: Array<string | undefined>): string[] {
+  return [...new Set(values.filter((value): value is string => Boolean(value)))];
+}
+
+function getBatchReviewPreflightMode(
+  entries: NormalizedBatchReviewEntry[],
+): ReviewPreflightMode {
+  const hasExpert = entries.some((entry) => entry.mode === "expert");
+  const hasVision = entries.some((entry) => entry.mode === "vision");
+
+  if (hasExpert && hasVision) {
+    return "both";
+  }
+
+  return hasVision ? "vision" : "expert";
+}
+
+export function deriveBatchReviewPreflightOptions(
+  entries: NormalizedBatchReviewEntry[],
+): RunReviewPreflightOptions {
+  return {
+    mode: getBatchReviewPreflightMode(entries),
+    personaRequirements: [
+      ...new Map(
+        entries.map((entry) => {
+          const expert = entry.expert || "UI/UX";
+          const promptLibraryPath = entry.promptLibraryPath;
+          return [
+            `${expert}::${promptLibraryPath || ""}`,
+            {
+              expert,
+              promptLibraryPath,
+            },
+          ];
+        }),
+      ).values(),
+    ],
+    modelRequirements: [
+      ...[
+        ...new Map(
+          entries
+            .filter((entry) => entry.mode === "expert" && entry.model)
+            .map((entry) => [
+              `${entry.model}::${entry.ollamaUrl || ""}`,
+              {
+                name: "expert-model" as const,
+                model: entry.model!,
+                ollamaUrl: entry.ollamaUrl,
+              },
+            ]),
+        ).values(),
+      ],
+      ...[
+        ...new Map(
+          entries
+            .filter((entry) => entry.mode === "vision" && entry.model)
+            .map((entry) => [
+              `${entry.model}::${entry.ollamaUrl || ""}`,
+              {
+                name: "vision-model" as const,
+                model: entry.model!,
+                ollamaUrl: entry.ollamaUrl,
+              },
+            ]),
+        ).values(),
+      ],
+    ],
+    contextPaths: uniqueDefined(entries.map((entry) => entry.contextPath)),
+  };
+}
+
+export async function runBatchReviewManifestPreflight({
+  manifestPath,
+  cwd = process.cwd(),
+  browserPath,
+  fetchImpl,
+}: RunBatchReviewManifestPreflightOptions): Promise<ReviewPreflightResult> {
+  const resolvedManifestPath = resolveFromCwd(manifestPath, cwd);
+  const manifest = await loadBatchReviewManifest(resolvedManifestPath, cwd);
+  const entries = normalizeBatchReviewManifest(manifest, cwd);
+  const preflightOptions = deriveBatchReviewPreflightOptions(entries);
+
+  return runReviewPreflight({
+    ...preflightOptions,
+    browserPath,
+    cwd,
+    fetchImpl,
   });
 }
 

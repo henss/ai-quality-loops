@@ -143,6 +143,8 @@ Use `batch-review` when you want to run the same expert or vision audit across m
 batch-review ./review-manifest.json
 ```
 
+The CLI now runs the shared review-preflight checks against the manifest's combined prerequisites before the first review starts, so mixed expert and vision batches fail fast on missing personas, models, browser dependencies, or unreadable optional context files.
+
 The manifest is intentionally narrow:
 
 - `defaults` applies shared settings across the run.

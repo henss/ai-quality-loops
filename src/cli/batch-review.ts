@@ -2,8 +2,10 @@ import { cac } from "cac";
 import * as dotenv from "dotenv";
 import {
   formatBatchReviewSummary,
+  runBatchReviewManifestPreflight,
   runBatchReviewManifest,
 } from "../review/batch-review.js";
+import { formatReviewPreflightSummary } from "../review/preflight.js";
 import { reportCliError } from "../shared/cli-errors.js";
 
 dotenv.config();
@@ -20,6 +22,15 @@ async function main() {
       if (!manifestPath) {
         cli.outputHelp();
         process.exit(1);
+      }
+
+      const preflight = await runBatchReviewManifestPreflight({
+        manifestPath,
+      });
+      console.info(formatReviewPreflightSummary(preflight));
+      if (!preflight.ok) {
+        process.exitCode = 1;
+        return;
       }
 
       const summary = await runBatchReviewManifest({

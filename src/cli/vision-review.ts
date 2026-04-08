@@ -27,17 +27,25 @@ async function main() {
       default: VISION_MODEL,
     })
     .option("--css <css>", "Custom CSS to inject before screenshot")
+    .option("--json", "Emit a structured review result to stdout")
+    .option("--json-output <path>", "Path to save the structured review result JSON")
     .action(async (urlOrPath, options) => {
-      await runVisionReview({
+      const result = await runVisionReview({
         urlOrPath,
         expert: options.expert,
         outputPath: options.output,
+        structuredOutputPath: options.jsonOutput,
         width: parseInt(options.width),
         height: parseInt(options.height),
         sections: options.sections ? options.sections.split(",") : [],
         model: options.model,
         customCss: options.css,
+        resultFormat: options.json ? "structured" : "markdown",
       });
+
+      if (options.json) {
+        console.info(JSON.stringify(result, null, 2));
+      }
     });
 
   cli.help();

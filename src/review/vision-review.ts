@@ -3,6 +3,7 @@ import fsSync from "node:fs";
 import * as path from "node:path";
 import * as os from "node:os";
 import { getLogger } from "../shared/logger.js";
+import { resolveFromCwd, writeJson } from "../shared/io.js";
 import { callOllamaVision, imageToBase64 } from "../shared/ollama.js";
 import {
   getDefaultOllamaUrl,
@@ -24,6 +25,10 @@ import {
   writeReviewOutput,
 } from "./shared.js";
 import { prepareVisionCaptureTarget } from "./vision-capture-target.js";
+import {
+  buildStructuredReviewResult,
+  type StructuredReviewResult,
+} from "./review-result.js";
 
 /**
  * Options for the Vision Review engine.
@@ -35,6 +40,8 @@ export interface VisionReviewOptions extends ReviewRedactionOptions {
   expert: string;
   /** Path to save the review result (optional) */
   outputPath?: string;
+  /** Path to save the structured review result JSON (optional) */
+  structuredOutputPath?: string;
   /** Viewport width for the screenshot (default: 1280) */
   width?: number;
   /** Viewport height for the screenshot (default: 720) */
@@ -55,20 +62,31 @@ export interface VisionReviewOptions extends ReviewRedactionOptions {
   customCss?: string;
   /** Optional orchestrator to prepare the environment */
   orchestrator?: { prepareForOllama: () => Promise<void> };
+  /** Return a structured review result instead of the raw Markdown string */
+  resultFormat?: "markdown" | "structured";
 }
 
 /**
  * Run a visual audit of a page using a vision-capable LLM.
  *
  * @param options - Review configuration options.
- * @returns The review feedback as a Markdown string.
+ * @returns The review feedback as Markdown by default, or a structured result when requested.
  */
-export async function runVisionReview(options: VisionReviewOptions): Promise<string> {
+export async function runVisionReview(
+  options: VisionReviewOptions & { resultFormat: "structured" },
+): Promise<StructuredReviewResult>;
+export async function runVisionReview(
+  options: VisionReviewOptions,
+): Promise<string>;
+export async function runVisionReview(
+  options: VisionReviewOptions,
+): Promise<string | StructuredReviewResult> {
   const OLLAMA_URL = getDefaultOllamaUrl();
   const VISION_MODEL = getDefaultVisionReviewModel();
   const { urlOrPath } = options;
   const expertType = options.expert || "UI/UX";
   const outputPath = options.outputPath;
+  const structuredOutputPath = options.structuredOutputPath;
   const width = options.width || 1280;
   const height = options.height || 720;
   const visionModel = options.model || VISION_MODEL;
@@ -228,6 +246,38 @@ export async function runVisionReview(options: VisionReviewOptions): Promise<str
     getLogger().info(text);
     getLogger().info("---------------------\n");
 
+    const structuredResult = buildStructuredReviewResult({
+      workflow: "vision",
+      expert: personaName,
+      model: visionModel,
+      markdown: text,
+      provenance: [
+        {
+          label: "Source",
+          value: sanitizedSource,
+        },
+        {
+          label: "Attached image count",
+          value: String(screenshotPaths.length),
+        },
+        {
+          label: "Capture mode",
+          value:
+            sectionList.length > 0
+              ? "targeted section screenshots"
+              : "full-page screenshot",
+        },
+        ...(sectionList.length > 0
+          ? [
+              {
+                label: "Captured section references",
+                value: summarizedSectionLabels.join(", "),
+              },
+            ]
+          : []),
+      ],
+    });
+
     if (outputPath) {
       const absoluteOutputPath = await writeReviewOutput(outputPath, text);
       getLogger().info(
@@ -241,7 +291,21 @@ export async function runVisionReview(options: VisionReviewOptions): Promise<str
       );
     }
 
-    return text;
+    if (structuredOutputPath) {
+      const absoluteStructuredOutputPath = resolveFromCwd(structuredOutputPath);
+      await writeJson(absoluteStructuredOutputPath, structuredResult, false);
+      getLogger().info(
+        `Structured review saved to: ${summarizeReviewOutputReference(
+          absoluteStructuredOutputPath,
+          process.cwd(),
+          {
+            extraRedactions: options.extraRedactions,
+          },
+        )}`,
+      );
+    }
+
+    return options.resultFormat === "structured" ? structuredResult : text;
   } catch (error) {
     getLogger().error(
       `Error during Vision review: ${summarizeReviewSurfaceError(error, {

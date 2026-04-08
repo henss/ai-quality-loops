@@ -20,23 +20,32 @@ async function main() {
     )
     .option("--model <id>", "Ollama model ID", { default: DEFAULT_MODEL })
     .option("--output <path>", "Path to save the review")
+    .option("--json", "Emit a structured review result to stdout")
+    .option("--json-output <path>", "Path to save the structured review result JSON")
     .action(async (content, options) => {
       const expertType = options.expert;
       const contentInput = options.content || content;
       const modelId = options.model;
       const outputPath = options.output;
+      const structuredOutputPath = options.jsonOutput;
 
       if (!expertType || !contentInput) {
         cli.outputHelp();
         process.exit(1);
       }
 
-      await runExpertReview({
+      const result = await runExpertReview({
         expert: expertType,
         content: contentInput,
         modelId,
         outputPath,
+        structuredOutputPath,
+        resultFormat: options.json ? "structured" : "markdown",
       });
+
+      if (options.json) {
+        console.info(JSON.stringify(result, null, 2));
+      }
     });
 
   cli.help();

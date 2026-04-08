@@ -31,6 +31,7 @@ The library works out-of-the-box with default example personas in `personas/univ
 - Screenshot capture utilities also accept caller-provided `extraRedactions` rules, so embedding projects can redact private structured identifiers from browser-command logs or launch failures without expanding the library's built-in heuristic set.
 - CLI failure output also emits only sanitized error summaries instead of raw stacks, so command-line review runs do not re-expose private paths or URL query details during failures.
 - Review flows also attach prompt-safe provenance bullets such as `Content source` or `Capture mode`, using sanitized descriptors instead of raw local paths or sensitive URL details.
+- Expert and vision review entrypoints can also emit one narrow structured review-result contract with summary, severity rollup, finding list, sanitized provenance descriptors, and the original Markdown, so downstream automation can route findings without maintaining brittle Markdown parsers.
 - `CHROME_PATH`: (Optional) Path to your browser executable (defaults to Edge on Windows).
 - `OLLAMA_URL`: (Optional) URL to your Ollama instance (defaults to http://127.0.0.1:11434).
 
@@ -79,6 +80,20 @@ await runExpertReview({
 });
 ```
 
+If a caller needs structured findings instead of only Markdown, request the additive review-result contract:
+
+```typescript
+const result = await runExpertReview({
+  expert: 'UI/UX',
+  content: './README.md',
+  resultFormat: 'structured',
+  structuredOutputPath: './reviews/ux-review.json'
+});
+
+console.log(result.summary);
+console.log(result.findings[0]?.severity);
+```
+
 ### Visual Audit (Vision Review)
 
 ```typescript
@@ -102,6 +117,19 @@ await runVisionReview({
   height: 720,
   extraRedactions
 });
+```
+
+The same contract is available for screenshot-backed reviews:
+
+```typescript
+const result = await runVisionReview({
+  urlOrPath: 'https://example.com',
+  expert: 'UI/UX',
+  resultFormat: 'structured',
+  structuredOutputPath: './reviews/vision-ux.json'
+});
+
+console.log(result.provenance);
 ```
 
 ### Section Discovery For Targeted Vision Captures
@@ -155,6 +183,10 @@ Use `batch-review` when you want to run the same expert or vision audit across m
 ```
 
 ```bash
+expert-review ./README.md --expert "UI/UX" --json
+expert-review ./README.md --expert "UI/UX" --output ./reviews/readme.md --json-output ./reviews/readme.json
+vision-review https://example.com --expert "UI/UX" --json
+
 batch-review ./review-manifest.json
 ```
 

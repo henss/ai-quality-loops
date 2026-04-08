@@ -1,5 +1,6 @@
 import { getLogger } from "../shared/logger.js";
 import { generateTextWithOllama } from "../shared/ollama.js";
+import { resolveFromCwd, writeJson } from "../shared/io.js";
 import {
   getDefaultExpertReviewModel,
   getDefaultOllamaUrl,
@@ -17,6 +18,10 @@ import {
   summarizeReviewOutputReference,
   writeReviewOutput,
 } from "./shared.js";
+import {
+  buildStructuredReviewResult,
+  type StructuredReviewResult,
+} from "./review-result.js";
 
 /**
  * Options for the Expert Review engine.
@@ -30,6 +35,8 @@ export interface ExpertReviewOptions extends ReviewRedactionOptions {
   modelId?: string;
   /** Path to save the review result (optional) */
   outputPath?: string;
+  /** Path to save the structured review result JSON (optional) */
+  structuredOutputPath?: string;
   /** Path to the persona Markdown library (optional, falls back to env.PROMPT_LIBRARY_PATH) */
   promptLibraryPath?: string;
   /** Path to the brand/project context JSON (optional, falls back to env.CONTEXT_PATH) */
@@ -40,15 +47,25 @@ export interface ExpertReviewOptions extends ReviewRedactionOptions {
   expertMap?: Record<string, string>;
   /** Optional orchestrator to prepare the environment (e.g. VRAM management) */
   orchestrator?: { prepareForOllama: () => Promise<void> };
+  /** Return a structured review result instead of the raw Markdown string */
+  resultFormat?: "markdown" | "structured";
 }
 
 /**
  * Run a text-based expert review using an LLM persona.
  *
  * @param options - Review configuration options.
- * @returns The review feedback as a Markdown string.
+ * @returns The review feedback as Markdown by default, or a structured result when requested.
  */
-export async function runExpertReview(options: ExpertReviewOptions): Promise<string> {
+export async function runExpertReview(
+  options: ExpertReviewOptions & { resultFormat: "structured" },
+): Promise<StructuredReviewResult>;
+export async function runExpertReview(
+  options: ExpertReviewOptions,
+): Promise<string>;
+export async function runExpertReview(
+  options: ExpertReviewOptions,
+): Promise<string | StructuredReviewResult> {
   const DEFAULT_MODEL = getDefaultExpertReviewModel();
   const OLLAMA_URL = getDefaultOllamaUrl();
 
@@ -56,6 +73,7 @@ export async function runExpertReview(options: ExpertReviewOptions): Promise<str
   const contentInput = options.content;
   const modelId = options.modelId || DEFAULT_MODEL;
   const outputPath = options.outputPath;
+  const structuredOutputPath = options.structuredOutputPath;
   const ollamaUrl = (options.ollamaUrl || OLLAMA_URL).replace(/\/$/, "");
   const contentText = await loadReviewContent(contentInput);
   const summarizedContentSource = await summarizeReviewInputReference(
@@ -119,6 +137,19 @@ export async function runExpertReview(options: ExpertReviewOptions): Promise<str
     getLogger().info(text);
     getLogger().info("---------------------\n");
 
+    const structuredResult = buildStructuredReviewResult({
+      workflow: "expert",
+      expert: personaName,
+      model: modelId,
+      markdown: text,
+      provenance: [
+        {
+          label: "Content source",
+          value: summarizedContentSource,
+        },
+      ],
+    });
+
     if (outputPath) {
       const absoluteOutputPath = await writeReviewOutput(outputPath, text);
       getLogger().info(
@@ -132,7 +163,21 @@ export async function runExpertReview(options: ExpertReviewOptions): Promise<str
       );
     }
 
-    return text;
+    if (structuredOutputPath) {
+      const absoluteStructuredOutputPath = resolveFromCwd(structuredOutputPath);
+      await writeJson(absoluteStructuredOutputPath, structuredResult, false);
+      getLogger().info(
+        `Structured review saved to: ${summarizeReviewOutputReference(
+          absoluteStructuredOutputPath,
+          process.cwd(),
+          {
+            extraRedactions: options.extraRedactions,
+          },
+        )}`,
+      );
+    }
+
+    return options.resultFormat === "structured" ? structuredResult : text;
   } catch (error) {
     getLogger().error(
       `Error during Expert review: ${summarizeReviewSurfaceError(error, {

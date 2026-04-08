@@ -104,6 +104,52 @@ await runVisionReview({
 });
 ```
 
+### Manifest-Driven Batch Reviews
+
+Use `batch-review` when you want to run the same expert or vision audit across multiple targets without rebuilding the outer loop in each embedding repo.
+
+`review-manifest.json`
+
+```json
+{
+  "defaults": {
+    "mode": "vision",
+    "expert": "UI/UX",
+    "outputDir": "./reviews/site-audit",
+    "width": 1440,
+    "height": 900
+  },
+  "reviews": [
+    {
+      "name": "Homepage hero",
+      "target": "https://example.com",
+      "sections": ["hero"]
+    },
+    {
+      "name": "Pricing page",
+      "target": "https://example.com/pricing"
+    },
+    {
+      "mode": "expert",
+      "expert": "Efficiency",
+      "target": "./README.md",
+      "outputPath": "./reviews/readme-efficiency.md"
+    }
+  ]
+}
+```
+
+```bash
+batch-review ./review-manifest.json
+```
+
+The manifest is intentionally narrow:
+
+- `defaults` applies shared settings across the run.
+- `reviews[]` defines sequential review targets using `target`, `mode`, and optional overrides like `expert`, `model`, `outputPath`, `sections`, `css`, `width`, and `height`.
+- `outputDir` is an optional shared convenience. When a review omits `outputPath`, the runner derives a stable Markdown filename inside that directory.
+- The first slice is sequential only. Concurrency, scheduling, and repo-specific policy routing stay outside the shared open-source boundary.
+
 ### Direct Ollama Calls
 
 ```typescript

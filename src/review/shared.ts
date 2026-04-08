@@ -201,6 +201,22 @@ export function resolvePromptLibraryPath(
   return path.resolve(__dirname, "../../personas/universal.md");
 }
 
+export function resolveReviewContextPath(
+  contextPath?: string,
+  cwd = process.cwd(),
+): string {
+  if (contextPath) {
+    return resolveFromCwd(contextPath, cwd);
+  }
+
+  const envPath = process.env.CONTEXT_PATH;
+  if (envPath) {
+    return resolveFromCwd(envPath, cwd);
+  }
+
+  return path.resolve(cwd, "context.json");
+}
+
 export async function loadPersonaPrompt({
   expert,
   promptLibraryPath,
@@ -235,11 +251,7 @@ export async function loadReviewContext(
   contextPath?: string,
   cwd = process.cwd(),
 ): Promise<Record<string, unknown>> {
-  const resolvedContextPath = contextPath
-    ? path.resolve(contextPath)
-    : process.env.CONTEXT_PATH
-      ? path.resolve(process.env.CONTEXT_PATH)
-      : path.resolve(cwd, "context.json");
+  const resolvedContextPath = resolveReviewContextPath(contextPath, cwd);
 
   try {
     return await readJson<Record<string, unknown>>(resolvedContextPath);

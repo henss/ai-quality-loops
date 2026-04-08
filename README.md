@@ -150,6 +150,24 @@ The manifest is intentionally narrow:
 - `outputDir` is an optional shared convenience. When a review omits `outputPath`, the runner derives a stable Markdown filename inside that directory.
 - The first slice is sequential only. Concurrency, scheduling, and repo-specific policy routing stay outside the shared open-source boundary.
 
+### Review Preflight CLI
+
+Use `review-preflight` to catch missing local prerequisites before a costly expert or vision run.
+
+```bash
+review-preflight --mode both --expert "UI/UX"
+review-preflight --mode vision --vision-model qwen3-vl:30b --json
+```
+
+The command stays read-only and checks:
+
+- Ollama reachability plus whether the requested expert and/or vision model is installed.
+- Browser executable availability for screenshot-backed review flows.
+- Persona-library resolution for the requested persona.
+- Optional context JSON readability when a context file is configured.
+
+It exits with code `0` on success and `1` on failure. Use `--json` when a wrapper script needs structured pass/fail details.
+
 ### Direct Ollama Calls
 
 ```typescript

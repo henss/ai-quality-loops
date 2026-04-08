@@ -8,9 +8,16 @@ import {
 } from "../shared/review-surface.js";
 import { resolveFromCwd } from "../shared/io.js";
 
-const CHROME_PATH =
-  process.env.CHROME_PATH ||
+const DEFAULT_CHROME_PATH =
   "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe";
+
+export function getDefaultBrowserPath(): string {
+  return process.env.CHROME_PATH || DEFAULT_CHROME_PATH;
+}
+
+export function resolveBrowserPath(browserPath?: string): string {
+  return browserPath || getDefaultBrowserPath();
+}
 
 /**
  * Capture a screenshot of a URL or local file using a headless browser.
@@ -32,7 +39,7 @@ export async function takeScreenshot(
 ): Promise<string> {
   const width = options.width || 1280;
   const height = options.height || 720;
-  const chromePath = options.chromePath || CHROME_PATH;
+  const chromePath = resolveBrowserPath(options.chromePath);
   const extraRedactions = options.extraRedactions || [];
 
   let targetUrl = urlOrPath;

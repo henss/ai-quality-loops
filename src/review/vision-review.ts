@@ -24,7 +24,7 @@ import {
   summarizeReviewOutputReference,
   writeReviewOutput,
 } from "./shared.js";
-import { prepareVisionCaptureTarget } from "./vision-capture-target.js";
+import { planVisionCaptures } from "./vision-capture-plan.js";
 import {
   buildStructuredReviewResult,
   type StructuredReviewResult,
@@ -132,29 +132,24 @@ export async function runVisionReview(
         `Using existing image file for review: ${sanitizedSource}`,
       );
     } else {
-      const preparedTarget = await prepareVisionCaptureTarget(
+      const capturePlan = await planVisionCaptures({
         urlOrPath,
-        options.customCss,
-      );
-      cleanupCaptureTarget = preparedTarget.cleanup;
-      const captureTarget = preparedTarget.target;
+        sections: sectionList,
+        width,
+        height,
+        customCss: options.customCss,
+        extraRedactions: options.extraRedactions,
+      });
+      cleanupCaptureTarget = capturePlan.cleanup;
 
-      if (captureTarget !== urlOrPath) {
+      if (capturePlan.usesPreparedTarget) {
         getLogger().info("Prepared a temporary styled HTML capture target");
       }
 
-      if (sectionList.length > 0) {
-        for (const [index, section] of sectionList.entries()) {
-          await capture(`${captureTarget}#${section}`, summarizedSectionLabels[index], {
-            width,
-            height,
-            extraRedactions: options.extraRedactions,
-          });
-        }
-      } else {
-        await capture(captureTarget, "full", {
-          width,
-          height: 6000,
+      for (const plannedCapture of capturePlan.captures) {
+        await capture(plannedCapture.target, plannedCapture.label, {
+          width: plannedCapture.width,
+          height: plannedCapture.height,
           extraRedactions: options.extraRedactions,
         });
       }

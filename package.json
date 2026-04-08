@@ -31,6 +31,7 @@
     "batch-review": "dist/cli/batch-review.js",
     "expert-review": "dist/cli/expert-review.js",
     "review-preflight": "dist/cli/review-preflight.js",
+    "vision-preview": "dist/cli/vision-preview.js",
     "vision-review": "dist/cli/vision-review.js",
     "vision-sections": "dist/cli/vision-sections.js",
     "web-screenshot": "dist/cli/screenshot.js"

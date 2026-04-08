@@ -147,6 +147,22 @@ The command stays generic on purpose:
 - It lists valid `#id` fragment targets and prints a manifest-ready `sections` array suggestion.
 - It does not guess which sections you should review or add project-specific selector heuristics to the shared package surface.
 
+### Capture Preview For Targeted Vision Runs
+
+Use `vision-preview` when you want the exact screenshots a `vision-review` run would capture, without spending model time first.
+
+```bash
+vision-preview https://example.com --sections hero,pricing
+vision-preview ./site/index.html --css ".debug-outline { outline: 2px solid red; }" --output-dir ./artifacts/preview
+vision-preview --manifest ./review-manifest.json --entry-name "Homepage hero" --json
+```
+
+The command stays intentionally narrow:
+
+- It uses the same capture planning and browser screenshot path as `vision-review`.
+- It shows whether requested custom CSS was actually injected, which matters when the target is not a local HTML file.
+- It can preview one vision entry from a batch-review manifest without widening into browser-debugging or auto-fixing behavior.
+
 ### Manifest-Driven Batch Reviews
 
 Use `batch-review` when you want to run the same expert or vision audit across multiple targets without rebuilding the outer loop in each embedding repo.

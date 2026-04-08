@@ -204,6 +204,7 @@ expert-review ./README.md --expert "UI/UX" --output ./reviews/readme.md --json-o
 vision-review https://example.com --expert "UI/UX" --json
 
 batch-review ./review-manifest.json
+batch-review ./review-manifest.json --summary-output ./reviews/batch-summary.json
 ```
 
 The CLI now runs the shared review-preflight checks against the manifest's combined prerequisites before the first review starts, so mixed expert and vision batches fail fast on missing personas, models, browser dependencies, or unreadable optional context files.
@@ -213,6 +214,7 @@ The manifest is intentionally narrow:
 - `defaults` applies shared settings across the run.
 - `reviews[]` defines sequential review targets using `target`, `mode`, and optional overrides like `expert`, `model`, `outputPath`, `sections`, `css`, `width`, and `height`.
 - `outputDir` is an optional shared convenience. When a review omits `outputPath`, the runner derives a stable Markdown filename inside that directory.
+- `--summary-output` writes one sanitized JSON artifact with batch totals, per-target status, sanitized target descriptors, sanitized output locations, and failure summaries so downstream automation can ingest the run without parsing the human console summary.
 - The first slice is sequential only. Concurrency, scheduling, and repo-specific policy routing stay outside the shared open-source boundary.
 
 When a vision review needs targeted captures, run `vision-sections <target>` first and copy the suggested ids into the manifest's `sections` array.

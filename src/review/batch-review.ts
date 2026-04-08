@@ -83,6 +83,24 @@ export interface BatchReviewSummary {
   results: BatchReviewResult[];
 }
 
+export interface BatchReviewArtifactResult {
+  index: number;
+  name?: string;
+  mode: BatchReviewMode;
+  targetSummary: string;
+  outputPath?: string;
+  status: "success" | "failure";
+  errorSummary?: string;
+}
+
+export interface BatchReviewArtifactSummary {
+  manifestPath: string;
+  total: number;
+  succeeded: number;
+  failed: number;
+  results: BatchReviewArtifactResult[];
+}
+
 export interface RunBatchReviewManifestOptions {
   manifestPath: string;
   cwd?: string;
@@ -427,6 +445,42 @@ export function formatBatchReviewSummary(summary: BatchReviewSummary): string {
   }
 
   return lines.join("\n");
+}
+
+export function createBatchReviewArtifactSummary(
+  summary: BatchReviewSummary,
+): BatchReviewArtifactSummary {
+  return {
+    manifestPath: sanitizeReviewSurfaceValue(summary.manifestPath),
+    total: summary.total,
+    succeeded: summary.succeeded,
+    failed: summary.failed,
+    results: summary.results.map((result) => ({
+      index: result.index,
+      name: result.name,
+      mode: result.mode,
+      targetSummary: result.targetSummary,
+      outputPath: result.outputPath
+        ? sanitizeReviewSurfaceValue(result.outputPath)
+        : undefined,
+      status: result.status,
+      errorSummary: result.errorSummary,
+    })),
+  };
+}
+
+export function formatBatchReviewArtifactSummary(
+  summary: BatchReviewSummary,
+): string {
+  return JSON.stringify(createBatchReviewArtifactSummary(summary), null, 2);
+}
+
+export async function writeBatchReviewArtifactSummary(
+  summary: BatchReviewSummary,
+  outputPath: string,
+): Promise<void> {
+  await fs.mkdir(path.dirname(outputPath), { recursive: true });
+  await fs.writeFile(outputPath, formatBatchReviewArtifactSummary(summary));
 }
 
 export async function runBatchReviewManifest({

@@ -6,13 +6,16 @@ import { getLogger, setLogger, silentLogger } from "../shared/logger.js";
 import type { ExpertReviewOptions } from "./expert-review.js";
 import type { VisionReviewOptions } from "./vision-review.js";
 import {
+  createBatchReviewArtifactSummary,
   deriveBatchReviewPreflightOptions,
   formatBatchReviewSummary,
+  formatBatchReviewArtifactSummary,
   loadBatchReviewManifest,
   normalizeBatchReviewManifest,
   runBatchReviewManifestPreflight,
   runBatchReviewManifest,
   type BatchReviewManifest,
+  writeBatchReviewArtifactSummary,
 } from "./batch-review.js";
 
 function createFetchResponse(body: unknown, ok = true, status = 200): Response {
@@ -234,6 +237,108 @@ describe("batch review manifest", () => {
     expect(formatBatchReviewSummary(summary)).toContain(
       "Batch review summary: 1 succeeded, 1 failed, 2 total.",
     );
+  });
+
+  it("creates a sanitized machine-readable artifact summary", () => {
+    const artifact = createBatchReviewArtifactSummary({
+      manifestPath: "D:\\workspace\\private\\manifest.json",
+      total: 2,
+      succeeded: 1,
+      failed: 1,
+      results: [
+        {
+          index: 0,
+          name: "Homepage",
+          mode: "vision",
+          targetSummary: "Remote URL (example.com)",
+          outputPath: "D:\\workspace\\private\\reviews\\homepage.md",
+          status: "success",
+        },
+        {
+          index: 1,
+          mode: "expert",
+          targetSummary: "Local file path (.md file)",
+          status: "failure",
+          errorSummary: "Error: Failed to open Local file path (.md file)",
+        },
+      ],
+    });
+
+    expect(artifact).toEqual({
+      manifestPath: "Local file path (.json file)",
+      total: 2,
+      succeeded: 1,
+      failed: 1,
+      results: [
+        {
+          index: 0,
+          name: "Homepage",
+          mode: "vision",
+          targetSummary: "Remote URL (example.com)",
+          outputPath: "Local file path (.md file)",
+          status: "success",
+        },
+        {
+          index: 1,
+          name: undefined,
+          mode: "expert",
+          targetSummary: "Local file path (.md file)",
+          status: "failure",
+          errorSummary: "Error: Failed to open Local file path (.md file)",
+        },
+      ],
+    });
+
+    expect(JSON.parse(formatBatchReviewArtifactSummary({
+      manifestPath: "D:\\workspace\\private\\manifest.json",
+      total: 0,
+      succeeded: 0,
+      failed: 0,
+      results: [],
+    }))).toMatchObject({
+      manifestPath: "Local file path (.json file)",
+      total: 0,
+    });
+  });
+
+  it("writes the machine-readable artifact summary to disk", async () => {
+    const outputPath = path.join(tempDir, "artifacts", "batch-summary.json");
+
+    await writeBatchReviewArtifactSummary(
+      {
+        manifestPath: path.join(tempDir, "manifest.json"),
+        total: 1,
+        succeeded: 1,
+        failed: 0,
+        results: [
+          {
+            index: 0,
+            mode: "expert",
+            targetSummary: "Local file path (.md file)",
+            outputPath: path.join(tempDir, "reviews", "readme.md"),
+            status: "success",
+          },
+        ],
+      },
+      outputPath,
+    );
+
+    const written = JSON.parse(await fs.readFile(outputPath, "utf-8"));
+    expect(written).toEqual({
+      manifestPath: "Local file path (.json file)",
+      total: 1,
+      succeeded: 1,
+      failed: 0,
+      results: [
+        {
+          index: 0,
+          mode: "expert",
+          targetSummary: "Local file path (.md file)",
+          outputPath: "Local file path (.md file)",
+          status: "success",
+        },
+      ],
+    });
   });
 
   it("requires a mode and expert persona for expert batch entries", () => {

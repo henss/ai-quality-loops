@@ -157,6 +157,33 @@ const result = await runVisionReview({
 console.log(result.provenance);
 ```
 
+When two structured review runs need a deterministic regression summary, compare them directly instead of diffing Markdown:
+
+```typescript
+import {
+  compareStructuredReviewResults,
+  parseStructuredReviewResult
+} from 'ai-quality-loops';
+
+const previous = parseStructuredReviewResult(previousJson);
+const current = parseStructuredReviewResult(currentJson);
+const comparison = compareStructuredReviewResults({
+  before: previous,
+  after: current
+});
+
+console.log(comparison.overallSeverityChange.direction);
+console.log(comparison.counts);
+console.log(comparison.changed.map((finding) => finding.key));
+```
+
+The comparison helper stays intentionally narrow:
+
+- it compares exactly two published structured review-result artifacts
+- it groups findings by a stable normalized key derived from title or summary text
+- it reports added, removed, changed, and unchanged findings plus per-finding and overall severity movement
+- it does not add scoring, approval heuristics, or model-based equivalence judgments
+
 ### Section Discovery For Targeted Vision Captures
 
 Use `vision-sections` before `vision-review --sections ...` or before authoring a batch-review manifest when you need to discover fragment-compatible DOM ids from a rendered page.

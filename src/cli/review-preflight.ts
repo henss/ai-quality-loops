@@ -6,6 +6,10 @@ import {
   type ReviewPreflightMode,
 } from "../review/preflight.js";
 import { reportCliError } from "../shared/cli-errors.js";
+import {
+  formatPersonaCatalog,
+  getPersonaCatalog,
+} from "../review/persona-catalog.js";
 
 dotenv.config();
 
@@ -38,8 +42,21 @@ async function main() {
     .option("--context <path>", "Path to the optional review context JSON file")
     .option("--ollama-url <url>", "Base URL for the Ollama API")
     .option("--browser-path <path>", "Browser executable path for screenshot-based checks")
+    .option("--list-personas", "List available personas and built-in aliases")
     .option("--json", "Emit the result as JSON")
     .action(async (options) => {
+      if (options.listPersonas) {
+        const catalog = await getPersonaCatalog({
+          promptLibraryPath: options.promptLibrary,
+        });
+        if (options.json) {
+          console.info(JSON.stringify(catalog, null, 2));
+        } else {
+          console.info(formatPersonaCatalog(catalog));
+        }
+        return;
+      }
+
       const result = await runReviewPreflight({
         mode: parseMode(options.mode),
         expert: options.expert,

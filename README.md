@@ -254,8 +254,11 @@ Use `batch-review` when you want to run the same expert or vision audit across m
 
 ```bash
 expert-review ./README.md --expert "UI/UX" --json
+expert-review --list-personas
+expert-review --list-personas --prompt-library ./personas.md --json
 expert-review ./README.md --expert "UI/UX" --output ./reviews/readme.md --json-output ./reviews/readme.json
 vision-review https://example.com --expert "UI/UX" --json
+vision-review https://example.com --list-personas
 
 batch-review ./review-manifest.json
 batch-review ./review-manifest.json --summary-output ./reviews/batch-summary.json
@@ -309,6 +312,19 @@ The command stays read-only and checks:
 - Optional context JSON readability when a context file is configured.
 
 It exits with code `0` on success and `1` on failure. Use `--json` when a wrapper script needs structured pass/fail details.
+
+When a wrapper or operator needs discovery instead of validation, use the same entrypoints to list the active prompt-library surface before running a review:
+
+```bash
+review-preflight --list-personas
+review-preflight --list-personas --prompt-library ./personas.md --json
+```
+
+The persona catalog surface stays intentionally narrow:
+
+- It lists the personas found in the active prompt library plus the built-in alias mappings that resolve to them.
+- It flags aliases that do not currently resolve to a persona in that library, which keeps generic-vs-project-local gaps explicit instead of failing later in a review run.
+- It does not recommend personas, score them, or add project-specific defaults beyond the existing shared alias map.
 
 ### Direct Ollama Calls
 

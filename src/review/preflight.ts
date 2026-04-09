@@ -6,9 +6,9 @@ import {
 } from "../shared/review-surface.js";
 import { resolveBrowserPath } from "../utils/screenshot.js";
 import {
-  loadPersonaPrompt,
   resolveReviewContextPath,
 } from "./shared.js";
+import { loadPersonaPrompt } from "./persona-catalog.js";
 
 export type ReviewPreflightMode = "expert" | "vision" | "both";
 export type ReviewPreflightCheckName =

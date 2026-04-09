@@ -16,13 +16,13 @@ import {
 import { takeScreenshot } from "../utils/screenshot.js";
 import {
   buildReviewEnvelope,
-  loadPersonaPrompt,
   prepareReviewInputMaterialSections,
   loadReviewContext,
   type ReviewRedactionOptions,
   summarizeReviewOutputReference,
   writeReviewOutput,
 } from "./shared.js";
+import { loadPersonaPrompt } from "./persona-catalog.js";
 import {
   formatTargetedVisionCaptureReferences,
   planVisionCaptures,

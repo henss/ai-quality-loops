@@ -9,7 +9,6 @@ import { summarizeReviewSurfaceError } from "../shared/review-surface.js";
 import {
   buildReviewEnvelope,
   loadReviewContent,
-  loadPersonaPrompt,
   prepareReviewInputMaterialSections,
   prepareReviewMaterialSections,
   loadReviewContext,
@@ -18,6 +17,7 @@ import {
   summarizeReviewOutputReference,
   writeReviewOutput,
 } from "./shared.js";
+import { loadPersonaPrompt } from "./persona-catalog.js";
 import {
   buildStructuredReviewResult,
   type StructuredReviewResult,

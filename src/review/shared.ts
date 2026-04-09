@@ -1,32 +1,10 @@
 import * as fs from "node:fs/promises";
-import fsSync from "node:fs";
 import * as path from "node:path";
-import { fileURLToPath } from "node:url";
 import { readJson, resolveFromCwd } from "../shared/io.js";
 import {
   type ReviewSurfaceRedactions,
   sanitizeReviewSurfaceValue,
 } from "../shared/review-surface.js";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-const DEFAULT_EXPERT_ALIASES: Record<string, string> = {
-  "UI/UX": "SKEPTICAL UI/UX CRITIC",
-  Efficiency: "REPOSITORY & AI EFFICIENCY SPECIALIST",
-};
-
-export interface LoadPersonaPromptOptions {
-  expert: string;
-  promptLibraryPath?: string;
-  expertMap?: Record<string, string>;
-}
-
-export interface LoadedPersonaPrompt {
-  personaName: string;
-  personaPrompt: string;
-  promptLibraryPath: string;
-}
 
 export interface ReviewEnvelopeSection {
   heading: string;
@@ -173,34 +151,6 @@ export function sanitizeReviewContext(
   return visit(value, 0);
 }
 
-export function resolvePersonaName(
-  expert: string,
-  expertMap?: Record<string, string>,
-): string {
-  return expertMap?.[expert] || DEFAULT_EXPERT_ALIASES[expert] || expert;
-}
-
-export function resolvePromptLibraryPath(
-  promptLibraryPath?: string,
-  cwd = process.cwd(),
-): string {
-  if (promptLibraryPath) {
-    return resolveFromCwd(promptLibraryPath);
-  }
-
-  const envPath = process.env.PROMPT_LIBRARY_PATH;
-  if (envPath) {
-    return resolveFromCwd(envPath);
-  }
-
-  const defaultInCwd = path.resolve(cwd, "personas.md");
-  if (fsSync.existsSync(defaultInCwd)) {
-    return defaultInCwd;
-  }
-
-  return path.resolve(__dirname, "../../personas/universal.md");
-}
-
 export function resolveReviewContextPath(
   contextPath?: string,
   cwd = process.cwd(),
@@ -215,36 +165,6 @@ export function resolveReviewContextPath(
   }
 
   return path.resolve(cwd, "context.json");
-}
-
-export async function loadPersonaPrompt({
-  expert,
-  promptLibraryPath,
-  expertMap,
-}: LoadPersonaPromptOptions): Promise<LoadedPersonaPrompt> {
-  const resolvedPromptLibraryPath = resolvePromptLibraryPath(promptLibraryPath);
-  if (!fsSync.existsSync(resolvedPromptLibraryPath)) {
-    throw new Error(`Persona library not found at: ${resolvedPromptLibraryPath}`);
-  }
-
-  const promptLibrary = await fs.readFile(resolvedPromptLibraryPath, "utf-8");
-  const personaName = resolvePersonaName(expert, expertMap);
-  const escapedPersona = personaName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  const personaRegex = new RegExp(
-    `(?:### LLM COMMITTEE PERSONA: \\d+\\. |#{1,3} )${escapedPersona}[\\s\\S]*?(?=(?:### LLM COMMITTEE PERSONA|#{1,3} [^\\n]+)|$)`,
-    "i",
-  );
-  const personaMatch = promptLibrary.match(personaRegex);
-
-  if (!personaMatch) {
-    throw new Error(`Could not find persona prompt for: ${personaName}`);
-  }
-
-  return {
-    personaName,
-    personaPrompt: personaMatch[0].trim(),
-    promptLibraryPath: resolvedPromptLibraryPath,
-  };
 }
 
 export async function loadReviewContext(
@@ -451,3 +371,5 @@ export function buildReviewEnvelope({
 
   return blocks.join("\n").trim();
 }
+
+export { resolvePromptLibraryPath } from "./persona-catalog.js";

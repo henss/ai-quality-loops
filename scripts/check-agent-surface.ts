@@ -46,6 +46,15 @@ const MIN_MEANINGFUL_OVERSIZE_REDUCTION_RATIO = 0.03;
 const repoRoot = process.cwd();
 const configPath = path.join(repoRoot, "agent-surface-budgets.json");
 const config = JSON.parse(fs.readFileSync(configPath, "utf8")) as BudgetConfig;
+const ESLINT_CONFIG_CANDIDATES = [
+  "eslint.config.js",
+  "eslint.config.mjs",
+  "eslint.config.cjs",
+  ".eslintrc.js",
+  ".eslintrc.cjs",
+  ".eslintrc.json",
+  ".eslintrc",
+];
 
 function parseArgs(argv: string[]): ParsedArgs {
   const parsed: ParsedArgs = { staged: false, files: [] };
@@ -190,6 +199,13 @@ function findLineViolations(reports: FileReport[], changedOnly: boolean): string
 }
 
 async function loadStructuralRuleViolations(reports: FileReport[], baselineRef: string): Promise<Map<string, RuleDelta[]>> {
+  const hasEslintConfig = ESLINT_CONFIG_CANDIDATES.some((candidate) =>
+    fs.existsSync(path.join(repoRoot, candidate)),
+  );
+  if (!hasEslintConfig) {
+    return new Map<string, RuleDelta[]>();
+  }
+
   const eslint = new ESLint({ cwd: repoRoot });
   const currentResults = await eslint.lintFiles(reports.map((report) => report.filePath));
   const baselineResults = new Map<string, number>();

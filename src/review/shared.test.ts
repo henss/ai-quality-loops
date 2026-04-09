@@ -5,13 +5,11 @@ import * as os from "node:os";
 import {
   buildReviewEnvelope,
   loadReviewContent,
-  loadPersonaPrompt,
   loadReviewContext,
   prepareReviewEvidenceDescriptorItems,
   prepareReviewInputMaterialSections,
   prepareReviewMetadataItems,
   prepareReviewMaterialSections,
-  resolvePersonaName,
   resolvePromptLibraryPath,
   sanitizeReviewContext,
   summarizeReviewInputReference,
@@ -19,6 +17,13 @@ import {
   summarizeReviewPathReference,
   writeReviewOutput,
 } from "./shared.js";
+import {
+  formatPersonaCatalog,
+  getPersonaCatalog,
+  listPersonaNames,
+  loadPersonaPrompt,
+  resolvePersonaName,
+} from "./persona-catalog.js";
 
 describe("Review shared utilities", () => {
   let tempDir: string;
@@ -126,6 +131,119 @@ describe("Review shared utilities", () => {
     expect(
       summarizeReviewOutputReference("reviews/output.md", tempDir),
     ).toBe("Local file path (.md file)");
+  });
+
+  it("lists persona names from markdown headers without duplicates", () => {
+    expect(
+      listPersonaNames(
+        [
+          "### LLM COMMITTEE PERSONA: 1. SKEPTICAL UI/UX CRITIC",
+          "Prompt A",
+          "## REPOSITORY & AI EFFICIENCY SPECIALIST",
+          "Prompt B",
+          "### LLM COMMITTEE PERSONA: 3. SKEPTICAL UI/UX CRITIC",
+          "Prompt C",
+        ].join("\n"),
+      ),
+    ).toEqual([
+      "SKEPTICAL UI/UX CRITIC",
+      "REPOSITORY & AI EFFICIENCY SPECIALIST",
+    ]);
+  });
+
+  it("builds a persona catalog with aliases grouped by resolved persona", async () => {
+    const promptLibraryPath = path.join(tempDir, "personas.md");
+    await fs.writeFile(
+      promptLibraryPath,
+      [
+        "### LLM COMMITTEE PERSONA: 1. SKEPTICAL UI/UX CRITIC",
+        "Critical review prompt",
+        "",
+        "### LLM COMMITTEE PERSONA: 2. CUSTOM REVIEWER",
+        "Custom review prompt",
+      ].join("\n"),
+    );
+
+    await expect(
+      getPersonaCatalog({
+        promptLibraryPath,
+        expertMap: {
+          Reviewer: "CUSTOM REVIEWER",
+          Missing: "NOT IN LIBRARY",
+        },
+      }),
+    ).resolves.toEqual({
+      promptLibraryPath,
+      personas: [
+        {
+          personaName: "SKEPTICAL UI/UX CRITIC",
+          aliases: ["UI/UX"],
+        },
+        {
+          personaName: "CUSTOM REVIEWER",
+          aliases: ["Reviewer"],
+        },
+      ],
+      aliases: [
+        {
+          alias: "UI/UX",
+          personaName: "SKEPTICAL UI/UX CRITIC",
+          source: "built-in",
+        },
+        {
+          alias: "Reviewer",
+          personaName: "CUSTOM REVIEWER",
+          source: "custom",
+        },
+      ],
+      unmatchedAliases: [
+        {
+          alias: "Efficiency",
+          personaName: "REPOSITORY & AI EFFICIENCY SPECIALIST",
+          source: "built-in",
+        },
+        {
+          alias: "Missing",
+          personaName: "NOT IN LIBRARY",
+          source: "custom",
+        },
+      ],
+    });
+  });
+
+  it("formats persona catalogs with alias and mismatch summaries", () => {
+    expect(
+      formatPersonaCatalog({
+        promptLibraryPath: path.join(tempDir, "personas.md"),
+        personas: [
+          {
+            personaName: "SKEPTICAL UI/UX CRITIC",
+            aliases: ["UI/UX"],
+          },
+          {
+            personaName: "CUSTOM REVIEWER",
+            aliases: [],
+          },
+        ],
+        aliases: [],
+        unmatchedAliases: [
+          {
+            alias: "Efficiency",
+            personaName: "REPOSITORY & AI EFFICIENCY SPECIALIST",
+            source: "built-in",
+          },
+        ],
+      }),
+    ).toBe(
+      [
+        "Available personas from personas.md:",
+        "- SKEPTICAL UI/UX CRITIC (aliases: UI/UX)",
+        "- CUSTOM REVIEWER",
+        "",
+        "Aliases without a matching persona in this library:",
+        "- Efficiency -> REPOSITORY & AI EFFICIENCY SPECIALIST [built-in]",
+      ].join("\n"),
+    );
   });
 
   it("summarizes review path references through one shared prompt-safe helper", () => {

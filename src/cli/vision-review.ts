@@ -3,6 +3,10 @@ import { runVisionReview } from "../review/vision-review.js";
 import * as dotenv from "dotenv";
 import { getDefaultVisionReviewModel } from "../shared/models.js";
 import { reportCliError } from "../shared/cli-errors.js";
+import {
+  formatPersonaCatalog,
+  getPersonaCatalog,
+} from "../review/persona-catalog.js";
 
 dotenv.config();
 
@@ -12,8 +16,8 @@ async function main() {
   const cli = cac("vision-review");
 
   cli
-    .command("<urlOrPath>", "Review a website or local page using a vision LLM")
-    .option("--expert <type>", "Expert persona (default: UI/UX)", {
+    .command("[urlOrPath]", "Review a website or local page using a vision LLM")
+    .option("--expert <type>", "Expert persona name or built-in alias (default: UI/UX)", {
       default: "UI/UX",
     })
     .option("--output <path>", "Path to save the review")
@@ -26,10 +30,29 @@ async function main() {
     .option("--model <m>", "Vision model", {
       default: VISION_MODEL,
     })
+    .option("--prompt-library <path>", "Path to the persona library markdown file")
+    .option("--list-personas", "List available personas and built-in aliases")
     .option("--css <css>", "Custom CSS to inject before screenshot")
     .option("--json", "Emit a structured review result to stdout")
     .option("--json-output <path>", "Path to save the structured review result JSON")
     .action(async (urlOrPath, options) => {
+      if (options.listPersonas) {
+        const catalog = await getPersonaCatalog({
+          promptLibraryPath: options.promptLibrary,
+        });
+        if (options.json) {
+          console.info(JSON.stringify(catalog, null, 2));
+        } else {
+          console.info(formatPersonaCatalog(catalog));
+        }
+        return;
+      }
+
+      if (!urlOrPath) {
+        cli.outputHelp();
+        process.exit(1);
+      }
+
       const result = await runVisionReview({
         urlOrPath,
         expert: options.expert,
@@ -39,6 +62,7 @@ async function main() {
         height: parseInt(options.height),
         sections: options.sections ? options.sections.split(",") : [],
         model: options.model,
+        promptLibraryPath: options.promptLibrary,
         customCss: options.css,
         resultFormat: options.json ? "structured" : "markdown",
       });

@@ -18,6 +18,8 @@ export * from "./review/vision-section-discovery.js";
 export * from "./review/batch-review.js";
 export * from "./review/preflight.js";
 export * from "./review/review-gate.js";
+export * from "./review/persona-catalog.js";
+export * from "./review/shared.js";
 export {
   JSON_CONTRACT_SCHEMA_FILES,
   parseBatchReviewArtifactSummary,

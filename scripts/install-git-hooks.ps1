@@ -1,4 +1,4 @@
-// Managed by llm-orchestrator TypeScript agent-surface standard.
+# Managed by llm-orchestrator TypeScript agent-surface standard.
 $ErrorActionPreference = "Stop"
 
 $repoRoot = Split-Path -Parent $PSScriptRoot

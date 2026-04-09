@@ -22,6 +22,17 @@ import type {
   NormalizedBatchReviewEntry,
 } from "./batch-review.js";
 
+export interface BatchReviewExecutionPlanEntry
+  extends NormalizedBatchReviewEntry {
+  targetSummary: string;
+}
+
+export interface BatchReviewExecutionPlan {
+  total: number;
+  entries: BatchReviewExecutionPlanEntry[];
+  preflight: RunReviewPreflightOptions;
+}
+
 function uniqueDefined(values: Array<string | undefined>): string[] {
   return [...new Set(values.filter((value): value is string => Boolean(value)))];
 }
@@ -90,6 +101,19 @@ export function deriveBatchReviewPreflightOptions(
       ],
     ],
     contextPaths: uniqueDefined(entries.map((entry) => entry.contextPath)),
+  };
+}
+
+export function deriveBatchReviewExecutionPlan(
+  entries: NormalizedBatchReviewEntry[],
+): BatchReviewExecutionPlan {
+  return {
+    total: entries.length,
+    entries: entries.map((entry) => ({
+      ...entry,
+      targetSummary: sanitizeReviewSurfaceValue(entry.target),
+    })),
+    preflight: deriveBatchReviewPreflightOptions(entries),
   };
 }
 

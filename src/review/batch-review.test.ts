@@ -7,10 +7,13 @@ import type { ExpertReviewOptions } from "./expert-review.js";
 import type { VisionReviewOptions } from "./vision-review.js";
 import {
   createBatchReviewArtifactSummary,
+  deriveBatchReviewExecutionPlan,
   deriveBatchReviewPreflightOptions,
   formatBatchReviewSummary,
   formatBatchReviewArtifactSummary,
+  formatBatchReviewExecutionPlan,
   loadBatchReviewArtifactSummary,
+  loadBatchReviewExecutionPlan,
   loadBatchReviewManifest,
   normalizeBatchReviewManifest,
   selectBatchReviewEntriesFromSummary,
@@ -637,6 +640,193 @@ describe("batch review manifest", () => {
       ],
       contextPaths: ["./context-a.json", "./context-b.json"],
     });
+  });
+
+  it("derives a read-only execution plan from normalized manifest entries", () => {
+    const plan = deriveBatchReviewExecutionPlan([
+      {
+        index: 0,
+        name: "Homepage hero",
+        mode: "vision",
+        target: "https://example.com",
+        expert: "UI/UX",
+        model: "qwen3-vl:30b",
+        outputPath: path.join(tempDir, "reviews", "homepage-hero.md"),
+        structuredOutputPath: path.join(tempDir, "reviews", "homepage-hero.json"),
+        width: 1440,
+        height: 900,
+        sections: ["hero"],
+        css: ".hero { outline: 1px solid red; }",
+        promptLibraryPath: path.join(tempDir, "personas.md"),
+        contextPath: path.join(tempDir, "context.json"),
+        ollamaUrl: "http://127.0.0.1:11434",
+      },
+      {
+        index: 1,
+        mode: "expert",
+        target: "./README.md",
+        expert: "Efficiency",
+        outputPath: path.join(tempDir, "reviews", "readme.md"),
+        structuredOutputPath: path.join(tempDir, "reviews", "readme.json"),
+      },
+    ]);
+
+    expect(plan.total).toBe(2);
+    expect(plan.entries[0]).toMatchObject({
+      index: 0,
+      name: "Homepage hero",
+      mode: "vision",
+      target: "https://example.com",
+      targetSummary: "Remote URL (host: example.com)",
+      expert: "UI/UX",
+      model: "qwen3-vl:30b",
+      outputPath: path.join(tempDir, "reviews", "homepage-hero.md"),
+      structuredOutputPath: path.join(tempDir, "reviews", "homepage-hero.json"),
+      width: 1440,
+      height: 900,
+      sections: ["hero"],
+      css: ".hero { outline: 1px solid red; }",
+      promptLibraryPath: path.join(tempDir, "personas.md"),
+      contextPath: path.join(tempDir, "context.json"),
+      ollamaUrl: "http://127.0.0.1:11434",
+    });
+    expect(plan.entries[1]).toMatchObject({
+      index: 1,
+      mode: "expert",
+      target: "./README.md",
+      targetSummary: "Local file path (.md file)",
+      expert: "Efficiency",
+      outputPath: path.join(tempDir, "reviews", "readme.md"),
+      structuredOutputPath: path.join(tempDir, "reviews", "readme.json"),
+    });
+    expect(plan.preflight).toEqual({
+      mode: "both",
+      personaRequirements: [
+        {
+          expert: "UI/UX",
+          promptLibraryPath: path.join(tempDir, "personas.md"),
+        },
+        {
+          expert: "Efficiency",
+          promptLibraryPath: undefined,
+        },
+      ],
+      modelRequirements: [
+        {
+          name: "vision-model",
+          model: "qwen3-vl:30b",
+          ollamaUrl: "http://127.0.0.1:11434",
+        },
+      ],
+      contextPaths: [path.join(tempDir, "context.json")],
+    });
+
+    expect(formatBatchReviewExecutionPlan(plan)).toContain(
+      "Batch review plan: 2 entries.",
+    );
+    expect(formatBatchReviewExecutionPlan(plan)).toContain(
+      "Preflight mode: both.",
+    );
+  });
+
+  it("loads a manifest execution plan with merged defaults and derived output paths", async () => {
+    const manifestPath = path.join(tempDir, "manifest.json");
+    await fs.writeFile(
+      manifestPath,
+      JSON.stringify(
+        {
+          defaults: {
+            mode: "vision",
+            expert: "UI/UX",
+            model: "qwen3-vl:30b",
+            outputDir: "./reviews",
+            structuredOutputDir: "./reviews/json",
+            width: 1440,
+            height: 900,
+            sections: ["hero"],
+            promptLibraryPath: "./personas.md",
+            contextPath: "./context.json",
+            ollamaUrl: "http://127.0.0.1:11434",
+          },
+          reviews: [
+            {
+              name: "Homepage hero",
+              target: "https://example.com",
+            },
+            {
+              mode: "expert",
+              expert: "Efficiency",
+              target: "./README.md",
+            },
+          ],
+        },
+        null,
+        2,
+      ),
+    );
+
+    const plan = await loadBatchReviewExecutionPlan({
+      manifestPath,
+      cwd: tempDir,
+    });
+
+    expect(plan.entries[0]).toMatchObject({
+      index: 0,
+      name: "Homepage hero",
+      mode: "vision",
+      target: "https://example.com",
+      targetSummary: "Remote URL (host: example.com)",
+      expert: "UI/UX",
+      model: "qwen3-vl:30b",
+      outputPath: path.join(tempDir, "reviews", "homepage-hero-vision-review.md"),
+      structuredOutputPath: path.join(
+        tempDir,
+        "reviews",
+        "json",
+        "homepage-hero-vision-review.json",
+      ),
+      width: 1440,
+      height: 900,
+      sections: ["hero"],
+      promptLibraryPath: "./personas.md",
+      contextPath: "./context.json",
+      ollamaUrl: "http://127.0.0.1:11434",
+    });
+    expect(plan.entries[1]).toMatchObject({
+      index: 1,
+      mode: "expert",
+      target: "./README.md",
+      targetSummary: "Local file path (.md file)",
+      expert: "Efficiency",
+      model: "qwen3-vl:30b",
+      outputPath: path.join(tempDir, "reviews", "readme-expert-review.md"),
+      structuredOutputPath: path.join(
+        tempDir,
+        "reviews",
+        "json",
+        "readme-expert-review.json",
+      ),
+      width: 1440,
+      height: 900,
+      sections: ["hero"],
+      promptLibraryPath: "./personas.md",
+      contextPath: "./context.json",
+      ollamaUrl: "http://127.0.0.1:11434",
+    });
+    expect(plan.preflight.mode).toBe("both");
+    expect(plan.preflight.personaRequirements).toHaveLength(2);
+    expect(plan.preflight.modelRequirements).toEqual([
+      {
+        name: "expert-model",
+        model: "qwen3-vl:30b",
+        ollamaUrl: "http://127.0.0.1:11434",
+      },
+      {
+        name: "vision-model",
+        model: "qwen3-vl:30b",
+        ollamaUrl: "http://127.0.0.1:11434",
+      },
+    ]);
   });
 
   it("runs manifest preflight before execution using combined manifest requirements", async () => {

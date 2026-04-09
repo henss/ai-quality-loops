@@ -272,6 +272,29 @@ review-gate --batch-summary ./reviews/batch-summary.json --max-failed-reviews 0 
 
 The CLI now runs the shared review-preflight checks against the manifest's combined prerequisites before the first review starts, so mixed expert and vision batches fail fast on missing personas, models, browser dependencies, or unreadable optional context files.
 
+If an embedding repo needs a read-only manifest preview before deciding whether to execute, use the programmatic planning seam instead of parsing CLI text:
+
+```typescript
+import {
+  formatBatchReviewExecutionPlan,
+  loadBatchReviewExecutionPlan
+} from 'ai-quality-loops';
+
+const plan = await loadBatchReviewExecutionPlan({
+  manifestPath: './review-manifest.json'
+});
+
+console.log(formatBatchReviewExecutionPlan(plan));
+console.log(plan.entries[0]?.outputPath);
+console.log(plan.preflight.personaRequirements);
+```
+
+That preview surface stays intentionally narrow:
+
+- it resolves the manifest through the same normalization path the runner uses
+- it exposes merged per-entry review settings, derived output paths, sanitized target summaries, and combined preflight requirements
+- it does not add a second public CLI preview command yet, which keeps the next extraction decision separate from the existing Ready output seams
+
 The manifest is intentionally narrow:
 
 - `defaults` applies shared settings across the run.

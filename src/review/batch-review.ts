@@ -21,9 +21,12 @@ import {
   type VisionReviewOptions,
 } from "./vision-review.js";
 import {
+  deriveBatchReviewExecutionPlan,
   deriveBatchReviewPreflightOptions,
   runBatchReviewEntries,
   runBatchReviewEntriesPreflight,
+  type BatchReviewExecutionPlan,
+  type BatchReviewExecutionPlanEntry,
 } from "./batch-review-execution.js";
 import {
   createBatchReviewArtifactSummary,
@@ -36,6 +39,7 @@ import { sanitizeReviewSurfaceValue } from "../shared/review-surface.js";
 
 export {
   createBatchReviewArtifactSummary,
+  deriveBatchReviewExecutionPlan,
   deriveBatchReviewPreflightOptions,
   formatBatchReviewArtifactSummary,
   loadBatchReviewArtifactSummary,
@@ -47,6 +51,8 @@ export {
 
 export type {
   BatchReviewArtifactSummary,
+  BatchReviewExecutionPlan,
+  BatchReviewExecutionPlanEntry,
   BatchReviewManifest,
   BatchReviewManifestDefaults,
   BatchReviewManifestEntry,
@@ -118,6 +124,11 @@ export interface RunBatchReviewManifestPreflightOptions {
   cwd?: string;
   browserPath?: string;
   fetchImpl?: typeof fetch;
+}
+
+export interface LoadBatchReviewExecutionPlanOptions {
+  manifestPath: string;
+  cwd?: string;
 }
 
 export async function loadBatchReviewManifest(
@@ -226,6 +237,51 @@ export async function runBatchReviewManifestPreflight({
     browserPath,
     fetchImpl,
   });
+}
+
+export async function loadBatchReviewExecutionPlan({
+  manifestPath,
+  cwd = process.cwd(),
+}: LoadBatchReviewExecutionPlanOptions): Promise<BatchReviewExecutionPlan> {
+  const resolvedManifestPath = resolveFromCwd(manifestPath, cwd);
+  const manifest = await loadBatchReviewManifest(resolvedManifestPath, cwd);
+  const entries = normalizeBatchReviewManifest(manifest, cwd);
+  return deriveBatchReviewExecutionPlan(entries);
+}
+
+export function formatBatchReviewExecutionPlan(
+  plan: BatchReviewExecutionPlan,
+): string {
+  const lines = [`Batch review plan: ${plan.total} entr${plan.total === 1 ? "y" : "ies"}.`];
+  const personaRequirements = plan.preflight.personaRequirements ?? [];
+  const modelRequirements = plan.preflight.modelRequirements ?? [];
+  const contextPaths = plan.preflight.contextPaths ?? [];
+
+  for (const entry of plan.entries) {
+    const namePrefix = entry.name ? `${entry.name}: ` : "";
+    const details = [
+      entry.outputPath
+        ? `markdown ${sanitizeReviewSurfaceValue(entry.outputPath)}`
+        : undefined,
+      entry.structuredOutputPath
+        ? `json ${sanitizeReviewSurfaceValue(entry.structuredOutputPath)}`
+        : undefined,
+      entry.model ? `model ${entry.model}` : undefined,
+    ].filter(Boolean);
+
+    lines.push(
+      `- ${namePrefix}${entry.mode} ${entry.targetSummary}${details.length > 0 ? ` -> ${details.join(", ")}` : ""}`,
+    );
+  }
+
+  lines.push(
+    `Preflight mode: ${plan.preflight.mode}.`,
+    `Persona requirements: ${personaRequirements.length}.`,
+    `Model requirements: ${modelRequirements.length}.`,
+    `Context files: ${contextPaths.length}.`,
+  );
+
+  return lines.join("\n");
 }
 
 export function formatBatchReviewSummary(summary: BatchReviewSummary): string {

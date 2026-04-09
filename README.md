@@ -234,6 +234,10 @@ batch-review ./review-manifest.json
 batch-review ./review-manifest.json --summary-output ./reviews/batch-summary.json
 batch-review ./review-manifest.json --rerun-summary ./reviews/batch-summary.json --rerun-failed
 batch-review ./review-manifest.json --rerun-summary ./reviews/batch-summary.json --entry-name "Homepage hero,Readme audit"
+
+review-gate --result ./reviews/json/homepage-hero-vision-review.json --fail-on-severity critical
+review-gate --result ./reviews/json/homepage-hero-vision-review.json --result ./reviews/json/pricing-vision-review.json --max-high 0 --max-medium 2
+review-gate --batch-summary ./reviews/batch-summary.json --max-failed-reviews 0 --json
 ```
 
 The CLI now runs the shared review-preflight checks against the manifest's combined prerequisites before the first review starts, so mixed expert and vision batches fail fast on missing personas, models, browser dependencies, or unreadable optional context files.
@@ -249,6 +253,17 @@ The manifest is intentionally narrow:
 - The first slice is sequential only. Concurrency, scheduling, and repo-specific policy routing stay outside the shared open-source boundary.
 
 When a vision review needs targeted captures, run `vision-sections <target>` first and copy the suggested ids into the manifest's `sections` array.
+
+### Review Gate CLI
+
+Use `review-gate` when CI or a repo-local script needs one explicit pass/fail decision from published machine-readable artifacts.
+
+- `--result` reads one or more structured review-result JSON files and applies severity or finding-count budgets.
+- `--batch-summary` reads one or more batch summary JSON files and applies failed-review budgets.
+- `--fail-on-severity`, `--max-critical`, `--max-high`, `--max-medium`, `--max-low`, `--max-unknown`, and `--max-failed-reviews` keep policy explicit instead of hiding repo-specific heuristics in the package.
+- `--json` emits a machine-readable report with counts, thresholds, violations, and sanitized input labels.
+
+The current surface is intentionally narrow: batch summaries are status-only gate inputs because the published summary contract sanitizes artifact paths. If a wrapper needs severity budgets, pass the structured review-result JSON files directly with `--result` instead of expecting the batch summary to rediscover them.
 
 ### Review Preflight CLI
 

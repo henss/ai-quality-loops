@@ -16,6 +16,7 @@ export * from "./review/review-result.js";
 export * from "./review/vision-section-discovery.js";
 export * from "./review/batch-review.js";
 export * from "./review/preflight.js";
+export * from "./review/review-gate.js";
 export {
   JSON_CONTRACT_SCHEMA_FILES,
   parseBatchReviewArtifactSummary,

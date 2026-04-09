@@ -205,6 +205,8 @@ vision-review https://example.com --expert "UI/UX" --json
 
 batch-review ./review-manifest.json
 batch-review ./review-manifest.json --summary-output ./reviews/batch-summary.json
+batch-review ./review-manifest.json --rerun-summary ./reviews/batch-summary.json --rerun-failed
+batch-review ./review-manifest.json --rerun-summary ./reviews/batch-summary.json --entry-name "Homepage hero,Readme audit"
 ```
 
 The CLI now runs the shared review-preflight checks against the manifest's combined prerequisites before the first review starts, so mixed expert and vision batches fail fast on missing personas, models, browser dependencies, or unreadable optional context files.
@@ -215,6 +217,8 @@ The manifest is intentionally narrow:
 - `reviews[]` defines sequential review targets using `target`, `mode`, and optional overrides like `expert`, `model`, `outputPath`, `sections`, `css`, `width`, and `height`.
 - `outputDir` is an optional shared convenience. When a review omits `outputPath`, the runner derives a stable Markdown filename inside that directory.
 - `--summary-output` writes one sanitized JSON artifact with batch totals, per-target status, sanitized target descriptors, sanitized output locations, and failure summaries so downstream automation can ingest the run without parsing the human console summary.
+- `--rerun-summary` reuses one prior summary artifact to select a bounded rerun set from the current manifest without widening into resumable orchestration state.
+- `--rerun-failed` reruns only entries that failed in that prior summary, while `--entry-name` reruns one or more named entries recorded in the summary artifact. Matching stays on summary result indexes and manifest review names, so duplicate names should be avoided when rerunning by name.
 - The first slice is sequential only. Concurrency, scheduling, and repo-specific policy routing stay outside the shared open-source boundary.
 
 When a vision review needs targeted captures, run `vision-sections <target>` first and copy the suggested ids into the manifest's `sections` array.

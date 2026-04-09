@@ -1,16 +1,8 @@
 import * as fs from "node:fs/promises";
 import path from "node:path";
-import { getLogger } from "../shared/logger.js";
 import { resolveFromCwd } from "../shared/io.js";
 import {
-  sanitizeReviewSurfaceValue,
-  summarizeReviewSurfaceError,
-} from "../shared/review-surface.js";
-import {
-  runReviewPreflight,
-  type ReviewPreflightMode,
   type ReviewPreflightResult,
-  type RunReviewPreflightOptions,
 } from "./preflight.js";
 import {
   runExpertReview,
@@ -20,6 +12,30 @@ import {
   runVisionReview,
   type VisionReviewOptions,
 } from "./vision-review.js";
+import {
+  deriveBatchReviewPreflightOptions,
+  runBatchReviewEntries,
+  runBatchReviewEntriesPreflight,
+} from "./batch-review-execution.js";
+import {
+  createBatchReviewArtifactSummary,
+  formatBatchReviewArtifactSummary,
+  loadBatchReviewArtifactSummary,
+  selectBatchReviewEntriesFromSummary,
+  writeBatchReviewArtifactSummary,
+} from "./batch-review-artifacts.js";
+import { sanitizeReviewSurfaceValue } from "../shared/review-surface.js";
+
+export {
+  createBatchReviewArtifactSummary,
+  deriveBatchReviewPreflightOptions,
+  formatBatchReviewArtifactSummary,
+  loadBatchReviewArtifactSummary,
+  runBatchReviewEntries,
+  runBatchReviewEntriesPreflight,
+  selectBatchReviewEntriesFromSummary,
+  writeBatchReviewArtifactSummary,
+};
 
 export type BatchReviewMode = "expert" | "vision";
 
@@ -99,6 +115,11 @@ export interface BatchReviewArtifactSummary {
   succeeded: number;
   failed: number;
   results: BatchReviewArtifactResult[];
+}
+
+export interface BatchReviewRerunSelectionOptions {
+  onlyFailed?: boolean;
+  entryNames?: string[];
 }
 
 export interface RunBatchReviewManifestOptions {
@@ -335,77 +356,6 @@ export function normalizeBatchReviewManifest(
   });
 }
 
-function uniqueDefined(values: Array<string | undefined>): string[] {
-  return [...new Set(values.filter((value): value is string => Boolean(value)))];
-}
-
-function getBatchReviewPreflightMode(
-  entries: NormalizedBatchReviewEntry[],
-): ReviewPreflightMode {
-  const hasExpert = entries.some((entry) => entry.mode === "expert");
-  const hasVision = entries.some((entry) => entry.mode === "vision");
-
-  if (hasExpert && hasVision) {
-    return "both";
-  }
-
-  return hasVision ? "vision" : "expert";
-}
-
-export function deriveBatchReviewPreflightOptions(
-  entries: NormalizedBatchReviewEntry[],
-): RunReviewPreflightOptions {
-  return {
-    mode: getBatchReviewPreflightMode(entries),
-    personaRequirements: [
-      ...new Map(
-        entries.map((entry) => {
-          const expert = entry.expert || "UI/UX";
-          const promptLibraryPath = entry.promptLibraryPath;
-          return [
-            `${expert}::${promptLibraryPath || ""}`,
-            {
-              expert,
-              promptLibraryPath,
-            },
-          ];
-        }),
-      ).values(),
-    ],
-    modelRequirements: [
-      ...[
-        ...new Map(
-          entries
-            .filter((entry) => entry.mode === "expert" && entry.model)
-            .map((entry) => [
-              `${entry.model}::${entry.ollamaUrl || ""}`,
-              {
-                name: "expert-model" as const,
-                model: entry.model!,
-                ollamaUrl: entry.ollamaUrl,
-              },
-            ]),
-        ).values(),
-      ],
-      ...[
-        ...new Map(
-          entries
-            .filter((entry) => entry.mode === "vision" && entry.model)
-            .map((entry) => [
-              `${entry.model}::${entry.ollamaUrl || ""}`,
-              {
-                name: "vision-model" as const,
-                model: entry.model!,
-                ollamaUrl: entry.ollamaUrl,
-              },
-            ]),
-        ).values(),
-      ],
-    ],
-    contextPaths: uniqueDefined(entries.map((entry) => entry.contextPath)),
-  };
-}
-
 export async function runBatchReviewManifestPreflight({
   manifestPath,
   cwd = process.cwd(),
@@ -415,12 +365,11 @@ export async function runBatchReviewManifestPreflight({
   const resolvedManifestPath = resolveFromCwd(manifestPath, cwd);
   const manifest = await loadBatchReviewManifest(resolvedManifestPath, cwd);
   const entries = normalizeBatchReviewManifest(manifest, cwd);
-  const preflightOptions = deriveBatchReviewPreflightOptions(entries);
 
-  return runReviewPreflight({
-    ...preflightOptions,
-    browserPath,
+  return runBatchReviewEntriesPreflight({
+    entries,
     cwd,
+    browserPath,
     fetchImpl,
   });
 }
@@ -447,42 +396,6 @@ export function formatBatchReviewSummary(summary: BatchReviewSummary): string {
   return lines.join("\n");
 }
 
-export function createBatchReviewArtifactSummary(
-  summary: BatchReviewSummary,
-): BatchReviewArtifactSummary {
-  return {
-    manifestPath: sanitizeReviewSurfaceValue(summary.manifestPath),
-    total: summary.total,
-    succeeded: summary.succeeded,
-    failed: summary.failed,
-    results: summary.results.map((result) => ({
-      index: result.index,
-      name: result.name,
-      mode: result.mode,
-      targetSummary: result.targetSummary,
-      outputPath: result.outputPath
-        ? sanitizeReviewSurfaceValue(result.outputPath)
-        : undefined,
-      status: result.status,
-      errorSummary: result.errorSummary,
-    })),
-  };
-}
-
-export function formatBatchReviewArtifactSummary(
-  summary: BatchReviewSummary,
-): string {
-  return JSON.stringify(createBatchReviewArtifactSummary(summary), null, 2);
-}
-
-export async function writeBatchReviewArtifactSummary(
-  summary: BatchReviewSummary,
-  outputPath: string,
-): Promise<void> {
-  await fs.mkdir(path.dirname(outputPath), { recursive: true });
-  await fs.writeFile(outputPath, formatBatchReviewArtifactSummary(summary));
-}
-
 export async function runBatchReviewManifest({
   manifestPath,
   cwd = process.cwd(),
@@ -492,77 +405,10 @@ export async function runBatchReviewManifest({
   const resolvedManifestPath = resolveFromCwd(manifestPath, cwd);
   const manifest = await loadBatchReviewManifest(resolvedManifestPath, cwd);
   const entries = normalizeBatchReviewManifest(manifest, cwd);
-  const results: BatchReviewResult[] = [];
-
-  for (const entry of entries) {
-    const targetSummary = sanitizeReviewSurfaceValue(entry.target);
-    const label = entry.name || `Review ${entry.index + 1}`;
-
-    getLogger().info(
-      `[Batch Review] Starting ${label} (${entry.mode}) for ${targetSummary}`,
-    );
-
-    try {
-      if (entry.mode === "expert") {
-        await runExpertReviewImpl({
-          expert: entry.expert!,
-          content: entry.target,
-          modelId: entry.model,
-          outputPath: entry.outputPath,
-          promptLibraryPath: entry.promptLibraryPath,
-          contextPath: entry.contextPath,
-          ollamaUrl: entry.ollamaUrl,
-        });
-      } else {
-        await runVisionReviewImpl({
-          urlOrPath: entry.target,
-          expert: entry.expert || "UI/UX",
-          outputPath: entry.outputPath,
-          width: entry.width,
-          height: entry.height,
-          sections: entry.sections,
-          model: entry.model,
-          promptLibraryPath: entry.promptLibraryPath,
-          contextPath: entry.contextPath,
-          ollamaUrl: entry.ollamaUrl,
-          customCss: entry.css,
-        });
-      }
-
-      results.push({
-        index: entry.index,
-        name: entry.name,
-        mode: entry.mode,
-        targetSummary,
-        outputPath: entry.outputPath,
-        status: "success",
-      });
-    } catch (error) {
-      const errorSummary = summarizeReviewSurfaceError(error);
-      getLogger().error(
-        `[Batch Review] ${label} failed: ${errorSummary}`,
-      );
-
-      results.push({
-        index: entry.index,
-        name: entry.name,
-        mode: entry.mode,
-        targetSummary,
-        outputPath: entry.outputPath,
-        status: "failure",
-        errorSummary,
-      });
-    }
-  }
-
-  const succeeded = results.filter((result) => result.status === "success").length;
-  const failed = results.length - succeeded;
-
-  return {
+  return runBatchReviewEntries({
     manifestPath: resolvedManifestPath,
-    total: results.length,
-    succeeded,
-    failed,
-    results,
-  };
+    entries,
+    runExpertReviewImpl,
+    runVisionReviewImpl,
+  });
 }

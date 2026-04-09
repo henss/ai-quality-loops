@@ -1,34 +1,16 @@
-export type StructuredReviewSeverity =
-  | "critical"
-  | "high"
-  | "medium"
-  | "low"
-  | "unknown";
+import type {
+  StructuredReviewFinding,
+  StructuredReviewProvenanceItem,
+  StructuredReviewResult,
+  StructuredReviewSeverity,
+} from "../contracts/json-contracts.js";
 
-export interface StructuredReviewProvenanceItem {
-  label: string;
-  value: string;
-}
-
-export interface StructuredReviewFinding {
-  title: string;
-  summary: string;
-  severity: StructuredReviewSeverity;
-  recommendation?: string;
-  evidence?: string[];
-}
-
-export interface StructuredReviewResult {
-  schemaVersion: "1";
-  workflow: "expert" | "vision";
-  expert: string;
-  model: string;
-  summary: string;
-  overallSeverity: StructuredReviewSeverity;
-  findings: StructuredReviewFinding[];
-  provenance: StructuredReviewProvenanceItem[];
-  markdown: string;
-}
+export type {
+  StructuredReviewFinding,
+  StructuredReviewProvenanceItem,
+  StructuredReviewResult,
+  StructuredReviewSeverity,
+};
 
 interface MarkdownSection {
   heading?: string;

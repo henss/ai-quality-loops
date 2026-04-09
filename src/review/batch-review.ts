@@ -2,6 +2,14 @@ import * as fs from "node:fs/promises";
 import path from "node:path";
 import { resolveFromCwd } from "../shared/io.js";
 import {
+  parseBatchReviewManifest,
+  type BatchReviewArtifactSummary,
+  type BatchReviewManifest,
+  type BatchReviewManifestDefaults,
+  type BatchReviewManifestEntry,
+  type BatchReviewMode,
+} from "../contracts/json-contracts.js";
+import {
   type ReviewPreflightResult,
 } from "./preflight.js";
 import {
@@ -37,32 +45,13 @@ export {
   writeBatchReviewArtifactSummary,
 };
 
-export type BatchReviewMode = "expert" | "vision";
-
-export interface BatchReviewManifestDefaults {
-  mode?: BatchReviewMode;
-  expert?: string;
-  model?: string;
-  outputDir?: string;
-  width?: number;
-  height?: number;
-  sections?: string[];
-  css?: string;
-  promptLibraryPath?: string;
-  contextPath?: string;
-  ollamaUrl?: string;
-}
-
-export interface BatchReviewManifestEntry extends BatchReviewManifestDefaults {
-  name?: string;
-  target: string;
-  outputPath?: string;
-}
-
-export interface BatchReviewManifest {
-  defaults?: BatchReviewManifestDefaults;
-  reviews: BatchReviewManifestEntry[];
-}
+export type {
+  BatchReviewArtifactSummary,
+  BatchReviewManifest,
+  BatchReviewManifestDefaults,
+  BatchReviewManifestEntry,
+  BatchReviewMode,
+};
 
 export interface NormalizedBatchReviewEntry {
   index: number;
@@ -109,14 +98,6 @@ export interface BatchReviewArtifactResult {
   errorSummary?: string;
 }
 
-export interface BatchReviewArtifactSummary {
-  manifestPath: string;
-  total: number;
-  succeeded: number;
-  failed: number;
-  results: BatchReviewArtifactResult[];
-}
-
 export interface BatchReviewRerunSelectionOptions {
   onlyFailed?: boolean;
   entryNames?: string[];
@@ -136,154 +117,13 @@ export interface RunBatchReviewManifestPreflightOptions {
   fetchImpl?: typeof fetch;
 }
 
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
-}
-
-function readOptionalString(
-  value: unknown,
-  fieldName: string,
-): string | undefined {
-  if (value === undefined) {
-    return undefined;
-  }
-
-  if (typeof value !== "string" || value.trim().length === 0) {
-    throw new Error(`Manifest field "${fieldName}" must be a non-empty string.`);
-  }
-
-  return value;
-}
-
-function readOptionalNumber(
-  value: unknown,
-  fieldName: string,
-): number | undefined {
-  if (value === undefined) {
-    return undefined;
-  }
-
-  if (typeof value !== "number" || !Number.isFinite(value)) {
-    throw new Error(`Manifest field "${fieldName}" must be a finite number.`);
-  }
-
-  return value;
-}
-
-function readOptionalStringArray(
-  value: unknown,
-  fieldName: string,
-): string[] | undefined {
-  if (value === undefined) {
-    return undefined;
-  }
-
-  if (!Array.isArray(value) || value.some((item) => typeof item !== "string")) {
-    throw new Error(`Manifest field "${fieldName}" must be an array of strings.`);
-  }
-
-  return value;
-}
-
-function readMode(
-  value: unknown,
-  fieldName: string,
-): BatchReviewMode | undefined {
-  if (value === undefined) {
-    return undefined;
-  }
-
-  if (value !== "expert" && value !== "vision") {
-    throw new Error(
-      `Manifest field "${fieldName}" must be "expert" or "vision".`,
-    );
-  }
-
-  return value;
-}
-
-function parseManifestDefaults(
-  rawDefaults: unknown,
-  fieldPath: string,
-): BatchReviewManifestDefaults {
-  if (rawDefaults === undefined) {
-    return {};
-  }
-
-  if (!isRecord(rawDefaults)) {
-    throw new Error(`Manifest field "${fieldPath}" must be an object.`);
-  }
-
-  return {
-    mode: readMode(rawDefaults.mode, `${fieldPath}.mode`),
-    expert: readOptionalString(rawDefaults.expert, `${fieldPath}.expert`),
-    model: readOptionalString(rawDefaults.model, `${fieldPath}.model`),
-    outputDir: readOptionalString(rawDefaults.outputDir, `${fieldPath}.outputDir`),
-    width: readOptionalNumber(rawDefaults.width, `${fieldPath}.width`),
-    height: readOptionalNumber(rawDefaults.height, `${fieldPath}.height`),
-    sections: readOptionalStringArray(
-      rawDefaults.sections,
-      `${fieldPath}.sections`,
-    ),
-    css: readOptionalString(rawDefaults.css, `${fieldPath}.css`),
-    promptLibraryPath: readOptionalString(
-      rawDefaults.promptLibraryPath,
-      `${fieldPath}.promptLibraryPath`,
-    ),
-    contextPath: readOptionalString(
-      rawDefaults.contextPath,
-      `${fieldPath}.contextPath`,
-    ),
-    ollamaUrl: readOptionalString(
-      rawDefaults.ollamaUrl,
-      `${fieldPath}.ollamaUrl`,
-    ),
-  };
-}
-
-function parseManifestEntry(
-  rawEntry: unknown,
-  index: number,
-): BatchReviewManifestEntry {
-  const fieldPath = `reviews[${index}]`;
-
-  if (!isRecord(rawEntry)) {
-    throw new Error(`Manifest field "${fieldPath}" must be an object.`);
-  }
-
-  const target = readOptionalString(rawEntry.target, `${fieldPath}.target`);
-  if (!target) {
-    throw new Error(`Manifest field "${fieldPath}.target" is required.`);
-  }
-
-  return {
-    ...parseManifestDefaults(rawEntry, fieldPath),
-    name: readOptionalString(rawEntry.name, `${fieldPath}.name`),
-    target,
-    outputPath: readOptionalString(rawEntry.outputPath, `${fieldPath}.outputPath`),
-  };
-}
-
 export async function loadBatchReviewManifest(
   manifestPath: string,
   cwd = process.cwd(),
 ): Promise<BatchReviewManifest> {
   const resolvedManifestPath = resolveFromCwd(manifestPath, cwd);
   const rawManifest = await fs.readFile(resolvedManifestPath, "utf-8");
-  const parsed = JSON.parse(rawManifest) as unknown;
-
-  if (!isRecord(parsed)) {
-    throw new Error("Batch review manifest must be a JSON object.");
-  }
-
-  if (!Array.isArray(parsed.reviews) || parsed.reviews.length === 0) {
-    throw new Error('Batch review manifest requires a non-empty "reviews" array.');
-  }
-
-  return {
-    defaults: parseManifestDefaults(parsed.defaults, "defaults"),
-    reviews: parsed.reviews.map((entry, index) => parseManifestEntry(entry, index)),
-  };
+  return parseBatchReviewManifest(JSON.parse(rawManifest) as unknown);
 }
 
 function toSlug(value: string): string {

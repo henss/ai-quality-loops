@@ -32,6 +32,7 @@ The library works out-of-the-box with default example personas in `personas/univ
 - CLI failure output also emits only sanitized error summaries instead of raw stacks, so command-line review runs do not re-expose private paths or URL query details during failures.
 - Review flows also attach prompt-safe provenance bullets such as `Content source` or `Capture mode`, using sanitized descriptors instead of raw local paths or sensitive URL details.
 - Expert and vision review entrypoints can also emit one narrow structured review-result contract with summary, severity rollup, finding list, sanitized provenance descriptors, and the original Markdown, so downstream automation can route findings without maintaining brittle Markdown parsers.
+- The package also publishes JSON Schema artifacts for the batch-review manifest, batch-review summary, and structured review-result contracts under `schemas/`, alongside thin `parse...` and `validate...` helpers exported from the package root for callers that want contract checks without adding a schema runtime first.
 - `CHROME_PATH`: (Optional) Path to your browser executable (defaults to Edge on Windows).
 - `OLLAMA_URL`: (Optional) URL to your Ollama instance (defaults to http://127.0.0.1:11434).
 
@@ -92,6 +93,29 @@ const result = await runExpertReview({
 
 console.log(result.summary);
 console.log(result.findings[0]?.severity);
+```
+
+If a wrapper wants to validate JSON payloads against the published contract surface before it wires in a full JSON Schema toolchain, use the package helpers and the schema files together:
+
+```typescript
+import {
+  JSON_CONTRACT_SCHEMA_FILES,
+  validateBatchReviewManifest,
+  validateStructuredReviewResult
+} from 'ai-quality-loops';
+
+const manifestValidation = validateBatchReviewManifest(manifestJson);
+if (!manifestValidation.ok) {
+  throw manifestValidation.error;
+}
+
+const resultValidation = validateStructuredReviewResult(reviewResultJson);
+if (!resultValidation.ok) {
+  throw resultValidation.error;
+}
+
+console.log(JSON_CONTRACT_SCHEMA_FILES.batchReviewManifest);
+console.log(JSON_CONTRACT_SCHEMA_FILES.structuredReviewResult);
 ```
 
 ### Visual Audit (Vision Review)

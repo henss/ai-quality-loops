@@ -16,3 +16,15 @@ export * from "./review/review-result.js";
 export * from "./review/vision-section-discovery.js";
 export * from "./review/batch-review.js";
 export * from "./review/preflight.js";
+export {
+  JSON_CONTRACT_SCHEMA_FILES,
+  parseBatchReviewArtifactSummary,
+  parseBatchReviewManifest,
+  parseStructuredReviewResult,
+  validateBatchReviewArtifactSummary,
+  validateBatchReviewManifest,
+  validateStructuredReviewResult,
+  type JsonContractValidationFailure,
+  type JsonContractValidationResult,
+  type JsonContractValidationSuccess,
+} from "./contracts/json-contracts.js";

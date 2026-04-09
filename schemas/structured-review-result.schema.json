@@ -1,0 +1,101 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/henss/ai-quality-loops/schemas/structured-review-result.schema.json",
+  "title": "Structured Review Result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "workflow",
+    "expert",
+    "model",
+    "summary",
+    "overallSeverity",
+    "findings",
+    "provenance",
+    "markdown"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "1"
+    },
+    "workflow": {
+      "type": "string",
+      "enum": ["expert", "vision"]
+    },
+    "expert": {
+      "type": "string",
+      "minLength": 1
+    },
+    "model": {
+      "type": "string",
+      "minLength": 1
+    },
+    "summary": {
+      "type": "string",
+      "minLength": 1
+    },
+    "overallSeverity": {
+      "$ref": "#/$defs/severity"
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["title", "summary", "severity"],
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 1
+          },
+          "summary": {
+            "type": "string",
+            "minLength": 1
+          },
+          "severity": {
+            "$ref": "#/$defs/severity"
+          },
+          "recommendation": {
+            "type": "string",
+            "minLength": 1
+          },
+          "evidence": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "provenance": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["label", "value"],
+        "properties": {
+          "label": {
+            "type": "string",
+            "minLength": 1
+          },
+          "value": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "markdown": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "$defs": {
+    "severity": {
+      "type": "string",
+      "enum": ["critical", "high", "medium", "low", "unknown"]
+    }
+  }
+}

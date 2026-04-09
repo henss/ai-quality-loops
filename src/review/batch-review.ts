@@ -61,6 +61,7 @@ export interface NormalizedBatchReviewEntry {
   expert?: string;
   model?: string;
   outputPath?: string;
+  structuredOutputPath?: string;
   width?: number;
   height?: number;
   sections?: string[];
@@ -76,6 +77,7 @@ export interface BatchReviewResult {
   mode: BatchReviewMode;
   targetSummary: string;
   outputPath?: string;
+  structuredOutputPath?: string;
   status: "success" | "failure";
   errorSummary?: string;
 }
@@ -94,6 +96,7 @@ export interface BatchReviewArtifactResult {
   mode: BatchReviewMode;
   targetSummary: string;
   outputPath?: string;
+  structuredOutputPath?: string;
   status: "success" | "failure";
   errorSummary?: string;
 }
@@ -152,15 +155,17 @@ export function normalizeBatchReviewManifest(
   manifest: BatchReviewManifest,
   cwd = process.cwd(),
 ): NormalizedBatchReviewEntry[] {
+  const manifestDefaults = manifest.defaults;
+
   return manifest.reviews.map((entry, index) => {
-    const mode = entry.mode || manifest.defaults?.mode;
+    const mode = entry.mode || manifestDefaults?.mode;
     if (!mode) {
       throw new Error(
         `Review ${index + 1} is missing a mode. Set "defaults.mode" or "reviews[${index}].mode".`,
       );
     }
 
-    const expert = entry.expert || manifest.defaults?.expert;
+    const expert = entry.expert || manifestDefaults?.expert;
     if (mode === "expert" && !expert) {
       throw new Error(
         `Review ${index + 1} uses expert mode and requires an expert persona.`,
@@ -169,10 +174,18 @@ export function normalizeBatchReviewManifest(
 
     const outputPath = entry.outputPath
       ? resolveFromCwd(entry.outputPath, cwd)
-      : manifest.defaults?.outputDir
+      : manifestDefaults?.outputDir
         ? path.join(
-            resolveFromCwd(manifest.defaults.outputDir, cwd),
+            resolveFromCwd(manifestDefaults.outputDir, cwd),
             `${deriveOutputFileStem(entry, index)}-${mode}-review.md`,
+          )
+        : undefined;
+    const structuredOutputPath = entry.structuredOutputPath
+      ? resolveFromCwd(entry.structuredOutputPath, cwd)
+      : manifestDefaults?.structuredOutputDir
+        ? path.join(
+            resolveFromCwd(manifestDefaults.structuredOutputDir, cwd),
+            `${deriveOutputFileStem(entry, index)}-${mode}-review.json`,
           )
         : undefined;
 
@@ -182,16 +195,17 @@ export function normalizeBatchReviewManifest(
       mode,
       target: entry.target,
       expert,
-      model: entry.model || manifest.defaults?.model,
+      model: entry.model || manifestDefaults?.model,
       outputPath,
-      width: entry.width ?? manifest.defaults?.width,
-      height: entry.height ?? manifest.defaults?.height,
-      sections: entry.sections ?? manifest.defaults?.sections,
-      css: entry.css ?? manifest.defaults?.css,
+      structuredOutputPath,
+      width: entry.width ?? manifestDefaults?.width,
+      height: entry.height ?? manifestDefaults?.height,
+      sections: entry.sections ?? manifestDefaults?.sections,
+      css: entry.css ?? manifestDefaults?.css,
       promptLibraryPath:
-        entry.promptLibraryPath ?? manifest.defaults?.promptLibraryPath,
-      contextPath: entry.contextPath ?? manifest.defaults?.contextPath,
-      ollamaUrl: entry.ollamaUrl ?? manifest.defaults?.ollamaUrl,
+        entry.promptLibraryPath ?? manifestDefaults?.promptLibraryPath,
+      contextPath: entry.contextPath ?? manifestDefaults?.contextPath,
+      ollamaUrl: entry.ollamaUrl ?? manifestDefaults?.ollamaUrl,
     };
   });
 }

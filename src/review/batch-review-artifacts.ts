@@ -32,6 +32,9 @@ export function createBatchReviewArtifactSummary(
       outputPath: result.outputPath
         ? sanitizeReviewSurfaceValue(result.outputPath)
         : undefined,
+      structuredOutputPath: result.structuredOutputPath
+        ? sanitizeReviewSurfaceValue(result.structuredOutputPath)
+        : undefined,
       status: result.status,
       errorSummary: result.errorSummary,
     })),

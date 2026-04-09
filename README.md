@@ -200,6 +200,7 @@ Use `batch-review` when you want to run the same expert or vision audit across m
     "mode": "vision",
     "expert": "UI/UX",
     "outputDir": "./reviews/site-audit",
+    "structuredOutputDir": "./reviews/site-audit/json",
     "width": 1440,
     "height": 900
   },
@@ -217,7 +218,8 @@ Use `batch-review` when you want to run the same expert or vision audit across m
       "mode": "expert",
       "expert": "Efficiency",
       "target": "./README.md",
-      "outputPath": "./reviews/readme-efficiency.md"
+      "outputPath": "./reviews/readme-efficiency.md",
+      "structuredOutputPath": "./reviews/json/readme-efficiency.json"
     }
   ]
 }
@@ -239,9 +241,9 @@ The CLI now runs the shared review-preflight checks against the manifest's combi
 The manifest is intentionally narrow:
 
 - `defaults` applies shared settings across the run.
-- `reviews[]` defines sequential review targets using `target`, `mode`, and optional overrides like `expert`, `model`, `outputPath`, `sections`, `css`, `width`, and `height`.
-- `outputDir` is an optional shared convenience. When a review omits `outputPath`, the runner derives a stable Markdown filename inside that directory.
-- `--summary-output` writes one sanitized JSON artifact with batch totals, per-target status, sanitized target descriptors, sanitized output locations, and failure summaries so downstream automation can ingest the run without parsing the human console summary.
+- `reviews[]` defines sequential review targets using `target`, `mode`, and optional overrides like `expert`, `model`, `outputPath`, `structuredOutputPath`, `sections`, `css`, `width`, and `height`.
+- `outputDir` and `structuredOutputDir` are optional shared conveniences. When a review omits `outputPath` or `structuredOutputPath`, the runner derives stable Markdown and structured-result filenames inside those directories.
+- `--summary-output` writes one sanitized JSON artifact with batch totals, per-target status, sanitized target descriptors, sanitized Markdown and structured-result output locations, and failure summaries so downstream automation can ingest the run without parsing the human console summary.
 - `--rerun-summary` reuses one prior summary artifact to select a bounded rerun set from the current manifest without widening into resumable orchestration state.
 - `--rerun-failed` reruns only entries that failed in that prior summary, while `--entry-name` reruns one or more named entries recorded in the summary artifact. Matching stays on summary result indexes and manifest review names, so duplicate names should be avoided when rerunning by name.
 - The first slice is sequential only. Concurrency, scheduling, and repo-specific policy routing stay outside the shared open-source boundary.

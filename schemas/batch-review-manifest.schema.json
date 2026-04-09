@@ -41,6 +41,10 @@
           "type": "string",
           "minLength": 1
         },
+        "structuredOutputDir": {
+          "type": "string",
+          "minLength": 1
+        },
         "width": {
           "type": "number"
         },
@@ -88,6 +92,10 @@
           "type": "string",
           "minLength": 1
         },
+        "structuredOutputPath": {
+          "type": "string",
+          "minLength": 1
+        },
         "mode": {
           "$ref": "#/$defs/batchReviewMode"
         },
@@ -100,6 +108,10 @@
           "minLength": 1
         },
         "outputDir": {
+          "type": "string",
+          "minLength": 1
+        },
+        "structuredOutputDir": {
           "type": "string",
           "minLength": 1
         },

@@ -142,6 +142,7 @@ export async function runBatchReviewEntries({
           content: entry.target,
           modelId: entry.model,
           outputPath: entry.outputPath,
+          structuredOutputPath: entry.structuredOutputPath,
           promptLibraryPath: entry.promptLibraryPath,
           contextPath: entry.contextPath,
           ollamaUrl: entry.ollamaUrl,
@@ -151,6 +152,7 @@ export async function runBatchReviewEntries({
           urlOrPath: entry.target,
           expert: entry.expert || "UI/UX",
           outputPath: entry.outputPath,
+          structuredOutputPath: entry.structuredOutputPath,
           width: entry.width,
           height: entry.height,
           sections: entry.sections,
@@ -168,6 +170,7 @@ export async function runBatchReviewEntries({
         mode: entry.mode,
         targetSummary,
         outputPath: entry.outputPath,
+        structuredOutputPath: entry.structuredOutputPath,
         status: "success",
       });
     } catch (error) {
@@ -180,6 +183,7 @@ export async function runBatchReviewEntries({
         mode: entry.mode,
         targetSummary,
         outputPath: entry.outputPath,
+        structuredOutputPath: entry.structuredOutputPath,
         status: "failure",
         errorSummary,
       });

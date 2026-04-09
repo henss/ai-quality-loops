@@ -5,6 +5,7 @@ export interface BatchReviewManifestDefaults {
   expert?: string;
   model?: string;
   outputDir?: string;
+  structuredOutputDir?: string;
   width?: number;
   height?: number;
   sections?: string[];
@@ -18,6 +19,7 @@ export interface BatchReviewManifestEntry extends BatchReviewManifestDefaults {
   name?: string;
   target: string;
   outputPath?: string;
+  structuredOutputPath?: string;
 }
 
 export interface BatchReviewManifest {
@@ -31,6 +33,7 @@ export interface BatchReviewArtifactResult {
   mode: BatchReviewMode;
   targetSummary: string;
   outputPath?: string;
+  structuredOutputPath?: string;
   status: "success" | "failure";
   errorSummary?: string;
 }
@@ -219,6 +222,10 @@ function parseManifestDefaults(
     expert: readOptionalString(rawDefaults.expert, `${fieldPath}.expert`),
     model: readOptionalString(rawDefaults.model, `${fieldPath}.model`),
     outputDir: readOptionalString(rawDefaults.outputDir, `${fieldPath}.outputDir`),
+    structuredOutputDir: readOptionalString(
+      rawDefaults.structuredOutputDir,
+      `${fieldPath}.structuredOutputDir`,
+    ),
     width: readOptionalNumber(rawDefaults.width, `${fieldPath}.width`),
     height: readOptionalNumber(rawDefaults.height, `${fieldPath}.height`),
     sections: readOptionalStringArray(
@@ -256,6 +263,10 @@ function parseManifestEntry(
     name: readOptionalString(rawEntry.name, `${fieldPath}.name`),
     target: readRequiredString(rawEntry.target, `${fieldPath}.target`),
     outputPath: readOptionalString(rawEntry.outputPath, `${fieldPath}.outputPath`),
+    structuredOutputPath: readOptionalString(
+      rawEntry.structuredOutputPath,
+      `${fieldPath}.structuredOutputPath`,
+    ),
   };
 }
 
@@ -367,6 +378,10 @@ export function parseBatchReviewArtifactSummary(
           `${fieldPath}.targetSummary`,
         ),
         outputPath: readOptionalString(result.outputPath, `${fieldPath}.outputPath`),
+        structuredOutputPath: readOptionalString(
+          result.structuredOutputPath,
+          `${fieldPath}.structuredOutputPath`,
+        ),
         status:
           result.status === "success" || result.status === "failure"
             ? result.status

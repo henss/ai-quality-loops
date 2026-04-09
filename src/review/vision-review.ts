@@ -18,13 +18,15 @@ import {
   buildReviewEnvelope,
   loadPersonaPrompt,
   prepareReviewInputMaterialSections,
-  prepareReviewMaterialSections,
   loadReviewContext,
   type ReviewRedactionOptions,
   summarizeReviewOutputReference,
   writeReviewOutput,
 } from "./shared.js";
-import { planVisionCaptures } from "./vision-capture-plan.js";
+import {
+  formatTargetedVisionCaptureReferences,
+  planVisionCaptures,
+} from "./vision-capture-plan.js";
 import {
   buildStructuredReviewResult,
   type StructuredReviewResult,
@@ -96,6 +98,17 @@ export async function runVisionReview(
     extraRedactions: options.extraRedactions,
   });
   const summarizedSectionLabels = sectionList.map((_, index) => `section-${index + 1}`);
+  const targetedSectionReferences =
+    sectionList.length > 0
+      ? formatTargetedVisionCaptureReferences(
+          sectionList.map((section, index) => ({
+            label: summarizedSectionLabels[index]!,
+            section: sanitizeReviewSurfaceValue(section, {
+              extraRedactions: options.extraRedactions,
+            }),
+          })),
+        )
+      : undefined;
 
   // 1. Take Screenshots
   const screenshotPaths: string[] = [];
@@ -191,7 +204,7 @@ export async function runVisionReview(
       taskInstructions: [
         `You are reviewing screenshots captured from this source: ${sanitizedSource}.`,
         sectionList.length > 0
-          ? `The screenshots focus on ${sectionList.length} explicitly targeted section(s): ${summarizedSectionLabels.join(", ")}.`
+          ? `The screenshots focus on ${sectionList.length} explicitly targeted section(s): ${targetedSectionReferences}.`
           : 'The screenshots represent a "full page" capture, scrolling down from the hero section.',
         "Focus your analysis on the visual design, layout, usability, hierarchy, and consistency through the lens of your persona.",
       ].join("\n"),
@@ -220,7 +233,7 @@ export async function runVisionReview(
             label: "Captured section references",
             value:
               sectionList.length > 0
-                ? summarizedSectionLabels.join(", ")
+                ? targetedSectionReferences
                 : undefined,
             sanitizeValue: false,
           },
@@ -266,7 +279,7 @@ export async function runVisionReview(
           ? [
               {
                 label: "Captured section references",
-                value: summarizedSectionLabels.join(", "),
+                value: targetedSectionReferences!,
               },
             ]
           : []),

@@ -50,6 +50,15 @@ function splitTargetFragment(target: string): {
   };
 }
 
+export function formatTargetedVisionCaptureReferences(
+  captures: ReadonlyArray<Pick<PlannedVisionCapture, "label" | "section">>,
+): string {
+  return captures
+    .filter((capture) => capture.section)
+    .map((capture) => `${capture.label} (${capture.section})`)
+    .join(", ");
+}
+
 export async function planVisionCaptures(
   options: VisionCapturePlanOptions,
 ): Promise<PreparedVisionCapturePlan> {

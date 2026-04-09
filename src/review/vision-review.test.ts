@@ -98,4 +98,62 @@ describe("runVisionReview", () => {
     expect(takeScreenshot).toHaveBeenCalledTimes(1);
     expect(imageToBase64).toHaveBeenCalledTimes(1);
   });
+
+  it("preserves targeted section identifiers in prompt-safe capture references", async () => {
+    const { runVisionReview } = await import("./vision-review.js");
+
+    await fs.writeFile(
+      path.join(tempDir, "personas.md"),
+      [
+        "### LLM COMMITTEE PERSONA: 1. SKEPTICAL UI/UX CRITIC",
+        "Review like a skeptic.",
+      ].join("\n"),
+    );
+
+    takeScreenshot.mockImplementation(async (_target: string, outputPath: string) => {
+      await fs.writeFile(outputPath, "fake-image");
+    });
+    imageToBase64.mockResolvedValue("ZmFrZS1pbWFnZQ==");
+    callOllamaVision.mockResolvedValue([
+      "# Overview",
+      "The targeted sections reveal one medium-priority issue.",
+      "",
+      "## Findings",
+      "- CTA hierarchy: Medium severity because the primary CTA styling is inconsistent between sections.",
+    ].join("\n"));
+
+    const result = await runVisionReview({
+      urlOrPath: "https://example.com/private/page",
+      expert: "UI/UX",
+      sections: ["hero", "pricing-secret"],
+      extraRedactions: [
+        {
+          pattern: /\bpricing-secret\b/g,
+          replacement: "[Section redacted]",
+        },
+      ],
+      promptLibraryPath: path.join(tempDir, "personas.md"),
+      resultFormat: "structured",
+    });
+
+    expect(result.provenance).toContainEqual({
+      label: "Captured section references",
+      value: "section-1 (hero), section-2 ([Section redacted])",
+    });
+
+    expect(callOllamaVision).toHaveBeenCalledWith(
+      expect.objectContaining({
+        prompt: expect.stringContaining(
+          "The screenshots focus on 2 explicitly targeted section(s): section-1 (hero), section-2 ([Section redacted]).",
+        ),
+      }),
+    );
+    expect(callOllamaVision).toHaveBeenCalledWith(
+      expect.objectContaining({
+        prompt: expect.stringContaining(
+          "Captured section references: section-1 (hero), section-2 ([Section redacted])",
+        ),
+      }),
+    );
+  });
 });

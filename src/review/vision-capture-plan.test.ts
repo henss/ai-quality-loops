@@ -2,7 +2,10 @@ import { afterEach, describe, expect, it } from "vitest";
 import * as fs from "node:fs/promises";
 import * as os from "node:os";
 import * as path from "node:path";
-import { planVisionCaptures } from "./vision-capture-plan.js";
+import {
+  formatTargetedVisionCaptureReferences,
+  planVisionCaptures,
+} from "./vision-capture-plan.js";
 
 describe("planVisionCaptures", () => {
   const createdDirs: string[] = [];
@@ -80,5 +83,20 @@ describe("planVisionCaptures", () => {
     expect(plan.captures[0].target).toBe("https://example.com#hero");
 
     await plan.cleanup();
+  });
+
+  it("formats targeted capture references with labels and section ids", () => {
+    expect(
+      formatTargetedVisionCaptureReferences([
+        {
+          label: "section-1",
+          section: "hero",
+        },
+        {
+          label: "section-2",
+          section: "pricing",
+        },
+      ]),
+    ).toBe("section-1 (hero), section-2 (pricing)");
   });
 });

@@ -326,7 +326,7 @@ The manifest is intentionally narrow:
 - `defaults` applies shared settings across the run.
 - `reviews[]` defines sequential review targets using `target`, `mode`, and optional overrides like `expert`, `model`, `outputPath`, `structuredOutputPath`, `sections`, `css`, `width`, and `height`.
 - `outputDir` and `structuredOutputDir` are optional shared conveniences. When a review omits `outputPath` or `structuredOutputPath`, the runner derives stable Markdown and structured-result filenames inside those directories.
-- `--summary-output` writes one sanitized JSON artifact with batch totals, per-target status, sanitized target descriptors, sanitized Markdown and structured-result output locations, and failure summaries so downstream automation can ingest the run without parsing the human console summary.
+- `--summary-output` writes one sanitized JSON artifact with batch totals, stable per-entry `resultKey` values, per-target status, sanitized target descriptors, sanitized Markdown and structured-result output locations, additive structured-result severity/count rollups when JSON companions exist, and failure summaries so downstream automation can ingest the run without parsing the human console summary.
 - `--rerun-summary` reuses one prior summary artifact to select a bounded rerun set from the current manifest without widening into resumable orchestration state.
 - `--rerun-failed` reruns only entries that failed in that prior summary, while `--entry-name` reruns one or more named entries recorded in the summary artifact. Matching stays on summary result indexes and manifest review names, so duplicate names should be avoided when rerunning by name.
 - The first slice is sequential only. Concurrency, scheduling, and repo-specific policy routing stay outside the shared open-source boundary.
@@ -342,7 +342,7 @@ Use `review-gate` when CI or a repo-local script needs one explicit pass/fail de
 - `--fail-on-severity`, `--max-critical`, `--max-high`, `--max-medium`, `--max-low`, `--max-unknown`, and `--max-failed-reviews` keep policy explicit instead of hiding repo-specific heuristics in the package.
 - `--json` emits a machine-readable report with counts, thresholds, violations, and sanitized input labels.
 
-The current surface is intentionally narrow: batch summaries are status-only gate inputs because the published summary contract sanitizes artifact paths. If a wrapper needs severity budgets, pass the structured review-result JSON files directly with `--result` instead of expecting the batch summary to rediscover them.
+The current surface is intentionally narrow: batch summaries now expose additive per-entry `resultKey` values plus structured-result severity/count rollups when a companion JSON artifact exists, but `review-gate --batch-summary` still only applies failed-review budgets today. If a wrapper needs explicit severity budgets, pass the structured review-result JSON files directly with `--result` instead of expecting `review-gate` to infer policy from the summary alone.
 
 ### Review Preflight CLI
 

@@ -37,6 +37,10 @@
             "type": "string",
             "minLength": 1
           },
+          "resultKey": {
+            "type": "string",
+            "minLength": 1
+          },
           "mode": {
             "type": "string",
             "enum": ["expert", "vision"]
@@ -52,6 +56,33 @@
           "structuredOutputPath": {
             "type": "string",
             "minLength": 1
+          },
+          "structuredResult": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["overallSeverity", "totalFindings", "findingCounts"],
+            "properties": {
+              "overallSeverity": {
+                "type": "string",
+                "enum": ["critical", "high", "medium", "low", "unknown"]
+              },
+              "totalFindings": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "findingCounts": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["critical", "high", "medium", "low", "unknown"],
+                "properties": {
+                  "critical": { "type": "integer", "minimum": 0 },
+                  "high": { "type": "integer", "minimum": 0 },
+                  "medium": { "type": "integer", "minimum": 0 },
+                  "low": { "type": "integer", "minimum": 0 },
+                  "unknown": { "type": "integer", "minimum": 0 }
+                }
+              }
+            }
           },
           "status": {
             "type": "string",

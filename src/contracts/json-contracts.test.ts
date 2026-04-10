@@ -3,6 +3,7 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 import {
   JSON_CONTRACT_SCHEMA_FILES,
+  createBatchReviewResultKey,
   parseBatchReviewArtifactSummary,
   parseBatchReviewManifest,
   validateBatchReviewManifest,
@@ -86,9 +87,21 @@ describe("public JSON contracts", () => {
         results: [
           {
             index: 0,
+            resultKey: "readme-audit-expert",
             mode: "expert",
             targetSummary: "Local file path (.md file)",
             structuredOutputPath: "Local file path (.json file)",
+            structuredResult: {
+              overallSeverity: "medium",
+              totalFindings: 2,
+              findingCounts: {
+                critical: 0,
+                high: 0,
+                medium: 1,
+                low: 1,
+                unknown: 0,
+              },
+            },
             status: "success",
           },
         ],
@@ -102,15 +115,52 @@ describe("public JSON contracts", () => {
         {
           index: 0,
           name: undefined,
+          resultKey: "readme-audit-expert",
           mode: "expert",
           targetSummary: "Local file path (.md file)",
           outputPath: undefined,
           structuredOutputPath: "Local file path (.json file)",
+          structuredResult: {
+            overallSeverity: "medium",
+            totalFindings: 2,
+            findingCounts: {
+              critical: 0,
+              high: 0,
+              medium: 1,
+              low: 1,
+              unknown: 0,
+            },
+          },
           status: "success",
           errorSummary: undefined,
         },
       ],
     });
+  });
+
+  it("fills a stable result key when older summaries omit it", () => {
+    const parsed = parseBatchReviewArtifactSummary({
+      total: 1,
+      succeeded: 1,
+      failed: 0,
+      results: [
+        {
+          index: 0,
+          name: "Homepage hero",
+          mode: "vision",
+          targetSummary: "Remote URL (example.com)",
+          status: "success",
+        },
+      ],
+    });
+
+    expect(parsed.results[0]?.resultKey).toBe(
+      createBatchReviewResultKey({
+        index: 0,
+        name: "Homepage hero",
+        mode: "vision",
+      }),
+    );
   });
 
   it("validates the published structured review result shape", () => {

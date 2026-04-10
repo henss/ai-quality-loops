@@ -17,10 +17,15 @@ import {
   runVisionReview,
   type VisionReviewOptions,
 } from "./vision-review.js";
+import {
+  summarizeStructuredReviewResultRollup,
+  type StructuredReviewResult,
+} from "./review-result.js";
 import type {
   BatchReviewSummary,
   NormalizedBatchReviewEntry,
 } from "./batch-review.js";
+import { createBatchReviewResultKey } from "../contracts/json-contracts.js";
 
 export interface BatchReviewExecutionPlanEntry
   extends NormalizedBatchReviewEntry {
@@ -146,22 +151,33 @@ export async function runBatchReviewEntries({
 }: {
   manifestPath: string;
   entries: NormalizedBatchReviewEntry[];
-  runExpertReviewImpl?: (options: ExpertReviewOptions) => Promise<string>;
-  runVisionReviewImpl?: (options: VisionReviewOptions) => Promise<string>;
+  runExpertReviewImpl?: (
+    options: ExpertReviewOptions,
+  ) => Promise<string | StructuredReviewResult>;
+  runVisionReviewImpl?: (
+    options: VisionReviewOptions,
+  ) => Promise<string | StructuredReviewResult>;
 }): Promise<BatchReviewSummary> {
   const results: BatchReviewSummary["results"] = [];
 
   for (const entry of entries) {
     const targetSummary = sanitizeReviewSurfaceValue(entry.target);
     const label = entry.name || `Review ${entry.index + 1}`;
+    const resultKey = createBatchReviewResultKey({
+      index: entry.index,
+      name: entry.name,
+      mode: entry.mode,
+    });
 
     getLogger().info(
       `[Batch Review] Starting ${label} (${entry.mode}) for ${targetSummary}`,
     );
 
     try {
+      let structuredResult: StructuredReviewResult | undefined;
+
       if (entry.mode === "expert") {
-        await runExpertReviewImpl({
+        const reviewResult = await runExpertReviewImpl({
           expert: entry.expert!,
           content: entry.target,
           modelId: entry.model,
@@ -170,9 +186,12 @@ export async function runBatchReviewEntries({
           promptLibraryPath: entry.promptLibraryPath,
           contextPath: entry.contextPath,
           ollamaUrl: entry.ollamaUrl,
+          resultFormat: entry.structuredOutputPath ? "structured" : "markdown",
         });
+        structuredResult =
+          typeof reviewResult === "string" ? undefined : reviewResult;
       } else {
-        await runVisionReviewImpl({
+        const reviewResult = await runVisionReviewImpl({
           urlOrPath: entry.target,
           expert: entry.expert || "UI/UX",
           outputPath: entry.outputPath,
@@ -185,16 +204,23 @@ export async function runBatchReviewEntries({
           contextPath: entry.contextPath,
           ollamaUrl: entry.ollamaUrl,
           customCss: entry.css,
+          resultFormat: entry.structuredOutputPath ? "structured" : "markdown",
         });
+        structuredResult =
+          typeof reviewResult === "string" ? undefined : reviewResult;
       }
 
       results.push({
         index: entry.index,
         name: entry.name,
+        resultKey,
         mode: entry.mode,
         targetSummary,
         outputPath: entry.outputPath,
         structuredOutputPath: entry.structuredOutputPath,
+        structuredResult: structuredResult
+          ? summarizeStructuredReviewResultRollup(structuredResult)
+          : undefined,
         status: "success",
       });
     } catch (error) {
@@ -204,6 +230,7 @@ export async function runBatchReviewEntries({
       results.push({
         index: entry.index,
         name: entry.name,
+        resultKey,
         mode: entry.mode,
         targetSummary,
         outputPath: entry.outputPath,

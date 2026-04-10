@@ -12,6 +12,20 @@ export type {
   StructuredReviewSeverity,
 };
 
+export interface StructuredReviewSeverityCounts {
+  critical: number;
+  high: number;
+  medium: number;
+  low: number;
+  unknown: number;
+}
+
+export interface StructuredReviewResultRollup {
+  overallSeverity: StructuredReviewSeverity;
+  totalFindings: number;
+  findingCounts: StructuredReviewSeverityCounts;
+}
+
 interface MarkdownSection {
   heading?: string;
   body: string;
@@ -92,6 +106,16 @@ export function inferReviewSeverity(text: string): StructuredReviewSeverity {
   }
 
   return "unknown";
+}
+
+export function createStructuredReviewSeverityCounts(): StructuredReviewSeverityCounts {
+  return {
+    critical: 0,
+    high: 0,
+    medium: 0,
+    low: 0,
+    unknown: 0,
+  };
 }
 
 function pickFindingTitle(text: string, fallbackTitle: string): string {
@@ -232,6 +256,28 @@ export function summarizeStructuredReviewSeverity(
   }
 
   return "unknown";
+}
+
+export function summarizeStructuredReviewFindingCounts(
+  findings: StructuredReviewFinding[],
+): StructuredReviewSeverityCounts {
+  const counts = createStructuredReviewSeverityCounts();
+
+  for (const finding of findings) {
+    counts[finding.severity] += 1;
+  }
+
+  return counts;
+}
+
+export function summarizeStructuredReviewResultRollup(
+  result: Pick<StructuredReviewResult, "overallSeverity" | "findings">,
+): StructuredReviewResultRollup {
+  return {
+    overallSeverity: result.overallSeverity,
+    totalFindings: result.findings.length,
+    findingCounts: summarizeStructuredReviewFindingCounts(result.findings),
+  };
 }
 
 export function buildStructuredReviewResult(input: {

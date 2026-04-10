@@ -8,6 +8,7 @@ import {
 } from "../contracts/json-contracts.js";
 import { resolveFromCwd } from "../shared/io.js";
 import { sanitizeReviewSurfaceValue } from "../shared/review-surface.js";
+import { createStructuredReviewSeverityCounts } from "./review-result.js";
 
 const REVIEW_SEVERITY_ORDER: StructuredReviewSeverity[] = [
   "critical",
@@ -68,16 +69,6 @@ export interface ReviewGateReport {
   inputs: {
     structuredReviewResults: string[];
     batchSummaries: string[];
-  };
-}
-
-function createSeverityCounts(): Record<StructuredReviewSeverity, number> {
-  return {
-    critical: 0,
-    high: 0,
-    medium: 0,
-    low: 0,
-    unknown: 0,
   };
 }
 
@@ -195,8 +186,8 @@ export function evaluateReviewGate(input: {
   const structuredReviewResults = input.structuredReviewResults || [];
   const batchSummaries = input.batchSummaries || [];
   const thresholds = input.thresholds;
-  const findingCounts = createSeverityCounts();
-  const overallSeverityCounts = createSeverityCounts();
+  const findingCounts = createStructuredReviewSeverityCounts();
+  const overallSeverityCounts = createStructuredReviewSeverityCounts();
 
   for (const loadedResult of structuredReviewResults) {
     overallSeverityCounts[loadedResult.result.overallSeverity] += 1;
@@ -336,4 +327,3 @@ export async function runReviewGate(input: {
     thresholds: input.thresholds,
   });
 }
-

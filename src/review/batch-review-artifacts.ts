@@ -27,6 +27,7 @@ export function createBatchReviewArtifactSummary(
     results: summary.results.map((result) => ({
       index: result.index,
       name: result.name,
+      resultKey: result.resultKey,
       mode: result.mode,
       targetSummary: result.targetSummary,
       outputPath: result.outputPath
@@ -35,6 +36,7 @@ export function createBatchReviewArtifactSummary(
       structuredOutputPath: result.structuredOutputPath
         ? sanitizeReviewSurfaceValue(result.structuredOutputPath)
         : undefined,
+      structuredResult: result.structuredResult,
       status: result.status,
       errorSummary: result.errorSummary,
     })),

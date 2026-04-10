@@ -2,11 +2,13 @@ import * as fs from "node:fs/promises";
 import path from "node:path";
 import { resolveFromCwd } from "../shared/io.js";
 import {
+  createBatchReviewResultKey,
   parseBatchReviewManifest,
   type BatchReviewArtifactSummary,
   type BatchReviewManifest,
   type BatchReviewManifestDefaults,
   type BatchReviewManifestEntry,
+  type BatchReviewStructuredResultSummary,
   type BatchReviewMode,
 } from "../contracts/json-contracts.js";
 import {
@@ -20,6 +22,7 @@ import {
   runVisionReview,
   type VisionReviewOptions,
 } from "./vision-review.js";
+import type { StructuredReviewResult } from "./review-result.js";
 import {
   deriveBatchReviewExecutionPlan,
   deriveBatchReviewPreflightOptions,
@@ -56,6 +59,7 @@ export type {
   BatchReviewManifest,
   BatchReviewManifestDefaults,
   BatchReviewManifestEntry,
+  BatchReviewStructuredResultSummary,
   BatchReviewMode,
 };
 
@@ -80,10 +84,12 @@ export interface NormalizedBatchReviewEntry {
 export interface BatchReviewResult {
   index: number;
   name?: string;
+  resultKey: string;
   mode: BatchReviewMode;
   targetSummary: string;
   outputPath?: string;
   structuredOutputPath?: string;
+  structuredResult?: BatchReviewStructuredResultSummary;
   status: "success" | "failure";
   errorSummary?: string;
 }
@@ -99,13 +105,17 @@ export interface BatchReviewSummary {
 export interface BatchReviewArtifactResult {
   index: number;
   name?: string;
+  resultKey: string;
   mode: BatchReviewMode;
   targetSummary: string;
   outputPath?: string;
   structuredOutputPath?: string;
+  structuredResult?: BatchReviewStructuredResultSummary;
   status: "success" | "failure";
   errorSummary?: string;
 }
+
+export { createBatchReviewResultKey };
 
 export interface BatchReviewRerunSelectionOptions {
   onlyFailed?: boolean;
@@ -115,8 +125,12 @@ export interface BatchReviewRerunSelectionOptions {
 export interface RunBatchReviewManifestOptions {
   manifestPath: string;
   cwd?: string;
-  runExpertReviewImpl?: (options: ExpertReviewOptions) => Promise<string>;
-  runVisionReviewImpl?: (options: VisionReviewOptions) => Promise<string>;
+  runExpertReviewImpl?: (
+    options: ExpertReviewOptions,
+  ) => Promise<string | StructuredReviewResult>;
+  runVisionReviewImpl?: (
+    options: VisionReviewOptions,
+  ) => Promise<string | StructuredReviewResult>;
 }
 
 export interface RunBatchReviewManifestPreflightOptions {

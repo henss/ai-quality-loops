@@ -5,24 +5,21 @@ import os from "node:os";
 import { getLogger, setLogger, silentLogger } from "../shared/logger.js";
 import type { ExpertReviewOptions } from "./expert-review.js";
 import type { VisionReviewOptions } from "./vision-review.js";
+import type { StructuredReviewResult } from "./review-result.js";
 import {
-  createBatchReviewArtifactSummary,
+  createBatchReviewResultKey,
   deriveBatchReviewExecutionPlan,
   deriveBatchReviewPreflightOptions,
   formatBatchReviewSummary,
-  formatBatchReviewArtifactSummary,
   formatBatchReviewExecutionPlan,
-  loadBatchReviewArtifactSummary,
   loadBatchReviewExecutionPlan,
   loadBatchReviewManifest,
   normalizeBatchReviewManifest,
-  selectBatchReviewEntriesFromSummary,
   runBatchReviewEntries,
   runBatchReviewEntriesPreflight,
   runBatchReviewManifestPreflight,
   runBatchReviewManifest,
   type BatchReviewManifest,
-  writeBatchReviewArtifactSummary,
 } from "./batch-review.js";
 
 function createFetchResponse(body: unknown, ok = true, status = 200): Response {
@@ -194,6 +191,7 @@ describe("batch review manifest", () => {
       contextPath: undefined,
       ollamaUrl: undefined,
       customCss: undefined,
+      resultFormat: "structured",
     });
     expect(runExpertReviewImpl).toHaveBeenCalledWith({
       expert: "Efficiency",
@@ -209,9 +207,93 @@ describe("batch review manifest", () => {
       promptLibraryPath: undefined,
       contextPath: undefined,
       ollamaUrl: undefined,
+      resultFormat: "structured",
     });
     expect(summary.succeeded).toBe(2);
     expect(summary.failed).toBe(0);
+    expect(summary.results).toEqual([
+      expect.objectContaining({
+        index: 0,
+        resultKey: createBatchReviewResultKey({
+          index: 0,
+          name: "Homepage",
+          mode: "vision",
+        }),
+      }),
+      expect.objectContaining({
+        index: 1,
+        resultKey: createBatchReviewResultKey({
+          index: 1,
+          mode: "expert",
+        }),
+      }),
+    ]);
+  });
+
+  it("captures per-entry structured severity rollups when the runner returns structured results", async () => {
+    const entries = normalizeBatchReviewManifest(
+      {
+        defaults: {
+          mode: "expert",
+          expert: "Efficiency",
+        },
+        reviews: [
+          {
+            name: "Readme audit",
+            target: "./README.md",
+            structuredOutputPath: "./reviews/readme.json",
+          },
+        ],
+      },
+      tempDir,
+    );
+
+    const summary = await runBatchReviewEntries({
+      manifestPath: path.join(tempDir, "manifest.json"),
+      entries,
+      runExpertReviewImpl: vi.fn(async (_options: ExpertReviewOptions) =>
+        ({
+          schemaVersion: "1",
+          workflow: "expert",
+          expert: "Efficiency",
+          model: "qwen3.5:32b",
+          summary: "One medium issue remains.",
+          overallSeverity: "medium",
+          findings: [
+            {
+              title: "Slow section",
+              summary: "The document buries the main action.",
+              severity: "medium",
+            },
+            {
+              title: "Minor wording",
+              summary: "One sentence is harder to scan than necessary.",
+              severity: "low",
+            },
+          ],
+          provenance: [],
+          markdown: "# Summary\nOne medium issue remains.",
+        }) satisfies StructuredReviewResult),
+    });
+
+    expect(summary.results).toEqual([
+      expect.objectContaining({
+        index: 0,
+        resultKey: "readme-audit-expert",
+        structuredResult: {
+          overallSeverity: "medium",
+          totalFindings: 2,
+          findingCounts: {
+            critical: 0,
+            high: 0,
+            medium: 1,
+            low: 1,
+            unknown: 0,
+          },
+        },
+        status: "success",
+      }),
+    ]);
   });
 
   it("captures failures in the summary and keeps later entries running", async () => {
@@ -271,296 +353,6 @@ describe("batch review manifest", () => {
     expect(formatBatchReviewSummary(summary)).toContain(
       "Batch review summary: 1 succeeded, 1 failed, 2 total.",
     );
-  });
-
-  it("creates a sanitized machine-readable artifact summary", () => {
-    const artifact = createBatchReviewArtifactSummary({
-      manifestPath: "D:\\workspace\\private\\manifest.json",
-      total: 2,
-      succeeded: 1,
-      failed: 1,
-      results: [
-        {
-          index: 0,
-          name: "Homepage",
-          mode: "vision",
-          targetSummary: "Remote URL (example.com)",
-          outputPath: "D:\\workspace\\private\\reviews\\homepage.md",
-          structuredOutputPath: "D:\\workspace\\private\\reviews\\homepage.json",
-          status: "success",
-        },
-        {
-          index: 1,
-          mode: "expert",
-          targetSummary: "Local file path (.md file)",
-          status: "failure",
-          errorSummary: "Error: Failed to open Local file path (.md file)",
-        },
-      ],
-    });
-
-    expect(artifact).toEqual({
-      manifestPath: "Local file path (.json file)",
-      total: 2,
-      succeeded: 1,
-      failed: 1,
-      results: [
-        {
-          index: 0,
-          name: "Homepage",
-          mode: "vision",
-          targetSummary: "Remote URL (example.com)",
-          outputPath: "Local file path (.md file)",
-          structuredOutputPath: "Local file path (.json file)",
-          status: "success",
-        },
-        {
-          index: 1,
-          name: undefined,
-          mode: "expert",
-          targetSummary: "Local file path (.md file)",
-          status: "failure",
-          errorSummary: "Error: Failed to open Local file path (.md file)",
-        },
-      ],
-    });
-
-    expect(JSON.parse(formatBatchReviewArtifactSummary({
-      manifestPath: "D:\\workspace\\private\\manifest.json",
-      total: 0,
-      succeeded: 0,
-      failed: 0,
-      results: [],
-    }))).toMatchObject({
-      manifestPath: "Local file path (.json file)",
-      total: 0,
-    });
-  });
-
-  it("writes the machine-readable artifact summary to disk", async () => {
-    const outputPath = path.join(tempDir, "artifacts", "batch-summary.json");
-
-    await writeBatchReviewArtifactSummary(
-      {
-        manifestPath: path.join(tempDir, "manifest.json"),
-        total: 1,
-        succeeded: 1,
-        failed: 0,
-        results: [
-          {
-            index: 0,
-            mode: "expert",
-            targetSummary: "Local file path (.md file)",
-            outputPath: path.join(tempDir, "reviews", "readme.md"),
-            structuredOutputPath: path.join(tempDir, "reviews", "readme.json"),
-            status: "success",
-          },
-        ],
-      },
-      outputPath,
-    );
-
-    const written = JSON.parse(await fs.readFile(outputPath, "utf-8"));
-    expect(written).toEqual({
-      manifestPath: "Local file path (.json file)",
-      total: 1,
-      succeeded: 1,
-      failed: 0,
-      results: [
-        {
-          index: 0,
-          mode: "expert",
-          targetSummary: "Local file path (.md file)",
-          outputPath: "Local file path (.md file)",
-          structuredOutputPath: "Local file path (.json file)",
-          status: "success",
-        },
-      ],
-    });
-  });
-
-  it("loads a machine-readable artifact summary from disk", async () => {
-    const outputPath = path.join(tempDir, "artifacts", "batch-summary.json");
-    await fs.mkdir(path.dirname(outputPath), { recursive: true });
-    await fs.writeFile(
-      outputPath,
-      JSON.stringify(
-        {
-          manifestPath: "Local file path (.json file)",
-          total: 2,
-          succeeded: 1,
-          failed: 1,
-          results: [
-            {
-              index: 0,
-              name: "Homepage",
-              mode: "vision",
-              targetSummary: "Remote URL (example.com)",
-              structuredOutputPath: "Local file path (.json file)",
-              status: "success",
-            },
-            {
-              index: 1,
-              name: "Readme audit",
-              mode: "expert",
-              targetSummary: "Local file path (.md file)",
-              status: "failure",
-              errorSummary: "Error: Failed to open Local file path (.md file)",
-            },
-          ],
-        },
-        null,
-        2,
-      ),
-    );
-
-    const loaded = await loadBatchReviewArtifactSummary(outputPath, tempDir);
-    expect(loaded).toEqual({
-      manifestPath: "Local file path (.json file)",
-      total: 2,
-      succeeded: 1,
-      failed: 1,
-      results: [
-        {
-          index: 0,
-          name: "Homepage",
-          mode: "vision",
-          targetSummary: "Remote URL (example.com)",
-          outputPath: undefined,
-          structuredOutputPath: "Local file path (.json file)",
-          status: "success",
-        },
-        {
-          index: 1,
-          name: "Readme audit",
-          mode: "expert",
-          targetSummary: "Local file path (.md file)",
-          outputPath: undefined,
-          structuredOutputPath: undefined,
-          status: "failure",
-          errorSummary: "Error: Failed to open Local file path (.md file)",
-        },
-      ],
-    });
-  });
-
-  it("selects failed or named rerun entries from a prior summary artifact", () => {
-    const manifest: BatchReviewManifest = {
-      defaults: {
-        mode: "expert",
-        expert: "Efficiency",
-      },
-      reviews: [
-        { name: "Homepage", mode: "vision", target: "https://example.com" },
-        { name: "Readme audit", target: "./README.md" },
-        { name: "Changelog audit", target: "./CHANGELOG.md" },
-      ],
-    };
-
-    const selected = selectBatchReviewEntriesFromSummary(
-      manifest,
-      {
-        manifestPath: "Local file path (.json file)",
-        total: 3,
-        succeeded: 1,
-        failed: 2,
-        results: [
-          {
-            index: 0,
-            name: "Homepage",
-            mode: "vision",
-            targetSummary: "Remote URL (example.com)",
-            status: "failure",
-          },
-          {
-            index: 1,
-            name: "Readme audit",
-            mode: "expert",
-            targetSummary: "Local file path (.md file)",
-            status: "success",
-          },
-          {
-            index: 2,
-            name: "Changelog audit",
-            mode: "expert",
-            targetSummary: "Local file path (.md file)",
-            status: "failure",
-          },
-        ],
-      },
-      {
-        onlyFailed: true,
-        entryNames: ["Readme audit"],
-      },
-    );
-
-    expect(selected).toEqual({
-      defaults: manifest.defaults,
-      reviews: [
-        { name: "Homepage", mode: "vision", target: "https://example.com" },
-        { name: "Readme audit", target: "./README.md" },
-        { name: "Changelog audit", target: "./CHANGELOG.md" },
-      ],
-    });
-  });
-
-  it("rejects ambiguous or empty summary-based rerun selections", () => {
-    const manifest: BatchReviewManifest = {
-      reviews: [
-        { name: "Homepage", mode: "vision", target: "https://example.com" },
-      ],
-    };
-
-    expect(() =>
-      selectBatchReviewEntriesFromSummary(
-        manifest,
-        {
-          manifestPath: "Local file path (.json file)",
-          total: 1,
-          succeeded: 1,
-          failed: 0,
-          results: [
-            {
-              index: 0,
-              name: "Homepage",
-              mode: "vision",
-              targetSummary: "Remote URL (example.com)",
-              status: "success",
-            },
-          ],
-        },
-        {},
-      ),
-    ).toThrow("--rerun-failed or --entry-name");
-
-    expect(() =>
-      selectBatchReviewEntriesFromSummary(
-        manifest,
-        {
-          manifestPath: "Local file path (.json file)",
-          total: 2,
-          succeeded: 0,
-          failed: 2,
-          results: [
-            {
-              index: 0,
-              name: "Homepage",
-              mode: "vision",
-              targetSummary: "Remote URL (example.com)",
-              status: "failure",
-            },
-            {
-              index: 0,
-              name: "Homepage",
-              mode: "vision",
-              targetSummary: "Remote URL (example.com)",
-              status: "failure",
-            },
-          ],
-        },
-        { entryNames: ["Homepage"] },
-      ),
-    ).toThrow("ambiguous");
   });
 
   it("requires a mode and expert persona for expert batch entries", () => {

@@ -30,10 +30,12 @@ export interface BatchReviewManifest {
 export interface BatchReviewArtifactResult {
   index: number;
   name?: string;
+  resultKey: string;
   mode: BatchReviewMode;
   targetSummary: string;
   outputPath?: string;
   structuredOutputPath?: string;
+  structuredResult?: BatchReviewStructuredResultSummary;
   status: "success" | "failure";
   errorSummary?: string;
 }
@@ -52,6 +54,12 @@ export type StructuredReviewSeverity =
   | "medium"
   | "low"
   | "unknown";
+
+export interface BatchReviewStructuredResultSummary {
+  overallSeverity: StructuredReviewSeverity;
+  totalFindings: number;
+  findingCounts: Record<StructuredReviewSeverity, number>;
+}
 
 export interface StructuredReviewProvenanceItem {
   label: string;
@@ -203,6 +211,69 @@ function readStructuredReviewSeverity(
         `Manifest field "${fieldName}" must be one of critical, high, medium, low, or unknown.`,
       );
   }
+}
+
+function createEmptySeverityCounts(): Record<StructuredReviewSeverity, number> {
+  return {
+    critical: 0,
+    high: 0,
+    medium: 0,
+    low: 0,
+    unknown: 0,
+  };
+}
+
+function toBatchReviewResultKeySlug(value: string): string {
+  return (
+    value
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "") || "review"
+  );
+}
+
+export function createBatchReviewResultKey(input: {
+  index: number;
+  name?: string;
+  mode: BatchReviewMode;
+}): string {
+  const namedStem = input.name ? toBatchReviewResultKeySlug(input.name) : undefined;
+
+  return namedStem
+    ? `${namedStem}-${input.mode}`
+    : `review-${input.index + 1}-${input.mode}`;
+}
+
+function parseBatchReviewStructuredResultSummary(
+  value: unknown,
+  fieldName: string,
+): BatchReviewStructuredResultSummary {
+  if (!isRecord(value)) {
+    throw new Error(`Manifest field "${fieldName}" must be an object.`);
+  }
+
+  const findingCounts = createEmptySeverityCounts();
+  const rawFindingCounts = value.findingCounts;
+
+  if (!isRecord(rawFindingCounts)) {
+    throw new Error(`Manifest field "${fieldName}.findingCounts" must be an object.`);
+  }
+
+  for (const severity of Object.keys(findingCounts) as StructuredReviewSeverity[]) {
+    findingCounts[severity] = readRequiredInteger(
+      rawFindingCounts[severity],
+      `${fieldName}.findingCounts.${severity}`,
+    );
+  }
+
+  return {
+    overallSeverity: readStructuredReviewSeverity(
+      value.overallSeverity,
+      `${fieldName}.overallSeverity`,
+    ),
+    totalFindings: readRequiredInteger(value.totalFindings, `${fieldName}.totalFindings`),
+    findingCounts,
+  };
 }
 
 function parseManifestDefaults(
@@ -372,6 +443,13 @@ export function parseBatchReviewArtifactSummary(
       return {
         index: readRequiredInteger(result.index, `${fieldPath}.index`),
         name: readOptionalString(result.name, `${fieldPath}.name`),
+        resultKey:
+          readOptionalString(result.resultKey, `${fieldPath}.resultKey`) ||
+          createBatchReviewResultKey({
+            index: readRequiredInteger(result.index, `${fieldPath}.index`),
+            name: readOptionalString(result.name, `${fieldPath}.name`),
+            mode: readRequiredMode(result.mode, `${fieldPath}.mode`),
+          }),
         mode: readRequiredMode(result.mode, `${fieldPath}.mode`),
         targetSummary: readRequiredString(
           result.targetSummary,
@@ -382,6 +460,13 @@ export function parseBatchReviewArtifactSummary(
           result.structuredOutputPath,
           `${fieldPath}.structuredOutputPath`,
         ),
+        structuredResult:
+          result.structuredResult === undefined
+            ? undefined
+            : parseBatchReviewStructuredResultSummary(
+                result.structuredResult,
+                `${fieldPath}.structuredResult`,
+              ),
         status:
           result.status === "success" || result.status === "failure"
             ? result.status

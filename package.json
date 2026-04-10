@@ -32,6 +32,7 @@
   "bin": {
     "batch-review": "dist/cli/batch-review.js",
     "expert-review": "dist/cli/expert-review.js",
+    "review-compare": "dist/cli/review-compare.js",
     "review-gate": "dist/cli/review-gate.js",
     "review-preflight": "dist/cli/review-preflight.js",
     "vision-preview": "dist/cli/vision-preview.js",

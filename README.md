@@ -194,6 +194,22 @@ The comparison helper stays intentionally narrow:
 - it reports added, removed, changed, and unchanged findings plus per-finding and overall severity movement
 - it does not add scoring, approval heuristics, or model-based equivalence judgments
 
+### Review Compare CLI
+
+Use `review-compare` when a shell-first wrapper needs the same deterministic comparison without writing TypeScript glue.
+
+```bash
+review-compare ./reviews/previous.json ./reviews/current.json
+review-compare ./reviews/previous.json ./reviews/current.json --json
+```
+
+The command stays intentionally narrow:
+
+- it reads exactly two published structured review-result JSON artifacts
+- it emits either a deterministic human-readable summary or machine-readable JSON
+- it sanitizes file-path labels in CLI output instead of echoing raw local filesystem locations
+- it does not add approval policy, fuzzy matching, or multi-run trend analysis
+
 ### Section Discovery For Targeted Vision Captures
 
 Use `vision-sections` before `vision-review --sections ...` or before authoring a batch-review manifest when you need to discover fragment-compatible DOM ids from a rendered page.

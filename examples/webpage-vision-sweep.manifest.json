@@ -1,0 +1,21 @@
+{
+  "defaults": {
+    "mode": "vision",
+    "expert": "UI/UX",
+    "outputDir": "./reviews/webpage-vision-sweep",
+    "structuredOutputDir": "./reviews/webpage-vision-sweep/json",
+    "width": 1440,
+    "height": 900
+  },
+  "reviews": [
+    {
+      "name": "Homepage hero",
+      "target": "https://example.com",
+      "sections": ["hero"]
+    },
+    {
+      "name": "Pricing page",
+      "target": "https://example.com/pricing"
+    }
+  ]
+}

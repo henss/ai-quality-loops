@@ -23,6 +23,7 @@
   ],
   "files": [
     "dist",
+    "examples",
     "schemas",
     "personas",
     "README.md",

@@ -159,4 +159,34 @@ describe("public JSON contracts", () => {
       expect(parsed.type).toBe("object");
     }
   });
+
+  it("ships parseable starter manifest examples at the package root", async () => {
+    const exampleManifestPaths = [
+      "examples/text-expert-audit.manifest.json",
+      "examples/webpage-vision-sweep.manifest.json",
+      "examples/screenshot-batch-run.manifest.json",
+    ];
+
+    for (const examplePath of exampleManifestPaths) {
+      const parsed = JSON.parse(
+        await fs.readFile(path.join(process.cwd(), examplePath), "utf-8"),
+      ) as unknown;
+
+      expect(parseBatchReviewManifest(parsed)).toEqual(
+        expect.objectContaining({
+          reviews: expect.any(Array),
+        }),
+      );
+    }
+  });
+
+  it("publishes starter examples in the package file list", async () => {
+    const packageJson = JSON.parse(
+      await fs.readFile(path.join(process.cwd(), "package.json"), "utf-8"),
+    ) as {
+      files?: string[];
+    };
+
+    expect(packageJson.files).toContain("examples");
+  });
 });

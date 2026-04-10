@@ -1,0 +1,18 @@
+{
+  "defaults": {
+    "mode": "vision",
+    "expert": "UI/UX",
+    "outputDir": "./reviews/screenshot-batch-run",
+    "structuredOutputDir": "./reviews/screenshot-batch-run/json"
+  },
+  "reviews": [
+    {
+      "name": "Homepage screenshot",
+      "target": "./artifacts/homepage.png"
+    },
+    {
+      "name": "Pricing screenshot",
+      "target": "./artifacts/pricing.png"
+    }
+  ]
+}

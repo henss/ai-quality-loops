@@ -15,6 +15,16 @@ A collection of core LLM utilities and visual review tools for automated quality
 npm install ai-quality-loops
 ```
 
+## Starter Examples
+
+The package publishes copy-ready starter manifests under `examples/` so embedding repos can begin with a narrow checked-in surface instead of rebuilding command shapes from README prose:
+
+- `examples/text-expert-audit.manifest.json` for one text/persona audit
+- `examples/webpage-vision-sweep.manifest.json` for one webpage review sweep with targeted section captures
+- `examples/screenshot-batch-run.manifest.json` for one screenshot-backed batch run over existing image files
+
+Use the companion notes in `examples/README.md` to decide which example to copy, which targets must be replaced, and when to use `vision-sections`, `vision-preview --manifest`, `batch-review`, and `review-gate` together.
+
 ## Configuration
 
 The library works out-of-the-box with default example personas in `personas/universal.md`, but you can customize it with your own paths:

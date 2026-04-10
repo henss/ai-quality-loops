@@ -1,0 +1,14 @@
+{
+  "defaults": {
+    "mode": "expert",
+    "expert": "UI/UX",
+    "outputDir": "./reviews/text-expert-audit",
+    "structuredOutputDir": "./reviews/text-expert-audit/json"
+  },
+  "reviews": [
+    {
+      "name": "Project readme audit",
+      "target": "./README.md"
+    }
+  ]
+}

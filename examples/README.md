@@ -4,6 +4,21 @@ These starter manifests are intentionally generic. Copy one into your repo, chan
 
 ## Included examples
 
+### `ci-review-gate-check.md`
+
+Use when you want a generic CI job shape that runs `batch-review`, saves structured artifacts, and gates the repository check with `review-gate` without adding a hosted service, scheduler, or package-owned policy layer.
+
+```bash
+npm exec -- batch-review ./review-manifest.ci.json --summary-output ./reviews/ai-quality/batch-summary.json
+npm exec -- review-gate --batch-summary ./reviews/ai-quality/batch-summary.json --max-failed-reviews 0 --max-critical 0
+```
+
+Typical edits:
+
+- copy the recipe into your CI provider's script syntax
+- replace the manifest targets with repo-safe local files, pages, screenshots, or URLs
+- set `review-gate` budgets in the embedding repo so project policy stays outside `ai-quality-loops`
+
 ### `text-expert-audit.manifest.json`
 
 Use when you want one bounded text review without inventing a repo-local manifest shape first.
@@ -54,4 +69,4 @@ Typical edits:
 
 - The examples stay open-source-safe on purpose. They do not embed private domains, company personas, or project-specific output routing.
 - If you need repo-specific naming, redaction rules, or CI budgets, add that in the embedding repo instead of widening the shared package surface.
-- If a future workflow needs more than copied starter manifests, the next extraction question is whether a scaffold command would stay generic enough for public maintenance.
+- If a future workflow needs more than copied starter manifests and the generic CI recipe, the next extraction question is whether a scaffold command would stay generic enough for public maintenance.

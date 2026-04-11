@@ -39,7 +39,8 @@ export interface ReviewGateThresholds {
 export type ReviewGateViolationKind =
   | "severity-threshold"
   | "finding-budget"
-  | "failed-review-budget";
+  | "failed-review-budget"
+  | "missing-structured-rollup";
 
 export interface ReviewGateViolation {
   kind: ReviewGateViolationKind;
@@ -123,6 +124,15 @@ function formatInputCounts(report: ReviewGateReport): string {
 
 function formatViolations(violations: ReviewGateViolation[]): string {
   return violations.map((violation) => `- ${violation.message}`).join("\n");
+}
+
+function hasSeverityGate(thresholds: ReviewGateThresholds): boolean {
+  return Boolean(
+    thresholds.failOnSeverity ||
+      Object.values(thresholds.maxFindings || {}).some(
+        (value) => value !== undefined,
+      ),
+  );
 }
 
 export function formatReviewGateReport(report: ReviewGateReport): string {
@@ -209,9 +219,35 @@ export function evaluateReviewGate(input: {
     (total, loadedSummary) => total + loadedSummary.summary.total,
     0,
   );
+  let batchSummaryResultsMissingStructuredRollups = 0;
+  let batchSummaryStructuredRollupCount = 0;
+
+  for (const loadedSummary of batchSummaries) {
+    for (const result of loadedSummary.summary.results) {
+      if (!result.structuredResult) {
+        batchSummaryResultsMissingStructuredRollups += 1;
+        continue;
+      }
+
+      batchSummaryStructuredRollupCount += 1;
+      overallSeverityCounts[result.structuredResult.overallSeverity] += 1;
+
+      for (const severity of REVIEW_SEVERITY_ORDER) {
+        findingCounts[severity] += result.structuredResult.findingCounts[severity];
+      }
+    }
+  }
 
   const highestObservedSeverity = highestSeverity([
     ...structuredReviewResults.map((loadedResult) => loadedResult.result.overallSeverity),
+    ...batchSummaries.flatMap((loadedSummary) =>
+      loadedSummary.summary.results
+        .map((result) => result.structuredResult?.overallSeverity)
+        .filter(
+          (severity): severity is StructuredReviewSeverity =>
+            severity !== undefined,
+        ),
+    ),
     ...REVIEW_SEVERITY_ORDER.filter((severity) => findingCounts[severity] > 0),
   ]);
 
@@ -219,7 +255,7 @@ export function evaluateReviewGate(input: {
 
   if (
     thresholds.failOnSeverity &&
-    structuredReviewResults.length > 0 &&
+    structuredReviewResults.length + batchSummaryStructuredRollupCount > 0 &&
     isSeverityAtOrAbove(
       highestObservedSeverity,
       thresholds.failOnSeverity,
@@ -250,6 +286,18 @@ export function evaluateReviewGate(input: {
         message: `Observed ${actual} ${severity} finding${actual === 1 ? "" : "s"}, which exceeds the max-${severity} budget (${allowed}).`,
       });
     }
+  }
+
+  if (
+    hasSeverityGate(thresholds) &&
+    batchSummaryResultsMissingStructuredRollups > 0
+  ) {
+    violations.push({
+      kind: "missing-structured-rollup",
+      actual: batchSummaryResultsMissingStructuredRollups,
+      allowed: "0 missing structuredResult rollups",
+      message: `Cannot fully apply severity budgets because ${batchSummaryResultsMissingStructuredRollups} batch summary result${batchSummaryResultsMissingStructuredRollups === 1 ? "" : "s"} do${batchSummaryResultsMissingStructuredRollups === 1 ? "es" : ""} not include structuredResult rollups.`,
+    });
   }
 
   if (

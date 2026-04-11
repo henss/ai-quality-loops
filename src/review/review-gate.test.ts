@@ -171,6 +171,141 @@ describe("review gate", () => {
     ]);
   });
 
+  it("applies severity budgets to batch summary structured-result rollups", async () => {
+    const summaryPath = path.join(tempDir, "batch-summary.json");
+    await fs.writeFile(
+      summaryPath,
+      JSON.stringify(
+        {
+          manifestPath: "Local file path (.json file)",
+          total: 2,
+          succeeded: 2,
+          failed: 0,
+          results: [
+            {
+              index: 0,
+              resultKey: "homepage-vision",
+              mode: "vision",
+              targetSummary: "Remote URL (example.com)",
+              status: "success",
+              structuredResult: {
+                overallSeverity: "high",
+                totalFindings: 2,
+                findingCounts: {
+                  critical: 0,
+                  high: 1,
+                  medium: 1,
+                  low: 0,
+                  unknown: 0,
+                },
+              },
+            },
+            {
+              index: 1,
+              resultKey: "readme-expert",
+              mode: "expert",
+              targetSummary: "Local file path (.md file)",
+              status: "success",
+              structuredResult: {
+                overallSeverity: "low",
+                totalFindings: 1,
+                findingCounts: {
+                  critical: 0,
+                  high: 0,
+                  medium: 0,
+                  low: 1,
+                  unknown: 0,
+                },
+              },
+            },
+          ],
+        },
+        null,
+        2,
+      ),
+    );
+
+    const report = await runReviewGate({
+      batchSummaryPaths: [summaryPath],
+      thresholds: {
+        failOnSeverity: "high",
+        maxFindings: {
+          medium: 0,
+        },
+      },
+    });
+
+    expect(report.ok).toBe(false);
+    expect(report.counts.findingCounts).toMatchObject({
+      high: 1,
+      medium: 1,
+      low: 1,
+    });
+    expect(report.counts.overallSeverityCounts).toMatchObject({
+      high: 1,
+      low: 1,
+    });
+    expect(report.counts.highestObservedSeverity).toBe("high");
+    expect(report.violations).toEqual([
+      expect.objectContaining({
+        kind: "severity-threshold",
+        actual: "high",
+      }),
+      expect.objectContaining({
+        kind: "finding-budget",
+        severity: "medium",
+        actual: 1,
+        allowed: 0,
+      }),
+    ]);
+  });
+
+  it("reports a clear unsupported condition for summary severity gates without rollups", async () => {
+    const summaryPath = path.join(tempDir, "batch-summary.json");
+    await fs.writeFile(
+      summaryPath,
+      JSON.stringify(
+        {
+          manifestPath: "Local file path (.json file)",
+          total: 1,
+          succeeded: 1,
+          failed: 0,
+          results: [
+            {
+              index: 0,
+              mode: "expert",
+              targetSummary: "Local file path (.md file)",
+              status: "success",
+            },
+          ],
+        },
+        null,
+        2,
+      ),
+    );
+
+    const report = await runReviewGate({
+      batchSummaryPaths: [summaryPath],
+      thresholds: {
+        maxFindings: {
+          high: 0,
+        },
+      },
+    });
+
+    expect(report.ok).toBe(false);
+    expect(report.violations).toEqual([
+      expect.objectContaining({
+        kind: "missing-structured-rollup",
+        actual: 1,
+        allowed: "0 missing structuredResult rollups",
+      }),
+    ]);
+    expect(formatReviewGateReport(report)).toContain(
+      "does not include structuredResult rollups",
+    );
+  });
+
   it("loads structured review results from disk with sanitized input labels", async () => {
     const resultPath = path.join(tempDir, "review.json");
     await fs.writeFile(
@@ -209,4 +344,3 @@ describe("review gate", () => {
     ]);
   });
 });
-

@@ -105,7 +105,7 @@ async function main() {
     )
     .option(
       "--fail-on-severity <severity>",
-      "Fail when any loaded structured review result reaches this severity or higher.",
+      "Fail when any loaded structured review result or batch-summary rollup reaches this severity or higher.",
     )
     .option(
       "--max-failed-reviews <count>",
@@ -159,4 +159,3 @@ main().catch((error) => {
   reportCliError(error);
   process.exit(1);
 });
-

@@ -338,11 +338,11 @@ When a vision review needs targeted captures, run `vision-sections <target>` fir
 Use `review-gate` when CI or a repo-local script needs one explicit pass/fail decision from published machine-readable artifacts.
 
 - `--result` reads one or more structured review-result JSON files and applies severity or finding-count budgets.
-- `--batch-summary` reads one or more batch summary JSON files and applies failed-review budgets.
+- `--batch-summary` reads one or more batch summary JSON files and applies failed-review budgets, plus severity or finding-count budgets when entries include structured-result rollups.
 - `--fail-on-severity`, `--max-critical`, `--max-high`, `--max-medium`, `--max-low`, `--max-unknown`, and `--max-failed-reviews` keep policy explicit instead of hiding repo-specific heuristics in the package.
 - `--json` emits a machine-readable report with counts, thresholds, violations, and sanitized input labels.
 
-The current surface is intentionally narrow: batch summaries now expose additive per-entry `resultKey` values plus structured-result severity/count rollups when a companion JSON artifact exists, but `review-gate --batch-summary` still only applies failed-review budgets today. If a wrapper needs explicit severity budgets, pass the structured review-result JSON files directly with `--result` instead of expecting `review-gate` to infer policy from the summary alone.
+The surface stays explicit: `review-gate --batch-summary` consumes only published per-entry `structuredResult` rollups and never infers repo-specific policy defaults. If a summary entry does not include a rollup, severity budgets report that missing rollup instead of silently treating the entry as clean.
 
 ### Review Preflight CLI
 

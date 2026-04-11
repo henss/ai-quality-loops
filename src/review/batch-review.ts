@@ -32,6 +32,16 @@ import {
   type BatchReviewExecutionPlanEntry,
 } from "./batch-review-execution.js";
 import {
+  compareBatchReviewArtifactSummaries,
+  formatBatchReviewSummaryComparisonReport,
+  runBatchReviewSummaryComparison,
+  type BatchReviewSummaryComparison,
+  type BatchReviewSummaryComparisonReport,
+  type BatchReviewSummaryEntryComparison,
+  type BatchReviewSummaryEntrySnapshot,
+  type BatchReviewSummarySeverityDirection,
+} from "./batch-review-summary-compare.js";
+import {
   createBatchReviewArtifactSummary,
   formatBatchReviewArtifactSummary,
   loadBatchReviewArtifactSummary,
@@ -42,10 +52,13 @@ import { sanitizeReviewSurfaceValue } from "../shared/review-surface.js";
 
 export {
   createBatchReviewArtifactSummary,
+  compareBatchReviewArtifactSummaries,
   deriveBatchReviewExecutionPlan,
   deriveBatchReviewPreflightOptions,
+  formatBatchReviewSummaryComparisonReport,
   formatBatchReviewArtifactSummary,
   loadBatchReviewArtifactSummary,
+  runBatchReviewSummaryComparison,
   runBatchReviewEntries,
   runBatchReviewEntriesPreflight,
   selectBatchReviewEntriesFromSummary,
@@ -59,6 +72,11 @@ export type {
   BatchReviewManifest,
   BatchReviewManifestDefaults,
   BatchReviewManifestEntry,
+  BatchReviewSummaryComparison,
+  BatchReviewSummaryComparisonReport,
+  BatchReviewSummaryEntryComparison,
+  BatchReviewSummaryEntrySnapshot,
+  BatchReviewSummarySeverityDirection,
   BatchReviewStructuredResultSummary,
   BatchReviewMode,
 };

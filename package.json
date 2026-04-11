@@ -30,6 +30,7 @@
     "LICENSE"
   ],
   "bin": {
+    "batch-review-compare": "dist/cli/batch-review-compare.js",
     "batch-review": "dist/cli/batch-review.js",
     "expert-review": "dist/cli/expert-review.js",
     "review-compare": "dist/cli/review-compare.js",

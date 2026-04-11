@@ -294,6 +294,8 @@ batch-review ./review-manifest.json --rerun-summary ./reviews/batch-summary.json
 review-gate --result ./reviews/json/homepage-hero-vision-review.json --fail-on-severity critical
 review-gate --result ./reviews/json/homepage-hero-vision-review.json --result ./reviews/json/pricing-vision-review.json --max-high 0 --max-medium 2
 review-gate --batch-summary ./reviews/batch-summary.json --max-failed-reviews 0 --json
+batch-review-compare ./reviews/previous-batch-summary.json ./reviews/current-batch-summary.json
+batch-review-compare ./reviews/previous-batch-summary.json ./reviews/current-batch-summary.json --json
 ```
 
 The CLI now runs the shared review-preflight checks against the manifest's combined prerequisites before the first review starts, so mixed expert and vision batches fail fast on missing personas, models, browser dependencies, or unreadable optional context files.
@@ -343,6 +345,15 @@ Use `review-gate` when CI or a repo-local script needs one explicit pass/fail de
 - `--json` emits a machine-readable report with counts, thresholds, violations, and sanitized input labels.
 
 The surface stays explicit: `review-gate --batch-summary` consumes only published per-entry `structuredResult` rollups and never infers repo-specific policy defaults. If a summary entry does not include a rollup, severity budgets report that missing rollup instead of silently treating the entry as clean.
+
+### Batch Review Compare CLI
+
+Use `batch-review-compare` when a repeated manifest run needs a deterministic two-summary overview without diffing console text or reading per-entry result files.
+
+- It compares exactly two published batch-review summary JSON artifacts.
+- It matches entries by the summary `resultKey` and reports added, removed, status-changed, and unchanged entries.
+- It reports aggregate severity movement and finding-count deltas only from the per-entry `structuredResult` rollups already present in the summaries.
+- It does not infer baselines, read structured output paths, add approval policy, or route results through `review-gate`.
 
 ### Review Preflight CLI
 

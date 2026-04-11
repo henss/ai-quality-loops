@@ -15,6 +15,23 @@ A collection of core LLM utilities and visual review tools for automated quality
 npm install ai-quality-loops
 ```
 
+## What You Can Do
+
+Use the package when you need repeatable LLM-assisted review workflows that stay local to your repo and keep policy decisions caller-owned:
+
+- **Run one focused text review** with a named expert persona against a README, code file, spec, or raw text input.
+- **Run one visual review** against a webpage, local HTML file, or screenshot-backed target.
+- **Save structured review results** so downstream tools can route findings without parsing Markdown.
+- **Compare two structured review results** when you need a deterministic before/after regression summary.
+- **Discover page sections** before targeted visual review so manifest entries can point at stable fragment ids.
+- **Preview targeted captures** before spending model time on a vision run.
+- **Run manifest-driven batch reviews** across several text, page, and screenshot targets with consistent output paths.
+- **Rerun selected batch entries** from a prior summary when only failed or named reviews need another pass.
+- **Gate CI or local checks** with explicit severity and finding-count budgets using `review-gate`.
+- **Compare two batch summaries** to see added, removed, status-changed, and severity-moved review entries.
+- **Check local prerequisites** before a costly run, including personas, Ollama models, browser availability, and optional context files.
+- **Call the underlying Ollama helpers** when you need lower-level text or vision generation instead of the review workflow.
+
 ## Starter Examples
 
 The package publishes copy-ready starter manifests under `examples/` so embedding repos can begin with a narrow checked-in surface instead of rebuilding command shapes from README prose:

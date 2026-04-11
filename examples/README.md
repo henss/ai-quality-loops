@@ -2,6 +2,25 @@
 
 These starter manifests are intentionally generic. Copy one into your repo, change the `target` values, then keep any repo-specific wrappers or policy logic outside `ai-quality-loops`.
 
+## Capability map
+
+The example files cover the repeatable workflow surfaces. The package also supports single-run and low-level entrypoints that do not need a copied manifest:
+
+| Need | Start here | Notes |
+| --- | --- | --- |
+| Review one text file or raw text input | `expert-review ./README.md --expert "UI/UX"` | Use `--json-output` when a wrapper needs structured findings. |
+| Review one webpage, local HTML file, or screenshot target | `vision-review https://example.com --expert "UI/UX"` | Use `--json-output` for the same structured review-result contract. |
+| List available personas before picking one | `review-preflight --list-personas --json` | Useful when a repo supplies its own prompt library. |
+| Check local review prerequisites | `review-preflight --mode both --expert "UI/UX"` | Checks Ollama, browser availability, personas, and optional context files. |
+| Find stable page fragments for targeted vision review | `vision-sections https://example.com --json` | Copy the suggested `sections` values into a manifest or direct review call. |
+| Preview browser captures before spending model time | `vision-preview --manifest ./examples/webpage-vision-sweep.manifest.json --entry-name "Homepage hero"` | Also works with a direct URL or local HTML file. |
+| Compare two structured review-result JSON files | `review-compare ./reviews/previous.json ./reviews/current.json --json` | Use for single-target before/after checks. |
+| Run several repeatable reviews from one checked-in plan | `batch-review ./examples/webpage-vision-sweep.manifest.json` | Use the starter manifests below as copy-ready shapes. |
+| Rerun only failed or named batch entries | `batch-review ./manifest.json --rerun-summary ./reviews/batch-summary.json --rerun-failed` | Keeps retry selection tied to the prior summary artifact. |
+| Gate a local or CI check with explicit budgets | `review-gate --result ./reviews/result.json --max-high 0` | Use `--batch-summary` when gating a whole manifest run. |
+| Compare two batch summary artifacts | `batch-review-compare ./reviews/previous-summary.json ./reviews/current-summary.json --json` | Use for repeated manifest runs, release checks, or PR before/after summaries. |
+| Make lower-level local LLM calls | `generateTextWithOllama(...)` or `callOllamaVision(...)` | Use only when the review workflow is too high-level for the caller. |
+
 ## Included examples
 
 ### `ci-review-gate-check.md`

@@ -2,3 +2,4 @@
 /dist/
 /package-lock.json
 /.runtime/
+/scripts/orchestrator-outcome-record.ts

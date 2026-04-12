@@ -8,7 +8,19 @@ import {
 } from "../contracts/json-contracts.js";
 import { resolveFromCwd } from "../shared/io.js";
 import { sanitizeReviewSurfaceValue } from "../shared/review-surface.js";
+import {
+  countBatchReviewComparisonDeltas,
+  loadBatchReviewSummaryComparisonReports,
+  type LoadedBatchReviewSummaryComparisonReport,
+  type ReviewGateComparisonThresholds,
+} from "./review-gate-comparison.js";
 import { createStructuredReviewSeverityCounts } from "./review-result.js";
+
+export {
+  loadBatchReviewSummaryComparisonReports,
+  type LoadedBatchReviewSummaryComparisonReport,
+  type ReviewGateComparisonThresholds,
+} from "./review-gate-comparison.js";
 
 const REVIEW_SEVERITY_ORDER: StructuredReviewSeverity[] = [
   "critical",
@@ -34,13 +46,16 @@ export interface ReviewGateThresholds {
   failOnSeverity?: StructuredReviewSeverity;
   maxFailedReviews?: number;
   maxFindings?: Partial<Record<StructuredReviewSeverity, number>>;
+  batchComparison?: ReviewGateComparisonThresholds;
 }
 
 export type ReviewGateViolationKind =
   | "severity-threshold"
   | "finding-budget"
   | "failed-review-budget"
-  | "missing-structured-rollup";
+  | "missing-structured-rollup"
+  | "batch-comparison-added-finding-budget"
+  | "batch-comparison-severity-regression-budget";
 
 export interface ReviewGateViolation {
   kind: ReviewGateViolationKind;
@@ -55,10 +70,13 @@ export interface ReviewGateCounts {
   overallSeverityCounts: Record<StructuredReviewSeverity, number>;
   reviewResults: number;
   batchSummaries: number;
+  batchComparisonReports: number;
   batchReviewTotals: number;
   passedBatchReviews: number;
   failedBatchReviews: number;
   highestObservedSeverity: StructuredReviewSeverity;
+  batchComparisonAddedFindings: Record<StructuredReviewSeverity, number>;
+  batchComparisonSeverityRegressions: number;
 }
 
 export interface ReviewGateReport {
@@ -70,6 +88,7 @@ export interface ReviewGateReport {
   inputs: {
     structuredReviewResults: string[];
     batchSummaries: string[];
+    batchComparisons: string[];
   };
 }
 
@@ -119,6 +138,12 @@ function formatInputCounts(report: ReviewGateReport): string {
     );
   }
 
+  if (report.counts.batchComparisonReports > 0) {
+    parts.push(
+      `${report.counts.batchComparisonReports} batch comparison report${report.counts.batchComparisonReports === 1 ? "" : "s"}`,
+    );
+  }
+
   return parts.length > 0 ? parts.join(" and ") : "0 inputs";
 }
 
@@ -128,7 +153,11 @@ function formatViolations(violations: ReviewGateViolation[]): string {
 
 function hasSeverityGate(thresholds: ReviewGateThresholds): boolean {
   return Boolean(
-    thresholds.failOnSeverity ||
+      thresholds.failOnSeverity ||
+      Object.values(thresholds.batchComparison?.maxAddedFindings || {}).some(
+        (value) => value !== undefined,
+      ) ||
+      thresholds.batchComparison?.maxSeverityRegressions !== undefined ||
       Object.values(thresholds.maxFindings || {}).some(
         (value) => value !== undefined,
       ),
@@ -142,6 +171,7 @@ export function formatReviewGateReport(report: ReviewGateReport): string {
     `Highest observed severity: ${report.counts.highestObservedSeverity}.`,
     `Finding counts: ${formatSeverityCounts(report.counts.findingCounts)}.`,
     `Batch review status counts: passed=${report.counts.passedBatchReviews}, failed=${report.counts.failedBatchReviews}, total=${report.counts.batchReviewTotals}.`,
+    `Batch comparison deltas: added findings ${formatSeverityCounts(report.counts.batchComparisonAddedFindings)}; severity regressions=${report.counts.batchComparisonSeverityRegressions}.`,
   ];
 
   if (report.violations.length > 0) {
@@ -191,13 +221,17 @@ export async function loadBatchReviewArtifactSummaries(
 export function evaluateReviewGate(input: {
   structuredReviewResults?: LoadedStructuredReviewResult[];
   batchSummaries?: LoadedBatchReviewArtifactSummary[];
+  batchComparisons?: LoadedBatchReviewSummaryComparisonReport[];
   thresholds: ReviewGateThresholds;
 }): ReviewGateReport {
   const structuredReviewResults = input.structuredReviewResults || [];
   const batchSummaries = input.batchSummaries || [];
+  const batchComparisons = input.batchComparisons || [];
   const thresholds = input.thresholds;
   const findingCounts = createStructuredReviewSeverityCounts();
   const overallSeverityCounts = createStructuredReviewSeverityCounts();
+  const batchComparisonCounts =
+    countBatchReviewComparisonDeltas(batchComparisons);
 
   for (const loadedResult of structuredReviewResults) {
     overallSeverityCounts[loadedResult.result.overallSeverity] += 1;
@@ -312,6 +346,37 @@ export function evaluateReviewGate(input: {
     });
   }
 
+  for (const severity of REVIEW_SEVERITY_ORDER) {
+    const allowed = thresholds.batchComparison?.maxAddedFindings?.[severity];
+    if (allowed === undefined) {
+      continue;
+    }
+
+    const actual = batchComparisonCounts.addedFindings[severity];
+    if (actual > allowed) {
+      violations.push({
+        kind: "batch-comparison-added-finding-budget",
+        severity,
+        actual,
+        allowed,
+        message: `Observed ${actual} added ${severity} finding delta${actual === 1 ? "" : "s"} across batch comparison reports, which exceeds the max-added-${severity} budget (${allowed}).`,
+      });
+    }
+  }
+
+  if (
+    thresholds.batchComparison?.maxSeverityRegressions !== undefined &&
+    batchComparisonCounts.severityRegressions >
+      thresholds.batchComparison.maxSeverityRegressions
+  ) {
+    violations.push({
+      kind: "batch-comparison-severity-regression-budget",
+      actual: batchComparisonCounts.severityRegressions,
+      allowed: thresholds.batchComparison.maxSeverityRegressions,
+      message: `Observed ${batchComparisonCounts.severityRegressions} batch comparison severity regression${batchComparisonCounts.severityRegressions === 1 ? "" : "s"}, which exceeds the max-severity-regressions budget (${thresholds.batchComparison.maxSeverityRegressions}).`,
+    });
+  }
+
   const report: ReviewGateReport = {
     ok: violations.length === 0,
     summary:
@@ -325,13 +390,21 @@ export function evaluateReviewGate(input: {
               overallSeverityCounts,
               reviewResults: structuredReviewResults.length,
               batchSummaries: batchSummaries.length,
+              batchComparisonReports: batchComparisons.length,
               batchReviewTotals,
               passedBatchReviews,
               failedBatchReviews,
               highestObservedSeverity,
+              batchComparisonAddedFindings: batchComparisonCounts.addedFindings,
+              batchComparisonSeverityRegressions:
+                batchComparisonCounts.severityRegressions,
             },
             violations: [],
-            inputs: { structuredReviewResults: [], batchSummaries: [] },
+            inputs: {
+              structuredReviewResults: [],
+              batchSummaries: [],
+              batchComparisons: [],
+            },
           })}.`
         : `Review gate failed with ${violations.length} violation${violations.length === 1 ? "" : "s"}.`,
     thresholds,
@@ -340,10 +413,14 @@ export function evaluateReviewGate(input: {
       overallSeverityCounts,
       reviewResults: structuredReviewResults.length,
       batchSummaries: batchSummaries.length,
+      batchComparisonReports: batchComparisons.length,
       batchReviewTotals,
       passedBatchReviews,
       failedBatchReviews,
       highestObservedSeverity,
+      batchComparisonAddedFindings: batchComparisonCounts.addedFindings,
+      batchComparisonSeverityRegressions:
+        batchComparisonCounts.severityRegressions,
     },
     violations,
     inputs: {
@@ -351,6 +428,9 @@ export function evaluateReviewGate(input: {
         (loadedResult) => loadedResult.pathLabel,
       ),
       batchSummaries: batchSummaries.map((loadedSummary) => loadedSummary.pathLabel),
+      batchComparisons: batchComparisons.map(
+        (loadedComparison) => loadedComparison.pathLabel,
+      ),
     },
   };
 
@@ -360,18 +440,22 @@ export function evaluateReviewGate(input: {
 export async function runReviewGate(input: {
   resultPaths?: string[];
   batchSummaryPaths?: string[];
+  batchComparisonPaths?: string[];
   thresholds: ReviewGateThresholds;
   cwd?: string;
 }): Promise<ReviewGateReport> {
   const cwd = input.cwd || process.cwd();
-  const [structuredReviewResults, batchSummaries] = await Promise.all([
+  const [structuredReviewResults, batchSummaries, batchComparisons] =
+    await Promise.all([
     loadStructuredReviewResults(input.resultPaths || [], cwd),
     loadBatchReviewArtifactSummaries(input.batchSummaryPaths || [], cwd),
+    loadBatchReviewSummaryComparisonReports(input.batchComparisonPaths || [], cwd),
   ]);
 
   return evaluateReviewGate({
     structuredReviewResults,
     batchSummaries,
+    batchComparisons,
     thresholds: input.thresholds,
   });
 }

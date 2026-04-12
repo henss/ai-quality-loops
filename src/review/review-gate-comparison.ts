@@ -1,0 +1,114 @@
+import * as fs from "node:fs/promises";
+import type { StructuredReviewSeverity } from "../contracts/json-contracts.js";
+import { resolveFromCwd } from "../shared/io.js";
+import { sanitizeReviewSurfaceValue } from "../shared/review-surface.js";
+import type { BatchReviewSummaryComparisonReport } from "./batch-review-summary-compare.js";
+import { createStructuredReviewSeverityCounts } from "./review-result.js";
+
+const REVIEW_SEVERITY_ORDER: StructuredReviewSeverity[] = [
+  "critical",
+  "high",
+  "medium",
+  "low",
+  "unknown",
+];
+
+export interface LoadedBatchReviewSummaryComparisonReport {
+  path: string;
+  pathLabel: string;
+  report: BatchReviewSummaryComparisonReport;
+}
+
+export interface ReviewGateComparisonThresholds {
+  maxAddedFindings?: Partial<Record<StructuredReviewSeverity, number>>;
+  maxSeverityRegressions?: number;
+}
+
+export interface ReviewGateComparisonCounts {
+  addedFindings: Record<StructuredReviewSeverity, number>;
+  severityRegressions: number;
+}
+
+function parseBatchReviewSummaryComparisonReport(
+  value: unknown,
+): BatchReviewSummaryComparisonReport {
+  if (typeof value !== "object" || value === null || Array.isArray(value)) {
+    throw new Error("Batch comparison report must be a JSON object.");
+  }
+
+  const report = value as BatchReviewSummaryComparisonReport;
+  if (
+    typeof report.comparison !== "object" ||
+    report.comparison === null ||
+    typeof report.comparison.counts !== "object" ||
+    report.comparison.counts === null ||
+    !Array.isArray(report.comparison.added) ||
+    !Array.isArray(report.comparison.changed)
+  ) {
+    throw new Error(
+      'Batch comparison report must include "comparison.counts", "comparison.added", and "comparison.changed".',
+    );
+  }
+
+  return report;
+}
+
+export async function loadBatchReviewSummaryComparisonReports(
+  comparisonPaths: string[],
+  cwd = process.cwd(),
+): Promise<LoadedBatchReviewSummaryComparisonReport[]> {
+  return Promise.all(
+    comparisonPaths.map(async (comparisonPath) => {
+      const resolvedPath = resolveFromCwd(comparisonPath, cwd);
+      const rawComparison = await fs.readFile(resolvedPath, "utf-8");
+
+      return {
+        path: resolvedPath,
+        pathLabel: sanitizeReviewSurfaceValue(resolvedPath),
+        report: parseBatchReviewSummaryComparisonReport(
+          JSON.parse(rawComparison) as unknown,
+        ),
+      };
+    }),
+  );
+}
+
+export function countBatchReviewComparisonDeltas(
+  batchComparisons: LoadedBatchReviewSummaryComparisonReport[],
+): ReviewGateComparisonCounts {
+  const addedFindings = createStructuredReviewSeverityCounts();
+  let severityRegressions = 0;
+
+  for (const loadedComparison of batchComparisons) {
+    const comparison = loadedComparison.report.comparison;
+    severityRegressions += comparison.counts.severityMovement.regressed;
+
+    for (const added of comparison.added) {
+      if (!added.structuredResult) {
+        continue;
+      }
+
+      for (const severity of REVIEW_SEVERITY_ORDER) {
+        addedFindings[severity] += added.structuredResult.findingCounts[severity];
+      }
+    }
+
+    for (const changed of comparison.changed) {
+      if (!changed.findingCountDelta) {
+        continue;
+      }
+
+      for (const severity of REVIEW_SEVERITY_ORDER) {
+        addedFindings[severity] += Math.max(
+          0,
+          changed.findingCountDelta[severity],
+        );
+      }
+    }
+  }
+
+  return {
+    addedFindings,
+    severityRegressions,
+  };
+}

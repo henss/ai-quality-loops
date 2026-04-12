@@ -314,6 +314,8 @@ review-gate --result ./reviews/json/homepage-hero-vision-review.json --result ./
 review-gate --batch-summary ./reviews/batch-summary.json --max-failed-reviews 0 --json
 batch-review-compare ./reviews/previous-batch-summary.json ./reviews/current-batch-summary.json
 batch-review-compare ./reviews/previous-batch-summary.json ./reviews/current-batch-summary.json --json
+batch-review-compare ./reviews/previous-batch-summary.json ./reviews/current-batch-summary.json --json > ./reviews/batch-comparison.json
+review-gate --batch-comparison ./reviews/batch-comparison.json --max-added-critical 0 --max-added-high 0 --max-severity-regressions 0
 ```
 
 The CLI now runs the shared review-preflight checks against the manifest's combined prerequisites before the first review starts, so mixed expert and vision batches fail fast on missing personas, models, browser dependencies, or unreadable optional context files.
@@ -359,10 +361,14 @@ Use `review-gate` when CI or a repo-local script needs one explicit pass/fail de
 
 - `--result` reads one or more structured review-result JSON files and applies severity or finding-count budgets.
 - `--batch-summary` reads one or more batch summary JSON files and applies failed-review budgets, plus severity or finding-count budgets when entries include structured-result rollups.
+- `--batch-comparison` reads one or more `batch-review-compare --json` reports and applies delta budgets to the comparison contract instead of rereading raw summaries.
 - `--fail-on-severity`, `--max-critical`, `--max-high`, `--max-medium`, `--max-low`, `--max-unknown`, and `--max-failed-reviews` keep policy explicit instead of hiding repo-specific heuristics in the package.
+- `--max-added-critical`, `--max-added-high`, `--max-added-medium`, `--max-added-low`, `--max-added-unknown`, and `--max-severity-regressions` keep regression budgets caller-owned for comparison reports.
 - `--json` emits a machine-readable report with counts, thresholds, violations, and sanitized input labels.
 
 The surface stays explicit: `review-gate --batch-summary` consumes only published per-entry `structuredResult` rollups and never infers repo-specific policy defaults. If a summary entry does not include a rollup, severity budgets report that missing rollup instead of silently treating the entry as clean.
+
+For comparison reports, added finding budgets count positive per-severity finding deltas on matched entries plus findings from added entries with structured rollups. Severity regression budgets count matched entries whose overall severity worsened. Removed entries, baseline storage, and approval policy remain caller-owned.
 
 ### Batch Review Compare CLI
 
@@ -371,7 +377,7 @@ Use `batch-review-compare` when a repeated manifest run needs a deterministic tw
 - It compares exactly two published batch-review summary JSON artifacts.
 - It matches entries by the summary `resultKey` and reports added, removed, status-changed, and unchanged entries.
 - It reports aggregate severity movement and finding-count deltas only from the per-entry `structuredResult` rollups already present in the summaries.
-- It does not infer baselines, read structured output paths, add approval policy, or route results through `review-gate`.
+- It does not infer baselines, read structured output paths, or add approval policy; use `review-gate --batch-comparison` when CI needs explicit delta budgets for the JSON report.
 
 ### Review Preflight CLI
 

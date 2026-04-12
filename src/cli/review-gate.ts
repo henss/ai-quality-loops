@@ -74,6 +74,34 @@ function createThresholds(options: Record<string, unknown>): ReviewGateThreshold
     thresholds.maxFindings = maxFindings;
   }
 
+  const maxAddedFindings = {
+    critical: parseOptionalBudget(
+      options.maxAddedCritical,
+      "--max-added-critical",
+    ),
+    high: parseOptionalBudget(options.maxAddedHigh, "--max-added-high"),
+    medium: parseOptionalBudget(options.maxAddedMedium, "--max-added-medium"),
+    low: parseOptionalBudget(options.maxAddedLow, "--max-added-low"),
+    unknown: parseOptionalBudget(
+      options.maxAddedUnknown,
+      "--max-added-unknown",
+    ),
+  };
+  const maxSeverityRegressions = parseOptionalBudget(
+    options.maxSeverityRegressions,
+    "--max-severity-regressions",
+  );
+
+  if (
+    maxSeverityRegressions !== undefined ||
+    Object.values(maxAddedFindings).some((value) => value !== undefined)
+  ) {
+    thresholds.batchComparison = {
+      maxSeverityRegressions,
+      maxAddedFindings,
+    };
+  }
+
   return thresholds;
 }
 
@@ -81,6 +109,10 @@ function hasAnyThreshold(thresholds: ReviewGateThresholds): boolean {
   return Boolean(
     thresholds.failOnSeverity ||
       thresholds.maxFailedReviews !== undefined ||
+      thresholds.batchComparison?.maxSeverityRegressions !== undefined ||
+      Object.values(thresholds.batchComparison?.maxAddedFindings || {}).some(
+        (value) => value !== undefined,
+      ) ||
       Object.values(thresholds.maxFindings || {}).some(
         (value) => value !== undefined,
       ),
@@ -104,6 +136,10 @@ async function main() {
       "Path to a batch summary JSON artifact. Repeat or use comma-separated values.",
     )
     .option(
+      "--batch-comparison <path>",
+      "Path to a batch-review-compare --json report. Repeat or use comma-separated values.",
+    )
+    .option(
       "--fail-on-severity <severity>",
       "Fail when any loaded structured review result or batch-summary rollup reaches this severity or higher.",
     )
@@ -116,14 +152,43 @@ async function main() {
     .option("--max-medium <count>", "Allow at most this many medium findings.")
     .option("--max-low <count>", "Allow at most this many low findings.")
     .option("--max-unknown <count>", "Allow at most this many unknown findings.")
+    .option(
+      "--max-added-critical <count>",
+      "Allow at most this many added critical finding deltas across batch comparison reports.",
+    )
+    .option(
+      "--max-added-high <count>",
+      "Allow at most this many added high finding deltas across batch comparison reports.",
+    )
+    .option(
+      "--max-added-medium <count>",
+      "Allow at most this many added medium finding deltas across batch comparison reports.",
+    )
+    .option(
+      "--max-added-low <count>",
+      "Allow at most this many added low finding deltas across batch comparison reports.",
+    )
+    .option(
+      "--max-added-unknown <count>",
+      "Allow at most this many added unknown finding deltas across batch comparison reports.",
+    )
+    .option(
+      "--max-severity-regressions <count>",
+      "Allow at most this many matched-entry severity regressions across batch comparison reports.",
+    )
     .option("--json", "Emit the gate result as JSON")
     .action(async (options) => {
       const resultPaths = parsePathList(options.result);
       const batchSummaryPaths = parsePathList(options.batchSummary);
+      const batchComparisonPaths = parsePathList(options.batchComparison);
 
-      if (resultPaths.length === 0 && batchSummaryPaths.length === 0) {
+      if (
+        resultPaths.length === 0 &&
+        batchSummaryPaths.length === 0 &&
+        batchComparisonPaths.length === 0
+      ) {
         throw new Error(
-          "Provide at least one input via --result or --batch-summary.",
+          "Provide at least one input via --result, --batch-summary, or --batch-comparison.",
         );
       }
 
@@ -137,6 +202,7 @@ async function main() {
       const report = await runReviewGate({
         resultPaths,
         batchSummaryPaths,
+        batchComparisonPaths,
         thresholds,
       });
 

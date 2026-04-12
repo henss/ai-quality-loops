@@ -6,6 +6,7 @@ import {
   evaluateReviewGate,
   formatReviewGateReport,
   loadBatchReviewArtifactSummaries,
+  loadBatchReviewSummaryComparisonReports,
   loadStructuredReviewResults,
   runReviewGate,
 } from "./review-gate.js";
@@ -304,6 +305,226 @@ describe("review gate", () => {
     expect(formatReviewGateReport(report)).toContain(
       "does not include structuredResult rollups",
     );
+  });
+
+  it("fails when batch comparison added finding deltas exceed explicit budgets", async () => {
+    const comparisonPath = path.join(tempDir, "batch-comparison.json");
+    await fs.writeFile(
+      comparisonPath,
+      JSON.stringify(
+        {
+          inputs: {
+            before: { pathLabel: "Local file path (.json file)" },
+            after: { pathLabel: "Local file path (.json file)" },
+          },
+          comparison: {
+            counts: {
+              beforeEntries: 2,
+              afterEntries: 3,
+              added: 1,
+              removed: 0,
+              matched: 2,
+              statusChanged: 0,
+              severityMovement: {
+                improved: 0,
+                regressed: 1,
+                unchanged: 1,
+                unavailable: 0,
+              },
+              totalFindingsDelta: 1,
+              findingCountDelta: {
+                critical: 0,
+                high: 1,
+                medium: 0,
+                low: 0,
+                unknown: 0,
+              },
+            },
+            added: [
+              {
+                resultKey: "pricing-vision",
+                index: 2,
+                name: "Pricing",
+                mode: "vision",
+                targetSummary: "Remote URL (example.com)",
+                status: "success",
+                structuredResult: {
+                  overallSeverity: "critical",
+                  totalFindings: 1,
+                  findingCounts: {
+                    critical: 1,
+                    high: 0,
+                    medium: 0,
+                    low: 0,
+                    unknown: 0,
+                  },
+                },
+              },
+            ],
+            removed: [],
+            changed: [
+              {
+                resultKey: "homepage-vision",
+                before: {
+                  resultKey: "homepage-vision",
+                  index: 0,
+                  mode: "vision",
+                  targetSummary: "Remote URL (example.com)",
+                  status: "success",
+                  structuredResult: {
+                    overallSeverity: "medium",
+                    totalFindings: 1,
+                    findingCounts: {
+                      critical: 0,
+                      high: 0,
+                      medium: 1,
+                      low: 0,
+                      unknown: 0,
+                    },
+                  },
+                },
+                after: {
+                  resultKey: "homepage-vision",
+                  index: 0,
+                  mode: "vision",
+                  targetSummary: "Remote URL (example.com)",
+                  status: "success",
+                  structuredResult: {
+                    overallSeverity: "high",
+                    totalFindings: 2,
+                    findingCounts: {
+                      critical: 0,
+                      high: 1,
+                      medium: 1,
+                      low: 0,
+                      unknown: 0,
+                    },
+                  },
+                },
+                statusChange: {
+                  before: "success",
+                  after: "success",
+                  changed: false,
+                },
+                severityChange: {
+                  before: "medium",
+                  after: "high",
+                  direction: "regressed",
+                },
+                totalFindingsDelta: 1,
+                findingCountDelta: {
+                  critical: 0,
+                  high: 1,
+                  medium: 0,
+                  low: 0,
+                  unknown: 0,
+                },
+              },
+            ],
+            unchanged: [],
+          },
+        },
+        null,
+        2,
+      ),
+    );
+
+    const report = await runReviewGate({
+      batchComparisonPaths: [comparisonPath],
+      thresholds: {
+        batchComparison: {
+          maxAddedFindings: {
+            critical: 0,
+            high: 0,
+          },
+          maxSeverityRegressions: 0,
+        },
+      },
+    });
+
+    expect(report.ok).toBe(false);
+    expect(report.counts.batchComparisonReports).toBe(1);
+    expect(report.counts.batchComparisonAddedFindings).toMatchObject({
+      critical: 1,
+      high: 1,
+    });
+    expect(report.counts.batchComparisonSeverityRegressions).toBe(1);
+    expect(report.violations).toEqual([
+      expect.objectContaining({
+        kind: "batch-comparison-added-finding-budget",
+        severity: "critical",
+        actual: 1,
+        allowed: 0,
+      }),
+      expect.objectContaining({
+        kind: "batch-comparison-added-finding-budget",
+        severity: "high",
+        actual: 1,
+        allowed: 0,
+      }),
+      expect.objectContaining({
+        kind: "batch-comparison-severity-regression-budget",
+        actual: 1,
+        allowed: 0,
+      }),
+    ]);
+    expect(formatReviewGateReport(report)).toContain(
+      "Batch comparison deltas: added findings critical=1, high=1",
+    );
+  });
+
+  it("loads batch comparison reports from disk with sanitized input labels", async () => {
+    const comparisonPath = path.join(tempDir, "batch-comparison.json");
+    await fs.writeFile(
+      comparisonPath,
+      JSON.stringify(
+        {
+          inputs: {
+            before: { pathLabel: "Local file path (.json file)" },
+            after: { pathLabel: "Local file path (.json file)" },
+          },
+          comparison: {
+            counts: {
+              beforeEntries: 1,
+              afterEntries: 1,
+              added: 0,
+              removed: 0,
+              matched: 1,
+              statusChanged: 0,
+              severityMovement: {
+                improved: 0,
+                regressed: 0,
+                unchanged: 1,
+                unavailable: 0,
+              },
+              totalFindingsDelta: 0,
+              findingCountDelta: {
+                critical: 0,
+                high: 0,
+                medium: 0,
+                low: 0,
+                unknown: 0,
+              },
+            },
+            added: [],
+            removed: [],
+            changed: [],
+            unchanged: [],
+          },
+        },
+        null,
+        2,
+      ),
+    );
+
+    const loaded = await loadBatchReviewSummaryComparisonReports([comparisonPath]);
+
+    expect(loaded).toEqual([
+      expect.objectContaining({
+        path: comparisonPath,
+        pathLabel: "Local file path (.json file)",
+      }),
+    ]);
   });
 
   it("loads structured review results from disk with sanitized input labels", async () => {

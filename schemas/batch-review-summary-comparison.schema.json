@@ -1,0 +1,189 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/henss/ai-quality-loops/schemas/batch-review-summary-comparison.schema.json",
+  "title": "Batch Review Summary Comparison",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["inputs", "comparison"],
+  "properties": {
+    "inputs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["before", "after"],
+      "properties": {
+        "before": { "$ref": "#/$defs/inputLabel" },
+        "after": { "$ref": "#/$defs/inputLabel" }
+      }
+    },
+    "comparison": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["counts", "added", "removed", "changed", "unchanged"],
+      "properties": {
+        "counts": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "beforeEntries",
+            "afterEntries",
+            "added",
+            "removed",
+            "matched",
+            "statusChanged",
+            "severityMovement",
+            "totalFindingsDelta",
+            "findingCountDelta"
+          ],
+          "properties": {
+            "beforeEntries": { "type": "integer", "minimum": 0 },
+            "afterEntries": { "type": "integer", "minimum": 0 },
+            "added": { "type": "integer", "minimum": 0 },
+            "removed": { "type": "integer", "minimum": 0 },
+            "matched": { "type": "integer", "minimum": 0 },
+            "statusChanged": { "type": "integer", "minimum": 0 },
+            "severityMovement": { "$ref": "#/$defs/severityMovementCounts" },
+            "totalFindingsDelta": { "type": "integer" },
+            "findingCountDelta": { "$ref": "#/$defs/signedSeverityCounts" }
+          }
+        },
+        "added": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/entrySnapshot" }
+        },
+        "removed": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/entrySnapshot" }
+        },
+        "changed": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/entryComparison" }
+        },
+        "unchanged": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/entryComparison" }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "batchReviewMode": {
+      "type": "string",
+      "enum": ["expert", "vision"]
+    },
+    "entrySnapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["resultKey", "index", "mode", "targetSummary", "status"],
+      "properties": {
+        "resultKey": { "type": "string", "minLength": 1 },
+        "index": { "type": "integer", "minimum": 0 },
+        "name": { "type": "string", "minLength": 1 },
+        "mode": { "$ref": "#/$defs/batchReviewMode" },
+        "targetSummary": { "type": "string", "minLength": 1 },
+        "status": { "$ref": "#/$defs/reviewStatus" },
+        "structuredResult": { "$ref": "#/$defs/structuredResultSummary" }
+      }
+    },
+    "entryComparison": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "resultKey",
+        "before",
+        "after",
+        "statusChange",
+        "severityChange"
+      ],
+      "properties": {
+        "resultKey": { "type": "string", "minLength": 1 },
+        "before": { "$ref": "#/$defs/entrySnapshot" },
+        "after": { "$ref": "#/$defs/entrySnapshot" },
+        "statusChange": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["before", "after", "changed"],
+          "properties": {
+            "before": { "$ref": "#/$defs/reviewStatus" },
+            "after": { "$ref": "#/$defs/reviewStatus" },
+            "changed": { "type": "boolean" }
+          }
+        },
+        "severityChange": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["direction"],
+          "properties": {
+            "before": { "$ref": "#/$defs/structuredReviewSeverity" },
+            "after": { "$ref": "#/$defs/structuredReviewSeverity" },
+            "direction": {
+              "type": "string",
+              "enum": ["improved", "regressed", "unchanged", "unavailable"]
+            }
+          }
+        },
+        "totalFindingsDelta": { "type": "integer" },
+        "findingCountDelta": { "$ref": "#/$defs/signedSeverityCounts" }
+      }
+    },
+    "inputLabel": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["pathLabel"],
+      "properties": {
+        "pathLabel": { "type": "string", "minLength": 1 }
+      }
+    },
+    "reviewStatus": {
+      "type": "string",
+      "enum": ["success", "failure"]
+    },
+    "severityMovementCounts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["improved", "regressed", "unchanged", "unavailable"],
+      "properties": {
+        "improved": { "type": "integer", "minimum": 0 },
+        "regressed": { "type": "integer", "minimum": 0 },
+        "unchanged": { "type": "integer", "minimum": 0 },
+        "unavailable": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "signedSeverityCounts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["critical", "high", "medium", "low", "unknown"],
+      "properties": {
+        "critical": { "type": "integer" },
+        "high": { "type": "integer" },
+        "medium": { "type": "integer" },
+        "low": { "type": "integer" },
+        "unknown": { "type": "integer" }
+      }
+    },
+    "structuredReviewSeverity": {
+      "type": "string",
+      "enum": ["critical", "high", "medium", "low", "unknown"]
+    },
+    "structuredResultSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["overallSeverity", "totalFindings", "findingCounts"],
+      "properties": {
+        "overallSeverity": { "$ref": "#/$defs/structuredReviewSeverity" },
+        "totalFindings": { "type": "integer", "minimum": 0 },
+        "findingCounts": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["critical", "high", "medium", "low", "unknown"],
+          "properties": {
+            "critical": { "type": "integer", "minimum": 0 },
+            "high": { "type": "integer", "minimum": 0 },
+            "medium": { "type": "integer", "minimum": 0 },
+            "low": { "type": "integer", "minimum": 0 },
+            "unknown": { "type": "integer", "minimum": 0 }
+          }
+        }
+      }
+    }
+  }
+}

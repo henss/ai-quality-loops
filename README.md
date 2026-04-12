@@ -61,7 +61,7 @@ The library works out-of-the-box with default example personas in `personas/univ
 - Review flows also attach prompt-safe provenance bullets such as `Content source` or `Capture mode`, using sanitized descriptors instead of raw local paths or sensitive URL details.
 - Targeted vision-review provenance preserves the planned capture label together with the sanitized requested section id, using values such as `section-1 (hero)` instead of collapsing everything to anonymous section counters.
 - Expert and vision review entrypoints can also emit one narrow structured review-result contract with summary, severity rollup, finding list, sanitized provenance descriptors, and the original Markdown, so downstream automation can route findings without maintaining brittle Markdown parsers.
-- The package also publishes JSON Schema artifacts for the batch-review manifest, batch-review summary, and structured review-result contracts under `schemas/`, alongside thin `parse...` and `validate...` helpers exported from the package root for callers that want contract checks without adding a schema runtime first.
+- The package also publishes JSON Schema artifacts for the batch-review manifest, batch-review summary, batch-review summary comparison, and structured review-result contracts under `schemas/`, alongside thin `parse...` and `validate...` helpers exported from the package root for callers that want contract checks without adding a schema runtime first.
 - `CHROME_PATH`: (Optional) Path to your browser executable (defaults to Edge on Windows).
 - `OLLAMA_URL`: (Optional) URL to your Ollama instance (defaults to http://127.0.0.1:11434).
 
@@ -129,6 +129,7 @@ If a wrapper wants to validate JSON payloads against the published contract surf
 ```typescript
 import {
   JSON_CONTRACT_SCHEMA_FILES,
+  validateBatchReviewSummaryComparisonReport,
   validateBatchReviewManifest,
   validateStructuredReviewResult
 } from 'ai-quality-loops';
@@ -143,7 +144,14 @@ if (!resultValidation.ok) {
   throw resultValidation.error;
 }
 
+const comparisonValidation =
+  validateBatchReviewSummaryComparisonReport(comparisonJson);
+if (!comparisonValidation.ok) {
+  throw comparisonValidation.error;
+}
+
 console.log(JSON_CONTRACT_SCHEMA_FILES.batchReviewManifest);
+console.log(JSON_CONTRACT_SCHEMA_FILES.batchReviewSummaryComparison);
 console.log(JSON_CONTRACT_SCHEMA_FILES.structuredReviewResult);
 ```
 
@@ -377,6 +385,7 @@ Use `batch-review-compare` when a repeated manifest run needs a deterministic tw
 - It compares exactly two published batch-review summary JSON artifacts.
 - It matches entries by the summary `resultKey` and reports added, removed, status-changed, and unchanged entries.
 - It reports aggregate severity movement and finding-count deltas only from the per-entry `structuredResult` rollups already present in the summaries.
+- Its `--json` output is covered by the published `batchReviewSummaryComparison` schema path and `validateBatchReviewSummaryComparisonReport(...)` helper so wrappers can validate the contract without scraping CLI implementation details.
 - It does not infer baselines, read structured output paths, or add approval policy; use `review-gate --batch-comparison` when CI needs explicit delta budgets for the JSON report.
 
 ### Review Preflight CLI

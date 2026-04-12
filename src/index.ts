@@ -33,3 +33,12 @@ export {
   type JsonContractValidationResult,
   type JsonContractValidationSuccess,
 } from "./contracts/json-contracts.js";
+export {
+  parseBatchReviewSummaryComparisonReport,
+  validateBatchReviewSummaryComparisonReport,
+  type BatchReviewSummaryComparison,
+  type BatchReviewSummaryComparisonReport,
+  type BatchReviewSummaryEntryComparison,
+  type BatchReviewSummaryEntrySnapshot,
+  type BatchReviewSummarySeverityDirection,
+} from "./contracts/batch-review-summary-comparison-contract.js";

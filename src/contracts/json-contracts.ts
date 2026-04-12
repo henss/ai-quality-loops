@@ -102,6 +102,8 @@ export type JsonContractValidationResult<T> =
 
 export const JSON_CONTRACT_SCHEMA_FILES = Object.freeze({
   batchReviewManifest: "schemas/batch-review-manifest.schema.json",
+  batchReviewSummaryComparison:
+    "schemas/batch-review-summary-comparison.schema.json",
   batchReviewSummary: "schemas/batch-review-summary.schema.json",
   structuredReviewResult: "schemas/structured-review-result.schema.json",
 });

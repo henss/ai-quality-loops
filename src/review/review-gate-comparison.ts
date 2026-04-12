@@ -2,7 +2,10 @@ import * as fs from "node:fs/promises";
 import type { StructuredReviewSeverity } from "../contracts/json-contracts.js";
 import { resolveFromCwd } from "../shared/io.js";
 import { sanitizeReviewSurfaceValue } from "../shared/review-surface.js";
-import type { BatchReviewSummaryComparisonReport } from "./batch-review-summary-compare.js";
+import {
+  parseBatchReviewSummaryComparisonReport,
+  type BatchReviewSummaryComparisonReport,
+} from "../contracts/batch-review-summary-comparison-contract.js";
 import { createStructuredReviewSeverityCounts } from "./review-result.js";
 
 const REVIEW_SEVERITY_ORDER: StructuredReviewSeverity[] = [
@@ -27,30 +30,6 @@ export interface ReviewGateComparisonThresholds {
 export interface ReviewGateComparisonCounts {
   addedFindings: Record<StructuredReviewSeverity, number>;
   severityRegressions: number;
-}
-
-function parseBatchReviewSummaryComparisonReport(
-  value: unknown,
-): BatchReviewSummaryComparisonReport {
-  if (typeof value !== "object" || value === null || Array.isArray(value)) {
-    throw new Error("Batch comparison report must be a JSON object.");
-  }
-
-  const report = value as BatchReviewSummaryComparisonReport;
-  if (
-    typeof report.comparison !== "object" ||
-    report.comparison === null ||
-    typeof report.comparison.counts !== "object" ||
-    report.comparison.counts === null ||
-    !Array.isArray(report.comparison.added) ||
-    !Array.isArray(report.comparison.changed)
-  ) {
-    throw new Error(
-      'Batch comparison report must include "comparison.counts", "comparison.added", and "comparison.changed".',
-    );
-  }
-
-  return report;
 }
 
 export async function loadBatchReviewSummaryComparisonReports(

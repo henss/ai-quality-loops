@@ -4,6 +4,13 @@ import {
   type BatchReviewStructuredResultSummary,
   type StructuredReviewSeverity,
 } from "../contracts/json-contracts.js";
+import {
+  type BatchReviewSummaryComparison,
+  type BatchReviewSummaryComparisonReport,
+  type BatchReviewSummaryEntryComparison,
+  type BatchReviewSummaryEntrySnapshot,
+  type BatchReviewSummarySeverityDirection,
+} from "../contracts/batch-review-summary-comparison-contract.js";
 import { resolveFromCwd } from "../shared/io.js";
 import { sanitizeReviewSurfaceValue } from "../shared/review-surface.js";
 import { loadBatchReviewArtifactSummary } from "./batch-review-artifacts.js";
@@ -16,61 +23,13 @@ const REVIEW_SEVERITY_ORDER: StructuredReviewSeverity[] = [
   "unknown",
 ];
 
-export type BatchReviewSummarySeverityDirection = "improved" | "regressed" | "unchanged" | "unavailable";
-
-export interface BatchReviewSummaryEntrySnapshot {
-  resultKey: string;
-  index: number;
-  name?: string;
-  mode: BatchReviewArtifactResult["mode"];
-  targetSummary: string;
-  status: BatchReviewArtifactResult["status"];
-  structuredResult?: BatchReviewStructuredResultSummary;
-}
-
-export interface BatchReviewSummaryEntryComparison {
-  resultKey: string;
-  before: BatchReviewSummaryEntrySnapshot;
-  after: BatchReviewSummaryEntrySnapshot;
-  statusChange: {
-    before: BatchReviewArtifactResult["status"];
-    after: BatchReviewArtifactResult["status"];
-    changed: boolean;
-  };
-  severityChange: {
-    before?: StructuredReviewSeverity;
-    after?: StructuredReviewSeverity;
-    direction: BatchReviewSummarySeverityDirection;
-  };
-  totalFindingsDelta?: number;
-  findingCountDelta?: Record<StructuredReviewSeverity, number>;
-}
-
-export interface BatchReviewSummaryComparison {
-  counts: {
-    beforeEntries: number;
-    afterEntries: number;
-    added: number;
-    removed: number;
-    matched: number;
-    statusChanged: number;
-    severityMovement: Record<BatchReviewSummarySeverityDirection, number>;
-    totalFindingsDelta: number;
-    findingCountDelta: Record<StructuredReviewSeverity, number>;
-  };
-  added: BatchReviewSummaryEntrySnapshot[];
-  removed: BatchReviewSummaryEntrySnapshot[];
-  changed: BatchReviewSummaryEntryComparison[];
-  unchanged: BatchReviewSummaryEntryComparison[];
-}
-
-export interface BatchReviewSummaryComparisonReport {
-  inputs: {
-    before: { pathLabel: string };
-    after: { pathLabel: string };
-  };
-  comparison: BatchReviewSummaryComparison;
-}
+export type {
+  BatchReviewSummaryComparison,
+  BatchReviewSummaryComparisonReport,
+  BatchReviewSummaryEntryComparison,
+  BatchReviewSummaryEntrySnapshot,
+  BatchReviewSummarySeverityDirection,
+};
 
 function createEmptySeverityCounts(): Record<StructuredReviewSeverity, number> {
   return {

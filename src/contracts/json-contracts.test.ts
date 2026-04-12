@@ -9,6 +9,7 @@ import {
   validateBatchReviewManifest,
   validateStructuredReviewResult,
 } from "./json-contracts.js";
+import { validateBatchReviewSummaryComparisonReport } from "./batch-review-summary-comparison-contract.js";
 
 describe("public JSON contracts", () => {
   it("parses the published batch review manifest shape", () => {
@@ -161,6 +162,119 @@ describe("public JSON contracts", () => {
         mode: "vision",
       }),
     );
+  });
+
+  it("validates the published batch review summary comparison shape", () => {
+    const validation = validateBatchReviewSummaryComparisonReport({
+      inputs: {
+        before: { pathLabel: "Local file path (.json file)" },
+        after: { pathLabel: "Local file path (.json file)" },
+      },
+      comparison: {
+        counts: {
+          beforeEntries: 1,
+          afterEntries: 1,
+          added: 0,
+          removed: 0,
+          matched: 1,
+          statusChanged: 0,
+          severityMovement: {
+            improved: 0,
+            regressed: 1,
+            unchanged: 0,
+            unavailable: 0,
+          },
+          totalFindingsDelta: 1,
+          findingCountDelta: {
+            critical: 0,
+            high: 1,
+            medium: 0,
+            low: 0,
+            unknown: 0,
+          },
+        },
+        added: [],
+        removed: [],
+        changed: [
+          {
+            resultKey: "homepage-vision",
+            before: {
+              resultKey: "homepage-vision",
+              index: 0,
+              mode: "vision",
+              targetSummary: "Remote URL (example.com)",
+              status: "success",
+              structuredResult: {
+                overallSeverity: "medium",
+                totalFindings: 1,
+                findingCounts: {
+                  critical: 0,
+                  high: 0,
+                  medium: 1,
+                  low: 0,
+                  unknown: 0,
+                },
+              },
+            },
+            after: {
+              resultKey: "homepage-vision",
+              index: 0,
+              mode: "vision",
+              targetSummary: "Remote URL (example.com)",
+              status: "success",
+              structuredResult: {
+                overallSeverity: "high",
+                totalFindings: 2,
+                findingCounts: {
+                  critical: 0,
+                  high: 1,
+                  medium: 1,
+                  low: 0,
+                  unknown: 0,
+                },
+              },
+            },
+            statusChange: {
+              before: "success",
+              after: "success",
+              changed: false,
+            },
+            severityChange: {
+              before: "medium",
+              after: "high",
+              direction: "regressed",
+            },
+            totalFindingsDelta: 1,
+            findingCountDelta: {
+              critical: 0,
+              high: 1,
+              medium: 0,
+              low: 0,
+              unknown: 0,
+            },
+          },
+        ],
+        unchanged: [],
+      },
+    });
+
+    expect(validation).toEqual({
+      ok: true,
+      value: expect.objectContaining({
+        comparison: expect.objectContaining({
+          counts: expect.objectContaining({
+            totalFindingsDelta: 1,
+          }),
+          changed: [
+            expect.objectContaining({
+              severityChange: expect.objectContaining({
+                direction: "regressed",
+              }),
+            }),
+          ],
+        }),
+      }),
+    });
   });
 
   it("validates the published structured review result shape", () => {

@@ -20,6 +20,7 @@ import {
 import { loadPersonaPrompt } from "./persona-catalog.js";
 import {
   buildStructuredReviewResult,
+  stripReviewReasoningBlocks,
   type StructuredReviewResult,
 } from "./review-result.js";
 
@@ -132,16 +133,17 @@ export async function runExpertReview(
       prompt: finalPrompt,
       temperature: 0.7,
     });
+    const reviewMarkdown = stripReviewReasoningBlocks(text);
 
     getLogger().info("\n--- " + personaName.toUpperCase() + " REVIEW ---");
-    getLogger().info(text);
+    getLogger().info(reviewMarkdown);
     getLogger().info("---------------------\n");
 
     const structuredResult = buildStructuredReviewResult({
       workflow: "expert",
       expert: personaName,
       model: modelId,
-      markdown: text,
+      markdown: reviewMarkdown,
       provenance: [
         {
           label: "Content source",
@@ -151,7 +153,7 @@ export async function runExpertReview(
     });
 
     if (outputPath) {
-      const absoluteOutputPath = await writeReviewOutput(outputPath, text);
+      const absoluteOutputPath = await writeReviewOutput(outputPath, reviewMarkdown);
       getLogger().info(
         `Review saved to: ${summarizeReviewOutputReference(
           absoluteOutputPath,
@@ -177,7 +179,7 @@ export async function runExpertReview(
       );
     }
 
-    return options.resultFormat === "structured" ? structuredResult : text;
+    return options.resultFormat === "structured" ? structuredResult : reviewMarkdown;
   } catch (error) {
     getLogger().error(
       `Error during Expert review: ${summarizeReviewSurfaceError(error, {

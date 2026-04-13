@@ -4,6 +4,7 @@ import {
   extractStructuredReviewFindings,
   extractStructuredReviewSummary,
   inferReviewSeverity,
+  stripReviewReasoningBlocks,
 } from "./review-result.js";
 
 describe("structured review result", () => {
@@ -111,5 +112,28 @@ Spacing between cards feels uneven.
 
   it("keeps severity unknown when the markdown does not signal priority", () => {
     expect(inferReviewSeverity("Needs cleanup before merge.")).toBe("unknown");
+  });
+
+  it("strips model reasoning blocks before parsing or persisting review markdown", () => {
+    const markdown = [
+      "<thought>",
+      "private chain of thought",
+      "</thought>",
+      "# Summary",
+      "Actionable review summary.",
+    ].join("\n");
+
+    expect(stripReviewReasoningBlocks(markdown)).toBe(
+      "# Summary\nActionable review summary.",
+    );
+    expect(
+      buildStructuredReviewResult({
+        workflow: "expert",
+        expert: "Reviewer",
+        model: "model",
+        markdown,
+        provenance: [],
+      }).markdown,
+    ).toBe("# Summary\nActionable review summary.");
   });
 });

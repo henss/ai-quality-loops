@@ -44,8 +44,17 @@ const SEVERITY_PATTERNS: Array<{
   { severity: "low", pattern: /\b(low|minor|nit|small)\b/i },
 ];
 
+export function stripReviewReasoningBlocks(markdown: string): string {
+  return markdown
+    .replace(/<thought>[\s\S]*?<\/thought>/gi, "")
+    .replace(/<thinking>[\s\S]*?<\/thinking>/gi, "")
+    .replace(/<reasoning>[\s\S]*?<\/reasoning>/gi, "")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+}
+
 function normalizeMarkdown(markdown: string): string {
-  return markdown.replace(/\r\n/g, "\n").trim();
+  return stripReviewReasoningBlocks(markdown.replace(/\r\n/g, "\n"));
 }
 
 function toParagraphs(body: string): string[] {

@@ -29,6 +29,7 @@ import {
 } from "./vision-capture-plan.js";
 import {
   buildStructuredReviewResult,
+  stripReviewReasoningBlocks,
   type StructuredReviewResult,
 } from "./review-result.js";
 
@@ -249,16 +250,17 @@ export async function runVisionReview(
       imagesBase64,
       temperature: 0.2,
     });
+    const reviewMarkdown = stripReviewReasoningBlocks(text);
 
     getLogger().info("\n--- VISION " + personaName.toUpperCase() + " REVIEW ---");
-    getLogger().info(text);
+    getLogger().info(reviewMarkdown);
     getLogger().info("---------------------\n");
 
     const structuredResult = buildStructuredReviewResult({
       workflow: "vision",
       expert: personaName,
       model: visionModel,
-      markdown: text,
+      markdown: reviewMarkdown,
       provenance: [
         {
           label: "Source",
@@ -287,7 +289,7 @@ export async function runVisionReview(
     });
 
     if (outputPath) {
-      const absoluteOutputPath = await writeReviewOutput(outputPath, text);
+      const absoluteOutputPath = await writeReviewOutput(outputPath, reviewMarkdown);
       getLogger().info(
         `Review saved to: ${summarizeReviewOutputReference(
           absoluteOutputPath,
@@ -313,7 +315,7 @@ export async function runVisionReview(
       );
     }
 
-    return options.resultFormat === "structured" ? structuredResult : text;
+    return options.resultFormat === "structured" ? structuredResult : reviewMarkdown;
   } catch (error) {
     getLogger().error(
       `Error during Vision review: ${summarizeReviewSurfaceError(error, {

@@ -41,6 +41,10 @@ async function main() {
     .option("--prompt-library <path>", "Path to the persona library markdown file")
     .option("--context <path>", "Path to the optional review context JSON file")
     .option("--ollama-url <url>", "Base URL for the Ollama API")
+    .option(
+      "--start-ollama",
+      "Attempt to start `ollama serve` when the configured endpoint is down",
+    )
     .option("--browser-path <path>", "Browser executable path for screenshot-based checks")
     .option("--list-personas", "List available personas and built-in aliases")
     .option("--json", "Emit the result as JSON")
@@ -65,6 +69,7 @@ async function main() {
         promptLibraryPath: options.promptLibrary,
         contextPath: options.context,
         ollamaUrl: options.ollamaUrl,
+        startOllamaIfDown: Boolean(options.startOllama),
         browserPath: options.browserPath,
       });
 

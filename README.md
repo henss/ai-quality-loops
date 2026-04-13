@@ -395,11 +395,13 @@ Use `review-preflight` to catch missing local prerequisites before a costly expe
 ```bash
 review-preflight --mode both --expert "UI/UX"
 review-preflight --mode vision --vision-model qwen3-vl:30b --json
+review-preflight --mode both --start-ollama
 ```
 
 The command stays read-only and checks:
 
 - Ollama reachability plus whether the requested expert and/or vision model is installed.
+- Optional `--start-ollama` startup of `ollama serve` before failing a down local endpoint.
 - Browser executable availability for screenshot-backed review flows.
 - Persona-library resolution for the requested persona.
 - Optional context JSON readability when a context file is configured.

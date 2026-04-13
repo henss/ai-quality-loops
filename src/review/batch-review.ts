@@ -156,6 +156,7 @@ export interface RunBatchReviewManifestPreflightOptions {
   cwd?: string;
   browserPath?: string;
   fetchImpl?: typeof fetch;
+  startOllamaIfDown?: boolean;
 }
 
 export interface LoadBatchReviewExecutionPlanOptions {
@@ -258,6 +259,7 @@ export async function runBatchReviewManifestPreflight({
   cwd = process.cwd(),
   browserPath,
   fetchImpl,
+  startOllamaIfDown,
 }: RunBatchReviewManifestPreflightOptions): Promise<ReviewPreflightResult> {
   const resolvedManifestPath = resolveFromCwd(manifestPath, cwd);
   const manifest = await loadBatchReviewManifest(resolvedManifestPath, cwd);
@@ -268,6 +270,7 @@ export async function runBatchReviewManifestPreflight({
     cwd,
     browserPath,
     fetchImpl,
+    startOllamaIfDown,
   });
 }
 

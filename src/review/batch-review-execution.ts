@@ -127,11 +127,13 @@ export async function runBatchReviewEntriesPreflight({
   cwd = process.cwd(),
   browserPath,
   fetchImpl,
+  startOllamaIfDown,
 }: {
   entries: NormalizedBatchReviewEntry[];
   cwd?: string;
   browserPath?: string;
   fetchImpl?: typeof fetch;
+  startOllamaIfDown?: boolean;
 }): Promise<ReviewPreflightResult> {
   const preflightOptions = deriveBatchReviewPreflightOptions(entries);
 
@@ -140,6 +142,7 @@ export async function runBatchReviewEntriesPreflight({
     browserPath,
     cwd,
     fetchImpl,
+    startOllamaIfDown,
   });
 }
 

@@ -54,6 +54,10 @@ async function main() {
       "--summary-output <path>",
       "Write a machine-readable JSON summary artifact for the batch run",
     )
+    .option(
+      "--start-ollama",
+      "Attempt to start `ollama serve` when the configured endpoint is down",
+    )
     .action(async (manifestArg, options) => {
       const manifestPath = options.manifest || manifestArg;
 
@@ -81,6 +85,7 @@ async function main() {
 
         const preflight = await runBatchReviewManifestPreflight({
           manifestPath,
+          startOllamaIfDown: Boolean(options.startOllama),
         });
         console.info(formatReviewPreflightSummary(preflight));
         if (!preflight.ok) {
@@ -120,6 +125,7 @@ async function main() {
       const rerunEntries = normalizeBatchReviewManifest(rerunManifest);
       const preflight = await runBatchReviewEntriesPreflight({
         entries: rerunEntries,
+        startOllamaIfDown: Boolean(options.startOllama),
       });
       console.info(formatReviewPreflightSummary(preflight));
       if (!preflight.ok) {

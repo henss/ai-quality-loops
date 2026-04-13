@@ -1,4 +1,5 @@
 import * as fs from "node:fs/promises";
+import { spawn } from "node:child_process";
 import { getDefaultExpertReviewModel, getDefaultOllamaUrl, getDefaultVisionReviewModel } from "../shared/models.js";
 import {
   sanitizeReviewSurfaceValue,
@@ -13,6 +14,7 @@ import { loadPersonaPrompt } from "./persona-catalog.js";
 export type ReviewPreflightMode = "expert" | "vision" | "both";
 export type ReviewPreflightCheckName =
   | "ollama"
+  | "ollama-start"
   | "expert-model"
   | "vision-model"
   | "browser"
@@ -54,6 +56,12 @@ export interface RunReviewPreflightOptions {
   browserPath?: string;
   cwd?: string;
   fetchImpl?: typeof fetch;
+  startOllamaIfDown?: boolean;
+  startOllamaTimeoutMs?: number;
+  startOllamaImpl?: (
+    ollamaUrl: string,
+    options: { timeoutMs: number; fetchImpl: typeof fetch },
+  ) => Promise<ReviewPreflightCheck>;
   personaRequirements?: ReviewPreflightPersonaRequirement[];
   modelRequirements?: ReviewPreflightModelRequirement[];
   contextPaths?: string[];
@@ -104,6 +112,50 @@ async function listInstalledOllamaModels(
   }
 
   return names;
+}
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function defaultStartOllama(
+  ollamaUrl: string,
+  { timeoutMs, fetchImpl }: { timeoutMs: number; fetchImpl: typeof fetch },
+): Promise<ReviewPreflightCheck> {
+  try {
+    const child = spawn("ollama", ["serve"], {
+      detached: true,
+      stdio: "ignore",
+      windowsHide: true,
+    });
+    child.unref();
+  } catch (error) {
+    return {
+      name: "ollama-start",
+      status: "fail",
+      summary: `Could not start Ollama: ${summarizeReviewSurfaceError(error)}.`,
+    };
+  }
+
+  const startedAt = Date.now();
+  while (Date.now() - startedAt < timeoutMs) {
+    try {
+      await listInstalledOllamaModels(ollamaUrl, fetchImpl);
+      return {
+        name: "ollama-start",
+        status: "pass",
+        summary: `Started Ollama endpoint ${sanitizeReviewSurfaceValue(ollamaUrl)}.`,
+      };
+    } catch {
+      await sleep(250);
+    }
+  }
+
+  return {
+    name: "ollama-start",
+    status: "fail",
+    summary: `Ollama did not become reachable within ${timeoutMs} ms.`,
+  };
 }
 
 function uniqueBy<T>(values: T[], getKey: (value: T) => string): T[] {
@@ -259,6 +311,8 @@ export async function runReviewPreflight(
     }),
   );
   const { paths: contextPaths, explicitlyConfigured } = getContextPaths(options);
+  const startOllamaImpl = options.startOllamaImpl ?? defaultStartOllama;
+  const startOllamaTimeoutMs = options.startOllamaTimeoutMs ?? 8000;
 
   const modelsByOllamaUrl = new Map<string, ReviewPreflightModelRequirement[]>();
   for (const requirement of modelRequirements) {
@@ -281,6 +335,37 @@ export async function runReviewPreflight(
         summary: `Ollama endpoint ${sanitizeReviewSurfaceValue(ollamaUrl)} is reachable and returned ${installedModels.size} installed model(s).`,
       });
     } catch (error) {
+      if (options.startOllamaIfDown) {
+        const startCheck = await startOllamaImpl(ollamaUrl, {
+          timeoutMs: startOllamaTimeoutMs,
+          fetchImpl,
+        });
+        checks.push(startCheck);
+
+        if (startCheck.status === "pass") {
+          try {
+            const installedModels = await listInstalledOllamaModels(
+              ollamaUrl,
+              fetchImpl,
+            );
+            installedModelsByOllamaUrl.set(ollamaUrl, installedModels);
+            checks.push({
+              name: "ollama",
+              status: "pass",
+              summary: `Ollama endpoint ${sanitizeReviewSurfaceValue(ollamaUrl)} is reachable after startup and returned ${installedModels.size} installed model(s).`,
+            });
+            continue;
+          } catch (retryError) {
+            checks.push({
+              name: "ollama",
+              status: "fail",
+              summary: `Ollama endpoint ${sanitizeReviewSurfaceValue(ollamaUrl)} is still not reachable after startup: ${summarizeReviewSurfaceError(retryError)}.`,
+            });
+            continue;
+          }
+        }
+      }
+
       checks.push({
         name: "ollama",
         status: "fail",

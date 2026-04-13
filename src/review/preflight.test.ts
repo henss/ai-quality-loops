@@ -134,6 +134,62 @@ describe("review preflight", () => {
     );
   });
 
+  it("can start ollama and retry model validation when requested", async () => {
+    const promptLibraryPath = path.join(tempDir, "personas.md");
+    await fs.writeFile(
+      promptLibraryPath,
+      "# CUSTOM REVIEWER\nEverything is fine.",
+    );
+
+    const fetchImpl = vi
+      .fn()
+      .mockRejectedValueOnce(new Error("connect ECONNREFUSED 127.0.0.1"))
+      .mockResolvedValueOnce(
+        createFetchResponse({
+          models: [{ name: "qwen3.5:27b" }],
+        }),
+      );
+    const startOllamaImpl = vi.fn().mockResolvedValue({
+      name: "ollama-start",
+      status: "pass",
+      summary: "Started Ollama.",
+    });
+
+    const result = await runReviewPreflight({
+      mode: "expert",
+      expert: "CUSTOM REVIEWER",
+      expertModel: "qwen3.5:27b",
+      promptLibraryPath,
+      fetchImpl,
+      startOllamaIfDown: true,
+      startOllamaImpl,
+    });
+
+    expect(result.ok).toBe(true);
+    expect(startOllamaImpl).toHaveBeenCalledWith(
+      "http://127.0.0.1:11434",
+      expect.objectContaining({ fetchImpl }),
+    );
+    expect(result.checks).toContainEqual(
+      expect.objectContaining({
+        name: "ollama-start",
+        status: "pass",
+      }),
+    );
+    expect(result.checks).toContainEqual(
+      expect.objectContaining({
+        name: "ollama",
+        status: "pass",
+      }),
+    );
+    expect(result.checks).toContainEqual(
+      expect.objectContaining({
+        name: "expert-model",
+        status: "pass",
+      }),
+    );
+  });
+
   it("fails persona, browser, and invalid context checks with compact summaries", async () => {
     const promptLibraryPath = path.join(tempDir, "personas.md");
     const contextPath = path.join(tempDir, "context.json");

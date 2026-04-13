@@ -19,6 +19,7 @@ export * from "./review/vision-section-discovery.js";
 export * from "./review/batch-review.js";
 export * from "./review/preflight.js";
 export * from "./review/review-gate.js";
+export * from "./review/review-focus-lint.js";
 export * from "./review/persona-catalog.js";
 export * from "./review/shared.js";
 export {

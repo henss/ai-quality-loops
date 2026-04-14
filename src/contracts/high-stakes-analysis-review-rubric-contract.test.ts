@@ -35,6 +35,10 @@ describe("high-stakes analysis review rubric contract", () => {
 
     for (const privatePolicyTerm of [
       "broker",
+      "finance",
+      "financial",
+      "investment",
+      "market",
       "tax",
       "portfolio",
       "trading",

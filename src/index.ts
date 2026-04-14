@@ -43,3 +43,13 @@ export {
   type BatchReviewSummaryEntrySnapshot,
   type BatchReviewSummarySeverityDirection,
 } from "./contracts/batch-review-summary-comparison-contract.js";
+export {
+  HIGH_STAKES_ANALYSIS_REVIEW_RUBRIC_CONTRACT,
+  parseHighStakesAnalysisReviewRubricContract,
+  validateHighStakesAnalysisReviewRubricContract,
+  type HighStakesAnalysisReviewBoundary,
+  type HighStakesAnalysisReviewDimension,
+  type HighStakesAnalysisReviewDimensionId,
+  type HighStakesAnalysisReviewRubricContract,
+  type HighStakesAnalysisReviewSyntheticFixture,
+} from "./contracts/high-stakes-analysis-review-rubric-contract.js";

@@ -120,6 +120,43 @@ describe("batch review artifacts", () => {
     });
   });
 
+  it("keeps a synthetic public-boundary extraction artifact smoke test generic", () => {
+    const artifactJson = formatBatchReviewArtifactSummary({
+      manifestPath: "D:\\workspace\\private-product\\aiql-extraction\\manifest.json",
+      total: 1,
+      succeeded: 0,
+      failed: 1,
+      results: [
+        {
+          index: 0,
+          name: "Synthetic public boundary smoke",
+          resultKey: "synthetic-public-boundary-smoke-expert",
+          mode: "expert",
+          targetSummary:
+            "Review https://example.com/private/extraction?token=secret#handoff with D:\\workspace\\private-product\\artifact.md and reviewer@example.com",
+          outputPath:
+            "D:\\workspace\\private-product\\aiql-extraction\\reviews\\artifact.md",
+          structuredOutputPath:
+            "D:\\workspace\\private-product\\aiql-extraction\\reviews\\artifact.json",
+          status: "failure",
+          errorSummary:
+            'Failed to load "D:\\workspace\\private-product\\logs\\artifact.log" from https://example.com/private/extraction?token=secret#handoff and notify reviewer@example.com',
+        },
+      ],
+    });
+
+    expect(artifactJson).not.toContain("private-product");
+    expect(artifactJson).not.toContain("private/extraction");
+    expect(artifactJson).not.toContain("token=secret");
+    expect(artifactJson).not.toContain("#handoff");
+    expect(artifactJson).not.toContain("reviewer@example.com");
+    expect(artifactJson).toContain("Local file path (.json file)");
+    expect(artifactJson).toContain(
+      "Remote URL (host: example.com, path segments: 2, query redacted, fragment redacted)",
+    );
+    expect(artifactJson).toContain("Email address");
+  });
+
   it("writes the machine-readable artifact summary to disk", async () => {
     const outputPath = path.join(tempDir, "artifacts", "batch-summary.json");
 

@@ -29,7 +29,7 @@ export function createBatchReviewArtifactSummary(
       name: result.name,
       resultKey: result.resultKey,
       mode: result.mode,
-      targetSummary: result.targetSummary,
+      targetSummary: sanitizeReviewSurfaceValue(result.targetSummary),
       outputPath: result.outputPath
         ? sanitizeReviewSurfaceValue(result.outputPath)
         : undefined,
@@ -38,7 +38,9 @@ export function createBatchReviewArtifactSummary(
         : undefined,
       structuredResult: result.structuredResult,
       status: result.status,
-      errorSummary: result.errorSummary,
+      errorSummary: result.errorSummary
+        ? sanitizeReviewSurfaceValue(result.errorSummary)
+        : undefined,
     })),
   };
 }

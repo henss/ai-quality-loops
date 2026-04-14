@@ -32,6 +32,8 @@ Use the package when you need repeatable LLM-assisted review workflows that stay
 - **Check local prerequisites** before a costly run, including personas, Ollama models, browser availability, and optional context files.
 - **Call the underlying Ollama helpers** when you need lower-level text or vision generation instead of the review workflow.
 
+For caller-owned capture workflows, use `docs/capture-review-adapter-contract.md` as the boundary contract: adapters emit the existing batch-review manifest shape with generic target references, while capture selection, raw image handling, domain semantics, and action routing stay in the embedding repo.
+
 ## Starter Examples
 
 The package publishes copy-ready starter manifests under `examples/` so embedding repos can begin with a narrow checked-in surface instead of rebuilding command shapes from README prose:

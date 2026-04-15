@@ -255,9 +255,9 @@ export async function runVisionReview(
     });
     const reviewMarkdown = stripReviewReasoningBlocks(text);
 
-    getLogger().info("\n--- VISION " + personaName.toUpperCase() + " REVIEW ---");
-    getLogger().info(reviewMarkdown);
-    getLogger().info("---------------------\n");
+    getLogger().info(
+      `[Vision Review] ${personaName} review completed; markdown output omitted from console (${reviewMarkdown.length} chars).`,
+    );
 
     const structuredResult = buildStructuredReviewResult({
       workflow: "vision",

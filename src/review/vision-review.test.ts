@@ -156,4 +156,48 @@ describe("runVisionReview", () => {
       }),
     );
   });
+
+  it("omits the generated vision review body from logger output", async () => {
+    const { runVisionReview } = await import("./vision-review.js");
+    const logger = {
+      info: vi.fn(),
+      warn: vi.fn(),
+      error: vi.fn(),
+      debug: vi.fn(),
+    };
+    setLogger(logger);
+
+    await fs.writeFile(
+      path.join(tempDir, "personas.md"),
+      [
+        "### LLM COMMITTEE PERSONA: 1. SKEPTICAL UI/UX CRITIC",
+        "Review like a skeptic.",
+      ].join("\n"),
+    );
+
+    takeScreenshot.mockImplementation(async (_target: string, outputPath: string) => {
+      await fs.writeFile(outputPath, "fake-image");
+    });
+    imageToBase64.mockResolvedValue("ZmFrZS1pbWFnZQ==");
+    callOllamaVision.mockResolvedValue(
+      "# Overview\nDO_NOT_LOG_VISION_BODY\n\n## Findings\n- No issue.",
+    );
+
+    await runVisionReview({
+      urlOrPath: "https://example.com/private/page?token=secret#hero",
+      expert: "UI/UX",
+      outputPath: path.join(tempDir, "reviews", "vision.md"),
+      promptLibraryPath: path.join(tempDir, "personas.md"),
+    });
+
+    expect(logger.info).not.toHaveBeenCalledWith(
+      expect.stringContaining("DO_NOT_LOG_VISION_BODY"),
+    );
+    expect(logger.info).toHaveBeenCalledWith(
+      expect.stringContaining("markdown output omitted from console"),
+    );
+    await expect(
+      fs.readFile(path.join(tempDir, "reviews", "vision.md"), "utf-8"),
+    ).resolves.toContain("DO_NOT_LOG_VISION_BODY");
+  });
 });

@@ -83,4 +83,45 @@ describe("runExpertReview", () => {
       fs.readFile(path.join(tempDir, "reviews", "expert.json"), "utf-8"),
     ).resolves.toContain('"workflow": "expert"');
   });
+
+  it("omits the generated review body from logger output", async () => {
+    const { runExpertReview } = await import("./expert-review.js");
+    const logger = {
+      info: vi.fn(),
+      warn: vi.fn(),
+      error: vi.fn(),
+      debug: vi.fn(),
+    };
+    setLogger(logger);
+
+    await fs.writeFile(
+      path.join(tempDir, "personas.md"),
+      [
+        "### LLM COMMITTEE PERSONA: 1. SKEPTICAL UI/UX CRITIC",
+        "Review like a skeptic.",
+      ].join("\n"),
+    );
+    await fs.writeFile(path.join(tempDir, "draft.md"), "# Draft");
+
+    generateTextWithOllama.mockResolvedValue(
+      "# Summary\nDO_NOT_LOG_EXPERT_BODY\n\n## Findings\n- No issue.",
+    );
+
+    await runExpertReview({
+      expert: "UI/UX",
+      content: path.join(tempDir, "draft.md"),
+      outputPath: path.join(tempDir, "reviews", "expert.md"),
+      promptLibraryPath: path.join(tempDir, "personas.md"),
+    });
+
+    expect(logger.info).not.toHaveBeenCalledWith(
+      expect.stringContaining("DO_NOT_LOG_EXPERT_BODY"),
+    );
+    expect(logger.info).toHaveBeenCalledWith(
+      expect.stringContaining("markdown output omitted from console"),
+    );
+    await expect(
+      fs.readFile(path.join(tempDir, "reviews", "expert.md"), "utf-8"),
+    ).resolves.toContain("DO_NOT_LOG_EXPERT_BODY");
+  });
 });

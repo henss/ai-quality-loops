@@ -138,9 +138,9 @@ export async function runExpertReview(
     });
     const reviewMarkdown = stripReviewReasoningBlocks(text);
 
-    getLogger().info("\n--- " + personaName.toUpperCase() + " REVIEW ---");
-    getLogger().info(reviewMarkdown);
-    getLogger().info("---------------------\n");
+    getLogger().info(
+      `[Expert Review] ${personaName} review completed; markdown output omitted from console (${reviewMarkdown.length} chars).`,
+    );
 
     const structuredResult = buildStructuredReviewResult({
       workflow: "expert",

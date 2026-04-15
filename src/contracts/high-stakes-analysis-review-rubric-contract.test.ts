@@ -55,6 +55,43 @@ describe("high-stakes analysis review rubric contract", () => {
     ).toContain("money movement or execution instructions");
   });
 
+  it("lets callers layer private domain injections without widening the shared contract", () => {
+    const callerOwnedInjection = {
+      policyLabel: "private-domain-high-stakes-review",
+      injectedFocus: [
+        "authority-boundary",
+        "evidence-chain",
+        "recommendation-traceability",
+      ] satisfies HighStakesAnalysisReviewDimensionId[],
+      callerOwnedRules: [
+        "Require the caller's private approval policy before any irreversible action.",
+        "Require supplied evidence labels for all material account-impacting claims.",
+        "Keep execution thresholds and private source routing outside the reusable rubric.",
+      ],
+    };
+
+    const parsed = parseHighStakesAnalysisReviewRubricContract(
+      HIGH_STAKES_ANALYSIS_REVIEW_RUBRIC_CONTRACT,
+    );
+    const sharedDimensionIds = new Set(
+      parsed.dimensions.map((dimension) => dimension.id),
+    );
+
+    expect(
+      callerOwnedInjection.injectedFocus.every((dimensionId) =>
+        sharedDimensionIds.has(dimensionId),
+      ),
+    ).toBe(true);
+    expect(
+      JSON.stringify(HIGH_STAKES_ANALYSIS_REVIEW_RUBRIC_CONTRACT),
+    ).not.toContain(callerOwnedInjection.policyLabel);
+    for (const callerOwnedRule of callerOwnedInjection.callerOwnedRules) {
+      expect(
+        JSON.stringify(HIGH_STAKES_ANALYSIS_REVIEW_RUBRIC_CONTRACT),
+      ).not.toContain(callerOwnedRule);
+    }
+  });
+
   it("rejects contracts that omit a required review dimension", () => {
     const validation = validateHighStakesAnalysisReviewRubricContract({
       ...HIGH_STAKES_ANALYSIS_REVIEW_RUBRIC_CONTRACT,

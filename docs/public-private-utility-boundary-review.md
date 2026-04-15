@@ -24,6 +24,7 @@ No implementation path was chosen. The packet asks for independent boundary reco
 | New scaffold command for starter manifests | Defer | Current examples and CI recipe are enough; a scaffold could encode repo-local naming or policy defaults before repeated generic adoption proves the shape. |
 | Additional manifest-preview CLI | Defer | The programmatic execution-plan surface and `vision-preview --manifest` cover the current generic need without expanding the public command set. |
 | Concept-review, packet-review, or orchestrator-specific helper | Split or defer | Existing `expert-review` can run text critique generically. Any helper that understands tracker packets, approval states, or project routing belongs outside AIQL until a domain-neutral contract emerges. |
+| Venture claim-risk checker | Split | AIQL can supply generic evidence, uncertainty, adversarial review, and authority-boundary dimensions. Venture-specific claim categories, legal-adjacent cautions, reputation thresholds, buyer-facing readiness, proof standards, and escalation policy belong in the embedding repo. |
 | Private image-review wrapper example | Split | The generic adapter contract is sufficient. A wrapper example would likely teach private capture semantics through labels, paths, or routing assumptions. |
 | Comparison-driven CI regression recipe | Defer, monitor | This is the strongest generic candidate because `batch-review-compare --json` and `review-gate --batch-comparison` already exist. Promote only after repeated setup friction appears in more than one downstream adoption. |
 | Domain-specific high-stakes review injections | Split | AIQL can own synthetic contract shape and validation. Domain facts, thresholds, approval authority, and execution policy must remain caller-owned. |
@@ -42,6 +43,8 @@ Before moving a helper into AIQL, require a yes answer to this question:
 Can the helper be described as operating on generic review inputs and published AIQL contracts, with all target choice, private naming, raw artifacts, policy thresholds, routing, and domain interpretation provided by the caller?
 
 If the answer is no or uncertain, keep the helper private, write a caller-owned adapter, or defer the extraction until repeated generic adoption evidence exists.
+
+For venture or claim-risk review, the answer is currently uncertain-to-no: the reusable part is already covered by the high-stakes rubric contract, while the risk taxonomy and action thresholds are policy. A safe caller-owned checker should inject those private rules at the embedding boundary and pass only sanitized claim text, evidence labels, and generic review results through AIQL.
 
 ## Next Bounded Slice
 

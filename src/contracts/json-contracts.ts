@@ -13,6 +13,7 @@ export interface BatchReviewManifestDefaults {
   promptLibraryPath?: string;
   contextPath?: string;
   ollamaUrl?: string;
+  ollamaKeepAlive?: string;
 }
 
 export interface BatchReviewManifestEntry extends BatchReviewManifestDefaults {
@@ -319,6 +320,10 @@ function parseManifestDefaults(
     ollamaUrl: readOptionalString(
       rawDefaults.ollamaUrl,
       `${fieldPath}.ollamaUrl`,
+    ),
+    ollamaKeepAlive: readOptionalString(
+      rawDefaults.ollamaKeepAlive,
+      `${fieldPath}.ollamaKeepAlive`,
     ),
   };
 }

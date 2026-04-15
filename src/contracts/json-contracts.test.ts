@@ -44,6 +44,7 @@ describe("public JSON contracts", () => {
         promptLibraryPath: undefined,
         contextPath: undefined,
         ollamaUrl: undefined,
+        ollamaKeepAlive: undefined,
       },
       reviews: [
         {
@@ -60,6 +61,7 @@ describe("public JSON contracts", () => {
           promptLibraryPath: undefined,
           contextPath: undefined,
           ollamaUrl: undefined,
+          ollamaKeepAlive: undefined,
           outputPath: undefined,
           structuredOutputPath: "./reviews/json/homepage-hero.json",
         },

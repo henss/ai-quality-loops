@@ -1,7 +1,11 @@
-import { describe, it, expect } from "vitest";
-import { processOllamaStream } from "./ollama.js";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { callOllamaVision, generateTextWithOllama, processOllamaStream } from "./ollama.js";
 
 describe("Ollama Utilities", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   it("should process a generate stream", async () => {
     const chunks = [
       JSON.stringify({ response: "Hello", done: false }),
@@ -68,5 +72,62 @@ describe("Ollama Utilities", () => {
 
     const result = await processOllamaStream(mockResponse, "generate");
     expect(result).toBe("Hello");
+  });
+
+  it("passes custom keep_alive to text generation requests", async () => {
+    const stream = new ReadableStream({
+      start(controller) {
+        controller.enqueue(
+          new TextEncoder().encode(JSON.stringify({ response: "ok", done: true }) + "\n"),
+        );
+        controller.close();
+      },
+    });
+    const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValue({
+      ok: true,
+      body: stream,
+    } as unknown as Response);
+
+    await generateTextWithOllama({
+      ollamaUrl: "http://localhost:11434",
+      model: "qwen3.5:27b",
+      prompt: "Review this.",
+      keepAlive: "2h",
+    });
+
+    const body = JSON.parse(String(fetchMock.mock.calls[0]?.[1]?.body)) as {
+      keep_alive?: string;
+    };
+    expect(body.keep_alive).toBe("2h");
+  });
+
+  it("passes custom keep_alive to vision chat requests", async () => {
+    const stream = new ReadableStream({
+      start(controller) {
+        controller.enqueue(
+          new TextEncoder().encode(
+            JSON.stringify({ message: { content: "ok" }, done: true }) + "\n",
+          ),
+        );
+        controller.close();
+      },
+    });
+    const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValue({
+      ok: true,
+      body: stream,
+    } as unknown as Response);
+
+    await callOllamaVision({
+      ollamaUrl: "http://localhost:11434",
+      model: "qwen3-vl:30b",
+      prompt: "Review this.",
+      imagesBase64: ["abc"],
+      keepAlive: "2h",
+    });
+
+    const body = JSON.parse(String(fetchMock.mock.calls[0]?.[1]?.body)) as {
+      keep_alive?: string;
+    };
+    expect(body.keep_alive).toBe("2h");
   });
 });

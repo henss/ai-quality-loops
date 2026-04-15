@@ -116,7 +116,7 @@ export function deriveBatchReviewExecutionPlan(
     total: entries.length,
     entries: entries.map((entry) => ({
       ...entry,
-      targetSummary: sanitizeReviewSurfaceValue(entry.target),
+      targetSummary: sanitizeReviewSurfaceValue(entry.target, { includeFileName: true }),
     })),
     preflight: deriveBatchReviewPreflightOptions(entries),
   };
@@ -164,7 +164,7 @@ export async function runBatchReviewEntries({
   const results: BatchReviewSummary["results"] = [];
 
   for (const entry of entries) {
-    const targetSummary = sanitizeReviewSurfaceValue(entry.target);
+    const targetSummary = sanitizeReviewSurfaceValue(entry.target, { includeFileName: true });
     const label = entry.name || `Review ${entry.index + 1}`;
     const resultKey = createBatchReviewResultKey({
       index: entry.index,
@@ -189,6 +189,7 @@ export async function runBatchReviewEntries({
           promptLibraryPath: entry.promptLibraryPath,
           contextPath: entry.contextPath,
           ollamaUrl: entry.ollamaUrl,
+          ollamaKeepAlive: entry.ollamaKeepAlive,
           resultFormat: entry.structuredOutputPath ? "structured" : "markdown",
         });
         structuredResult =
@@ -206,6 +207,7 @@ export async function runBatchReviewEntries({
           promptLibraryPath: entry.promptLibraryPath,
           contextPath: entry.contextPath,
           ollamaUrl: entry.ollamaUrl,
+          ollamaKeepAlive: entry.ollamaKeepAlive,
           customCss: entry.css,
           resultFormat: entry.structuredOutputPath ? "structured" : "markdown",
         });

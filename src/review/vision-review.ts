@@ -59,6 +59,8 @@ export interface VisionReviewOptions extends ReviewRedactionOptions {
   contextPath?: string;
   /** Base URL for the Ollama API (optional) */
   ollamaUrl?: string;
+  /** Ollama keep_alive duration for the loaded model (optional, defaults to Ollama helper default) */
+  ollamaKeepAlive?: string | number;
   /** Custom mapping of expert types to persona names (optional) */
   expertMap?: Record<string, string>;
   /** Custom CSS to inject before taking the screenshot (optional) */
@@ -249,6 +251,7 @@ export async function runVisionReview(
       prompt: finalPrompt,
       imagesBase64,
       temperature: 0.2,
+      keepAlive: options.ollamaKeepAlive,
     });
     const reviewMarkdown = stripReviewReasoningBlocks(text);
 

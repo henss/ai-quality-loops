@@ -72,6 +72,10 @@
         "ollamaUrl": {
           "type": "string",
           "minLength": 1
+        },
+        "ollamaKeepAlive": {
+          "type": "string",
+          "minLength": 1
         }
       }
     },
@@ -140,6 +144,10 @@
           "minLength": 1
         },
         "ollamaUrl": {
+          "type": "string",
+          "minLength": 1
+        },
+        "ollamaKeepAlive": {
           "type": "string",
           "minLength": 1
         }

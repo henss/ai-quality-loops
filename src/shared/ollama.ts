@@ -88,6 +88,7 @@ export interface CallOllamaVisionParams {
   imagesBase64: string[];
   format?: string | object;
   temperature?: number;
+  keepAlive?: string | number;
 }
 
 /**
@@ -100,6 +101,7 @@ export async function callOllamaVision({
   imagesBase64,
   format,
   temperature = 0.1,
+  keepAlive = "10m",
 }: CallOllamaVisionParams): Promise<string> {
   const url = `${ollamaUrl.replace(/\/$/, "")}/api/chat`;
   const payload: any = {
@@ -112,7 +114,7 @@ export async function callOllamaVision({
       },
     ],
     stream: true,
-    keep_alive: "10m",
+    keep_alive: keepAlive,
     options: {
       temperature: temperature || 0,
       num_ctx: 32768,
@@ -162,19 +164,21 @@ export async function callOllamaChatVision({
   messages,
   format,
   temperature = 0.1,
+  keepAlive = "10m",
 }: {
   ollamaUrl: string;
   model: string;
   messages: OllamaChatMessage[];
   format?: string | object;
   temperature?: number;
+  keepAlive?: string | number;
 }): Promise<string> {
   const url = `${ollamaUrl.replace(/\/$/, "")}/api/chat`;
   const payload: any = {
     model,
     messages,
     stream: true,
-    keep_alive: "10m",
+    keep_alive: keepAlive,
     options: {
       temperature: temperature || 0,
       num_ctx: 32768,
@@ -293,19 +297,21 @@ export async function generateTextWithOllama({
   prompt,
   format,
   temperature = 0.7,
+  keepAlive = "10m",
 }: {
   ollamaUrl: string;
   model: string;
   prompt: string;
   format?: string | object;
   temperature?: number;
+  keepAlive?: string | number;
 }): Promise<string> {
   const url = `${ollamaUrl.replace(/\/$/, "")}/api/generate`;
   const payload: any = {
     model,
     prompt,
     stream: true,
-    keep_alive: "10m",
+    keep_alive: keepAlive,
     options: {
       temperature,
       num_ctx: 32768,

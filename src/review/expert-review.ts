@@ -44,6 +44,8 @@ export interface ExpertReviewOptions extends ReviewRedactionOptions {
   contextPath?: string;
   /** Base URL for the Ollama API (optional, falls back to env.OLLAMA_HOST or 'http://127.0.0.1:11434') */
   ollamaUrl?: string;
+  /** Ollama keep_alive duration for the loaded model (optional, defaults to Ollama helper default) */
+  ollamaKeepAlive?: string | number;
   /** Custom mapping of expert types to persona names (optional) */
   expertMap?: Record<string, string>;
   /** Optional orchestrator to prepare the environment (e.g. VRAM management) */
@@ -132,6 +134,7 @@ export async function runExpertReview(
       model: modelId,
       prompt: finalPrompt,
       temperature: 0.7,
+      keepAlive: options.ollamaKeepAlive,
     });
     const reviewMarkdown = stripReviewReasoningBlocks(text);
 

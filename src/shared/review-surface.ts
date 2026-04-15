@@ -3,6 +3,7 @@ import path from "node:path";
 export interface SanitizeReviewSurfaceValueOptions {
   maxLength?: number;
   extraRedactions?: ReviewSurfaceRedactions;
+  includeFileName?: boolean;
 }
 
 export interface SummarizeReviewSurfaceErrorOptions {
@@ -36,6 +37,7 @@ const DEFAULT_SANITIZE_REVIEW_SURFACE_VALUE_OPTIONS: Required<SanitizeReviewSurf
   {
     maxLength: 160,
     extraRedactions: [],
+    includeFileName: false,
   };
 
 const DEFAULT_SUMMARIZE_REVIEW_SURFACE_ERROR_OPTIONS: Required<SummarizeReviewSurfaceErrorOptions> =
@@ -52,12 +54,13 @@ function truncateSurfaceValue(value: string, maxLength: number): string {
   return `${value.slice(0, maxLength)}... [truncated ${value.length - maxLength} chars]`;
 }
 
-function sanitizeLocalPathDescriptor(value: string): string {
+function sanitizeLocalPathDescriptor(value: string, includeFileName = false): string {
   const normalized = value.replace(/^file:\/\//i, "").replace(/\\/g, "/");
   const basename = normalized.split("/").filter(Boolean).at(-1) || "";
   const ext = path.posix.extname(basename) || path.extname(basename);
+  const fileNameSuffix = includeFileName && basename ? `, file: ${basename}` : "";
 
-  return ext ? `Local file path (${ext} file)` : "Local file path";
+  return ext ? `Local file path (${ext} file${fileNameSuffix})` : "Local file path";
 }
 
 function sanitizeRemoteUrlDescriptor(value: string): string {
@@ -233,7 +236,7 @@ export function sanitizeReviewSurfaceValue(
     trimmed.startsWith("/") ||
     /^[^ \t\r\n]+(?:\\[^ \t\r\n]+)+$/.test(trimmed)
   ) {
-    return sanitizeLocalPathDescriptor(trimmed);
+    return sanitizeLocalPathDescriptor(trimmed, config.includeFileName);
   }
 
   return truncateSurfaceValue(

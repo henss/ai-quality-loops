@@ -71,6 +71,14 @@ describe("sanitizeReviewSurfaceValue", () => {
     ).toBe("Local file path (.html file)");
   });
 
+  it("can include the local filename while still hiding directory layout", () => {
+    expect(
+      sanitizeReviewSurfaceValue("D:\\workspace\\private\\mockups\\review.html", {
+        includeFileName: true,
+      }),
+    ).toBe("Local file path (.html file, file: review.html)");
+  });
+
   it("leaves short plain labels readable", () => {
     expect(sanitizeReviewSurfaceValue("section-hero")).toBe("section-hero");
   });

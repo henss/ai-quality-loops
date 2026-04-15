@@ -97,6 +97,7 @@ export interface NormalizedBatchReviewEntry {
   promptLibraryPath?: string;
   contextPath?: string;
   ollamaUrl?: string;
+  ollamaKeepAlive?: string;
 }
 
 export interface BatchReviewResult {
@@ -250,6 +251,7 @@ export function normalizeBatchReviewManifest(
         entry.promptLibraryPath ?? manifestDefaults?.promptLibraryPath,
       contextPath: entry.contextPath ?? manifestDefaults?.contextPath,
       ollamaUrl: entry.ollamaUrl ?? manifestDefaults?.ollamaUrl,
+      ollamaKeepAlive: entry.ollamaKeepAlive ?? manifestDefaults?.ollamaKeepAlive,
     };
   });
 }

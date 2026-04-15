@@ -58,6 +58,7 @@ describe("batch review manifest", () => {
             width: 1440,
             height: 900,
             sections: ["hero"],
+            ollamaKeepAlive: "2h",
           },
           reviews: [
             {
@@ -103,6 +104,7 @@ describe("batch review manifest", () => {
         promptLibraryPath: undefined,
         contextPath: undefined,
         ollamaUrl: undefined,
+        ollamaKeepAlive: "2h",
       },
       {
         index: 1,
@@ -125,6 +127,7 @@ describe("batch review manifest", () => {
         promptLibraryPath: undefined,
         contextPath: undefined,
         ollamaUrl: undefined,
+        ollamaKeepAlive: "2h",
       },
     ]);
   });
@@ -149,6 +152,7 @@ describe("batch review manifest", () => {
           target: "./README.md",
           outputPath: "./reviews/readme.md",
           model: "qwen3.5:32b",
+          ollamaKeepAlive: "45m",
         },
       ],
     };
@@ -190,6 +194,7 @@ describe("batch review manifest", () => {
       promptLibraryPath: undefined,
       contextPath: undefined,
       ollamaUrl: undefined,
+      ollamaKeepAlive: undefined,
       customCss: undefined,
       resultFormat: "structured",
     });
@@ -207,6 +212,7 @@ describe("batch review manifest", () => {
       promptLibraryPath: undefined,
       contextPath: undefined,
       ollamaUrl: undefined,
+      ollamaKeepAlive: "45m",
       resultFormat: "structured",
     });
     expect(summary.succeeded).toBe(2);
@@ -389,6 +395,7 @@ describe("batch review manifest", () => {
         promptLibraryPath: "./personas-a.md",
         contextPath: "./context-a.json",
         ollamaUrl: "http://127.0.0.1:11434",
+        ollamaKeepAlive: "2h",
       },
       {
         index: 1,
@@ -452,6 +459,7 @@ describe("batch review manifest", () => {
         promptLibraryPath: path.join(tempDir, "personas.md"),
         contextPath: path.join(tempDir, "context.json"),
         ollamaUrl: "http://127.0.0.1:11434",
+        ollamaKeepAlive: "2h",
       },
       {
         index: 1,
@@ -481,12 +489,13 @@ describe("batch review manifest", () => {
       promptLibraryPath: path.join(tempDir, "personas.md"),
       contextPath: path.join(tempDir, "context.json"),
       ollamaUrl: "http://127.0.0.1:11434",
+      ollamaKeepAlive: "2h",
     });
     expect(plan.entries[1]).toMatchObject({
       index: 1,
       mode: "expert",
       target: "./README.md",
-      targetSummary: "Local file path (.md file)",
+      targetSummary: "Local file path (.md file, file: README.md)",
       expert: "Efficiency",
       outputPath: path.join(tempDir, "reviews", "readme.md"),
       structuredOutputPath: path.join(tempDir, "reviews", "readme.json"),
@@ -539,6 +548,7 @@ describe("batch review manifest", () => {
             promptLibraryPath: "./personas.md",
             contextPath: "./context.json",
             ollamaUrl: "http://127.0.0.1:11434",
+            ollamaKeepAlive: "2h",
           },
           reviews: [
             {
@@ -583,12 +593,13 @@ describe("batch review manifest", () => {
       promptLibraryPath: "./personas.md",
       contextPath: "./context.json",
       ollamaUrl: "http://127.0.0.1:11434",
+      ollamaKeepAlive: "2h",
     });
     expect(plan.entries[1]).toMatchObject({
       index: 1,
       mode: "expert",
       target: "./README.md",
-      targetSummary: "Local file path (.md file)",
+      targetSummary: "Local file path (.md file, file: README.md)",
       expert: "Efficiency",
       model: "qwen3-vl:30b",
       outputPath: path.join(tempDir, "reviews", "readme-expert-review.md"),
@@ -604,6 +615,7 @@ describe("batch review manifest", () => {
       promptLibraryPath: "./personas.md",
       contextPath: "./context.json",
       ollamaUrl: "http://127.0.0.1:11434",
+      ollamaKeepAlive: "2h",
     });
     expect(plan.preflight.mode).toBe("both");
     expect(plan.preflight.personaRequirements).toHaveLength(2);

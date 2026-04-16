@@ -1,3 +1,8 @@
+import {
+  parseStructuredReviewDecision,
+  type StructuredReviewDecision,
+} from "./structured-review-decision-contract.js";
+
 export type BatchReviewMode = "expert" | "vision";
 
 export interface BatchReviewManifestDefaults {
@@ -61,7 +66,6 @@ export interface BatchReviewStructuredResultSummary {
   totalFindings: number;
   findingCounts: Record<StructuredReviewSeverity, number>;
 }
-
 export interface StructuredReviewProvenanceItem {
   label: string;
   value: string;
@@ -83,6 +87,7 @@ export interface StructuredReviewResult {
   summary: string;
   overallSeverity: StructuredReviewSeverity;
   findings: StructuredReviewFinding[];
+  decision?: StructuredReviewDecision;
   provenance: StructuredReviewProvenanceItem[];
   markdown: string;
 }
@@ -196,7 +201,6 @@ function readRequiredMode(value: unknown, fieldName: string): BatchReviewMode {
   if (!mode) {
     throw new Error(`Manifest field "${fieldName}" is required.`);
   }
-
   return mode;
 }
 
@@ -217,7 +221,6 @@ function readStructuredReviewSeverity(
       );
   }
 }
-
 function createEmptySeverityCounts(): Record<StructuredReviewSeverity, number> {
   return {
     critical: 0,
@@ -388,7 +391,6 @@ function parseStructuredReviewProvenanceItem(
     value: readRequiredString(value.value, `${fieldPath}.value`),
   };
 }
-
 function validateContract<T>(
   parser: (value: unknown) => T,
   value: unknown,
@@ -531,6 +533,8 @@ export function parseStructuredReviewResult(
     findings: value.findings.map((finding, index) =>
       parseStructuredReviewFinding(finding, index),
     ),
+    decision:
+      value.decision === undefined ? undefined : parseStructuredReviewDecision(value.decision),
     provenance: value.provenance.map((item, index) =>
       parseStructuredReviewProvenanceItem(item, index),
     ),

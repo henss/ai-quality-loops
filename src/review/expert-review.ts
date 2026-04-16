@@ -125,7 +125,39 @@ export async function runExpertReview(
         fenced: true,
       },
     ],
-    outputInstructions: "Provide your critical feedback based on your persona. Output in Markdown.",
+    outputInstructions: [
+      "Provide your review in Markdown.",
+      "",
+      "End with exactly one fenced JSON block whose top-level object contains `review_decision` using this shape:",
+      "```json",
+      JSON.stringify(
+        {
+          review_decision: {
+            schema: "peer_review_decision_v1",
+            verdict:
+              "accept | accept_with_follow_up | changes_requested | blocked | process_failed",
+            confidence: "low | medium | high",
+            blocking: false,
+            max_severity: "unknown | low | medium | high | critical",
+            summary: "One concise sentence with the review decision.",
+            blocking_findings: [],
+            non_blocking_findings: [
+              {
+                severity: "low | medium | high | critical | unknown",
+                title: "Short finding title",
+                summary: "One concise finding summary.",
+              },
+            ],
+            required_before_merge: [],
+            follow_up: [],
+          },
+        },
+        null,
+        2,
+      ),
+      "```",
+      "Use `accept` only when no before-merge work is required. Use `accept_with_follow_up` when the work passes but follow-up hardening or cleanup remains. Use `changes_requested` or `blocked` for findings that should fail the gate.",
+    ].join("\n"),
   });
 
   try {

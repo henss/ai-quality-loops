@@ -26,6 +26,28 @@ export interface StructuredReviewResultRollup {
   findingCounts: StructuredReviewSeverityCounts;
 }
 
+export type StructuredReviewDecisionVerdict =
+  | "accept"
+  | "accept_with_follow_up"
+  | "changes_requested"
+  | "blocked"
+  | "process_failed";
+
+export type StructuredReviewDecisionConfidence = "low" | "medium" | "high";
+
+export interface StructuredReviewDecision {
+  schema: "peer_review_decision_v1";
+  verdict: StructuredReviewDecisionVerdict;
+  confidence: StructuredReviewDecisionConfidence;
+  blocking: boolean;
+  max_severity: StructuredReviewSeverity;
+  summary: string;
+  blocking_findings: StructuredReviewFinding[];
+  non_blocking_findings: StructuredReviewFinding[];
+  required_before_merge: string[];
+  follow_up: string[];
+}
+
 interface MarkdownSection {
   heading?: string;
   body: string;
@@ -42,6 +64,26 @@ const SEVERITY_PATTERNS: Array<{
   { severity: "high", pattern: /\b(high|major|serious)\b/i },
   { severity: "medium", pattern: /\b(medium|moderate)\b/i },
   { severity: "low", pattern: /\b(low|minor|nit|small)\b/i },
+];
+const DECISION_BLOCK_PATTERN = /```(?:json|JSON)\s*([\s\S]*?)```/g;
+const DECISION_VERDICTS: StructuredReviewDecisionVerdict[] = [
+  "accept",
+  "accept_with_follow_up",
+  "changes_requested",
+  "blocked",
+  "process_failed",
+];
+const DECISION_CONFIDENCE_VALUES: StructuredReviewDecisionConfidence[] = [
+  "low",
+  "medium",
+  "high",
+];
+const SEVERITIES: StructuredReviewSeverity[] = [
+  "critical",
+  "high",
+  "medium",
+  "low",
+  "unknown",
 ];
 
 export function stripReviewReasoningBlocks(markdown: string): string {
@@ -125,6 +167,166 @@ export function createStructuredReviewSeverityCounts(): StructuredReviewSeverity
     low: 0,
     unknown: 0,
   };
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function readDecisionString(value: unknown, field: string): string {
+  if (typeof value !== "string" || value.trim().length === 0) {
+    throw new Error(`review_decision.${field} must be a non-empty string.`);
+  }
+
+  return value.trim();
+}
+
+function readDecisionStringArray(value: unknown, field: string): string[] {
+  if (value === undefined) {
+    return [];
+  }
+
+  if (!Array.isArray(value) || value.some((item) => typeof item !== "string")) {
+    throw new Error(`review_decision.${field} must be an array of strings.`);
+  }
+
+  return value.map((item) => item.trim()).filter(Boolean);
+}
+
+function readDecisionSeverity(value: unknown, field: string): StructuredReviewSeverity {
+  if (SEVERITIES.includes(value as StructuredReviewSeverity)) {
+    return value as StructuredReviewSeverity;
+  }
+
+  throw new Error(
+    `review_decision.${field} must be one of ${SEVERITIES.join(", ")}.`,
+  );
+}
+
+function readDecisionFinding(value: unknown, index: number): StructuredReviewFinding {
+  if (!isRecord(value)) {
+    throw new Error(`review_decision finding ${index} must be an object.`);
+  }
+
+  return {
+    title: readDecisionString(value.title, `findings[${index}].title`),
+    summary: readDecisionString(value.summary, `findings[${index}].summary`),
+    severity: readDecisionSeverity(value.severity, `findings[${index}].severity`),
+    recommendation:
+      value.recommendation === undefined
+        ? undefined
+        : readDecisionString(value.recommendation, `findings[${index}].recommendation`),
+    evidence: readDecisionStringArray(value.evidence, `findings[${index}].evidence`),
+  };
+}
+
+function readDecisionFindings(value: unknown, field: string): StructuredReviewFinding[] {
+  if (value === undefined) {
+    return [];
+  }
+
+  if (!Array.isArray(value)) {
+    throw new Error(`review_decision.${field} must be an array.`);
+  }
+
+  return value.map((item, index) => readDecisionFinding(item, index));
+}
+
+function parseReviewDecision(value: unknown): StructuredReviewDecision {
+  if (!isRecord(value)) {
+    throw new Error("review_decision must be an object.");
+  }
+
+  if (value.schema !== "peer_review_decision_v1") {
+    throw new Error('review_decision.schema must equal "peer_review_decision_v1".');
+  }
+
+  if (!DECISION_VERDICTS.includes(value.verdict as StructuredReviewDecisionVerdict)) {
+    throw new Error(`review_decision.verdict must be one of ${DECISION_VERDICTS.join(", ")}.`);
+  }
+
+  if (
+    !DECISION_CONFIDENCE_VALUES.includes(
+      value.confidence as StructuredReviewDecisionConfidence,
+    )
+  ) {
+    throw new Error(
+      `review_decision.confidence must be one of ${DECISION_CONFIDENCE_VALUES.join(", ")}.`,
+    );
+  }
+
+  if (typeof value.blocking !== "boolean") {
+    throw new Error("review_decision.blocking must be a boolean.");
+  }
+
+  const decision = {
+    schema: "peer_review_decision_v1",
+    verdict: value.verdict as StructuredReviewDecisionVerdict,
+    confidence: value.confidence as StructuredReviewDecisionConfidence,
+    blocking: value.blocking,
+    max_severity: readDecisionSeverity(value.max_severity, "max_severity"),
+    summary: readDecisionString(value.summary, "summary"),
+    blocking_findings: readDecisionFindings(value.blocking_findings, "blocking_findings"),
+    non_blocking_findings: readDecisionFindings(
+      value.non_blocking_findings,
+      "non_blocking_findings",
+    ),
+    required_before_merge: readDecisionStringArray(
+      value.required_before_merge,
+      "required_before_merge",
+    ),
+    follow_up: readDecisionStringArray(value.follow_up, "follow_up"),
+  } satisfies StructuredReviewDecision;
+
+  validateReviewDecisionConsistency(decision);
+  return decision;
+}
+
+function validateReviewDecisionConsistency(decision: StructuredReviewDecision): void {
+  const accepts = decision.verdict === "accept" || decision.verdict === "accept_with_follow_up";
+  if (accepts && decision.blocking) {
+    throw new Error("Accepted review decisions cannot be blocking.");
+  }
+
+  if (
+    accepts &&
+    (decision.max_severity === "critical" || decision.max_severity === "high")
+  ) {
+    throw new Error("Accepted review decisions cannot declare high or critical max_severity.");
+  }
+
+  if (!decision.blocking && decision.blocking_findings.length > 0) {
+    throw new Error("Non-blocking review decisions cannot include blocking findings.");
+  }
+
+  if (decision.verdict === "accept" && decision.required_before_merge.length > 0) {
+    throw new Error("Accepted review decisions cannot require before-merge work.");
+  }
+}
+
+export function extractStructuredReviewDecision(
+  markdown: string,
+): StructuredReviewDecision | undefined {
+  const normalized = normalizeMarkdown(markdown);
+  for (const match of normalized.matchAll(DECISION_BLOCK_PATTERN)) {
+    const rawJson = match[1]?.trim();
+    if (!rawJson) {
+      continue;
+    }
+
+    try {
+      const parsed = JSON.parse(rawJson) as unknown;
+      if (!isRecord(parsed) || !("review_decision" in parsed)) {
+        continue;
+      }
+
+      return parseReviewDecision(parsed.review_decision);
+    } catch {
+      continue;
+    }
+  }
+
+  return undefined;
 }
 
 function pickFindingTitle(text: string, fallbackTitle: string): string {
@@ -296,7 +498,10 @@ export function buildStructuredReviewResult(input: {
   markdown: string;
   provenance: StructuredReviewProvenanceItem[];
 }): StructuredReviewResult {
-  const findings = extractStructuredReviewFindings(input.markdown);
+  const decision = extractStructuredReviewDecision(input.markdown);
+  const findings = decision
+    ? [...decision.blocking_findings, ...decision.non_blocking_findings]
+    : extractStructuredReviewFindings(input.markdown);
 
   return {
     schemaVersion: "1",
@@ -304,8 +509,9 @@ export function buildStructuredReviewResult(input: {
     expert: input.expert,
     model: input.model,
     summary: extractStructuredReviewSummary(input.markdown),
-    overallSeverity: summarizeStructuredReviewSeverity(findings),
+    overallSeverity: decision?.max_severity ?? summarizeStructuredReviewSeverity(findings),
     findings,
+    decision,
     provenance: input.provenance,
     markdown: normalizeMarkdown(input.markdown),
   };

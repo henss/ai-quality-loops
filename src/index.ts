@@ -35,6 +35,12 @@ export {
   type JsonContractValidationSuccess,
 } from "./contracts/json-contracts.js";
 export {
+  parseStructuredReviewDecision,
+  type StructuredReviewDecision,
+  type StructuredReviewDecisionConfidence,
+  type StructuredReviewDecisionVerdict,
+} from "./contracts/structured-review-decision-contract.js";
+export {
   parseBatchReviewSummaryComparisonReport,
   validateBatchReviewSummaryComparisonReport,
   type BatchReviewSummaryComparison,

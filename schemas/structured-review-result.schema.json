@@ -41,30 +41,74 @@
     "findings": {
       "type": "array",
       "items": {
-        "type": "object",
-        "additionalProperties": false,
-        "required": ["title", "summary", "severity"],
-        "properties": {
-          "title": {
-            "type": "string",
-            "minLength": 1
-          },
-          "summary": {
-            "type": "string",
-            "minLength": 1
-          },
-          "severity": {
-            "$ref": "#/$defs/severity"
-          },
-          "recommendation": {
-            "type": "string",
-            "minLength": 1
-          },
-          "evidence": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
+        "$ref": "#/$defs/finding"
+      }
+    },
+    "decision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "verdict",
+        "confidence",
+        "blocking",
+        "max_severity",
+        "summary",
+        "blocking_findings",
+        "non_blocking_findings",
+        "required_before_merge",
+        "follow_up"
+      ],
+      "properties": {
+        "schema": {
+          "const": "peer_review_decision_v1"
+        },
+        "verdict": {
+          "type": "string",
+          "enum": [
+            "accept",
+            "accept_with_follow_up",
+            "changes_requested",
+            "blocked",
+            "process_failed"
+          ]
+        },
+        "confidence": {
+          "type": "string",
+          "enum": ["low", "medium", "high"]
+        },
+        "blocking": {
+          "type": "boolean"
+        },
+        "max_severity": {
+          "$ref": "#/$defs/severity"
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "blocking_findings": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/finding"
+          }
+        },
+        "non_blocking_findings": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/finding"
+          }
+        },
+        "required_before_merge": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "follow_up": {
+          "type": "array",
+          "items": {
+            "type": "string"
           }
         }
       }
@@ -96,6 +140,34 @@
     "severity": {
       "type": "string",
       "enum": ["critical", "high", "medium", "low", "unknown"]
+    },
+    "finding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["title", "summary", "severity"],
+      "properties": {
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "severity": {
+          "$ref": "#/$defs/severity"
+        },
+        "recommendation": {
+          "type": "string",
+          "minLength": 1
+        },
+        "evidence": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
     }
   }
 }

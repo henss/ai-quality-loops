@@ -17,6 +17,7 @@ AIQL already exposes the generic pieces needed for SMARTSEER-safe review composi
 - `HIGH_STAKES_ANALYSIS_REVIEW_RUBRIC_CONTRACT` covers authority boundaries, evidence chains, uncertainty handling, scenario coverage, recommendation traceability, adversarial review, and output discipline with synthetic fixtures.
 - `defineReviewSurfaceRedactions(...)` lets callers inject private redaction rules without converting those rules into AIQL defaults.
 - `docs/capture-review-adapter-contract.md` keeps capture selection, raw artifacts, retention, domain semantics, and action routing in the embedding repo.
+- `docs/redaction-boundary-checks-private-policy-split.md` records the redaction-boundary split: generic sanitization stays public, while private rule bundles, field semantics, and policy bindings stay caller-owned.
 
 ## Boundary Inventory
 
@@ -29,6 +30,7 @@ AIQL already exposes the generic pieces needed for SMARTSEER-safe review composi
 | Packet, tracker, or workflow critique helper | Generic text review over sanitized content with caller-selected persona and optional structured output. | Tracker schema, issue state, routing policy, project labels, approval states, and coordination comments. | Split or defer. Use `expert-review` from the embedding repo until a domain-neutral contract emerges. |
 | Persona or prompt presets for private domains | Universal personas and generic prompt-library loading. | Private personas, domain terms, escalation aliases, and source-specific redactions. | Split. Keep private prompt libraries in embedding repos. |
 | Result interpretation and ticket creation | Structured findings, severity rollups, comparisons, and explicit gate violations. | Whether a finding opens a ticket, blocks a release, pages someone, or changes real-world state. | Split. AIQL can report; callers decide. |
+| Redaction-boundary checks | Generic sanitization of URLs, paths, data URIs, contact links, error summaries, metadata labels, and caller-supplied extra redaction bundles. | Private rule literals, customer field semantics, policy labels, escalation thresholds, and action routing. | Split. Keep built-in checks generic; keep private policy bindings in embedding repos. |
 
 ## Promotion Test
 

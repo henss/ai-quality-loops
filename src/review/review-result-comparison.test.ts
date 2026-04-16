@@ -22,6 +22,36 @@ function createResult(
   };
 }
 
+interface CallerOwnedReviewFinding {
+  topic: string;
+  callerImpactCode: "stop" | "watch" | "note";
+  callerEvidenceRefs: string[];
+  callerRemediation: string;
+}
+
+const CALLER_SEVERITY_MAP = {
+  stop: "high",
+  watch: "medium",
+  note: "low",
+} as const satisfies Record<
+  CallerOwnedReviewFinding["callerImpactCode"],
+  StructuredReviewResult["overallSeverity"]
+>;
+
+function createCallerMappedResult(
+  findings: CallerOwnedReviewFinding[],
+): StructuredReviewResult {
+  const structuredFindings = findings.map((finding) => ({
+    title: finding.topic,
+    summary: `${finding.topic} needs ${CALLER_SEVERITY_MAP[finding.callerImpactCode]} attention.`,
+    severity: CALLER_SEVERITY_MAP[finding.callerImpactCode],
+    recommendation: finding.callerRemediation,
+    evidence: finding.callerEvidenceRefs,
+  }));
+
+  return createResult(structuredFindings, "high");
+}
+
 describe("structured review result comparison", () => {
   it("normalizes findings into a stable reusable grouping key", () => {
     expect(
@@ -184,5 +214,65 @@ describe("structured review result comparison", () => {
         },
       }),
     );
+  });
+
+  it("compares caller-mapped structured results without knowing private field names", () => {
+    const report = compareStructuredReviewResults({
+      before: createCallerMappedResult([
+        {
+          topic: "Release checklist",
+          callerImpactCode: "stop",
+          callerEvidenceRefs: ["artifact-alpha"],
+          callerRemediation: "Add the missing confirmation step.",
+        },
+        {
+          topic: "Status note",
+          callerImpactCode: "note",
+          callerEvidenceRefs: ["artifact-beta"],
+          callerRemediation: "Keep the note as-is.",
+        },
+      ]),
+      after: createCallerMappedResult([
+        {
+          topic: "Release checklist",
+          callerImpactCode: "watch",
+          callerEvidenceRefs: ["artifact-alpha"],
+          callerRemediation: "Confirm the last remaining owner.",
+        },
+        {
+          topic: "Status note",
+          callerImpactCode: "note",
+          callerEvidenceRefs: ["artifact-beta"],
+          callerRemediation: "Keep the note as-is.",
+        },
+      ]),
+    });
+
+    expect(report.counts).toEqual({
+      beforeFindings: 2,
+      afterFindings: 2,
+      added: 0,
+      removed: 0,
+      changed: 1,
+      unchanged: 1,
+      severityMovement: {
+        improved: 1,
+        regressed: 0,
+        unchanged: 1,
+      },
+    });
+    expect(report.changed).toEqual([
+      expect.objectContaining({
+        key: "release checklist",
+        changedFields: ["summary", "severity", "recommendation"],
+        severityChange: {
+          before: "high",
+          after: "medium",
+          direction: "improved",
+        },
+      }),
+    ]);
+    expect(JSON.stringify(report)).not.toContain("callerImpactCode");
+    expect(JSON.stringify(report)).not.toContain("callerRemediation");
   });
 });

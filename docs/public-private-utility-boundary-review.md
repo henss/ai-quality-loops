@@ -13,6 +13,7 @@ No implementation path was chosen. The packet asks for independent boundary reco
 - `README.md` already frames AIQL as a generic local review package and keeps policy decisions caller-owned.
 - `docs/capture-review-adapter-contract.md` already defines the key split: AIQL owns manifest validation, review execution, sanitized artifacts, and structured contracts; embedding adapters own capture selection, raw images, domain semantics, retention, and action routing.
 - `docs/adoption-pressure-matrix.md` already suppresses new public surfaces when evidence is weak or inference-led, especially scaffold commands, private image-review wrappers, and orchestrator-specific helpers.
+- `docs/smartseer-safe-review-utility-boundary-inventory.md` records the OPS-693 inventory for synthetic, open-source-safe review utility boundaries.
 - `src/index.ts` exports a broad but still review-centered surface: review runners, manifest planning, preflight, result contracts, gates, comparison helpers, redaction helpers, screenshot capture, and Ollama primitives.
 
 ## Boundary Recommendations

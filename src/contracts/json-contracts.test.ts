@@ -346,6 +346,49 @@ describe("public JSON contracts", () => {
     }
   });
 
+  it("ships a synthetic apartment review-result fixture without private home data", async () => {
+    const fixture = JSON.parse(
+      await fs.readFile(
+        path.join(
+          process.cwd(),
+          "examples/synthetic-apartment-review-result.fixture.json",
+        ),
+        "utf-8",
+      ),
+    ) as unknown;
+
+    const validation = validateStructuredReviewResult(fixture);
+    expect(validation).toEqual({
+      ok: true,
+      value: expect.objectContaining({
+        workflow: "vision",
+        provenance: expect.arrayContaining([
+          expect.objectContaining({
+            label: "Privacy boundary",
+          }),
+        ]),
+      }),
+    });
+
+    const serialized = JSON.stringify(fixture).toLowerCase();
+    for (const privateHomeDataTerm of [
+      "stefan",
+      "bedroom",
+      "kitchen",
+      "bathroom",
+      "living room",
+      "latitude",
+      "longitude",
+      ".png",
+      ".jpg",
+      ".jpeg",
+      "d:\\",
+      "/users/",
+    ]) {
+      expect(serialized).not.toContain(privateHomeDataTerm);
+    }
+  });
+
   it("publishes starter examples in the package file list", async () => {
     const packageJson = JSON.parse(
       await fs.readFile(path.join(process.cwd(), "package.json"), "utf-8"),

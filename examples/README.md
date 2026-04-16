@@ -19,6 +19,7 @@ The example files cover the repeatable workflow surfaces. The package also suppo
 | Rerun only failed or named batch entries | `batch-review ./manifest.json --rerun-summary ./reviews/batch-summary.json --rerun-failed` | Keeps retry selection tied to the prior summary artifact. |
 | Gate a local or CI check with explicit budgets | `review-gate --result ./reviews/result.json --max-high 0` | Use `--batch-summary` for a whole manifest run or `--batch-comparison` for explicit comparison-report delta budgets. |
 | Compare two batch summary artifacts | `batch-review-compare ./reviews/previous-summary.json ./reviews/current-summary.json --json` | Feed the JSON report into `review-gate --batch-comparison` when CI should fail on caller-owned regression budgets. |
+| Validate a sanitized structured-result fixture | `validateStructuredReviewResult(...)` with `./examples/synthetic-apartment-review-result.fixture.json` | Use when checking contract consumers against a fixture that contains no private home data. |
 | Make lower-level local LLM calls | `generateTextWithOllama(...)` or `callOllamaVision(...)` | Use only when the review workflow is too high-level for the caller. |
 
 ## Included examples
@@ -84,8 +85,19 @@ Typical edits:
 - keep review names unique so reruns by `--entry-name` stay unambiguous
 - prefer checked-in manifests over ad hoc shell aliases when the same batch will run again
 
+### `synthetic-apartment-review-result.fixture.json`
+
+Use when you want a structured review-result fixture for contract tests without checking in real household data.
+
+Typical edits:
+
+- do not replace the synthetic zone labels with real room names, resident details, coordinates, or capture paths
+- keep any real screenshots, retention policy, and action routing in the embedding repo
+- use it as a consumer fixture for `validateStructuredReviewResult(...)`, not as a runnable `batch-review` target
+
 ## Boundary notes
 
 - The examples stay open-source-safe on purpose. They do not embed private domains, company personas, or project-specific output routing.
+- The synthetic apartment fixture is contract-focused. It intentionally excludes real room names, image paths, coordinates, Stefan-specific facts, and release or publication instructions.
 - If you need repo-specific naming, redaction rules, or CI budgets, add that in the embedding repo instead of widening the shared package surface.
 - If a future workflow needs more than copied starter manifests and the generic CI recipe, the next extraction question is whether a scaffold command would stay generic enough for public maintenance.

@@ -1,0 +1,44 @@
+{
+  "schemaVersion": "1",
+  "workflow": "vision",
+  "expert": "UI/UX",
+  "model": "synthetic-contract-fixture",
+  "summary": "Synthetic apartment review fixture with generic zones, no private home data, and no raw capture references.",
+  "overallSeverity": "medium",
+  "findings": [
+    {
+      "title": "Zone transition lacks clear review evidence",
+      "summary": "The review notes a possible spacing concern between Zone A and Zone B, but the fixture keeps the evidence synthetic and does not name real rooms, coordinates, residents, or capture paths.",
+      "severity": "medium",
+      "recommendation": "Ask the caller-owned adapter for a sanitized evidence label or omit the claim from the shared review artifact.",
+      "evidence": [
+        "Synthetic zone label: Zone A",
+        "Synthetic zone label: Zone B"
+      ]
+    },
+    {
+      "title": "Caller action remains outside the shared contract",
+      "summary": "The fixture can identify a generic review concern, but any interpretation as a real apartment change, household action, or capture-retention decision stays caller-owned.",
+      "severity": "low",
+      "recommendation": "Keep action routing and real-world household context in the embedding repo.",
+      "evidence": [
+        "Boundary note: synthetic fixture only"
+      ]
+    }
+  ],
+  "provenance": [
+    {
+      "label": "Content source",
+      "value": "Synthetic apartment review fixture"
+    },
+    {
+      "label": "Capture mode",
+      "value": "Caller-owned synthetic capture reference"
+    },
+    {
+      "label": "Privacy boundary",
+      "value": "No real room names, image paths, coordinates, resident details, or private household facts"
+    }
+  ],
+  "markdown": "# Summary\nSynthetic apartment review fixture with generic zones only.\n\n## Findings\n- Medium: Zone transition lacks clear review evidence.\n- Low: Caller action remains outside the shared contract.\n\n## Boundary\nNo real room names, image paths, coordinates, resident details, or private household facts are part of this fixture."
+}

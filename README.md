@@ -41,6 +41,7 @@ The package publishes copy-ready starter manifests under `examples/` so embeddin
 - `examples/text-expert-audit.manifest.json` for one text/persona audit
 - `examples/webpage-vision-sweep.manifest.json` for one webpage review sweep with targeted section captures
 - `examples/screenshot-batch-run.manifest.json` for one screenshot-backed batch run over existing image files
+- `examples/synthetic-apartment-review-result.fixture.json` for a sanitized structured-result contract fixture with no private home data
 - `examples/ci-review-gate-check.md` for one generic CI check recipe that wires `batch-review`, structured outputs, and `review-gate`
 
 Use the companion notes in `examples/README.md` to decide which example to copy, which targets must be replaced, and when to use `vision-sections`, `vision-preview --manifest`, `batch-review`, and `review-gate` together.

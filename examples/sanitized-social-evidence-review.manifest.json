@@ -1,0 +1,14 @@
+{
+  "defaults": {
+    "mode": "expert",
+    "expert": "UI/UX",
+    "outputDir": "./reviews/social-evidence",
+    "structuredOutputDir": "./reviews/social-evidence/json"
+  },
+  "reviews": [
+    {
+      "name": "Synthetic social evidence packet",
+      "target": "./examples/synthetic-social-evidence-review-context.md"
+    }
+  ]
+}

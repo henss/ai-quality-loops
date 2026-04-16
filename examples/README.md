@@ -19,6 +19,7 @@ The example files cover the repeatable workflow surfaces. The package also suppo
 | Rerun only failed or named batch entries | `batch-review ./manifest.json --rerun-summary ./reviews/batch-summary.json --rerun-failed` | Keeps retry selection tied to the prior summary artifact. |
 | Gate a local or CI check with explicit budgets | `review-gate --result ./reviews/result.json --max-high 0` | Use `--batch-summary` for a whole manifest run or `--batch-comparison` for explicit comparison-report delta budgets. |
 | Compare two batch summary artifacts | `batch-review-compare ./reviews/previous-summary.json ./reviews/current-summary.json --json` | Feed the JSON report into `review-gate --batch-comparison` when CI should fail on caller-owned regression budgets. |
+| Review a sanitized social evidence packet | `batch-review ./examples/sanitized-social-evidence-review.manifest.json` | Use this as a text-review seam for redacted evidence packets; keep real sources, proof thresholds, and publication routing caller-owned. |
 | Validate a sanitized structured-result fixture | `validateStructuredReviewResult(...)` with `./examples/synthetic-apartment-review-result.fixture.json` | Use when checking contract consumers against a fixture that contains no private home data. |
 | Make lower-level local LLM calls | `generateTextWithOllama(...)` or `callOllamaVision(...)` | Use only when the review workflow is too high-level for the caller. |
 
@@ -85,6 +86,20 @@ Typical edits:
 - keep review names unique so reruns by `--entry-name` stay unambiguous
 - prefer checked-in manifests over ad hoc shell aliases when the same batch will run again
 
+### `sanitized-social-evidence-review.manifest.json`
+
+Use when you want a generic text review over a redacted evidence packet before a caller-owned public surface uses social proof, testimonials, usage signals, or qualitative feedback.
+
+```bash
+batch-review ./examples/sanitized-social-evidence-review.manifest.json
+```
+
+Typical edits:
+
+- replace the synthetic context target with a redacted evidence packet from your repo
+- switch `expert` or `promptLibraryPath` to a caller-owned evidence reviewer when project policy needs one
+- keep real account data, raw screenshots, source collection, proof thresholds, publication approval, and action routing outside `ai-quality-loops`
+
 ### `synthetic-apartment-review-result.fixture.json`
 
 Use when you want a structured review-result fixture for contract tests without checking in real household data.
@@ -99,5 +114,6 @@ Typical edits:
 
 - The examples stay open-source-safe on purpose. They do not embed private domains, company personas, or project-specific output routing.
 - The synthetic apartment fixture is contract-focused. It intentionally excludes real room names, image paths, coordinates, Stefan-specific facts, and release or publication instructions.
+- The synthetic social evidence fixture is seam-focused. It intentionally excludes real account names, audience facts, source identities, brand strategy, publication decisions, and business routing.
 - If you need repo-specific naming, redaction rules, or CI budgets, add that in the embedding repo instead of widening the shared package surface.
 - If a future workflow needs more than copied starter manifests and the generic CI recipe, the next extraction question is whether a scaffold command would stay generic enough for public maintenance.

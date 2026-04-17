@@ -41,6 +41,7 @@ The package publishes copy-ready starter manifests under `examples/` so embeddin
 - `examples/text-expert-audit.manifest.json` for one text/persona audit
 - `examples/webpage-vision-sweep.manifest.json` for one webpage review sweep with targeted section captures
 - `examples/screenshot-batch-run.manifest.json` for one screenshot-backed batch run over existing image files
+- `examples/synthetic-zone-vision-probe.manifest.json` for one public-safe synthetic visual probe with generic zones and no real capture data
 - `examples/sanitized-social-evidence-review.manifest.json` for one synthetic text review over redacted social-evidence claims
 - `examples/synthetic-apartment-review-result.fixture.json` for a sanitized structured-result contract fixture with no private home data
 - `examples/ci-review-gate-check.md` for one generic CI check recipe that wires `batch-review`, structured outputs, and `review-gate`

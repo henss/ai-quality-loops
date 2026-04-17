@@ -331,6 +331,7 @@ describe("public JSON contracts", () => {
       "examples/text-expert-audit.manifest.json",
       "examples/webpage-vision-sweep.manifest.json",
       "examples/screenshot-batch-run.manifest.json",
+      "examples/synthetic-zone-vision-probe.manifest.json",
     ];
 
     for (const examplePath of exampleManifestPaths) {
@@ -377,6 +378,48 @@ describe("public JSON contracts", () => {
       "kitchen",
       "bathroom",
       "living room",
+      "latitude",
+      "longitude",
+      ".png",
+      ".jpg",
+      ".jpeg",
+      "d:\\",
+      "/users/",
+    ]) {
+      expect(serialized).not.toContain(privateHomeDataTerm);
+    }
+  });
+
+  it("ships an apartment-agnostic synthetic vision probe without private home semantics", async () => {
+    const manifestPath = path.join(
+      process.cwd(),
+      "examples/synthetic-zone-vision-probe.manifest.json",
+    );
+    const manifest = JSON.parse(await fs.readFile(manifestPath, "utf-8")) as unknown;
+    const parsed = parseBatchReviewManifest(manifest);
+
+    expect(parsed.defaults?.mode).toBe("vision");
+    expect(parsed.reviews[0]).toEqual(
+      expect.objectContaining({
+        name: "Synthetic zone overview",
+        target: "./examples/synthetic-zone-layout.html",
+        sections: ["overview", "zone-a", "zone-b", "boundary-note"],
+      }),
+    );
+
+    const htmlPath = path.join(process.cwd(), parsed.reviews[0]!.target);
+    await expect(fs.access(htmlPath)).resolves.toBeUndefined();
+
+    const html = await fs.readFile(htmlPath, "utf-8");
+    const serialized = `${JSON.stringify(manifest)}\n${html}`.toLowerCase();
+    for (const privateHomeDataTerm of [
+      "stefan",
+      "apartment",
+      "bedroom",
+      "kitchen",
+      "bathroom",
+      "living room",
+      "resident",
       "latitude",
       "longitude",
       ".png",

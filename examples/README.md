@@ -19,6 +19,7 @@ The example files cover the repeatable workflow surfaces. The package also suppo
 | Rerun only failed or named batch entries | `batch-review ./manifest.json --rerun-summary ./reviews/batch-summary.json --rerun-failed` | Keeps retry selection tied to the prior summary artifact. |
 | Gate a local or CI check with explicit budgets | `review-gate --result ./reviews/result.json --max-high 0` | Use `--batch-summary` for a whole manifest run or `--batch-comparison` for explicit comparison-report delta budgets. |
 | Compare two batch summary artifacts | `batch-review-compare ./reviews/previous-summary.json ./reviews/current-summary.json --json` | Feed the JSON report into `review-gate --batch-comparison` when CI should fail on caller-owned regression budgets. |
+| Probe image-review quality with a synthetic visual target | `vision-preview --manifest ./examples/synthetic-zone-vision-probe.manifest.json --entry-name "Synthetic zone overview"` | Uses generic zones only; keep real capture handling, thresholds, and routing caller-owned. |
 | Review a sanitized social evidence packet | `batch-review ./examples/sanitized-social-evidence-review.manifest.json` | Use this as a text-review seam for redacted evidence packets; keep real sources, proof thresholds, and publication routing caller-owned. |
 | Validate a sanitized structured-result fixture | `validateStructuredReviewResult(...)` with `./examples/synthetic-apartment-review-result.fixture.json` | Use when checking contract consumers against a fixture that contains no private home data. |
 | Make lower-level local LLM calls | `generateTextWithOllama(...)` or `callOllamaVision(...)` | Use only when the review workflow is too high-level for the caller. |
@@ -85,6 +86,22 @@ Typical edits:
 - replace the example `.png` paths with screenshot files that already exist in your repo or CI workspace
 - keep review names unique so reruns by `--entry-name` stay unambiguous
 - prefer checked-in manifests over ad hoc shell aliases when the same batch will run again
+
+### `synthetic-zone-vision-probe.manifest.json`
+
+Use when you want a runnable image-review quality probe that exercises browser capture, targeted sections, structured output paths, and `review-gate` compatibility without checking in private screenshots or domain semantics.
+
+```bash
+vision-preview --manifest ./examples/synthetic-zone-vision-probe.manifest.json --entry-name "Synthetic zone overview"
+batch-review ./examples/synthetic-zone-vision-probe.manifest.json --summary-output ./reviews/synthetic-zone-summary.json
+review-gate --batch-summary ./reviews/synthetic-zone-summary.json --max-failed-reviews 0
+```
+
+Typical edits:
+
+- keep the target synthetic or replace it with a public-safe fixture owned by your repo
+- review only visual quality concerns such as spacing, hierarchy, contrast, and label clarity
+- keep real source handling, retention, thresholds, routing, and domain interpretation outside `ai-quality-loops`
 
 ### `sanitized-social-evidence-review.manifest.json`
 

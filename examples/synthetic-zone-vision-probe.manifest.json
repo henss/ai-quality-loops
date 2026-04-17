@@ -1,0 +1,17 @@
+{
+  "defaults": {
+    "mode": "vision",
+    "expert": "UI/UX",
+    "outputDir": "./reviews/synthetic-zone-vision-probe",
+    "structuredOutputDir": "./reviews/synthetic-zone-vision-probe/json",
+    "width": 1280,
+    "height": 720
+  },
+  "reviews": [
+    {
+      "name": "Synthetic zone overview",
+      "target": "./examples/synthetic-zone-layout.html",
+      "sections": ["overview", "zone-a", "zone-b", "boundary-note"]
+    }
+  ]
+}

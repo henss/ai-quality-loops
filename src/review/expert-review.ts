@@ -289,6 +289,7 @@ export async function runExpertReview(
           value: summarizedContentSource,
         },
       ],
+      extraRedactions: options.extraRedactions,
     });
     const decisionParsed = Boolean(structuredResult.decision);
     const diagnostics = {

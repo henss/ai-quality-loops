@@ -289,6 +289,7 @@ export async function runVisionReview(
             ]
           : []),
       ],
+      extraRedactions: options.extraRedactions,
     });
 
     if (outputPath) {

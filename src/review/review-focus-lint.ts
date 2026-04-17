@@ -6,6 +6,8 @@ export interface ReviewFocusLintInput {
   paths: string[];
   forbiddenTerms: string[];
   allowedTerms?: string[];
+  requireUserBenefit?: boolean;
+  userBenefitTerms?: string[];
   cwd?: string;
 }
 
@@ -14,7 +16,7 @@ export interface ReviewFocusLintFinding {
   term: string;
   line: number;
   excerpt: string;
-  classification: "prompt_drift";
+  classification: "prompt_drift" | "missing_user_relevance";
 }
 
 export interface ReviewFocusLintReport {
@@ -26,6 +28,15 @@ export interface ReviewFocusLintReport {
 function normalizeTerms(terms: string[]): string[] {
   return [...new Set(terms.map((term) => term.trim()).filter(Boolean))];
 }
+
+const DEFAULT_USER_BENEFIT_TERMS = [
+  "attention",
+  "risk",
+  "decision",
+  "triage",
+  "review time",
+  "manual review",
+];
 
 async function collectFiles(targetPath: string): Promise<string[]> {
   const stat = await fs.stat(targetPath);
@@ -45,6 +56,21 @@ async function collectFiles(targetPath: string): Promise<string[]> {
 function lineHasAllowedContext(line: string, allowedTerms: string[]): boolean {
   const lower = line.toLowerCase();
   return allowedTerms.some((term) => lower.includes(term.toLowerCase()));
+}
+
+function textHasTerm(text: string, terms: string[]): boolean {
+  const lower = text.toLowerCase();
+  return terms.some((term) => lower.includes(term.toLowerCase()));
+}
+
+function firstNonEmptyExcerpt(text: string): { line: number; excerpt: string } {
+  const lines = text.split(/\r?\n/);
+  const index = lines.findIndex((line) => line.trim().length > 0);
+  const line = index === -1 ? "" : lines[index] ?? "";
+  return {
+    line: index === -1 ? 1 : index + 1,
+    excerpt: line.trim().slice(0, 240),
+  };
 }
 
 function lintText(filePath: string, text: string, forbiddenTerms: string[], allowedTerms: string[]): ReviewFocusLintFinding[] {
@@ -74,10 +100,13 @@ export async function runReviewFocusLint(input: ReviewFocusLintInput): Promise<R
   const cwd = input.cwd ?? process.cwd();
   const forbiddenTerms = normalizeTerms(input.forbiddenTerms);
   const allowedTerms = normalizeTerms(input.allowedTerms ?? []);
+  const configuredUserBenefitTerms = normalizeTerms(input.userBenefitTerms ?? []);
+  const userBenefitTerms =
+    configuredUserBenefitTerms.length > 0 ? configuredUserBenefitTerms : DEFAULT_USER_BENEFIT_TERMS;
   if (input.paths.length === 0) {
     throw new Error("Provide at least one review output path to lint.");
   }
-  if (forbiddenTerms.length === 0) {
+  if (forbiddenTerms.length === 0 && !input.requireUserBenefit) {
     throw new Error("Provide at least one forbidden focus term.");
   }
 
@@ -90,7 +119,21 @@ export async function runReviewFocusLint(input: ReviewFocusLintInput): Promise<R
   ];
   const findings = (
     await Promise.all(
-      files.map(async (file) => lintText(file, await fs.readFile(file, "utf8"), forbiddenTerms, allowedTerms)),
+      files.map(async (file) => {
+        const text = await fs.readFile(file, "utf8");
+        const fileFindings = lintText(file, text, forbiddenTerms, allowedTerms);
+        if (input.requireUserBenefit && !textHasTerm(text, userBenefitTerms)) {
+          const excerpt = firstNonEmptyExcerpt(text);
+          fileFindings.push({
+            path: file,
+            term: "user benefit",
+            line: excerpt.line,
+            excerpt: excerpt.excerpt,
+            classification: "missing_user_relevance",
+          });
+        }
+        return fileFindings;
+      }),
     )
   ).flat();
 

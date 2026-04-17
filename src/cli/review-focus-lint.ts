@@ -24,12 +24,16 @@ async function main() {
     .option("--path <path>", "File or directory to scan. Repeat or use comma-separated values.")
     .option("--forbid <term>", "Forbidden term or phrase. Repeat or use comma-separated values.")
     .option("--allow <term>", "Allowed context term or phrase. Repeat or use comma-separated values.")
+    .option("--require-user-benefit", "Fail files that do not state a concrete user-facing benefit.")
+    .option("--benefit <term>", "User-benefit term or phrase. Repeat or use comma-separated values.")
     .option("--json", "Emit JSON")
     .action(async (options) => {
       const report = await runReviewFocusLint({
         paths: parseList(options.path),
         forbiddenTerms: parseList(options.forbid),
         allowedTerms: parseList(options.allow),
+        requireUserBenefit: Boolean(options.requireUserBenefit),
+        userBenefitTerms: parseList(options.benefit),
       });
       console.info(options.json ? JSON.stringify(report, null, 2) : formatReviewFocusLintReport(report));
       if (!report.ok) {

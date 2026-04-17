@@ -338,6 +338,7 @@ batch-review-compare ./reviews/previous-batch-summary.json ./reviews/current-bat
 batch-review-compare ./reviews/previous-batch-summary.json ./reviews/current-batch-summary.json --json
 batch-review-compare ./reviews/previous-batch-summary.json ./reviews/current-batch-summary.json --json > ./reviews/batch-comparison.json
 review-gate --batch-comparison ./reviews/batch-comparison.json --max-added-critical 0 --max-added-high 0 --max-severity-regressions 0
+review-focus-lint --path ./reviews --require-user-benefit --forbid "Layout & Usability,Navigation"
 ```
 
 The CLI now runs the shared review-preflight checks against the manifest's combined prerequisites before the first review starts, so mixed expert and vision batches fail fast on missing personas, models, browser dependencies, or unreadable optional context files.
@@ -391,6 +392,18 @@ Use `review-gate` when CI or a repo-local script needs one explicit pass/fail de
 The surface stays explicit: `review-gate --batch-summary` consumes only published per-entry `structuredResult` rollups and never infers repo-specific policy defaults. If a summary entry does not include a rollup, severity budgets report that missing rollup instead of silently treating the entry as clean.
 
 For comparison reports, added finding budgets count positive per-severity finding deltas on matched entries plus findings from added entries with structured rollups. Severity regression budgets count matched entries whose overall severity worsened. Removed entries, baseline storage, and approval policy remain caller-owned.
+
+### Review Focus Lint CLI
+
+Use `review-focus-lint` when a wrapper needs a cheap pass/fail check over saved review Markdown, text, or JSON before a human reads it.
+
+- `--forbid` flags off-topic words or phrases supplied by the caller.
+- `--allow` suppresses forbidden-term findings on lines with an allowed context phrase.
+- `--require-user-benefit` fails each scanned file that does not mention a concrete user-facing benefit such as saved attention, risk reduction, triage value, or decision support.
+- `--benefit` replaces the generic user-benefit terms with caller-owned terms.
+- `--json` emits the same report shape as the programmatic lint helper.
+
+The lint stays intentionally heuristic. It does not decide whether an output should be accepted, create tickets, encode project-specific relevance policy, or infer private workflow value.
 
 ### Batch Review Compare CLI
 

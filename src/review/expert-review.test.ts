@@ -131,6 +131,70 @@ describe("runExpertReview", () => {
     ).resolves.toContain('"workflow": "expert"');
   });
 
+  it("logs actual output paths while keeping structured provenance sanitized", async () => {
+    const { runExpertReview } = await import("./expert-review.js");
+    const logger = {
+      info: vi.fn(),
+      warn: vi.fn(),
+      error: vi.fn(),
+      debug: vi.fn(),
+    };
+    setLogger(logger);
+
+    const markdownOutputPath = path.join(tempDir, "reviews", "expert.md");
+    const jsonOutputPath = path.join(tempDir, "reviews", "expert.json");
+
+    await fs.writeFile(
+      path.join(tempDir, "personas.md"),
+      [
+        "### LLM COMMITTEE PERSONA: 1. SKEPTICAL UI/UX CRITIC",
+        "Review like a skeptic.",
+      ].join("\n"),
+    );
+    await fs.writeFile(path.join(tempDir, "draft.md"), "# Draft");
+
+    generateTextWithOllamaDetailed.mockResolvedValue({
+      text: JSON.stringify({
+        review_decision: {
+          schema: "peer_review_decision_v1",
+          verdict: "accept",
+          confidence: "high",
+          blocking: false,
+          max_severity: "low",
+          summary: "No blocking issue.",
+          blocking_findings: [],
+          non_blocking_findings: [],
+          required_before_merge: [],
+          follow_up: [],
+        },
+      }),
+      generatedChars: 120,
+      elapsedMs: 10,
+    });
+
+    const result = await runExpertReview({
+      expert: "UI/UX",
+      content: path.join(tempDir, "draft.md"),
+      outputPath: markdownOutputPath,
+      structuredOutputPath: jsonOutputPath,
+      promptLibraryPath: path.join(tempDir, "personas.md"),
+      resultFormat: "structured",
+    });
+
+    expect(result.provenance).toEqual([
+      {
+        label: "Content source",
+        value: "Local file path (.md file)",
+      },
+    ]);
+    expect(logger.info).toHaveBeenCalledWith(
+      `Review saved to: ${markdownOutputPath}`,
+    );
+    expect(logger.info).toHaveBeenCalledWith(
+      `Structured review saved to: ${jsonOutputPath}`,
+    );
+  });
+
   it("omits the generated review body from logger output", async () => {
     const { runExpertReview } = await import("./expert-review.js");
     const logger = {

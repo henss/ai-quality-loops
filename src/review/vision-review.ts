@@ -19,7 +19,7 @@ import {
   prepareReviewInputMaterialSections,
   loadReviewContext,
   type ReviewRedactionOptions,
-  summarizeReviewOutputReference,
+  formatReviewOperationalReference,
   writeReviewOutput,
 } from "./shared.js";
 import { loadPersonaPrompt } from "./persona-catalog.js";
@@ -294,12 +294,9 @@ export async function runVisionReview(
     if (outputPath) {
       const absoluteOutputPath = await writeReviewOutput(outputPath, reviewMarkdown);
       getLogger().info(
-        `Review saved to: ${summarizeReviewOutputReference(
+        `Review saved to: ${formatReviewOperationalReference(
           absoluteOutputPath,
           process.cwd(),
-          {
-            extraRedactions: options.extraRedactions,
-          },
         )}`,
       );
     }
@@ -308,12 +305,9 @@ export async function runVisionReview(
       const absoluteStructuredOutputPath = resolveFromCwd(structuredOutputPath);
       await writeJson(absoluteStructuredOutputPath, structuredResult, false);
       getLogger().info(
-        `Structured review saved to: ${summarizeReviewOutputReference(
+        `Structured review saved to: ${formatReviewOperationalReference(
           absoluteStructuredOutputPath,
           process.cwd(),
-          {
-            extraRedactions: options.extraRedactions,
-          },
         )}`,
       );
     }

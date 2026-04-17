@@ -318,6 +318,43 @@ describe("batch review manifest", () => {
     ]);
   });
 
+  it("logs the actual target path when starting a local-file batch entry", async () => {
+    const logger = {
+      info: vi.fn(),
+      warn: vi.fn(),
+      error: vi.fn(),
+      debug: vi.fn(),
+    };
+    setLogger(logger);
+
+    const targetPath = path.join(tempDir, "review-bundle.md");
+    const entries = normalizeBatchReviewManifest(
+      {
+        defaults: {
+          mode: "expert",
+          expert: "Efficiency",
+        },
+        reviews: [
+          {
+            name: "Task acceptance review",
+            target: targetPath,
+          },
+        ],
+      },
+      tempDir,
+    );
+
+    await runBatchReviewEntries({
+      manifestPath: path.join(tempDir, "manifest.json"),
+      entries,
+      runExpertReviewImpl: vi.fn(async () => "ok"),
+    });
+
+    expect(logger.info).toHaveBeenCalledWith(
+      `[Batch Review] Starting Task acceptance review (expert) for ${targetPath}`,
+    );
+  });
+
   it("records structured review schema failures without extracting prose findings", async () => {
     const entries = normalizeBatchReviewManifest(
       {

@@ -14,6 +14,7 @@ import {
   type ExpertReviewOptions,
   type ExpertReviewDiagnostics,
 } from "./expert-review.js";
+import { formatReviewOperationalReference } from "./shared.js";
 import {
   runVisionReview,
   type VisionReviewOptions,
@@ -182,7 +183,9 @@ export async function runBatchReviewEntries({
     });
 
     getLogger().info(
-      `[Batch Review] Starting ${label} (${entry.mode}) for ${targetSummary}`,
+      `[Batch Review] Starting ${label} (${entry.mode}) for ${formatReviewOperationalReference(
+        entry.target,
+      )}`,
     );
 
     const startedAt = Date.now();

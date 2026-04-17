@@ -1,5 +1,6 @@
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
+import { fileURLToPath } from "node:url";
 import { readJson, resolveFromCwd } from "../shared/io.js";
 import {
   type ReviewSurfaceRedactions,
@@ -241,6 +242,31 @@ export function summarizeReviewOutputReference(
     cwd,
     extraRedactions: options.extraRedactions,
   });
+}
+
+export function formatReviewOperationalReference(
+  referencePath: string,
+  cwd = process.cwd(),
+): string {
+  const trimmed = referencePath.trim();
+
+  if (!trimmed) {
+    return "[empty]";
+  }
+
+  if (/^(https?:|data:|mailto:)/i.test(trimmed)) {
+    return trimmed;
+  }
+
+  if (/^file:\/\//i.test(trimmed)) {
+    try {
+      return fileURLToPath(trimmed);
+    } catch {
+      return trimmed;
+    }
+  }
+
+  return resolveFromCwd(trimmed, cwd);
 }
 
 export async function writeReviewOutput(

@@ -3,7 +3,7 @@ import * as fs from "node:fs/promises";
 import path from "node:path";
 import os from "node:os";
 import { getLogger, setLogger, silentLogger } from "../shared/logger.js";
-import type { ExpertReviewOptions } from "./expert-review.js";
+import type { ExpertReviewDiagnostics, ExpertReviewOptions } from "./expert-review.js";
 import type { VisionReviewOptions } from "./vision-review.js";
 import type { StructuredReviewResult } from "./review-result.js";
 import {
@@ -279,7 +279,16 @@ describe("batch review manifest", () => {
           ],
           provenance: [],
           markdown: "# Summary\nOne medium issue remains.",
-        }) satisfies StructuredReviewResult),
+          diagnostics: {
+            elapsedMs: 900,
+            outputChars: 1234,
+            decisionParsed: true,
+            ollamaTelemetry: {
+              promptEvalCount: 100,
+              evalCount: 40,
+            },
+          },
+        }) satisfies StructuredReviewResult & { diagnostics: ExpertReviewDiagnostics }),
     });
 
     expect(summary.results).toEqual([
@@ -298,6 +307,60 @@ describe("batch review manifest", () => {
           },
         },
         status: "success",
+        durationMs: expect.any(Number),
+        outputChars: 1234,
+        decisionParsed: true,
+        ollamaTelemetry: {
+          promptEvalCount: 100,
+          evalCount: 40,
+        },
+      }),
+    ]);
+  });
+
+  it("records structured review schema failures without extracting prose findings", async () => {
+    const entries = normalizeBatchReviewManifest(
+      {
+        defaults: {
+          mode: "expert",
+          expert: "Efficiency",
+        },
+        reviews: [
+          {
+            name: "Readme audit",
+            target: "./README.md",
+            structuredOutputPath: "./reviews/readme.json",
+          },
+        ],
+      },
+      tempDir,
+    );
+    const error = new Error(
+      "Structured expert review did not emit a valid peer_review_decision_v1 JSON object.",
+    );
+    Object.assign(error, {
+      diagnostics: {
+        elapsedMs: 25,
+        outputChars: 200,
+        decisionParsed: false,
+      } satisfies ExpertReviewDiagnostics,
+    });
+
+    const summary = await runBatchReviewEntries({
+      manifestPath: path.join(tempDir, "manifest.json"),
+      entries,
+      runExpertReviewImpl: vi.fn(async () => {
+        throw error;
+      }),
+    });
+
+    expect(summary.results).toEqual([
+      expect.objectContaining({
+        status: "failure",
+        errorSummary: expect.stringContaining("valid peer_review_decision_v1"),
+        outputChars: 200,
+        decisionParsed: false,
+        durationMs: expect.any(Number),
       }),
     ]);
   });

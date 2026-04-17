@@ -23,6 +23,7 @@ import {
   type VisionReviewOptions,
 } from "./vision-review.js";
 import type { StructuredReviewResult } from "./review-result.js";
+import type { OllamaGenerationTelemetry } from "../shared/ollama.js";
 import {
   deriveBatchReviewExecutionPlan,
   deriveBatchReviewPreflightOptions,
@@ -111,6 +112,10 @@ export interface BatchReviewResult {
   structuredResult?: BatchReviewStructuredResultSummary;
   status: "success" | "failure";
   errorSummary?: string;
+  durationMs?: number;
+  outputChars?: number;
+  decisionParsed?: boolean;
+  ollamaTelemetry?: OllamaGenerationTelemetry;
 }
 
 export interface BatchReviewSummary {

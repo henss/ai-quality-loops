@@ -12,6 +12,7 @@ import {
 import {
   runExpertReview,
   type ExpertReviewOptions,
+  type ExpertReviewDiagnostics,
 } from "./expert-review.js";
 import {
   runVisionReview,
@@ -26,6 +27,14 @@ import type {
   NormalizedBatchReviewEntry,
 } from "./batch-review.js";
 import { createBatchReviewResultKey } from "../contracts/json-contracts.js";
+
+function readExpertDiagnostics(value: unknown): ExpertReviewDiagnostics | undefined {
+  if (typeof value !== "object" || value === null) {
+    return undefined;
+  }
+
+  return (value as { diagnostics?: ExpertReviewDiagnostics }).diagnostics;
+}
 
 export interface BatchReviewExecutionPlanEntry
   extends NormalizedBatchReviewEntry {
@@ -176,8 +185,10 @@ export async function runBatchReviewEntries({
       `[Batch Review] Starting ${label} (${entry.mode}) for ${targetSummary}`,
     );
 
+    const startedAt = Date.now();
     try {
       let structuredResult: StructuredReviewResult | undefined;
+      let diagnostics: ExpertReviewDiagnostics | undefined;
 
       if (entry.mode === "expert") {
         const reviewResult = await runExpertReviewImpl({
@@ -194,6 +205,7 @@ export async function runBatchReviewEntries({
         });
         structuredResult =
           typeof reviewResult === "string" ? undefined : reviewResult;
+        diagnostics = readExpertDiagnostics(reviewResult);
       } else {
         const reviewResult = await runVisionReviewImpl({
           urlOrPath: entry.target,
@@ -215,6 +227,7 @@ export async function runBatchReviewEntries({
           typeof reviewResult === "string" ? undefined : reviewResult;
       }
 
+      const durationMs = Date.now() - startedAt;
       results.push({
         index: entry.index,
         name: entry.name,
@@ -227,10 +240,17 @@ export async function runBatchReviewEntries({
           ? summarizeStructuredReviewResultRollup(structuredResult)
           : undefined,
         status: "success",
+        durationMs,
+        outputChars: diagnostics?.outputChars,
+        decisionParsed: diagnostics?.decisionParsed,
+        ollamaTelemetry: diagnostics?.ollamaTelemetry,
       });
+      getLogger().info(`[Batch Review] ${label} completed in ${durationMs}ms.`);
     } catch (error) {
+      const durationMs = Date.now() - startedAt;
       const errorSummary = summarizeReviewSurfaceError(error);
       getLogger().error(`[Batch Review] ${label} failed: ${errorSummary}`);
+      const diagnostics = readExpertDiagnostics(error);
 
       results.push({
         index: entry.index,
@@ -242,6 +262,10 @@ export async function runBatchReviewEntries({
         structuredOutputPath: entry.structuredOutputPath,
         status: "failure",
         errorSummary,
+        durationMs,
+        outputChars: diagnostics?.outputChars,
+        decisionParsed: diagnostics?.decisionParsed,
+        ollamaTelemetry: diagnostics?.ollamaTelemetry,
       });
     }
   }

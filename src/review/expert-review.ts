@@ -1,5 +1,8 @@
 import { getLogger } from "../shared/logger.js";
-import { generateTextWithOllama } from "../shared/ollama.js";
+import {
+  generateTextWithOllamaDetailed,
+  type OllamaGenerationTelemetry,
+} from "../shared/ollama.js";
 import { resolveFromCwd, writeJson } from "../shared/io.js";
 import {
   getDefaultExpertReviewModel,
@@ -23,6 +26,80 @@ import {
   stripReviewReasoningBlocks,
   type StructuredReviewResult,
 } from "./review-result.js";
+
+export interface ExpertReviewDiagnostics {
+  elapsedMs: number;
+  outputChars: number;
+  decisionParsed: boolean;
+  ollamaTelemetry?: OllamaGenerationTelemetry;
+}
+
+const STRUCTURED_REVIEW_NUM_PREDICT = 4096;
+const STRUCTURED_REVIEW_PROGRESS_INTERVAL_MS = 30_000;
+
+const structuredReviewDecisionSchema = {
+  type: "object",
+  properties: {
+    review_decision: {
+      type: "object",
+      properties: {
+        schema: { const: "peer_review_decision_v1" },
+        verdict: {
+          enum: [
+            "accept",
+            "accept_with_follow_up",
+            "changes_requested",
+            "blocked",
+            "process_failed",
+          ],
+        },
+        confidence: { enum: ["low", "medium", "high"] },
+        blocking: { type: "boolean" },
+        max_severity: { enum: ["unknown", "low", "medium", "high", "critical"] },
+        summary: { type: "string" },
+        blocking_findings: {
+          type: "array",
+          items: { $ref: "#/$defs/finding" },
+        },
+        non_blocking_findings: {
+          type: "array",
+          items: { $ref: "#/$defs/finding" },
+        },
+        required_before_merge: { type: "array", items: { type: "string" } },
+        follow_up: { type: "array", items: { type: "string" } },
+      },
+      required: [
+        "schema",
+        "verdict",
+        "confidence",
+        "blocking",
+        "max_severity",
+        "summary",
+        "blocking_findings",
+        "non_blocking_findings",
+        "required_before_merge",
+        "follow_up",
+      ],
+      additionalProperties: false,
+    },
+  },
+  required: ["review_decision"],
+  additionalProperties: false,
+  $defs: {
+    finding: {
+      type: "object",
+      properties: {
+        severity: { enum: ["unknown", "low", "medium", "high", "critical"] },
+        title: { type: "string" },
+        summary: { type: "string" },
+        recommendation: { type: "string" },
+        evidence: { type: "array", items: { type: "string" } },
+      },
+      required: ["severity", "title", "summary"],
+      additionalProperties: false,
+    },
+  },
+};
 
 /**
  * Options for the Expert Review engine.
@@ -103,6 +180,49 @@ export async function runExpertReview(
     await options.orchestrator.prepareForOllama();
   }
 
+  const reviewDecisionExample = JSON.stringify(
+    {
+      review_decision: {
+        schema: "peer_review_decision_v1",
+        verdict:
+          "accept | accept_with_follow_up | changes_requested | blocked | process_failed",
+        confidence: "low | medium | high",
+        blocking: false,
+        max_severity: "unknown | low | medium | high | critical",
+        summary: "One concise sentence with the review decision.",
+        blocking_findings: [],
+        non_blocking_findings: [
+          {
+            severity: "low | medium | high | critical | unknown",
+            title: "Short finding title",
+            summary: "One concise finding summary.",
+          },
+        ],
+        required_before_merge: [],
+        follow_up: [],
+      },
+    },
+    null,
+    2,
+  );
+  const outputInstructions =
+    options.resultFormat === "structured"
+      ? [
+          "Return only valid JSON. Do not include Markdown, commentary, code fences, or hidden reasoning.",
+          "The top-level JSON object must contain `review_decision` using this shape:",
+          reviewDecisionExample,
+          "Use `accept` only when no before-merge work is required. Use `accept_with_follow_up` when the work passes but follow-up hardening or cleanup remains. Use `changes_requested` or `blocked` for findings that should fail the gate.",
+        ].join("\n")
+      : [
+          "Provide your review in Markdown.",
+          "",
+          "End with exactly one fenced JSON block whose top-level object contains `review_decision` using this shape:",
+          "```json",
+          reviewDecisionExample,
+          "```",
+          "Use `accept` only when no before-merge work is required. Use `accept_with_follow_up` when the work passes but follow-up hardening or cleanup remains. Use `changes_requested` or `blocked` for findings that should fail the gate.",
+        ].join("\n");
+
   const finalPrompt = buildReviewEnvelope({
     personaPrompt,
     context: brand,
@@ -125,50 +245,34 @@ export async function runExpertReview(
         fenced: true,
       },
     ],
-    outputInstructions: [
-      "Provide your review in Markdown.",
-      "",
-      "End with exactly one fenced JSON block whose top-level object contains `review_decision` using this shape:",
-      "```json",
-      JSON.stringify(
-        {
-          review_decision: {
-            schema: "peer_review_decision_v1",
-            verdict:
-              "accept | accept_with_follow_up | changes_requested | blocked | process_failed",
-            confidence: "low | medium | high",
-            blocking: false,
-            max_severity: "unknown | low | medium | high | critical",
-            summary: "One concise sentence with the review decision.",
-            blocking_findings: [],
-            non_blocking_findings: [
-              {
-                severity: "low | medium | high | critical | unknown",
-                title: "Short finding title",
-                summary: "One concise finding summary.",
-              },
-            ],
-            required_before_merge: [],
-            follow_up: [],
-          },
-        },
-        null,
-        2,
-      ),
-      "```",
-      "Use `accept` only when no before-merge work is required. Use `accept_with_follow_up` when the work passes but follow-up hardening or cleanup remains. Use `changes_requested` or `blocked` for findings that should fail the gate.",
-    ].join("\n"),
+    outputInstructions,
   });
 
   try {
-    const text = await generateTextWithOllama({
+    const generation = await generateTextWithOllamaDetailed({
       ollamaUrl,
       model: modelId,
       prompt: finalPrompt,
-      temperature: 0.7,
+      format:
+        options.resultFormat === "structured"
+          ? structuredReviewDecisionSchema
+          : undefined,
+      temperature: options.resultFormat === "structured" ? 0.1 : 0.7,
       keepAlive: options.ollamaKeepAlive,
+      numPredict:
+        options.resultFormat === "structured"
+          ? STRUCTURED_REVIEW_NUM_PREDICT
+          : undefined,
+      progressIntervalMs: STRUCTURED_REVIEW_PROGRESS_INTERVAL_MS,
+      onProgress: (progress) => {
+        getLogger().info(
+          `[Expert Review] ${personaName} still generating after ${Math.round(
+            progress.elapsedMs / 1000,
+          )}s (${progress.generatedChars} chars).`,
+        );
+      },
     });
-    const reviewMarkdown = stripReviewReasoningBlocks(text);
+    const reviewMarkdown = stripReviewReasoningBlocks(generation.text);
 
     getLogger().info(
       `[Expert Review] ${personaName} review completed; markdown output omitted from console (${reviewMarkdown.length} chars).`,
@@ -186,6 +290,14 @@ export async function runExpertReview(
         },
       ],
     });
+    const decisionParsed = Boolean(structuredResult.decision);
+    const diagnostics = {
+      elapsedMs: generation.elapsedMs,
+      outputChars: generation.generatedChars,
+      decisionParsed,
+      ollamaTelemetry: generation.telemetry,
+    } satisfies ExpertReviewDiagnostics;
+    Object.assign(structuredResult, { diagnostics });
 
     if (outputPath) {
       const absoluteOutputPath = await writeReviewOutput(outputPath, reviewMarkdown);
@@ -198,6 +310,14 @@ export async function runExpertReview(
           },
         )}`,
       );
+    }
+
+    if (options.resultFormat === "structured" && !decisionParsed) {
+      const error = new Error(
+        "Structured expert review did not emit a valid peer_review_decision_v1 JSON object.",
+      );
+      Object.assign(error, { diagnostics });
+      throw error;
     }
 
     if (structuredOutputPath) {

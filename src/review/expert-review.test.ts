@@ -4,10 +4,10 @@ import * as path from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { getLogger, setLogger, silentLogger } from "../shared/logger.js";
 
-const generateTextWithOllama = vi.fn();
+const generateTextWithOllamaDetailed = vi.fn();
 
 vi.mock("../shared/ollama.js", () => ({
-  generateTextWithOllama,
+  generateTextWithOllamaDetailed,
 }));
 
 describe("runExpertReview", () => {
@@ -17,7 +17,7 @@ describe("runExpertReview", () => {
   beforeEach(async () => {
     tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "aiql-expert-review-"));
     setLogger(silentLogger);
-    generateTextWithOllama.mockReset();
+    generateTextWithOllamaDetailed.mockReset();
   });
 
   afterEach(async () => {
@@ -38,15 +38,8 @@ describe("runExpertReview", () => {
     await fs.writeFile(path.join(tempDir, "context.json"), JSON.stringify({ project: "demo" }));
     await fs.writeFile(path.join(tempDir, "draft.md"), "# Draft");
 
-    generateTextWithOllama.mockResolvedValue([
-      "# Summary",
-      "The copy is usable, but one high-risk issue remains.",
-      "",
-      "## Findings",
-      "- Missing warning state: High severity because destructive actions are not visually distinct.",
-      "",
-      "```json",
-      JSON.stringify(
+    generateTextWithOllamaDetailed.mockResolvedValue({
+      text: JSON.stringify(
         {
           review_decision: {
             schema: "peer_review_decision_v1",
@@ -70,8 +63,13 @@ describe("runExpertReview", () => {
         null,
         2,
       ),
-      "```",
-    ].join("\n"));
+      generatedChars: 512,
+      elapsedMs: 1200,
+      telemetry: {
+        promptEvalCount: 100,
+        evalCount: 50,
+      },
+    });
 
     const result = await runExpertReview({
       expert: "UI/UX",
@@ -86,7 +84,7 @@ describe("runExpertReview", () => {
     expect(result).toMatchObject({
       workflow: "expert",
       expert: "SKEPTICAL UI/UX CRITIC",
-      summary: "The copy is usable, but one high-risk issue remains.",
+      summary: "The destructive action warning state must be fixed.",
       overallSeverity: "high",
       decision: expect.objectContaining({
         verdict: "changes_requested",
@@ -105,7 +103,24 @@ describe("runExpertReview", () => {
           severity: "high",
         }),
       ],
+      diagnostics: {
+        elapsedMs: 1200,
+        outputChars: 512,
+        decisionParsed: true,
+        ollamaTelemetry: {
+          promptEvalCount: 100,
+          evalCount: 50,
+        },
+      },
     });
+
+    expect(generateTextWithOllamaDetailed).toHaveBeenCalledWith(
+      expect.objectContaining({
+        format: expect.objectContaining({ type: "object" }),
+        temperature: 0.1,
+        numPredict: 4096,
+      }),
+    );
 
     await expect(
       fs.readFile(path.join(tempDir, "reviews", "expert.md"), "utf-8"),
@@ -135,9 +150,11 @@ describe("runExpertReview", () => {
     );
     await fs.writeFile(path.join(tempDir, "draft.md"), "# Draft");
 
-    generateTextWithOllama.mockResolvedValue(
-      "# Summary\nDO_NOT_LOG_EXPERT_BODY\n\n## Findings\n- No issue.",
-    );
+    generateTextWithOllamaDetailed.mockResolvedValue({
+      text: "# Summary\nDO_NOT_LOG_EXPERT_BODY\n\n## Findings\n- No issue.",
+      generatedChars: 54,
+      elapsedMs: 10,
+    });
 
     await runExpertReview({
       expert: "UI/UX",
@@ -155,5 +172,38 @@ describe("runExpertReview", () => {
     await expect(
       fs.readFile(path.join(tempDir, "reviews", "expert.md"), "utf-8"),
     ).resolves.toContain("DO_NOT_LOG_EXPERT_BODY");
+  });
+
+  it("fails structured reviews that do not emit a valid decision", async () => {
+    const { runExpertReview } = await import("./expert-review.js");
+
+    await fs.writeFile(
+      path.join(tempDir, "personas.md"),
+      [
+        "### LLM COMMITTEE PERSONA: 1. SKEPTICAL UI/UX CRITIC",
+        "Review like a skeptic.",
+      ].join("\n"),
+    );
+    await fs.writeFile(path.join(tempDir, "draft.md"), "# Draft");
+
+    generateTextWithOllamaDetailed.mockResolvedValue({
+      text: "I cannot decide yet.",
+      generatedChars: 20,
+      elapsedMs: 15,
+    });
+
+    await expect(
+      runExpertReview({
+        expert: "UI/UX",
+        content: path.join(tempDir, "draft.md"),
+        outputPath: path.join(tempDir, "reviews", "expert.md"),
+        promptLibraryPath: path.join(tempDir, "personas.md"),
+        resultFormat: "structured",
+      }),
+    ).rejects.toThrow("valid peer_review_decision_v1");
+
+    await expect(
+      fs.readFile(path.join(tempDir, "reviews", "expert.md"), "utf-8"),
+    ).resolves.toContain("I cannot decide yet.");
   });
 });

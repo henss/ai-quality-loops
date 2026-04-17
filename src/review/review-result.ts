@@ -308,6 +308,15 @@ export function extractStructuredReviewDecision(
   markdown: string,
 ): StructuredReviewDecision | undefined {
   const normalized = normalizeMarkdown(markdown);
+  try {
+    const parsed = JSON.parse(normalized) as unknown;
+    if (isRecord(parsed) && "review_decision" in parsed) {
+      return parseReviewDecision(parsed.review_decision);
+    }
+  } catch {
+    // Fall back to fenced JSON blocks for Markdown review output.
+  }
+
   for (const match of normalized.matchAll(DECISION_BLOCK_PATTERN)) {
     const rawJson = match[1]?.trim();
     if (!rawJson) {
@@ -508,7 +517,7 @@ export function buildStructuredReviewResult(input: {
     workflow: input.workflow,
     expert: input.expert,
     model: input.model,
-    summary: extractStructuredReviewSummary(input.markdown),
+    summary: decision?.summary ?? extractStructuredReviewSummary(input.markdown),
     overallSeverity: decision?.max_severity ?? summarizeStructuredReviewSeverity(findings),
     findings,
     decision,

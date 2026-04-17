@@ -1,6 +1,73 @@
 import { readFile } from "fs/promises";
 import { getLogger } from "./logger.js";
 
+export interface OllamaGenerationTelemetry {
+  totalDurationMs?: number;
+  loadDurationMs?: number;
+  promptEvalCount?: number;
+  promptEvalDurationMs?: number;
+  evalCount?: number;
+  evalDurationMs?: number;
+}
+
+export interface OllamaGenerationProgress {
+  elapsedMs: number;
+  generatedChars: number;
+}
+
+export interface DetailedOllamaGenerationResult {
+  text: string;
+  generatedChars: number;
+  elapsedMs: number;
+  telemetry?: OllamaGenerationTelemetry;
+}
+
+export interface OllamaStreamOptions {
+  onProgress?: (progress: OllamaGenerationProgress) => void;
+  progressIntervalMs?: number;
+}
+
+function durationNsToMs(value: unknown): number | undefined {
+  return typeof value === "number" && Number.isFinite(value)
+    ? Math.round(value / 1_000_000)
+    : undefined;
+}
+
+function readCount(value: unknown): number | undefined {
+  return typeof value === "number" && Number.isFinite(value) ? value : undefined;
+}
+
+function readTelemetry(value: unknown): OllamaGenerationTelemetry | undefined {
+  if (typeof value !== "object" || value === null) {
+    return undefined;
+  }
+
+  const record = value as Record<string, unknown>;
+  const telemetry = {
+    totalDurationMs: durationNsToMs(record.total_duration),
+    loadDurationMs: durationNsToMs(record.load_duration),
+    promptEvalCount: readCount(record.prompt_eval_count),
+    promptEvalDurationMs: durationNsToMs(record.prompt_eval_duration),
+    evalCount: readCount(record.eval_count),
+    evalDurationMs: durationNsToMs(record.eval_duration),
+  } satisfies OllamaGenerationTelemetry;
+
+  return Object.values(telemetry).some((entry) => entry !== undefined)
+    ? telemetry
+    : undefined;
+}
+
+function renderOllamaText(fullContent: string, fullThinking: string): string {
+  if (fullThinking.trim()) {
+    if (fullContent.trim()) {
+      return `<thought>\n${fullThinking.trim()}\n</thought>\n\n${fullContent.trim()}`;
+    }
+    return fullThinking.trim();
+  }
+
+  return fullContent;
+}
+
 /**
  * Common helper to process Ollama's streaming response and aggregate the content.
  * This is more robust for long reasoning outputs from models like qwen3-vl:32b.
@@ -9,16 +76,69 @@ export async function processOllamaStream(
   res: Response,
   type: "chat" | "generate",
 ): Promise<string> {
+  return (await processOllamaStreamDetailed(res, type)).text;
+}
+
+export async function processOllamaStreamDetailed(
+  res: Response,
+  type: "chat" | "generate",
+  options: OllamaStreamOptions = {},
+): Promise<DetailedOllamaGenerationResult> {
   const body = res.body;
   if (!body) {
     throw new Error("Ollama response body is empty.");
   }
 
+  const startedAt = Date.now();
+  const progressIntervalMs = options.progressIntervalMs ?? 30_000;
+  let lastProgressAt = startedAt;
   let fullContent = "";
   let fullThinking = "";
+  let telemetry: OllamaGenerationTelemetry | undefined;
   const reader = body.getReader();
   const decoder = new TextDecoder();
   let buffer = "";
+
+  const maybeReportProgress = () => {
+    if (!options.onProgress) {
+      return;
+    }
+
+    const now = Date.now();
+    if (progressIntervalMs > 0 && now - lastProgressAt < progressIntervalMs) {
+      return;
+    }
+
+    lastProgressAt = now;
+    options.onProgress({
+      elapsedMs: now - startedAt,
+      generatedChars: renderOllamaText(fullContent, fullThinking).length,
+    });
+  };
+
+  const processChunk = (data: Record<string, unknown>) => {
+    if (type === "chat") {
+      const message = data.message;
+      if (typeof message === "object" && message !== null) {
+        const content = (message as Record<string, unknown>).content;
+        if (typeof content === "string") {
+          fullContent += content;
+        }
+      }
+    } else if (typeof data.response === "string") {
+      fullContent += data.response;
+    }
+
+    if (typeof data.thinking === "string") {
+      fullThinking += data.thinking;
+    }
+
+    if (data.done === true) {
+      telemetry = readTelemetry(data);
+    }
+
+    maybeReportProgress();
+  };
 
   while (true) {
     const { done, value } = await reader.read();
@@ -31,21 +151,7 @@ export async function processOllamaStream(
     for (const line of lines) {
       if (!line.trim()) continue;
       try {
-        const data = JSON.parse(line);
-        if (type === "chat") {
-          if (data.message?.content) {
-            fullContent += data.message.content;
-          }
-        } else {
-          if (data.response) {
-            fullContent += data.response;
-          }
-        }
-
-        // Handle reasoning models that return a 'thinking' field
-        if (data.thinking) {
-          fullThinking += data.thinking;
-        }
+        processChunk(JSON.parse(line) as Record<string, unknown>);
       } catch (err) {
         getLogger().warn(`[Ollama] Failed to parse stream chunk: ${line}`, err);
       }
@@ -55,30 +161,19 @@ export async function processOllamaStream(
   // Handle any remaining buffer
   if (buffer.trim()) {
     try {
-      const data = JSON.parse(buffer);
-      if (type === "chat") {
-        if (data.message?.content) fullContent += data.message.content;
-      } else {
-        if (data.response) fullContent += data.response;
-      }
-      if (data.thinking) fullThinking += data.thinking;
+      processChunk(JSON.parse(buffer) as Record<string, unknown>);
     } catch (err) {
       // ignore
     }
   }
 
-  // If we have reasoning but no final content, return the reasoning.
-  // Otherwise, if we have both, we usually want to prepend reasoning or just return content.
-  // Given the issue "cut off somewhere in the middle", we should probably return both
-  // if they are present, or at least ensure we don't discard the reasoning.
-  if (fullThinking.trim()) {
-    if (fullContent.trim()) {
-      return `<thought>\n${fullThinking.trim()}\n</thought>\n\n${fullContent.trim()}`;
-    }
-    return fullThinking.trim();
-  }
-
-  return fullContent;
+  const text = renderOllamaText(fullContent, fullThinking);
+  return {
+    text,
+    generatedChars: text.length,
+    elapsedMs: Date.now() - startedAt,
+    telemetry,
+  };
 }
 
 export interface CallOllamaVisionParams {
@@ -298,6 +393,7 @@ export async function generateTextWithOllama({
   format,
   temperature = 0.7,
   keepAlive = "10m",
+  numPredict = 16384,
 }: {
   ollamaUrl: string;
   model: string;
@@ -305,7 +401,42 @@ export async function generateTextWithOllama({
   format?: string | object;
   temperature?: number;
   keepAlive?: string | number;
+  numPredict?: number;
 }): Promise<string> {
+  return (
+    await generateTextWithOllamaDetailed({
+      ollamaUrl,
+      model,
+      prompt,
+      format,
+      temperature,
+      keepAlive,
+      numPredict,
+    })
+  ).text;
+}
+
+export async function generateTextWithOllamaDetailed({
+  ollamaUrl,
+  model,
+  prompt,
+  format,
+  temperature = 0.7,
+  keepAlive = "10m",
+  numPredict = 16384,
+  onProgress,
+  progressIntervalMs,
+}: {
+  ollamaUrl: string;
+  model: string;
+  prompt: string;
+  format?: string | object;
+  temperature?: number;
+  keepAlive?: string | number;
+  numPredict?: number;
+  onProgress?: (progress: OllamaGenerationProgress) => void;
+  progressIntervalMs?: number;
+}): Promise<DetailedOllamaGenerationResult> {
   const url = `${ollamaUrl.replace(/\/$/, "")}/api/generate`;
   const payload: any = {
     model,
@@ -315,7 +446,7 @@ export async function generateTextWithOllama({
     options: {
       temperature,
       num_ctx: 32768,
-      num_predict: 16384,
+      num_predict: numPredict,
       repeat_penalty: 1.1,
       top_p: 0.9,
       top_k: 40,
@@ -341,7 +472,10 @@ export async function generateTextWithOllama({
     throw new Error(`Ollama request failed: HTTP ${res.status} ${text}`);
   }
 
-  return processOllamaStream(res, "generate");
+  return processOllamaStreamDetailed(res, "generate", {
+    onProgress,
+    progressIntervalMs,
+  });
 }
 
 /**

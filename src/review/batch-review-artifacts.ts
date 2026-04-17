@@ -41,6 +41,10 @@ export function createBatchReviewArtifactSummary(
       errorSummary: result.errorSummary
         ? sanitizeReviewSurfaceValue(result.errorSummary)
         : undefined,
+      durationMs: result.durationMs,
+      outputChars: result.outputChars,
+      decisionParsed: result.decisionParsed,
+      ollamaTelemetry: result.ollamaTelemetry,
     })),
   };
 }

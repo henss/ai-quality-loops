@@ -3,6 +3,17 @@ import {
   type StructuredReviewDecision,
 } from "./structured-review-decision-contract.js";
 
+export {
+  parseBatchReviewArtifactSummary,
+  validateBatchReviewArtifactSummary,
+} from "./batch-review-summary-contract.js";
+export type {
+  BatchReviewArtifactResult,
+  BatchReviewArtifactSummary,
+  BatchReviewOllamaTelemetry,
+  BatchReviewStructuredResultSummary,
+} from "./batch-review-summary-contract.js";
+
 export type BatchReviewMode = "expert" | "vision";
 
 export interface BatchReviewManifestDefaults {
@@ -33,39 +44,12 @@ export interface BatchReviewManifest {
   reviews: BatchReviewManifestEntry[];
 }
 
-export interface BatchReviewArtifactResult {
-  index: number;
-  name?: string;
-  resultKey: string;
-  mode: BatchReviewMode;
-  targetSummary: string;
-  outputPath?: string;
-  structuredOutputPath?: string;
-  structuredResult?: BatchReviewStructuredResultSummary;
-  status: "success" | "failure";
-  errorSummary?: string;
-}
-
-export interface BatchReviewArtifactSummary {
-  manifestPath?: string;
-  total: number;
-  succeeded: number;
-  failed: number;
-  results: BatchReviewArtifactResult[];
-}
-
 export type StructuredReviewSeverity =
   | "critical"
   | "high"
   | "medium"
   | "low"
   | "unknown";
-
-export interface BatchReviewStructuredResultSummary {
-  overallSeverity: StructuredReviewSeverity;
-  totalFindings: number;
-  findingCounts: Record<StructuredReviewSeverity, number>;
-}
 export interface StructuredReviewProvenanceItem {
   label: string;
   value: string;
@@ -149,16 +133,6 @@ function readOptionalNumber(
 
   if (typeof value !== "number" || !Number.isFinite(value)) {
     throw new Error(`Manifest field "${fieldName}" must be a finite number.`);
-  }
-
-  return value;
-}
-
-function readRequiredInteger(value: unknown, fieldName: string): number {
-  if (typeof value !== "number" || !Number.isInteger(value) || value < 0) {
-    throw new Error(
-      `Manifest field "${fieldName}" must be a non-negative integer.`,
-    );
   }
 
   return value;
@@ -250,38 +224,6 @@ export function createBatchReviewResultKey(input: {
   return namedStem
     ? `${namedStem}-${input.mode}`
     : `review-${input.index + 1}-${input.mode}`;
-}
-
-function parseBatchReviewStructuredResultSummary(
-  value: unknown,
-  fieldName: string,
-): BatchReviewStructuredResultSummary {
-  if (!isRecord(value)) {
-    throw new Error(`Manifest field "${fieldName}" must be an object.`);
-  }
-
-  const findingCounts = createEmptySeverityCounts();
-  const rawFindingCounts = value.findingCounts;
-
-  if (!isRecord(rawFindingCounts)) {
-    throw new Error(`Manifest field "${fieldName}.findingCounts" must be an object.`);
-  }
-
-  for (const severity of Object.keys(findingCounts) as StructuredReviewSeverity[]) {
-    findingCounts[severity] = readRequiredInteger(
-      rawFindingCounts[severity],
-      `${fieldName}.findingCounts.${severity}`,
-    );
-  }
-
-  return {
-    overallSeverity: readStructuredReviewSeverity(
-      value.overallSeverity,
-      `${fieldName}.overallSeverity`,
-    ),
-    totalFindings: readRequiredInteger(value.totalFindings, `${fieldName}.totalFindings`),
-    findingCounts,
-  };
 }
 
 function parseManifestDefaults(
@@ -427,78 +369,6 @@ export function validateBatchReviewManifest(
   value: unknown,
 ): JsonContractValidationResult<BatchReviewManifest> {
   return validateContract(parseBatchReviewManifest, value);
-}
-
-export function parseBatchReviewArtifactSummary(
-  value: unknown,
-): BatchReviewArtifactSummary {
-  if (!isRecord(value)) {
-    throw new Error("Batch review summary artifact must be a JSON object.");
-  }
-
-  if (!Array.isArray(value.results)) {
-    throw new Error('Batch review summary artifact requires a "results" array.');
-  }
-
-  return {
-    manifestPath: readOptionalString(value.manifestPath, "manifestPath"),
-    total: readRequiredInteger(value.total, "total"),
-    succeeded: readRequiredInteger(value.succeeded, "succeeded"),
-    failed: readRequiredInteger(value.failed, "failed"),
-    results: value.results.map((result, index) => {
-      const fieldPath = `results[${index}]`;
-      if (!isRecord(result)) {
-        throw new Error(`Manifest field "${fieldPath}" must be an object.`);
-      }
-
-      return {
-        index: readRequiredInteger(result.index, `${fieldPath}.index`),
-        name: readOptionalString(result.name, `${fieldPath}.name`),
-        resultKey:
-          readOptionalString(result.resultKey, `${fieldPath}.resultKey`) ||
-          createBatchReviewResultKey({
-            index: readRequiredInteger(result.index, `${fieldPath}.index`),
-            name: readOptionalString(result.name, `${fieldPath}.name`),
-            mode: readRequiredMode(result.mode, `${fieldPath}.mode`),
-          }),
-        mode: readRequiredMode(result.mode, `${fieldPath}.mode`),
-        targetSummary: readRequiredString(
-          result.targetSummary,
-          `${fieldPath}.targetSummary`,
-        ),
-        outputPath: readOptionalString(result.outputPath, `${fieldPath}.outputPath`),
-        structuredOutputPath: readOptionalString(
-          result.structuredOutputPath,
-          `${fieldPath}.structuredOutputPath`,
-        ),
-        structuredResult:
-          result.structuredResult === undefined
-            ? undefined
-            : parseBatchReviewStructuredResultSummary(
-                result.structuredResult,
-                `${fieldPath}.structuredResult`,
-              ),
-        status:
-          result.status === "success" || result.status === "failure"
-            ? result.status
-            : (() => {
-                throw new Error(
-                  `Manifest field "${fieldPath}.status" must be "success" or "failure".`,
-                );
-              })(),
-        errorSummary: readOptionalString(
-          result.errorSummary,
-          `${fieldPath}.errorSummary`,
-        ),
-      };
-    }),
-  };
-}
-
-export function validateBatchReviewArtifactSummary(
-  value: unknown,
-): JsonContractValidationResult<BatchReviewArtifactSummary> {
-  return validateContract(parseBatchReviewArtifactSummary, value);
 }
 
 export function parseStructuredReviewResult(

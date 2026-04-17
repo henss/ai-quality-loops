@@ -204,6 +204,9 @@ export function sanitizeReviewSurfaceValue(
   const config = {
     ...DEFAULT_SANITIZE_REVIEW_SURFACE_VALUE_OPTIONS,
     ...options,
+    extraRedactions:
+      options.extraRedactions ??
+      DEFAULT_SANITIZE_REVIEW_SURFACE_VALUE_OPTIONS.extraRedactions,
   };
   const trimmed = value.trim();
 
@@ -255,6 +258,9 @@ export function summarizeReviewSurfaceError(
   const config = {
     ...DEFAULT_SUMMARIZE_REVIEW_SURFACE_ERROR_OPTIONS,
     ...options,
+    extraRedactions:
+      options.extraRedactions ??
+      DEFAULT_SUMMARIZE_REVIEW_SURFACE_ERROR_OPTIONS.extraRedactions,
   };
 
   if (error instanceof Error) {

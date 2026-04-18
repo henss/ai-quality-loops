@@ -7,7 +7,6 @@ This file is a self-contained shared standard for agents working directly in thi
 ## Catalog-Managed Rules
 
 - Promote repeated workflows into reusable skills, scripts, or local automation; promote repeated mistakes or ambiguity into evals or the appropriate durable guidance surface.
-- Respect this repo's project, domain, account, workspace, billing, and legal boundaries. Do not mix cross-project control-plane logic with project-local behavior without an explicit recorded decision.
 - Keep files small and single-purpose. Prefer explicit data shapes, boundary-local normalization, narrow helpers, and focused tests. If a touched file is already structurally busy, extract a clearer seam before adding feature weight.
 - Prefer repo-local current state, generated status, or live tool output before older notes or historical ledgers when deciding what is true now.
 - Record unresolved design questions, repeated confusion, token waste, compatibility ambiguity, or follow-up work in the repo's canonical tracker, decision log, evals, or outcome artifact instead of leaving it only in chat.

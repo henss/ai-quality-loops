@@ -1,10 +1,8 @@
-<!-- [MANAGED_BY_LLM_ORCHESTRATOR_PORTFOLIO_GUIDANCE] -->
+<!-- [MANAGED_BY_PORTFOLIO_GUIDANCE_SYNC] -->
 
 # Portfolio Guidance
 
-Canonical owner: `D:\workspace\llm-orchestrator`
-Project: `ai-quality-loops`
-Repo: `D:\workspace\ai-quality-loops`
+This file is a self-contained shared standard for agents working directly in this repo. Keep repo-specific additions in the local block so sync can refresh the managed guidance safely.
 
 ## Build vs Buy
 

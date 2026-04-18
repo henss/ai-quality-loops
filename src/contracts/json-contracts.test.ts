@@ -10,6 +10,7 @@ import {
   validateStructuredReviewResult,
 } from "./json-contracts.js";
 import { validateBatchReviewSummaryComparisonReport } from "./batch-review-summary-comparison-contract.js";
+import { compareStructuredReviewResults } from "../review/review-result-comparison.js";
 
 describe("public JSON contracts", () => {
   it("parses the published batch review manifest shape", () => {
@@ -415,6 +416,75 @@ describe("public JSON contracts", () => {
     });
 
     const serialized = JSON.stringify(fixture).toLowerCase();
+    for (const privateBoundaryTerm of [
+      "stefan",
+      "linear",
+      "smartseer",
+      "ops-",
+      "customer",
+      "tenant",
+      "employee",
+      "company",
+      "https://",
+      "d:\\",
+      "/users/",
+      ".png",
+      ".jpg",
+      ".jpeg",
+    ]) {
+      expect(serialized).not.toContain(privateBoundaryTerm);
+    }
+  });
+
+  it("ships a public-safe synthetic structured-result golden-diff fixture", async () => {
+    const beforeFixture = JSON.parse(
+      await fs.readFile(
+        path.join(
+          process.cwd(),
+          "examples/synthetic-structured-result-golden-diff-before.fixture.json",
+        ),
+        "utf-8",
+      ),
+    ) as unknown;
+    const afterFixture = JSON.parse(
+      await fs.readFile(
+        path.join(
+          process.cwd(),
+          "examples/synthetic-structured-result-golden-diff-after.fixture.json",
+        ),
+        "utf-8",
+      ),
+    ) as unknown;
+    const expectedComparison = JSON.parse(
+      await fs.readFile(
+        path.join(
+          process.cwd(),
+          "examples/synthetic-structured-result-golden-diff.expected.json",
+        ),
+        "utf-8",
+      ),
+    ) as unknown;
+
+    const beforeValidation = validateStructuredReviewResult(beforeFixture);
+    const afterValidation = validateStructuredReviewResult(afterFixture);
+    expect(beforeValidation.ok).toBe(true);
+    expect(afterValidation.ok).toBe(true);
+    if (!beforeValidation.ok || !afterValidation.ok) {
+      throw new Error("Synthetic golden-diff fixtures must validate");
+    }
+
+    expect(
+      compareStructuredReviewResults({
+        before: beforeValidation.value,
+        after: afterValidation.value,
+      }),
+    ).toEqual(expectedComparison);
+
+    const serialized = JSON.stringify({
+      beforeFixture,
+      afterFixture,
+      expectedComparison,
+    }).toLowerCase();
     for (const privateBoundaryTerm of [
       "stefan",
       "linear",

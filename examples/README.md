@@ -23,6 +23,7 @@ The example files cover the repeatable workflow surfaces. The package also suppo
 | Review a sanitized social evidence packet | `batch-review ./examples/sanitized-social-evidence-review.manifest.json` | Use this as a text-review seam for redacted evidence packets; keep real sources, proof thresholds, and publication routing caller-owned. |
 | Validate a synthetic reviewer-contract fixture | `validateStructuredReviewResult(...)` with `./examples/synthetic-reviewer-contract-result.fixture.json` | Use when checking contract consumers against a public-safe fixture with generic evidence labels and caller-owned action boundaries. |
 | Validate a sanitized structured-result fixture | `validateStructuredReviewResult(...)` with `./examples/synthetic-apartment-review-result.fixture.json` | Use when checking contract consumers against a fixture that contains no private home data. |
+| Compare a synthetic structured-result golden diff | `compareStructuredReviewResults(...)` with `./examples/synthetic-structured-result-golden-diff-before.fixture.json` and `./examples/synthetic-structured-result-golden-diff-after.fixture.json` | Use when checking comparison consumers against a public-safe expected diff fixture. |
 | Make lower-level local LLM calls | `generateTextWithOllama(...)` or `callOllamaVision(...)` | Use only when the review workflow is too high-level for the caller. |
 
 ## Included examples
@@ -138,11 +139,22 @@ Typical edits:
 - keep approval, routing, remediation, publication, and domain interpretation outside `ai-quality-loops`
 - use `docs/reviewer-contract.md` as the boundary note before promoting another reviewer-contract example
 
+### `synthetic-structured-result-golden-diff-*.json`
+
+Use when you want a deterministic before/after fixture for consumers of `compareStructuredReviewResults(...)` or `review-compare --json`.
+
+Typical edits:
+
+- keep the before and after inputs synthetic, or replace them only with caller-sanitized structured review results
+- compare the helper output to `synthetic-structured-result-golden-diff.expected.json` when a wrapper needs a stable golden output shape
+- keep baseline selection, severity budgets, approval, routing, and remediation policy in the embedding repo
+
 ## Boundary notes
 
 - The examples stay open-source-safe on purpose. They do not embed private domains, company personas, or project-specific output routing.
 - The synthetic apartment fixture is contract-focused. It intentionally excludes real room names, image paths, coordinates, Stefan-specific facts, and release or publication instructions.
 - The synthetic reviewer-contract fixture is contract-focused. It intentionally excludes real issue keys, source URLs, local paths, account names, approval policy, and routing instructions.
+- The synthetic structured-result golden diff is comparison-focused. It intentionally excludes real source labels, tracker identifiers, local paths, account names, private facts, policy thresholds, and routing instructions.
 - The synthetic social evidence fixture is seam-focused. It intentionally excludes real account names, audience facts, source identities, brand strategy, publication decisions, and business routing.
 - If you need repo-specific naming, redaction rules, or CI budgets, add that in the embedding repo instead of widening the shared package surface.
 - If a future workflow needs more than copied starter manifests and the generic CI recipe, the next extraction question is whether a scaffold command would stay generic enough for public maintenance.

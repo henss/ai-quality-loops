@@ -1,0 +1,54 @@
+{
+  "schemaVersion": "1",
+  "workflow": "expert",
+  "expert": "Evidence Reviewer",
+  "model": "synthetic-golden-diff-fixture",
+  "summary": "Synthetic baseline review result for deterministic structured-result comparison checks.",
+  "overallSeverity": "high",
+  "findings": [
+    {
+      "title": "Claim support is incomplete",
+      "summary": "The synthetic claim relies on a generic evidence packet but does not yet name the supporting sanitized label.",
+      "severity": "high",
+      "recommendation": "Add a sanitized evidence label before treating the claim as ready for caller-owned routing.",
+      "evidence": [
+        "Synthetic evidence packet",
+        "Claim Alpha"
+      ]
+    },
+    {
+      "title": "Action boundary is explicit",
+      "summary": "The review result reports concerns without deciding approval, publication, routing, or remediation ownership.",
+      "severity": "low",
+      "recommendation": "Keep downstream policy and action mapping in the embedding repo.",
+      "evidence": [
+        "Boundary note: synthetic fixture only"
+      ]
+    },
+    {
+      "title": "Obsolete caveat remains",
+      "summary": "The baseline still includes a caveat for a generic source that is no longer part of the sanitized packet.",
+      "severity": "medium",
+      "recommendation": "Remove stale caveats when their supporting synthetic evidence labels disappear.",
+      "evidence": [
+        "Synthetic evidence packet",
+        "Caveat Beta"
+      ]
+    }
+  ],
+  "provenance": [
+    {
+      "label": "Content source",
+      "value": "Synthetic structured-result golden-diff baseline"
+    },
+    {
+      "label": "Review surface",
+      "value": "Structured review-result comparison fixture"
+    },
+    {
+      "label": "Privacy boundary",
+      "value": "No real source paths, tracker identifiers, account data, private facts, or domain policy"
+    }
+  ],
+  "markdown": "# Summary\nSynthetic baseline review result for deterministic structured-result comparison checks.\n\n## Findings\n- High: Claim support is incomplete.\n- Low: Action boundary is explicit.\n- Medium: Obsolete caveat remains.\n\n## Boundary\nThis fixture uses only generic labels and leaves approval, routing, remediation, and publication policy caller-owned."
+}

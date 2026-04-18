@@ -1,0 +1,53 @@
+{
+  "schemaVersion": "1",
+  "workflow": "expert",
+  "expert": "Evidence Reviewer",
+  "model": "synthetic-golden-diff-fixture",
+  "summary": "Synthetic candidate review result for deterministic structured-result comparison checks.",
+  "overallSeverity": "medium",
+  "findings": [
+    {
+      "title": "Claim support is incomplete",
+      "summary": "The synthetic claim now names the sanitized evidence label but still needs one caller-owned confirmation before routing.",
+      "severity": "medium",
+      "recommendation": "Confirm the sanitized evidence label in the embedding repo before any caller-owned routing.",
+      "evidence": [
+        "Synthetic evidence packet",
+        "Claim Alpha"
+      ]
+    },
+    {
+      "title": "Action boundary is explicit",
+      "summary": "The review result reports concerns without deciding approval, publication, routing, or remediation ownership.",
+      "severity": "low",
+      "recommendation": "Keep downstream policy and action mapping in the embedding repo.",
+      "evidence": [
+        "Boundary note: synthetic fixture only"
+      ]
+    },
+    {
+      "title": "Reviewer scope note added",
+      "summary": "The candidate adds a generic note that the fixture is for comparison behavior, not domain interpretation.",
+      "severity": "low",
+      "recommendation": "Keep interpretation, thresholds, and follow-up ownership outside the shared package.",
+      "evidence": [
+        "Boundary note: comparison fixture only"
+      ]
+    }
+  ],
+  "provenance": [
+    {
+      "label": "Content source",
+      "value": "Synthetic structured-result golden-diff candidate"
+    },
+    {
+      "label": "Review surface",
+      "value": "Structured review-result comparison fixture"
+    },
+    {
+      "label": "Privacy boundary",
+      "value": "No real source paths, tracker identifiers, account data, private facts, or domain policy"
+    }
+  ],
+  "markdown": "# Summary\nSynthetic candidate review result for deterministic structured-result comparison checks.\n\n## Findings\n- Medium: Claim support is incomplete.\n- Low: Action boundary is explicit.\n- Low: Reviewer scope note added.\n\n## Boundary\nThis fixture uses only generic labels and leaves approval, routing, remediation, and publication policy caller-owned."
+}

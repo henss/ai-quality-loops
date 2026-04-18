@@ -21,6 +21,7 @@ The example files cover the repeatable workflow surfaces. The package also suppo
 | Compare two batch summary artifacts | `batch-review-compare ./reviews/previous-summary.json ./reviews/current-summary.json --json` | Feed the JSON report into `review-gate --batch-comparison` when CI should fail on caller-owned regression budgets. |
 | Probe image-review quality with a synthetic visual target | `vision-preview --manifest ./examples/synthetic-zone-vision-probe.manifest.json --entry-name "Synthetic zone overview"` | Uses generic zones only; keep real capture handling, thresholds, and routing caller-owned. |
 | Review a sanitized social evidence packet | `batch-review ./examples/sanitized-social-evidence-review.manifest.json` | Use this as a text-review seam for redacted evidence packets; keep real sources, proof thresholds, and publication routing caller-owned. |
+| Validate a synthetic reviewer-contract fixture | `validateStructuredReviewResult(...)` with `./examples/synthetic-reviewer-contract-result.fixture.json` | Use when checking contract consumers against a public-safe fixture with generic evidence labels and caller-owned action boundaries. |
 | Validate a sanitized structured-result fixture | `validateStructuredReviewResult(...)` with `./examples/synthetic-apartment-review-result.fixture.json` | Use when checking contract consumers against a fixture that contains no private home data. |
 | Make lower-level local LLM calls | `generateTextWithOllama(...)` or `callOllamaVision(...)` | Use only when the review workflow is too high-level for the caller. |
 
@@ -127,10 +128,21 @@ Typical edits:
 - keep any real screenshots, retention policy, and action routing in the embedding repo
 - use it as a consumer fixture for `validateStructuredReviewResult(...)`, not as a runnable `batch-review` target
 
+### `synthetic-reviewer-contract-result.fixture.json`
+
+Use when you want a public-safe reviewer-contract fixture for contract tests without checking in real tracker data, private paths, source names, or domain policy.
+
+Typical edits:
+
+- keep evidence labels synthetic or replace them only with caller-sanitized labels
+- keep approval, routing, remediation, publication, and domain interpretation outside `ai-quality-loops`
+- use `docs/reviewer-contract.md` as the boundary note before promoting another reviewer-contract example
+
 ## Boundary notes
 
 - The examples stay open-source-safe on purpose. They do not embed private domains, company personas, or project-specific output routing.
 - The synthetic apartment fixture is contract-focused. It intentionally excludes real room names, image paths, coordinates, Stefan-specific facts, and release or publication instructions.
+- The synthetic reviewer-contract fixture is contract-focused. It intentionally excludes real issue keys, source URLs, local paths, account names, approval policy, and routing instructions.
 - The synthetic social evidence fixture is seam-focused. It intentionally excludes real account names, audience facts, source identities, brand strategy, publication decisions, and business routing.
 - If you need repo-specific naming, redaction rules, or CI budgets, add that in the embedding repo instead of widening the shared package surface.
 - If a future workflow needs more than copied starter manifests and the generic CI recipe, the next extraction question is whether a scaffold command would stay generic enough for public maintenance.

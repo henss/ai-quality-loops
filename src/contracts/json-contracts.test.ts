@@ -10,6 +10,7 @@ import {
   validateStructuredReviewResult,
 } from "./json-contracts.js";
 import { validateBatchReviewSummaryComparisonReport } from "./batch-review-summary-comparison-contract.js";
+import { loadBatchReviewExecutionPlan } from "../review/batch-review.js";
 import { compareStructuredReviewResults } from "../review/review-result-comparison.js";
 
 describe("public JSON contracts", () => {
@@ -346,6 +347,95 @@ describe("public JSON contracts", () => {
           reviews: expect.any(Array),
         }),
       );
+    }
+  });
+
+  it("keeps the sanitized social-evidence starter manifest public-safe and context-backed", async () => {
+    const manifestPath = path.join(
+      process.cwd(),
+      "examples/sanitized-social-evidence-review.manifest.json",
+    );
+    const manifest = JSON.parse(await fs.readFile(manifestPath, "utf-8")) as unknown;
+    const parsed = parseBatchReviewManifest(manifest);
+
+    expect(parsed.defaults).toEqual(
+      expect.objectContaining({
+        mode: "expert",
+        expert: "UI/UX",
+        contextPath: "./examples/synthetic-social-evidence-review-context.json",
+      }),
+    );
+    expect(parsed.reviews).toEqual([
+      expect.objectContaining({
+        name: "Synthetic social evidence packet",
+        target: "./examples/synthetic-social-evidence-review-context.md",
+      }),
+    ]);
+
+    const plan = await loadBatchReviewExecutionPlan({
+      manifestPath,
+      cwd: process.cwd(),
+    });
+    expect(plan.entries).toEqual([
+      expect.objectContaining({
+        mode: "expert",
+        target: "./examples/synthetic-social-evidence-review-context.md",
+        targetSummary:
+          "Local file path (.md file, file: synthetic-social-evidence-review-context.md)",
+        contextPath: "./examples/synthetic-social-evidence-review-context.json",
+      }),
+    ]);
+    expect(plan.preflight.personaRequirements).toEqual([
+      {
+        expert: "UI/UX",
+        promptLibraryPath: undefined,
+      },
+    ]);
+    expect(plan.preflight.contextPaths).toEqual([
+      "./examples/synthetic-social-evidence-review-context.json",
+    ]);
+
+    const contextPath = path.join(
+      process.cwd(),
+      parsed.defaults!.contextPath!,
+    );
+    const targetPath = path.join(process.cwd(), parsed.reviews[0]!.target);
+    await expect(fs.access(contextPath)).resolves.toBeUndefined();
+    await expect(fs.access(targetPath)).resolves.toBeUndefined();
+
+    const context = JSON.parse(await fs.readFile(contextPath, "utf-8")) as {
+      reviewFocus?: unknown;
+      outOfScope?: unknown;
+    };
+    expect(context).toEqual(
+      expect.objectContaining({
+        reviewSurface: "Sanitized social evidence packet",
+        reviewFocus: expect.any(Array),
+        outOfScope: expect.any(Array),
+      }),
+    );
+
+    const serialized = [
+      JSON.stringify(manifest),
+      JSON.stringify(context),
+      await fs.readFile(targetPath, "utf-8"),
+    ]
+      .join("\n")
+      .toLowerCase();
+    for (const privateBoundaryTerm of [
+      "stefan",
+      "linear",
+      "smartseer",
+      "format the sky",
+      "ops-",
+      "d:\\",
+      "/users/",
+      "https://",
+      ".png",
+      ".jpg",
+      ".jpeg",
+    ]) {
+      expect(serialized).not.toContain(privateBoundaryTerm);
     }
   });
 

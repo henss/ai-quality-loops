@@ -4,11 +4,11 @@
 
 - Follow this repo's checked-in guidance and conventions. These instructions are intentionally self-contained for direct repo-started agents.
 - Read `AGENTS.md` and `.codex/portfolio-guidance.md` before implementation.
-- Before non-trivial code edits, run the agent-surface preedit check on candidate files; if a touched file is near-limit or structurally busy, extract a focused seam before adding feature weight.
-- When a live refresh or `.runtime/current/` surface exists, use it before durable ledgers or historical session notes for current operational truth.
-- Work on the current default/shared branch unless Stefan explicitly requests otherwise; do not create branches, worktrees, or PR-only flows in Stefan-owned repos.
-- Treat dirty or untracked files outside the current task as active parallel work; do not delete, revert, format, normalize, or stage them unless explicitly authorized.
-- Before adding non-trivial reusable tooling or package-like infrastructure, run the applicable build-vs-buy scout or record why the work is one-off or non-commodity.
+- Keep generated or agent-created code small, typed, and easy to verify; split busy files before adding more feature weight.
+- Prefer repo-local current state, generated status, or live tool output before older notes when deciding what is true now.
+- Work on this repo's current default/shared branch unless local instructions explicitly request another flow; do not create branches or worktrees for routine work.
+- Preserve unrelated dirty or untracked files; do not delete, revert, format, normalize, or stage work outside the current task.
+- Prefer maintained third-party tools over new reusable local infrastructure when they fit this repo's trust, license, and integration boundary.
 
 <!-- [LOCAL_START] -->
 

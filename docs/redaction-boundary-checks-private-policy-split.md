@@ -26,6 +26,14 @@ AIQL already has the generic redaction seam needed for safe composition:
 | Policy binding and action routing | Generic findings, severity fields, comparison reports, and explicit gate inputs. | Approval thresholds, incident routing, ticket creation, release blocking, audit ownership, and exception policy. | Split. Callers interpret sanitized findings under their own policy. |
 | Repeated redaction-boundary checks | Documentation-only checklist or synthetic fixture if repeated generic adoption proves the gap. | Any private examples, production data, repo-local naming, or domain-specific rule defaults. | Monitor. Do not add a new helper from OPS-689 alone. |
 
+## OPS-1008 Boundary Clarification
+
+OPS-1008 keeps the same split but makes the policy-name boundary explicit: AIQL can own generic source inspection and sanitized review-surface examples, while callers own the literal rule names, field names, and policy labels that explain why a value matters in their environment.
+
+Do not promote caller policy names into default redaction checks. A safe public check may say that a string looks like a URL with a redacted query, a local path, a contact link, a data URL, or a caller-supplied project identifier. It should not say that the value is a customer id, escalation route, release blocker, tenant field, audit exception, or any other caller policy concept unless that label was supplied by the embedding repo and remains outside AIQL defaults.
+
+The current repository evidence supports a proposal rather than implementation: the public helper is `src/shared/review-surface.ts`, the package tests already cover caller-owned `extraRedactions`, and there is no `src/redaction-boundary/index.ts` implementation surface to split inside this repo. The next implementation step should wait until repeated open-source-safe adoption shows that the missing piece is a neutral checklist or synthetic fixture, not a private policy-name bundle.
+
 ## Promotion Test
 
 Before promoting a redaction-boundary check into AIQL, require a yes answer to all of these questions:

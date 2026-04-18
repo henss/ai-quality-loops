@@ -17,3 +17,6 @@ fi
 
 echo "pre-push: running typecheck when present"
 npm run --if-present typecheck
+
+echo "pre-push: checking private runtime files"
+npm run --if-present check:private-runtime

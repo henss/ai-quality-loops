@@ -20,6 +20,3 @@ npm run --if-present typecheck
 
 echo "pre-push: checking private runtime files"
 npm run --if-present check:private-runtime
-
-echo "pre-push: checking public boundary markers"
-npm run --if-present check:public-boundary

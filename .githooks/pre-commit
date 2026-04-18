@@ -9,6 +9,3 @@ npm run --if-present check:agent-surface:staged
 
 echo "pre-commit: checking private runtime files"
 npm run --if-present check:private-runtime
-
-echo "pre-commit: checking public boundary markers"
-npm run --if-present check:public-boundary

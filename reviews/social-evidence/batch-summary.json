@@ -1,0 +1,40 @@
+{
+  "manifestPath": "Local file path (.json file)",
+  "total": 1,
+  "succeeded": 1,
+  "failed": 0,
+  "results": [
+    {
+      "index": 0,
+      "name": "Synthetic social evidence packet",
+      "resultKey": "synthetic-social-evidence-packet-expert",
+      "mode": "expert",
+      "targetSummary": "Local file path (.md file, file: synthetic-social-evidence-review-context.md)",
+      "outputPath": "Local file path (.md file)",
+      "structuredOutputPath": "Local file path (.json file)",
+      "structuredResult": {
+        "overallSeverity": "high",
+        "totalFindings": 4,
+        "findingCounts": {
+          "critical": 0,
+          "high": 2,
+          "medium": 2,
+          "low": 0,
+          "unknown": 0
+        }
+      },
+      "status": "success",
+      "durationMs": 13232,
+      "outputChars": 1979,
+      "decisionParsed": true,
+      "ollamaTelemetry": {
+        "totalDurationMs": 13220,
+        "loadDurationMs": 175,
+        "promptEvalCount": 969,
+        "promptEvalDurationMs": 1508,
+        "evalCount": 440,
+        "evalDurationMs": 11023
+      }
+    }
+  ]
+}

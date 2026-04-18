@@ -2,6 +2,7 @@
   "defaults": {
     "mode": "expert",
     "expert": "UI/UX",
+    "contextPath": "./examples/synthetic-social-evidence-review-context.json",
     "outputDir": "./reviews/social-evidence",
     "structuredOutputDir": "./reviews/social-evidence/json"
   },

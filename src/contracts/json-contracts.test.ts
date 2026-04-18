@@ -333,6 +333,7 @@ describe("public JSON contracts", () => {
       "examples/webpage-vision-sweep.manifest.json",
       "examples/screenshot-batch-run.manifest.json",
       "examples/synthetic-zone-vision-probe.manifest.json",
+      "examples/sanitized-social-evidence-review.manifest.json",
     ];
 
     for (const examplePath of exampleManifestPaths) {

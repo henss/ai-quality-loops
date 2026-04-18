@@ -34,14 +34,14 @@ The safe shared role is a neutral review pass over sanitized evidence packets. T
 | Candidate surface | Recommendation | Reason |
 | --- | --- | --- |
 | Synthetic social evidence context fixture | Allow | It demonstrates the manifest seam without real accounts, private assets, claims, source paths, or publication decisions. |
-| Starter `batch-review` manifest | Allow | It reuses the existing manifest contract and output directories with generic names. |
+| Starter `batch-review` manifest | Allow | It reuses the existing manifest contract, a sanitized `contextPath`, and output directories with generic names. |
 | Social-proof persona, scoring rubric, or approval gate | Defer | Persona choice and proof thresholds can become brand, market, legal, or publication policy. Callers can provide a local prompt library when needed. |
 | Evidence collection, account scraping, telemetry import, or scheduling | Reject for AIQL | These require private source access, retention policy, and domain-owned interpretation. |
 | Automated publication, ticket creation, or business routing | Reject for AIQL | AIQL may emit review findings; callers decide what happens next. |
 
 ## Suggested Caller-Owned Use
 
-Copy `examples/sanitized-social-evidence-review.manifest.json` into the embedding repo, replace the synthetic target with a redacted evidence packet, and set `expert` or `promptLibraryPath` to a caller-owned reviewer if the default UI/UX persona is too broad. Keep real account data, raw screenshots, audience assumptions, claim thresholds, publication approvals, and routing decisions outside AIQL.
+Copy `examples/sanitized-social-evidence-review.manifest.json` into the embedding repo, replace the synthetic target with a redacted evidence packet, and keep or adapt the sanitized `contextPath` so the reviewer stays focused on evidence proportionality instead of private project policy. Set `expert` or `promptLibraryPath` to a caller-owned reviewer if the default UI/UX persona is too broad. Keep real account data, raw screenshots, audience assumptions, claim thresholds, publication approvals, and routing decisions outside AIQL.
 
 The reviewer should check whether social proof claims are understandable, proportionate to the support shown, caveated when samples are small or qualitative, and separated from stronger claims such as revenue, conversion, endorsement, or broad market validation.
 

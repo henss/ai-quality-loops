@@ -1,0 +1,14 @@
+{
+  "reviewSurface": "Sanitized social evidence packet",
+  "reviewFocus": [
+    "Check whether each public-facing claim is proportional to the support listed in the packet.",
+    "Flag missing or weak caveats when the evidence is qualitative, self-selected, small-sample, or not tied to a stronger outcome.",
+    "Check that source traceability is understandable without exposing private account data or real customer facts.",
+    "Keep publication approval, brand strategy, proof thresholds, and follow-up routing caller-owned."
+  ],
+  "outOfScope": [
+    "Do not infer real account identity, revenue, conversion, endorsement, audience size, or market validation.",
+    "Do not approve publication or decide whether the evidence should be used in a final creative surface.",
+    "Do not treat the fixture as a rendered page, visual design, or call-to-action review unless the packet itself makes a rendered-surface claim."
+  ]
+}

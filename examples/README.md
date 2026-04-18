@@ -116,6 +116,7 @@ batch-review ./examples/sanitized-social-evidence-review.manifest.json
 Typical edits:
 
 - replace the synthetic context target with a redacted evidence packet from your repo
+- keep or adapt the sanitized context file so review stays focused on claim support, caveats, traceability, and authority boundaries
 - switch `expert` or `promptLibraryPath` to a caller-owned evidence reviewer when project policy needs one
 - keep real account data, raw screenshots, source collection, proof thresholds, publication approval, and action routing outside `ai-quality-loops`
 

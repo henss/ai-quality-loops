@@ -1,0 +1,97 @@
+{
+  "schemaVersion": "1",
+  "workflow": "expert",
+  "expert": "SKEPTICAL UI/UX CRITIC",
+  "model": "qwen3.5:27b",
+  "summary": "The evidence packet lacks sufficient caveats and proportional framing for public-facing claims, risking overstatement of weak qualitative signals.",
+  "overallSeverity": "high",
+  "findings": [
+    {
+      "title": "Evidence A overstates sample representativeness",
+      "summary": "Claim 'People understood the main idea quickly' implies broad consensus without qualifying the small, self-selected sample size.",
+      "severity": "high",
+      "evidence": []
+    },
+    {
+      "title": "Evidence B conflates qualitative feedback with design validation",
+      "summary": "Stating 'packaging direction felt more coherent' without noting the absence of conversion or usability metrics may mislead readers into assuming stronger validation.",
+      "severity": "high",
+      "evidence": []
+    },
+    {
+      "title": "Evidence C lacks outcome linkage",
+      "summary": "Claim 'attracted repeat interest' is not tied to measurable engagement or retention, weakening its evidentiary weight.",
+      "severity": "medium",
+      "evidence": []
+    },
+    {
+      "title": "Missing source traceability context",
+      "summary": "Readers cannot assess credibility without understanding how feedback was collected or anonymized, even if private data is protected.",
+      "severity": "medium",
+      "evidence": []
+    }
+  ],
+  "decision": {
+    "schema": "peer_review_decision_v1",
+    "verdict": "changes_requested",
+    "confidence": "high",
+    "blocking": false,
+    "max_severity": "high",
+    "summary": "The evidence packet lacks sufficient caveats and proportional framing for public-facing claims, risking overstatement of weak qualitative signals.",
+    "blocking_findings": [],
+    "non_blocking_findings": [
+      {
+        "title": "Evidence A overstates sample representativeness",
+        "summary": "Claim 'People understood the main idea quickly' implies broad consensus without qualifying the small, self-selected sample size.",
+        "severity": "high",
+        "evidence": []
+      },
+      {
+        "title": "Evidence B conflates qualitative feedback with design validation",
+        "summary": "Stating 'packaging direction felt more coherent' without noting the absence of conversion or usability metrics may mislead readers into assuming stronger validation.",
+        "severity": "high",
+        "evidence": []
+      },
+      {
+        "title": "Evidence C lacks outcome linkage",
+        "summary": "Claim 'attracted repeat interest' is not tied to measurable engagement or retention, weakening its evidentiary weight.",
+        "severity": "medium",
+        "evidence": []
+      },
+      {
+        "title": "Missing source traceability context",
+        "summary": "Readers cannot assess credibility without understanding how feedback was collected or anonymized, even if private data is protected.",
+        "severity": "medium",
+        "evidence": []
+      }
+    ],
+    "required_before_merge": [
+      "Add explicit caveats to each claim clarifying sample limitations and qualitative nature.",
+      "Rephrase claims to reflect proportional support (e.g., 'Some users noted clarity' instead of 'People understood...')."
+    ],
+    "follow_up": [
+      "Consider adding a disclaimer section summarizing evidence limitations for public-facing use.",
+      "Document anonymization methodology to support traceability without exposing private data."
+    ]
+  },
+  "provenance": [
+    {
+      "label": "Content source",
+      "value": "Local file path (.md file)"
+    }
+  ],
+  "markdown": "{\n  \"review_decision\": {\n    \"schema\": \"peer_review_decision_v1\",\n    \"verdict\": \"changes_requested\",\n    \"confidence\": \"high\",\n    \"blocking\": false,\n    \"max_severity\": \"high\",\n    \"summary\": \"The evidence packet lacks sufficient caveats and proportional framing for public-facing claims, risking overstatement of weak qualitative signals.\",\n    \"blocking_findings\": [],\n    \"non_blocking_findings\": [\n      {\n        \"severity\": \"high\",\n        \"title\": \"Evidence A overstates sample representativeness\",\n        \"summary\": \"Claim 'People understood the main idea quickly' implies broad consensus without qualifying the small, self-selected sample size.\"\n      },\n      {\n        \"severity\": \"high\",\n        \"title\": \"Evidence B conflates qualitative feedback with design validation\",\n        \"summary\": \"Stating 'packaging direction felt more coherent' without noting the absence of conversion or usability metrics may mislead readers into assuming stronger validation.\"\n      },\n      {\n        \"severity\": \"medium\",\n        \"title\": \"Evidence C lacks outcome linkage\",\n        \"summary\": \"Claim 'attracted repeat interest' is not tied to measurable engagement or retention, weakening its evidentiary weight.\"\n      },\n      {\n        \"severity\": \"medium\",\n        \"title\": \"Missing source traceability context\",\n        \"summary\": \"Readers cannot assess credibility without understanding how feedback was collected or anonymized, even if private data is protected.\"\n      }\n    ],\n    \"required_before_merge\": [\n      \"Add explicit caveats to each claim clarifying sample limitations and qualitative nature.\",\n      \"Rephrase claims to reflect proportional support (e.g., 'Some users noted clarity' instead of 'People understood...').\"\n    ],\n    \"follow_up\": [\n      \"Consider adding a disclaimer section summarizing evidence limitations for public-facing use.\",\n      \"Document anonymization methodology to support traceability without exposing private data.\"\n    ]\n  }\n}",
+  "diagnostics": {
+    "elapsedMs": 11370,
+    "outputChars": 1979,
+    "decisionParsed": true,
+    "ollamaTelemetry": {
+      "totalDurationMs": 13220,
+      "loadDurationMs": 175,
+      "promptEvalCount": 969,
+      "promptEvalDurationMs": 1508,
+      "evalCount": 440,
+      "evalDurationMs": 11023
+    }
+  }
+}

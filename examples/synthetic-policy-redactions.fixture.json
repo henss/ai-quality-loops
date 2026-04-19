@@ -1,0 +1,25 @@
+{
+  "schema": "synthetic_policy_redactions_fixture_v1",
+  "purpose": "Public-safe fixture for checking caller-provided redaction rules without encoding private policy names.",
+  "redactions": [
+    {
+      "label": "Synthetic policy identifier",
+      "pattern": "\\bpolicy-alpha-\\d+\\b",
+      "replacement": "[Policy identifier redacted]",
+      "sample": "Escalate policy-alpha-42 through the shared review flow.",
+      "expected": "Escalate [Policy identifier redacted] through the shared review flow."
+    },
+    {
+      "label": "Synthetic section identifier",
+      "pattern": "\\bsection-secret\\b",
+      "replacement": "[Section redacted]",
+      "sample": "Capture section-secret before review.",
+      "expected": "Capture [Section redacted] before review."
+    }
+  ],
+  "boundary": [
+    "The fixture is synthetic and caller-owned.",
+    "The shared package redacts using caller-provided rules but does not define project policy.",
+    "Real identifiers, thresholds, routing, approvals, and domain interpretation stay outside this package."
+  ]
+}

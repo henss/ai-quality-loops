@@ -10,8 +10,8 @@ describe("defineReviewSurfaceRedactions", () => {
   it("returns a reusable copy of caller-provided rules", () => {
     const sourceRules = [
       {
-        pattern: /\bacme-internal-\d+\b/g,
-        replacement: "[Project identifier redacted]",
+        pattern: /\bpolicy-alpha-\d+\b/g,
+        replacement: "[Policy identifier redacted]",
       },
     ];
 
@@ -20,17 +20,17 @@ describe("defineReviewSurfaceRedactions", () => {
     expect(reusableRules).toEqual(sourceRules);
     expect(reusableRules).not.toBe(sourceRules);
     expect(
-      sanitizeReviewSurfaceValue("Escalate with tenant acme-internal-42", {
+      sanitizeReviewSurfaceValue("Escalate with policy policy-alpha-42", {
         extraRedactions: reusableRules,
       }),
-    ).toBe("Escalate with tenant [Project identifier redacted]");
+    ).toBe("Escalate with policy [Policy identifier redacted]");
   });
 
   it("returns an immutable reusable bundle boundary", () => {
     const reusableRules = defineReviewSurfaceRedactions([
       {
-        pattern: /\bacme-internal-\d+\b/g,
-        replacement: "[Project identifier redacted]",
+        pattern: /\bpolicy-alpha-\d+\b/g,
+        replacement: "[Policy identifier redacted]",
       },
     ]);
 
@@ -41,16 +41,16 @@ describe("defineReviewSurfaceRedactions", () => {
   it("exposes the reusable bundle type as a readonly public boundary", () => {
     const reusableRules: ReviewSurfaceRedactions = defineReviewSurfaceRedactions([
       {
-        pattern: /\bacme-internal-\d+\b/g,
-        replacement: "[Project identifier redacted]",
+        pattern: /\bpolicy-alpha-\d+\b/g,
+        replacement: "[Policy identifier redacted]",
       },
     ]);
 
     expect(
-      sanitizeReviewSurfaceValue("Escalate with tenant acme-internal-42", {
+      sanitizeReviewSurfaceValue("Escalate with policy policy-alpha-42", {
         extraRedactions: reusableRules,
       }),
-    ).toBe("Escalate with tenant [Project identifier redacted]");
+    ).toBe("Escalate with policy [Policy identifier redacted]");
   });
 });
 
@@ -161,15 +161,15 @@ describe("sanitizeReviewSurfaceValue", () => {
 
   it("supports caller-provided extra redaction rules for project-local identifiers", () => {
     expect(
-      sanitizeReviewSurfaceValue("Escalate with tenant acme-internal-42", {
+      sanitizeReviewSurfaceValue("Escalate with policy policy-alpha-42", {
         extraRedactions: [
           {
-            pattern: /\bacme-internal-\d+\b/g,
-            replacement: "[Project identifier redacted]",
+            pattern: /\bpolicy-alpha-\d+\b/g,
+            replacement: "[Policy identifier redacted]",
           },
         ],
       }),
-    ).toBe("Escalate with tenant [Project identifier redacted]");
+    ).toBe("Escalate with policy [Policy identifier redacted]");
   });
 });
 
@@ -223,19 +223,19 @@ describe("summarizeReviewSurfaceError", () => {
   });
 
   it("applies caller-provided extra redaction rules to error summaries", () => {
-    const error = new Error("Unknown tenant acme-internal-42 failed validation");
+    const error = new Error("Unknown policy policy-alpha-42 failed validation");
 
     expect(
       summarizeReviewSurfaceError(error, {
         extraRedactions: [
           {
-            pattern: /\bacme-internal-\d+\b/g,
-            replacement: "[Project identifier redacted]",
+            pattern: /\bpolicy-alpha-\d+\b/g,
+            replacement: "[Policy identifier redacted]",
           },
         ],
       }),
     ).toBe(
-      "Error: Unknown tenant [Project identifier redacted] failed validation",
+      "Error: Unknown policy [Policy identifier redacted] failed validation",
     );
   });
 

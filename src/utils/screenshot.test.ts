@@ -36,17 +36,17 @@ describe("takeScreenshot", () => {
     const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 
     await takeScreenshot("https://example.com", "reviews/output.png", {
-      chromePath: "custom runner acme-internal-42",
+      chromePath: "custom runner policy-alpha-42",
       extraRedactions: [
         {
-          pattern: /\bacme-internal-\d+\b/g,
-          replacement: "[Project identifier redacted]",
+          pattern: /\bpolicy-alpha-\d+\b/g,
+          replacement: "[Policy identifier redacted]",
         },
       ],
     });
 
     expect(infoSpy).toHaveBeenCalledWith(
-      expect.stringContaining("using custom runner [Project identifier redacted]"),
+      expect.stringContaining("using custom runner [Policy identifier redacted]"),
     );
     expect(errorSpy).not.toHaveBeenCalled();
 
@@ -58,23 +58,23 @@ describe("takeScreenshot", () => {
     const infoSpy = vi.spyOn(console, "info").mockImplementation(() => {});
     const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
     execaMock.mockRejectedValue(
-      new Error("Browser launch failed for tenant acme-internal-42"),
+      new Error("Browser launch failed for policy policy-alpha-42"),
     );
 
     await expect(
       takeScreenshot("https://example.com", "reviews/output.png", {
         extraRedactions: [
           {
-            pattern: /\bacme-internal-\d+\b/g,
-            replacement: "[Project identifier redacted]",
+            pattern: /\bpolicy-alpha-\d+\b/g,
+            replacement: "[Policy identifier redacted]",
           },
         ],
       }),
-    ).rejects.toThrow("Browser launch failed for tenant acme-internal-42");
+    ).rejects.toThrow("Browser launch failed for policy policy-alpha-42");
 
     expect(errorSpy).toHaveBeenCalledWith(
       expect.stringContaining(
-        "Error: Browser launch failed for tenant [Project identifier redacted]",
+        "Error: Browser launch failed for policy [Policy identifier redacted]",
       ),
     );
 

@@ -361,20 +361,20 @@ describe("Review shared utilities", () => {
       prepareReviewMetadataItems(
         [
           {
-            label: "Tenant",
-            value: "acme-internal-42",
+            label: "Policy",
+            value: "policy-alpha-42",
           },
         ],
         {
           extraRedactions: [
             {
-              pattern: /\bacme-internal-\d+\b/g,
-              replacement: "[Project identifier redacted]",
+              pattern: /\bpolicy-alpha-\d+\b/g,
+              replacement: "[Policy identifier redacted]",
             },
           ],
         },
       ),
-    ).toEqual(["Tenant: [Project identifier redacted]"]);
+    ).toEqual(["Policy: [Policy identifier redacted]"]);
   });
 
   it("prepares review evidence descriptors from raw surfaces or pre-summarized values", () => {
@@ -405,20 +405,20 @@ describe("Review shared utilities", () => {
         [
           {
             label: "Structured identifier",
-            value: "tenant/acme-internal-42",
+            value: "policy/policy-alpha-42",
           },
         ],
         {
           extraRedactions: [
             {
-              pattern: /\bacme-internal-\d+\b/g,
-              replacement: "[Project identifier redacted]",
+              pattern: /\bpolicy-alpha-\d+\b/g,
+              replacement: "[Policy identifier redacted]",
             },
           ],
         },
       ),
     ).toEqual([
-      "Structured identifier: tenant/[Project identifier redacted]",
+      "Structured identifier: policy/[Policy identifier redacted]",
     ]);
   });
 
@@ -438,14 +438,14 @@ describe("Review shared utilities", () => {
             sanitizeValue: false,
           },
           {
-            label: "Tenant",
-            value: "acme-internal-42",
+            label: "Policy",
+            value: "policy-alpha-42",
           },
         ],
         extraRedactions: [
           {
-            pattern: /\bacme-internal-\d+\b/g,
-            replacement: "[Project identifier redacted]",
+            pattern: /\bpolicy-alpha-\d+\b/g,
+            replacement: "[Policy identifier redacted]",
           },
         ],
       }),
@@ -455,7 +455,7 @@ describe("Review shared utilities", () => {
         body: [
           "- Source: Remote URL (host: example.com, path segments: 2, query redacted, fragment redacted)",
           "- Attached image count: 2",
-          "- Tenant: [Project identifier redacted]",
+          "- Policy: [Policy identifier redacted]",
         ].join("\n"),
         fenced: undefined,
       },
@@ -526,14 +526,14 @@ describe("Review shared utilities", () => {
     const sanitized = sanitizeReviewContext(
       {
         project: "demo",
-        tenantLabel: "acme-internal-42",
-        note: "Escalate acme-internal-42 through the shared review flow",
+        policyLabel: "policy-alpha-42",
+        note: "Escalate policy-alpha-42 through the shared review flow",
       },
       {
         extraRedactions: [
           {
-            pattern: /\bacme-internal-\d+\b/g,
-            replacement: "[Project identifier redacted]",
+            pattern: /\bpolicy-alpha-\d+\b/g,
+            replacement: "[Policy identifier redacted]",
           },
         ],
       },
@@ -541,8 +541,8 @@ describe("Review shared utilities", () => {
 
     expect(sanitized).toEqual({
       project: "demo",
-      tenantLabel: "[Project identifier redacted]",
-      note: "Escalate [Project identifier redacted] through the shared review flow",
+      policyLabel: "[Policy identifier redacted]",
+      note: "Escalate [Policy identifier redacted] through the shared review flow",
     });
   });
 
@@ -550,20 +550,20 @@ describe("Review shared utilities", () => {
     const prompt = buildReviewEnvelope({
       personaPrompt: "You are a careful reviewer.",
       context: {
-        tenantLabel: "acme-internal-42",
+        policyLabel: "policy-alpha-42",
       },
       taskInstructions: "Inspect the supplied material.",
       extraRedactions: [
         {
-          pattern: /\bacme-internal-\d+\b/g,
-          replacement: "[Project identifier redacted]",
+          pattern: /\bpolicy-alpha-\d+\b/g,
+          replacement: "[Policy identifier redacted]",
         },
       ],
     });
 
     expect(prompt).toContain(
-      '"tenantLabel": "[Project identifier redacted]"',
+      '"policyLabel": "[Policy identifier redacted]"',
     );
-    expect(prompt).not.toContain("acme-internal-42");
+    expect(prompt).not.toContain("policy-alpha-42");
   });
 });

@@ -117,19 +117,19 @@ describe("vision section discovery", () => {
     const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 
     execaMock.mockRejectedValue(
-      new Error("Browser failed for tenant acme-internal-42"),
+      new Error("Browser failed for policy policy-alpha-42"),
     );
 
     await expect(
       discoverVisionSections("https://example.com", {
         extraRedactions: [
           {
-            pattern: /\bacme-internal-\d+\b/g,
-            replacement: "[Project identifier redacted]",
+            pattern: /\bpolicy-alpha-\d+\b/g,
+            replacement: "[Policy identifier redacted]",
           },
         ],
       }),
-    ).rejects.toThrow("Browser failed for tenant acme-internal-42");
+    ).rejects.toThrow("Browser failed for policy policy-alpha-42");
 
     expect(execaMock).toHaveBeenCalledWith(
       expect.any(String),
@@ -137,7 +137,7 @@ describe("vision section discovery", () => {
     );
     expect(errorSpy).toHaveBeenCalledWith(
       expect.stringContaining(
-        "Error: Browser failed for tenant [Project identifier redacted]",
+        "Error: Browser failed for policy [Policy identifier redacted]",
       ),
     );
 

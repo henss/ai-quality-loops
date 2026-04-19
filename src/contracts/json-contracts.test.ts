@@ -12,6 +12,10 @@ import {
 import { validateBatchReviewSummaryComparisonReport } from "./batch-review-summary-comparison-contract.js";
 import { loadBatchReviewExecutionPlan } from "../review/batch-review.js";
 import { compareStructuredReviewResults } from "../review/review-result-comparison.js";
+import {
+  defineReviewSurfaceRedactions,
+  sanitizeReviewSurfaceValue,
+} from "../shared/review-surface.js";
 
 describe("public JSON contracts", () => {
   it("parses the published batch review manifest shape", () => {
@@ -511,6 +515,67 @@ describe("public JSON contracts", () => {
         ]),
       }),
     });
+
+    const serialized = JSON.stringify(fixture).toLowerCase();
+    for (const privateBoundaryTerm of [
+      "stefan",
+      "linear",
+      "smartseer",
+      "ops-",
+      "customer",
+      "tenant",
+      "employee",
+      "company",
+      "https://",
+      "d:\\",
+      "/users/",
+      ".png",
+      ".jpg",
+      ".jpeg",
+    ]) {
+      expect(serialized).not.toContain(privateBoundaryTerm);
+    }
+  });
+
+  it("ships a public-safe synthetic policy redactions fixture", async () => {
+    const fixture = JSON.parse(
+      await fs.readFile(
+        path.join(
+          process.cwd(),
+          "examples/synthetic-policy-redactions.fixture.json",
+        ),
+        "utf-8",
+      ),
+    ) as {
+      redactions?: Array<{
+        pattern?: string;
+        replacement?: string;
+        sample?: string;
+        expected?: string;
+      }>;
+    };
+
+    expect(fixture.redactions).toEqual(expect.any(Array));
+
+    for (const redaction of fixture.redactions || []) {
+      expect(typeof redaction.pattern).toBe("string");
+      expect(typeof redaction.replacement).toBe("string");
+      expect(typeof redaction.sample).toBe("string");
+      expect(typeof redaction.expected).toBe("string");
+
+      const redactions = defineReviewSurfaceRedactions([
+        {
+          pattern: new RegExp(redaction.pattern!, "g"),
+          replacement: redaction.replacement!,
+        },
+      ]);
+
+      expect(
+        sanitizeReviewSurfaceValue(redaction.sample!, {
+          extraRedactions: redactions,
+        }),
+      ).toBe(redaction.expected);
+    }
 
     const serialized = JSON.stringify(fixture).toLowerCase();
     for (const privateBoundaryTerm of [

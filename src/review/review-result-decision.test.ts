@@ -70,24 +70,24 @@ describe("structured review decision extraction", () => {
             blocking: true,
             max_severity: "high",
             summary:
-              "Review tenant-alpha at https://example.com/private/page?token=secret#notes before merge.",
+              "Review policy-alpha-42 at https://example.com/private/page?token=secret#notes before merge.",
             blocking_findings: [
               {
-                key: "private-tenant-alpha-fixture",
-                title: "Private fixture D:\\workspace\\tenant-alpha\\fixtures\\result.json",
+                key: "restricted-policy-alpha-42-fixture",
+                title: "Restricted fixture D:\\workspace\\policy-alpha-42\\fixtures\\result.json",
                 summary:
-                  "The reviewer echoed tenant-alpha and reviewer@example.com in the structured payload.",
+                  "The reviewer echoed policy-alpha-42 and reviewer@example.com in the structured payload.",
                 severity: "high",
                 recommendation:
-                  "Move tenant-alpha details out of the shared result and contact reviewer@example.com privately.",
+                  "Move policy-alpha-42 details out of the shared result and contact reviewer@example.com privately.",
                 evidence: [
-                  "D:\\workspace\\tenant-alpha\\fixtures\\result.json",
+                  "D:\\workspace\\policy-alpha-42\\fixtures\\result.json",
                   "https://example.com/private/page?token=secret#notes",
                 ],
               },
             ],
             non_blocking_findings: [],
-            required_before_merge: ["Remove tenant-alpha routing text."],
+            required_before_merge: ["Remove policy-alpha-42 routing text."],
             follow_up: ["Audit reviewer@example.com mentions later."],
           },
         },
@@ -104,26 +104,26 @@ describe("structured review decision extraction", () => {
       provenance: [
         {
           label: "Content source",
-          value: "D:\\workspace\\tenant-alpha\\source.md",
+          value: "D:\\workspace\\policy-alpha-42\\source.md",
         },
       ],
       markdown,
       extraRedactions: defineReviewSurfaceRedactions([
         {
-          pattern: /tenant-alpha/g,
-          replacement: "[Project identifier redacted]",
+          pattern: /\bpolicy-alpha-\d+\b/g,
+          replacement: "[Policy identifier redacted]",
         },
       ]),
     });
 
     const serialized = JSON.stringify(result);
-    expect(serialized).not.toContain("tenant-alpha");
+    expect(serialized).not.toContain("policy-alpha-42");
     expect(serialized).not.toContain("reviewer@example.com");
     expect(serialized).not.toContain("token=secret");
     expect(serialized).not.toContain("D:\\workspace");
-    expect(result.summary).toContain("[Project identifier redacted]");
+    expect(result.summary).toContain("[Policy identifier redacted]");
     expect(result.summary).toContain("Remote URL");
-    expect(result.findings[0]?.key).toBe("private-[Project identifier redacted]-fixture");
+    expect(result.findings[0]?.key).toBe("restricted-[Policy identifier redacted]-fixture");
     expect(result.findings[0]?.evidence).toEqual([
       "Local file path (.json file)",
       "Remote URL (host: example.com, path segments: 2, query redacted, fragment redacted)",

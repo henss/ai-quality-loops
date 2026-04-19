@@ -21,6 +21,7 @@ The example files cover the repeatable workflow surfaces. The package also suppo
 | Compare two batch summary artifacts | `batch-review-compare ./reviews/previous-summary.json ./reviews/current-summary.json --json` | Feed the JSON report into `review-gate --batch-comparison` when CI should fail on caller-owned regression budgets. |
 | Probe image-review quality with a synthetic visual target | `vision-preview --manifest ./examples/synthetic-zone-vision-probe.manifest.json --entry-name "Synthetic zone overview"` | Uses generic zones only; keep real capture handling, thresholds, and routing caller-owned. |
 | Review a sanitized social evidence packet | `batch-review ./examples/sanitized-social-evidence-review.manifest.json` | Use this as a text-review seam for redacted evidence packets; keep real sources, proof thresholds, and publication routing caller-owned. |
+| Check caller-owned redaction rules | `defineReviewSurfaceRedactions(...)` with `./examples/synthetic-policy-redactions.fixture.json` | Use when a consumer needs a public-safe fixture for project-local redaction behavior without moving policy names into AIQL. |
 | Validate a synthetic reviewer-contract fixture | `validateStructuredReviewResult(...)` with `./examples/synthetic-reviewer-contract-result.fixture.json` | Use when checking contract consumers against a public-safe fixture with generic evidence labels and caller-owned action boundaries. |
 | Validate a sanitized structured-result fixture | `validateStructuredReviewResult(...)` with `./examples/synthetic-apartment-review-result.fixture.json` | Use when checking contract consumers against a fixture that contains no private home data. |
 | Compare a synthetic structured-result golden diff | `compareStructuredReviewResults(...)` with `./examples/synthetic-structured-result-golden-diff-before.fixture.json` and `./examples/synthetic-structured-result-golden-diff-after.fixture.json` | Use when checking comparison consumers against a public-safe expected diff fixture. |
@@ -120,6 +121,16 @@ Typical edits:
 - switch `expert` or `promptLibraryPath` to a caller-owned evidence reviewer when project policy needs one
 - keep real account data, raw screenshots, source collection, proof thresholds, publication approval, and action routing outside `ai-quality-loops`
 
+### `synthetic-policy-redactions.fixture.json`
+
+Use when you want a public-safe fixture for caller-provided `extraRedactions` behavior without checking in private identifiers or project policy.
+
+Typical edits:
+
+- replace the synthetic policy identifiers only in your embedding repo, not in this package
+- keep real policy names, thresholds, approval, routing, and domain interpretation outside `ai-quality-loops`
+- use the fixture to validate that caller-provided redaction rules are threaded through prompts, logs, provenance, and structured results
+
 ### `synthetic-apartment-review-result.fixture.json`
 
 Use when you want a structured review-result fixture for contract tests without checking in real household data.
@@ -157,5 +168,6 @@ Typical edits:
 - The synthetic reviewer-contract fixture is contract-focused. It intentionally excludes real issue keys, source URLs, local paths, account names, approval policy, and routing instructions.
 - The synthetic structured-result golden diff is comparison-focused. It intentionally excludes real source labels, tracker identifiers, local paths, account names, private facts, policy thresholds, and routing instructions.
 - The synthetic social evidence fixture is seam-focused. It intentionally excludes real account names, audience facts, source identities, brand strategy, publication decisions, and business routing.
+- The synthetic policy redactions fixture is boundary-focused. It intentionally excludes real policy names, project identifiers, thresholds, approval, routing, and domain interpretation.
 - If you need repo-specific naming, redaction rules, or CI budgets, add that in the embedding repo instead of widening the shared package surface.
 - If a future workflow needs more than copied starter manifests and the generic CI recipe, the next extraction question is whether a scaffold command would stay generic enough for public maintenance.

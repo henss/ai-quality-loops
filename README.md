@@ -43,6 +43,7 @@ The package publishes copy-ready starter manifests under `examples/` so embeddin
 - `examples/screenshot-batch-run.manifest.json` for one screenshot-backed batch run over existing image files
 - `examples/synthetic-zone-vision-probe.manifest.json` for one public-safe synthetic visual probe with generic zones and no real capture data
 - `examples/sanitized-social-evidence-review.manifest.json` for one synthetic text review over redacted social-evidence claims
+- `examples/synthetic-policy-redactions.fixture.json` for public-safe caller-provided redaction-rule checks
 - `examples/synthetic-reviewer-contract-result.fixture.json` for a public-safe reviewer-contract fixture with generic evidence labels
 - `examples/synthetic-apartment-review-result.fixture.json` for a sanitized structured-result contract fixture with no private home data
 - `examples/synthetic-structured-result-golden-diff-*.json` for a public-safe before/after comparison fixture and expected diff
@@ -104,8 +105,8 @@ import {
 
 const extraRedactions = defineReviewSurfaceRedactions([
   {
-    pattern: /\bacme-internal-\d+\b/g,
-    replacement: '[Project identifier redacted]'
+    pattern: /\bpolicy-alpha-\d+\b/g,
+    replacement: '[Policy identifier redacted]'
   }
 ]);
 
@@ -183,8 +184,8 @@ import {
 
 const extraRedactions = defineReviewSurfaceRedactions([
   {
-    pattern: /\bacme-internal-\d+\b/g,
-    replacement: '[Project identifier redacted]'
+    pattern: /\bpolicy-alpha-\d+\b/g,
+    replacement: '[Policy identifier redacted]'
   }
 ]);
 

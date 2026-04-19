@@ -1,0 +1,15 @@
+{
+  "reviewSurface": "Synthetic source-handle review-output evidence pack",
+  "reviewFocus": [
+    "Check whether each proposed downstream claim is backed by the listed source handles without requiring copied private source content.",
+    "Flag missing caveats when evidence labels are qualitative, incomplete, derived from review output, or not independently verified.",
+    "Check that source handles are treated as opaque caller-owned retrieval hints, not proof, package-owned storage keys, or a portable resolution schema.",
+    "Check that the pack can guide caller-owned implementation or eval decisions without becoming a shadow store of private truth.",
+    "Keep source retrieval, domain interpretation, approval, retention, publication, and action routing caller-owned."
+  ],
+  "outOfScope": [
+    "Do not infer private facts, source contents, customer identity, company identity, revenue, endorsement, legal status, or production readiness.",
+    "Do not approve publication, storage policy, remediation routing, or implementation priority.",
+    "Do not treat source handles as proof by themselves when the packet only summarizes what a private source is expected to support."
+  ]
+}

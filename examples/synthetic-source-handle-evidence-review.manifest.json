@@ -1,0 +1,15 @@
+{
+  "defaults": {
+    "mode": "expert",
+    "expert": "Efficiency",
+    "contextPath": "./examples/synthetic-source-handle-evidence-review-context.json",
+    "outputDir": "./reviews/source-handle-evidence",
+    "structuredOutputDir": "./reviews/source-handle-evidence/json"
+  },
+  "reviews": [
+    {
+      "name": "Synthetic source-handle evidence pack",
+      "target": "./examples/synthetic-source-handle-evidence-review-context.md"
+    }
+  ]
+}

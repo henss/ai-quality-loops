@@ -52,6 +52,7 @@ The package publishes copy-ready starter manifests under `examples/` so embeddin
 
 Use the companion notes in `examples/README.md` to decide which example to copy, which targets must be replaced, and when to use `vision-sections`, `vision-preview --manifest`, `batch-review`, and `review-gate` together.
 Use `docs/reviewer-contract.md` when you need the open-source-safe boundary for structured reviewer-contract examples.
+Use `docs/downstream-agent-read-efficiency-pilot.md` when you need a public-safe pilot shape for measuring downstream-agent reads avoided by narrow packets, registry evidence, and bounded repo-local checks.
 
 ## Configuration
 

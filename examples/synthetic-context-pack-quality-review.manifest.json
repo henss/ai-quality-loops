@@ -1,0 +1,15 @@
+{
+  "defaults": {
+    "mode": "expert",
+    "expert": "Efficiency",
+    "contextPath": "./examples/synthetic-context-pack-quality-review-context.json",
+    "outputDir": "./reviews/context-pack-quality",
+    "structuredOutputDir": "./reviews/context-pack-quality/json"
+  },
+  "reviews": [
+    {
+      "name": "Synthetic context pack quality packet",
+      "target": "./examples/synthetic-context-pack-quality-review-context.md"
+    }
+  ]
+}

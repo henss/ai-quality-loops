@@ -34,6 +34,7 @@ const PUBLIC_SAFE_EXAMPLE_BLOCKLIST = [
 type PublicSafeTextManifestExample = {
   manifestPath: string;
   contextPath: string;
+  expert?: string;
   reviewName: string;
   reviewSurface: string;
   targetPath: string;
@@ -46,11 +47,12 @@ async function expectPublicSafeTextManifestExample(
   const manifestPath = path.join(process.cwd(), example.manifestPath);
   const manifest = JSON.parse(await fs.readFile(manifestPath, "utf-8")) as unknown;
   const parsed = parseBatchReviewManifest(manifest);
+  const expert = example.expert ?? "UI/UX";
 
   expect(parsed.defaults).toEqual(
     expect.objectContaining({
       mode: "expert",
-      expert: "UI/UX",
+      expert,
       contextPath: example.contextPath,
     }),
   );
@@ -75,7 +77,7 @@ async function expectPublicSafeTextManifestExample(
   ]);
   expect(plan.preflight.personaRequirements).toEqual([
     {
-      expert: "UI/UX",
+      expert,
       promptLibraryPath: undefined,
     },
   ]);
@@ -438,6 +440,7 @@ describe("public JSON contracts", () => {
       "examples/screenshot-batch-run.manifest.json",
       "examples/synthetic-zone-vision-probe.manifest.json",
       "examples/sanitized-social-evidence-review.manifest.json",
+      "examples/synthetic-context-pack-quality-review.manifest.json",
       "examples/synthetic-buyer-claim-caveat-review.manifest.json",
     ];
 
@@ -475,6 +478,19 @@ describe("public JSON contracts", () => {
       targetPath: "./examples/synthetic-social-evidence-review-context.md",
       targetSummary:
         "Local file path (.md file, file: synthetic-social-evidence-review-context.md)",
+    });
+  });
+
+  it("keeps the synthetic context-pack quality manifest public-safe and context-backed", async () => {
+    await expectPublicSafeTextManifestExample({
+      manifestPath: "examples/synthetic-context-pack-quality-review.manifest.json",
+      contextPath: "./examples/synthetic-context-pack-quality-review-context.json",
+      expert: "Efficiency",
+      reviewName: "Synthetic context pack quality packet",
+      reviewSurface: "Synthetic context pack quality packet",
+      targetPath: "./examples/synthetic-context-pack-quality-review-context.md",
+      targetSummary:
+        "Local file path (.md file, file: synthetic-context-pack-quality-review-context.md)",
     });
   });
 

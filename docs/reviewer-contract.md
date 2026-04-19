@@ -19,6 +19,7 @@ Validate payloads with `validateStructuredReviewResult(...)` or the published `s
 - `examples/synthetic-reviewer-contract-review.manifest.json` is a runnable synthetic text-review manifest.
 - `examples/synthetic-reviewer-contract-review-context.json` defines the review focus for that manifest.
 - `examples/synthetic-reviewer-contract-review-context.md` is the synthetic target packet.
+- `examples/synthetic-context-pack-quality-review.manifest.json` is a synthetic context-pack quality review that keeps source retrieval, source interpretation, approval, routing, and retention caller-owned.
 - `examples/synthetic-reviewer-contract-result.fixture.json` is a checked structured-result fixture for consumer tests.
 
 These examples demonstrate the contract only. They do not decide target selection, severity budgets, approval, remediation ownership, tracker routing, publication, deployment, retention, or real-world action.

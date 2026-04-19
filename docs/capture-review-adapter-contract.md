@@ -57,6 +57,22 @@ Downstream automation should consume the published structured contracts:
 
 These artifacts are allowed to contain generic review summaries, severity rollups, sanitized provenance descriptors, and artifact paths summarized by the existing review-surface helpers. They should not become a domain record or an inventory of private captured entities.
 
+## Retry Evidence
+
+Retry decisions should be explainable from the existing manifest and summary artifacts, not from a package-owned capture queue or private domain state. A caller-owned adapter can treat a retry as ready when it can point to all of the following public-safe evidence:
+
+- the source `BatchReviewManifest` entry, identified by stable `name`, `index`, or generated `resultKey`
+- the prior `batchReviewSummary` entry that triggered the retry, including `status`, sanitized `targetSummary`, and sanitized `errorSummary` when the prior run failed
+- any available structured severity or finding-count rollup from `structuredReviewResult`, when the retry is meant to recheck a completed review rather than recover a failed run
+- the retry selector used by the caller, such as "failed entries from prior summary" or "named entry requested by operator"
+- confirmation that the target reference, output paths, capture labels, and context references remain generic or caller-sanitized before the retry reaches AIQL
+
+The retry evidence does not need a new package contract when it is just a short caller-owned note beside the rerun command. For example, `batch-review ./manifest.json --rerun-summary ./reviews/batch-summary.json --rerun-failed` already keeps retry selection tied to the prior summary artifact. Embedding repos can add their own local note that records which summary entry caused the retry, while keeping raw screenshot bytes, private entity names, capture-retention decisions, thresholds, approval, and routing outside this package.
+
+If the retry is for a visual capture adapter, the shared evidence should use generic labels such as `Capture 1`, `section-1 (overview)`, or the sanitized `targetSummary` emitted by AIQL. It should not include real room names, resident details, coordinates, private file paths, source URLs with query details, customer names, ticket identifiers, or company-specific workflow states.
+
+Retry evidence is not sufficient to move adapter logic into AIQL when the selection depends on private capture scheduling, real-world prioritization, retention policy, ownership, or downstream action routing. In those cases, keep the retry planner in the embedding repo and pass only the resulting generic manifest entries to AIQL.
+
 ## Rejection Rules
 
 Keep the adapter outside this package when the next step requires any of the following:
@@ -68,3 +84,5 @@ Keep the adapter outside this package when the next step requires any of the fol
 - a new public CLI or helper that mainly saves one embedding repo from writing local glue
 
 The generic-vs-domain-specific extraction question is: can the adapter output be described as a checked-in `BatchReviewManifest` plus caller-owned redactions, with no private capture semantics in AIQL? If not, keep it in the embedding repo.
+
+For retry work, the matching extraction question is: can the retry be justified only from a `BatchReviewManifest`, a prior `batchReviewSummary`, sanitized structured review rollups, and a generic retry selector? If not, the missing evidence is domain-specific and should stay in the embedding repo.

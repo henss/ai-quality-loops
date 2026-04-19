@@ -7,6 +7,7 @@ import {
   formatBatchReviewSummaryComparisonReport,
   runBatchReviewSummaryComparison,
 } from "./batch-review-summary-compare.js";
+import { formatLaunchOutcomeEvidenceSummary } from "./launch-outcome-evidence-summary.js";
 import type { BatchReviewArtifactSummary } from "../contracts/json-contracts.js";
 
 function createSummary(
@@ -268,5 +269,153 @@ describe("batch review summary compare", () => {
     expect(() =>
       compareBatchReviewArtifactSummaries({ before, after }),
     ).toThrow('duplicate resultKey "readme-expert"');
+  });
+
+  it("formats a public-safe launch outcome evidence summary from comparison and gate data", () => {
+    const before = createSummary([
+      {
+        index: 0,
+        name: "Surface",
+        resultKey: "surface-review",
+        mode: "vision",
+        targetSummary: "Remote URL (example.com)",
+        status: "success",
+        structuredResult: {
+          overallSeverity: "high",
+          totalFindings: 2,
+          findingCounts: {
+            critical: 0,
+            high: 1,
+            medium: 0,
+            low: 1,
+            unknown: 0,
+          },
+        },
+      },
+      {
+        index: 1,
+        name: "Packet",
+        resultKey: "packet-review",
+        mode: "expert",
+        targetSummary: "Local file path (.md file)",
+        status: "failure",
+      },
+      {
+        index: 2,
+        name: "Removed",
+        resultKey: "removed-check",
+        mode: "expert",
+        targetSummary: "Local file path (.md file)",
+        status: "success",
+        structuredResult: {
+          overallSeverity: "low",
+          totalFindings: 1,
+          findingCounts: {
+            critical: 0,
+            high: 0,
+            medium: 0,
+            low: 1,
+            unknown: 0,
+          },
+        },
+      },
+    ]);
+    const after = createSummary([
+      {
+        index: 0,
+        name: "Surface",
+        resultKey: "surface-review",
+        mode: "vision",
+        targetSummary: "Remote URL (example.com)",
+        status: "success",
+        structuredResult: {
+          overallSeverity: "medium",
+          totalFindings: 1,
+          findingCounts: {
+            critical: 0,
+            high: 0,
+            medium: 1,
+            low: 0,
+            unknown: 0,
+          },
+        },
+      },
+      {
+        index: 1,
+        name: "Packet",
+        resultKey: "packet-review",
+        mode: "expert",
+        targetSummary: "Local file path (.md file)",
+        status: "success",
+      },
+      {
+        index: 3,
+        name: "New check",
+        resultKey: "new-check",
+        mode: "expert",
+        targetSummary: "Local file path (.md file)",
+        status: "success",
+        structuredResult: {
+          overallSeverity: "low",
+          totalFindings: 1,
+          findingCounts: {
+            critical: 0,
+            high: 0,
+            medium: 0,
+            low: 1,
+            unknown: 0,
+          },
+        },
+      },
+    ]);
+    const comparison = compareBatchReviewArtifactSummaries({ before, after });
+
+    expect(
+      formatLaunchOutcomeEvidenceSummary(
+        {
+          inputs: {
+            before: { pathLabel: "Local file path (.json file)" },
+            after: { pathLabel: "Local file path (.json file)" },
+          },
+          comparison,
+        },
+        {
+          title: "Synthetic Launch-Outcome Evidence Summary",
+          gate: { ok: true, summary: "Review gate passed under caller-owned thresholds." },
+        },
+      ),
+    ).toBe([
+      "# Synthetic Launch-Outcome Evidence Summary",
+      "",
+      "This summary is generated from sanitized AIQL review artifacts. It is evidence for a caller-owned launch outcome note, not a launch-readiness decision.",
+      "",
+      "## Inputs",
+      "",
+      "- Previous review artifact: Local file path (.json file)",
+      "- Current review artifact: Local file path (.json file)",
+      "",
+      "## Material Signals",
+      "",
+      "- Entries: before=3, after=3, matched=2, added=1, removed=1, statusChanged=1.",
+      "- Severity movement among matched entries: improved=1, regressed=0, unchanged=0, unavailable=1.",
+      "- Finding count delta: total=-1; critical=0, high=-1, medium=1, low=-1, unknown=0.",
+      "- Gate result: pass (Review gate passed under caller-owned thresholds.)",
+      "",
+      "## Evidence Notes",
+      "",
+      "- `packet-review`: status failure->success; severity unavailable; findings unavailable.",
+      "- `surface-review`: status unchanged; severity high->medium (improved); findings delta=-1.",
+      "- Added `new-check`: status=success; mode=expert; severity=low; findings=1.",
+      "- Removed `removed-check`: status=success; mode=expert; severity=low; findings=1.",
+      "",
+      "## Uncertainties",
+      "",
+      "- 1 matched entry has unavailable severity movement, so aggregate movement is incomplete.",
+      "- This summary does not decide launch readiness, publish tracker comments, or route follow-up work.",
+      "",
+      "## Boundary",
+      "",
+      "AIQL can summarize sanitized review comparisons and optional gate evidence. The embedding workflow owns real source selection, launch definition, approval authority, decision labels, tracker writes, and downstream action.",
+    ].join("\n"));
   });
 });

@@ -19,6 +19,8 @@ export * from "./review/review-result-compare.js";
 export * from "./review/vision-section-discovery.js";
 export * from "./review/capture-review-retry-evidence.js";
 export * from "./review/batch-review.js";
+export * from "./review/batch-review-summary-compare.js";
+export * from "./review/launch-outcome-evidence-summary.js";
 export * from "./review/preflight.js";
 export * from "./review/review-gate.js";
 export * from "./review/review-focus-lint.js";

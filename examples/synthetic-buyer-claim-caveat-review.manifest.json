@@ -1,0 +1,15 @@
+{
+  "defaults": {
+    "mode": "expert",
+    "expert": "UI/UX",
+    "contextPath": "./examples/synthetic-buyer-claim-caveat-review-context.json",
+    "outputDir": "./reviews/buyer-claim-caveats",
+    "structuredOutputDir": "./reviews/buyer-claim-caveats/json"
+  },
+  "reviews": [
+    {
+      "name": "Synthetic buyer claim caveat packet",
+      "target": "./examples/synthetic-buyer-claim-caveat-review-context.md"
+    }
+  ]
+}

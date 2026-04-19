@@ -1,0 +1,14 @@
+{
+  "reviewSurface": "Synthetic buyer claim caveat packet",
+  "reviewFocus": [
+    "Check whether each buyer-facing claim is proportional to the supplied synthetic evidence.",
+    "Flag missing caveats when evidence is directional, interview-based, small-sample, hypothetical, or not tied to a purchasing action.",
+    "Check that evidence labels are traceable without exposing real buyer identity, company names, private source paths, or proprietary research notes.",
+    "Keep sourcing, proof thresholds, outreach, spend, publication approval, and follow-up routing caller-owned."
+  ],
+  "outOfScope": [
+    "Do not infer real buyer demand, revenue potential, willingness to pay, market size, procurement readiness, or investment merit.",
+    "Do not approve outreach, public launch, account creation, spend, publication, or real-world follow-up.",
+    "Do not treat the fixture as a private venture artifact, sales script, diligence memo, or investment recommendation."
+  ]
+}

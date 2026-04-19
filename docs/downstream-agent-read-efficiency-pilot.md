@@ -42,10 +42,10 @@ Examples that should not be counted:
 - A private or production surface the agent had no authority to access.
 - A broad web search where repo-local or packet evidence was already the required source.
 
-## Boundary
+## Scope
 
 AIQL can host the generic measurement contract and public-safe examples. The embedding workflow owns real task selection, source registry semantics, tracker freshness, private context packaging, approval gates, and any downstream product decision.
 
 ## Extraction Question
 
-If future sessions repeatedly need the same measurement, ask whether the next step can stay generic as a small fixture or parser over public-safe outcome fields. If it needs private tracker semantics, product-pressure labels, company-specific ledgers, or control-plane routing, keep it in the embedding workflow.
+If future sessions repeatedly need the same measurement, ask whether the next step can stay generic as a small fixture or parser over public-safe outcome fields. If it needs private tracker semantics, product-pressure labels, company-specific ledgers, or private routing rules, keep it in the embedding workflow.

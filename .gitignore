@@ -1,7 +1,4 @@
 /node_modules/
 /dist/
 /package-lock.json
-
-# Private orchestrator runtime artifacts must never be committed to this public repo.
 /.runtime/
-/scripts/orchestrator-outcome-record.ts

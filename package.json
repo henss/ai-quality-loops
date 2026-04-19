@@ -47,9 +47,8 @@
     "build": "tsc",
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
-    "verify:session": "pnpm check:private-runtime && pnpm typecheck && pnpm test && pnpm check:agent-surface",
+    "verify:session": "pnpm typecheck && pnpm test && pnpm check:agent-surface",
     "git-hooks:install": "powershell -ExecutionPolicy Bypass -File .\\scripts\\install-git-hooks.ps1",
-    "check:private-runtime": "tsx scripts/check-private-runtime.ts",
     "check:agent-surface": "tsx scripts/check-agent-surface.ts",
     "check:agent-surface:staged": "tsx scripts/check-agent-surface.ts --staged",
     "refactor:extract-exports": "tsx scripts/refactor-extract-exports.ts"

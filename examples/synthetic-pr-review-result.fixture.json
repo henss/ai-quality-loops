@@ -1,0 +1,56 @@
+{
+  "schemaVersion": "1",
+  "workflow": "expert",
+  "expert": "PR Review Adapter Pilot",
+  "model": "synthetic-pr-review-fixture",
+  "summary": "Synthetic PR review result with generic evidence labels and caller-owned merge policy.",
+  "overallSeverity": "high",
+  "findings": [
+    {
+      "key": "missing-validation-evidence",
+      "title": "Validation evidence is missing",
+      "summary": "The synthetic change record describes a review-sensitive behavior change but does not include a caller-owned validation result.",
+      "severity": "high",
+      "recommendation": "Ask the embedding workflow to attach a sanitized validation summary before downstream triage.",
+      "evidence": [
+        "PR evidence label A",
+        "Validation slot: missing"
+      ]
+    },
+    {
+      "key": "merge-authority-boundary",
+      "title": "Merge authority remains caller-owned",
+      "summary": "The handoff can name a review concern but must not decide merge, assignment, priority, or repository policy.",
+      "severity": "medium",
+      "recommendation": "Keep merge policy, owner assignment, and tracker writes in the embedding workflow.",
+      "evidence": [
+        "Boundary note: synthetic fixture only"
+      ]
+    },
+    {
+      "key": "wording-cleanup",
+      "title": "Low-severity wording cleanup",
+      "summary": "The synthetic packet has a minor wording issue that is not candidate-worthy by default.",
+      "severity": "low",
+      "recommendation": "Leave low-severity editorial routing to the caller when needed.",
+      "evidence": [
+        "Optional note: synthetic fixture only"
+      ]
+    }
+  ],
+  "provenance": [
+    {
+      "label": "Content source",
+      "value": "Synthetic PR review packet"
+    },
+    {
+      "label": "Review surface",
+      "value": "Structured review-result contract"
+    },
+    {
+      "label": "Privacy boundary",
+      "value": "No real issue keys, repository names, branches, accounts, file paths, hostnames, or private policy"
+    }
+  ],
+  "markdown": "# Summary\nSynthetic PR review result with generic evidence labels only.\n\n## Findings\n- High: Validation evidence is missing.\n- Medium: Merge authority remains caller-owned.\n- Low: Low-severity wording cleanup.\n\n## Boundary\nNo target selection, private naming, merge policy, owner assignment, tracker writes, or repository interpretation is part of this fixture."
+}

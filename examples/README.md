@@ -28,6 +28,7 @@ The example files cover the repeatable workflow surfaces. The package also suppo
 | Review synthetic buyer-claim caveats | `batch-review ./examples/synthetic-buyer-claim-caveat-review.manifest.json` | Use this as a text-review seam for buyer-interest claims; keep real sources, outreach, spend, account creation, proof thresholds, and routing caller-owned. |
 | Check caller-owned redaction rules | `defineReviewSurfaceRedactions(...)` with `./examples/synthetic-policy-redactions.fixture.json` | Use when a consumer needs a public-safe fixture for project-local redaction behavior without moving policy names into AIQL. |
 | Validate a synthetic reviewer-contract fixture | `validateStructuredReviewResult(...)` with `./examples/synthetic-reviewer-contract-result.fixture.json` | Use when checking contract consumers against a public-safe fixture with generic evidence labels and caller-owned action boundaries. |
+| Pilot a sanitized PR review candidate handoff | `renderLinearCandidateHandoffYaml(...)` with `./examples/synthetic-pr-review-result.fixture.json` | Use when checking a no-write candidate packet before a caller-owned workflow handles pull-request selection, merge policy, and tracker writes. |
 | Validate a sanitized structured-result fixture | `validateStructuredReviewResult(...)` with `./examples/synthetic-apartment-review-result.fixture.json` | Use when checking contract consumers against a fixture that contains no private home data. |
 | Compare a synthetic structured-result golden diff | `compareStructuredReviewResults(...)` with `./examples/synthetic-structured-result-golden-diff-before.fixture.json` and `./examples/synthetic-structured-result-golden-diff-after.fixture.json` | Use when checking comparison consumers against a public-safe expected diff fixture. |
 | Make lower-level local LLM calls | `generateTextWithOllama(...)` or `callOllamaVision(...)` | Use only when the review workflow is too high-level for the caller. |
@@ -217,6 +218,16 @@ Typical edits:
 - keep approval, routing, remediation, publication, and domain interpretation outside `ai-quality-loops`
 - use `docs/reviewer-contract.md` as the boundary note before promoting another reviewer-contract example
 
+### `synthetic-pr-review-result.fixture.json`
+
+Use when you want a public-safe structured-result fixture for piloting a pull-request review candidate handoff without checking in real repository data, issue keys, branch names, source paths, account names, hostnames, reviewer assignments, or merge policy.
+
+Typical edits:
+
+- keep evidence labels synthetic or replace them only with caller-sanitized labels
+- compare `renderLinearCandidateHandoffYaml(...)` output to `synthetic-pr-review-candidate-handoff.expected.yaml` when a wrapper needs a stable no-write candidate packet
+- keep pull-request selection, source retrieval, inline placement, reviewer assignment, merge authority, priority, tracker writes, and repository policy in the embedding repo
+
 ### `synthetic-structured-result-golden-diff-*.json`
 
 Use when you want a deterministic before/after fixture for consumers of `compareStructuredReviewResults(...)` or `review-compare --json`.
@@ -232,6 +243,7 @@ Typical edits:
 - The examples stay open-source-safe on purpose. They do not embed private domains, company personas, or project-specific output routing.
 - The synthetic apartment fixture is contract-focused. It intentionally excludes real room names, image paths, coordinates, operator-specific facts, and release or publication instructions.
 - The synthetic reviewer-contract fixture is contract-focused. It intentionally excludes real issue keys, source URLs, local paths, account names, approval policy, and routing instructions.
+- The synthetic PR review fixture is adapter-pilot focused. It intentionally excludes real repository names, issue keys, branch names, source paths, hostnames, account names, reviewer assignments, merge policy, priority, and tracker writes.
 - The synthetic reviewer-contract manifest is runnable and intentionally excludes real target selection, issue keys, source URLs, local paths, account names, approval policy, routing, and retention decisions.
 - The synthetic context-pack quality manifest is seam-focused. It intentionally excludes real source names, source contents, tracker keys, private paths, source freshness, domain facts, approval state, retention policy, implementation priority, and routing instructions.
 - The synthetic structured-result golden diff is comparison-focused. It intentionally excludes real source labels, tracker identifiers, local paths, account names, private facts, policy thresholds, and routing instructions.

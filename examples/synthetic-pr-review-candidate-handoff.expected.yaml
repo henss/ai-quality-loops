@@ -1,0 +1,36 @@
+schema: "aiql_linear_candidate_handoff_v1"
+source:
+  kind: "structured_review_result"
+  label: "Synthetic PR review adapter pilot"
+  workflow: "expert"
+  expert: "PR Review Adapter Pilot"
+  model: "synthetic-pr-review-fixture"
+  overall_severity: "high"
+  summary: "Synthetic PR review result with generic evidence labels and caller-owned merge policy."
+policy:
+  writes_to_linear: false
+  creates_issues: false
+  prioritization_owner: "caller"
+  boundary: "Candidate handoff only; downstream tracker writes and priority decisions stay caller-owned."
+candidates:
+  - id: "missing-validation-evidence"
+    title: "Validation evidence is missing"
+    severity: "high"
+    summary: "The synthetic change record describes a review-sensitive behavior change but does not include a caller-owned validation result."
+    recommendation: "Ask the embedding workflow to attach a sanitized validation summary before downstream triage."
+    suggested_labels:
+      - "review-finding"
+      - "severity:high"
+    evidence:
+      - "PR evidence label A"
+      - "Validation slot: missing"
+  - id: "merge-authority-boundary"
+    title: "Merge authority remains caller-owned"
+    severity: "medium"
+    summary: "The handoff can name a review concern but must not decide merge, assignment, priority, or repository policy."
+    recommendation: "Keep merge policy, owner assignment, and tracker writes in the embedding workflow."
+    suggested_labels:
+      - "review-finding"
+      - "severity:medium"
+    evidence:
+      - "Boundary note: synthetic fixture only"

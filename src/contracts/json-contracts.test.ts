@@ -582,6 +582,52 @@ describe("public JSON contracts", () => {
     }
   });
 
+  it("ships a public-safe synthetic PR review adapter pilot fixture", async () => {
+    const fixture = JSON.parse(
+      await fs.readFile(
+        path.join(
+          process.cwd(),
+          "examples/synthetic-pr-review-result.fixture.json",
+        ),
+        "utf-8",
+      ),
+    ) as unknown;
+
+    const validation = validateStructuredReviewResult(fixture);
+    expect(validation).toEqual({
+      ok: true,
+      value: expect.objectContaining({
+        workflow: "expert",
+        provenance: expect.arrayContaining([
+          expect.objectContaining({
+            label: "Privacy boundary",
+          }),
+        ]),
+      }),
+    });
+
+    const serialized = JSON.stringify(fixture).toLowerCase();
+    for (const privateBoundaryTerm of [
+      "stefan",
+      "linear",
+      "smartseer",
+      "ops-",
+      "customer",
+      "tenant",
+      "employee",
+      "company",
+      "https://",
+      "d:\\",
+      "/users/",
+      ".png",
+      ".jpg",
+      ".jpeg",
+      "github.com",
+    ]) {
+      expect(serialized).not.toContain(privateBoundaryTerm);
+    }
+  });
+
   it("ships a runnable public-safe synthetic reviewer-contract manifest", async () => {
     const manifestPath = path.join(
       process.cwd(),

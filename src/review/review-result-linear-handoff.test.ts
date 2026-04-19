@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
+import fs from "node:fs/promises";
+import path from "node:path";
 import type { StructuredReviewResult } from "../contracts/json-contracts.js";
+import { validateStructuredReviewResult } from "../contracts/json-contracts.js";
 import { defineReviewSurfaceRedactions } from "../shared/review-surface.js";
 import {
   LINEAR_CANDIDATE_HANDOFF_SCHEMA,
@@ -114,5 +117,34 @@ describe("review result Linear candidate handoff renderer", () => {
     expect(yaml).toContain("Email address");
     expect(yaml).not.toContain("policy-alpha-42");
     expect(yaml).not.toContain("reviewer@example.com");
+  });
+
+  it("renders the synthetic PR review adapter pilot handoff fixture", async () => {
+    const fixture = JSON.parse(
+      await fs.readFile(
+        path.join(process.cwd(), "examples/synthetic-pr-review-result.fixture.json"),
+        "utf-8",
+      ),
+    ) as unknown;
+    const expected = await fs.readFile(
+      path.join(
+        process.cwd(),
+        "examples/synthetic-pr-review-candidate-handoff.expected.yaml",
+      ),
+      "utf-8",
+    );
+
+    const validation = validateStructuredReviewResult(fixture);
+    if (!validation.ok) {
+      throw validation.error;
+    }
+
+    const yaml = renderLinearCandidateHandoffYaml(validation.value, {
+      sourceLabel: "Synthetic PR review adapter pilot",
+    });
+
+    expect(yaml).toBe(expected);
+    expect(yaml).toContain("writes_to_linear: false");
+    expect(yaml).not.toContain("Low-severity wording cleanup");
   });
 });

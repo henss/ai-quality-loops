@@ -195,6 +195,17 @@ export const HIGH_STAKES_ANALYSIS_REVIEW_RUBRIC_CONTRACT: HighStakesAnalysisRevi
           "A sanitized analysis considers only the favorable case and omits adverse or neutral outcomes.",
         expectedReviewFocus: ["scenario-coverage", "adversarial-review"],
       },
+      {
+        id: "synthetic-caveat-preservation",
+        promptSummary:
+          "A sanitized high-impact analysis includes explicit caveats about missing evidence and caller-owned approval, but a downstream summary risks flattening them into a confident action recommendation.",
+        expectedReviewFocus: [
+          "authority-boundary",
+          "uncertainty-handling",
+          "recommendation-traceability",
+          "output-discipline",
+        ],
+      },
     ],
   };
 

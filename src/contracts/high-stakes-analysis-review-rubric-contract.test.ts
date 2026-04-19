@@ -55,6 +55,30 @@ describe("high-stakes analysis review rubric contract", () => {
     ).toContain("money movement or execution instructions");
   });
 
+  it("includes a synthetic caveat-preservation fixture without domain leakage", () => {
+    const parsed = parseHighStakesAnalysisReviewRubricContract(
+      HIGH_STAKES_ANALYSIS_REVIEW_RUBRIC_CONTRACT,
+    );
+    const fixture = parsed.syntheticFixtures.find(
+      (candidate) => candidate.id === "synthetic-caveat-preservation",
+    );
+
+    expect(fixture).toEqual({
+      id: "synthetic-caveat-preservation",
+      promptSummary:
+        "A sanitized high-impact analysis includes explicit caveats about missing evidence and caller-owned approval, but a downstream summary risks flattening them into a confident action recommendation.",
+      expectedReviewFocus: [
+        "authority-boundary",
+        "uncertainty-handling",
+        "recommendation-traceability",
+        "output-discipline",
+      ],
+    });
+    expect(fixture?.promptSummary.toLowerCase()).not.toMatch(
+      /broker|finance|financial|investment|market|tax|portfolio|trading|smartseer/,
+    );
+  });
+
   it("lets callers layer private domain injections without widening the shared contract", () => {
     const callerOwnedInjection = {
       policyLabel: "private-domain-high-stakes-review",

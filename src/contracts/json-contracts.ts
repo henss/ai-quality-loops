@@ -56,6 +56,7 @@ export interface StructuredReviewProvenanceItem {
 }
 
 export interface StructuredReviewFinding {
+  key?: string;
   title: string;
   summary: string;
   severity: StructuredReviewSeverity;
@@ -305,6 +306,7 @@ function parseStructuredReviewFinding(
   }
 
   return {
+    key: readOptionalString(value.key, `${fieldPath}.key`),
     title: readRequiredString(value.title, `${fieldPath}.title`),
     summary: readRequiredString(value.summary, `${fieldPath}.summary`),
     severity: readStructuredReviewSeverity(

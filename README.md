@@ -231,10 +231,12 @@ console.log(comparison.counts);
 console.log(comparison.changed.map((finding) => finding.key));
 ```
 
+Structured findings may include an optional `key` when a reviewer or wrapper can name the same issue across repeated runs. Keep keys generic and sanitized; omit them when a stable public-safe label would require private names, paths, URLs, account identifiers, tracker IDs, or domain-specific policy.
+
 The comparison helper stays intentionally narrow:
 
 - it compares exactly two published structured review-result artifacts
-- it groups findings by a stable normalized key derived from title or summary text
+- it groups findings by a stable normalized key, preferring an explicit finding `key` and falling back to title or summary text
 - it reports added, removed, changed, and unchanged findings plus per-finding and overall severity movement
 - it does not add scoring, approval heuristics, or model-based equivalence judgments
 

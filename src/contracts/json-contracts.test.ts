@@ -291,6 +291,7 @@ describe("public JSON contracts", () => {
       overallSeverity: "high",
       findings: [
         {
+          key: "cta-contrast",
           title: "Contrast regression",
           summary: "The primary CTA falls below contrast guidance.",
           severity: "high",
@@ -311,6 +312,11 @@ describe("public JSON contracts", () => {
       value: expect.objectContaining({
         workflow: "vision",
         overallSeverity: "high",
+        findings: [
+          expect.objectContaining({
+            key: "cta-contrast",
+          }),
+        ],
       }),
     });
   });

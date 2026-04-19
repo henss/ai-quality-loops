@@ -36,6 +36,10 @@ export function sanitizeStructuredReviewFinding(
   options: StructuredReviewResultSanitizationOptions,
 ): StructuredReviewFinding {
   return {
+    key:
+      finding.key === undefined
+        ? undefined
+        : sanitizeStructuredReviewText(finding.key, options),
     title: sanitizeStructuredReviewText(finding.title, options),
     summary: sanitizeStructuredReviewText(finding.summary, options),
     severity: finding.severity,

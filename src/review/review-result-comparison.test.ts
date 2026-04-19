@@ -56,6 +56,14 @@ describe("structured review result comparison", () => {
   it("normalizes findings into a stable reusable grouping key", () => {
     expect(
       normalizeStructuredReviewFindingKey({
+        key: "Checkout CTA / Contrast",
+        title: "Primary action contrast remains low",
+        summary: "The checkout call to action still misses contrast guidance.",
+      }),
+    ).toBe("checkout cta contrast");
+
+    expect(
+      normalizeStructuredReviewFindingKey({
         title: "Checkout CTA",
         summary: "Critical issue because contrast is too low.",
       }),
@@ -67,6 +75,52 @@ describe("structured review result comparison", () => {
         summary: "Mobile overflow on narrow screens.",
       }),
     ).toBe("mobile overflow on narrow screens");
+  });
+
+  it("matches repeated findings by explicit stable key when wording changes", () => {
+    const report = compareStructuredReviewResults({
+      before: createResult([
+        {
+          key: "checkout-cta-contrast",
+          title: "Checkout CTA",
+          summary: "Contrast falls below guidance.",
+          severity: "critical",
+        },
+      ]),
+      after: createResult([
+        {
+          key: "checkout cta contrast",
+          title: "Primary action contrast",
+          summary: "The checkout action still misses contrast guidance.",
+          severity: "high",
+        },
+      ]),
+    });
+
+    expect(report.counts).toEqual({
+      beforeFindings: 1,
+      afterFindings: 1,
+      added: 0,
+      removed: 0,
+      changed: 1,
+      unchanged: 0,
+      severityMovement: {
+        improved: 1,
+        regressed: 0,
+        unchanged: 0,
+      },
+    });
+    expect(report.changed).toEqual([
+      expect.objectContaining({
+        key: "checkout cta contrast",
+        changedFields: ["title", "summary", "severity"],
+        severityChange: {
+          before: "critical",
+          after: "high",
+          direction: "improved",
+        },
+      }),
+    ]);
   });
 
   it("compares added, removed, changed, and unchanged findings across runs", () => {

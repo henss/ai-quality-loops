@@ -109,6 +109,10 @@ function readFinding(value: unknown, fieldName: string): StructuredReviewFinding
   }
 
   return {
+    key:
+      value.key === undefined
+        ? undefined
+        : readRequiredString(value.key, `${fieldName}.key`),
     title: readRequiredString(value.title, `${fieldName}.title`),
     summary: readRequiredString(value.summary, `${fieldName}.summary`),
     severity: readSeverity(value.severity, `${fieldName}.severity`),

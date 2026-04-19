@@ -115,10 +115,15 @@ function compareSeverityDirection(
 }
 
 export function normalizeStructuredReviewFindingKey(
-  finding: Pick<StructuredReviewFinding, "title" | "summary">,
+  finding: Pick<StructuredReviewFinding, "key" | "title" | "summary">,
 ): string {
+  const normalizedExplicitKey = normalizeComparableText(finding.key || "");
   const normalizedTitle = normalizeComparableText(finding.title);
   const normalizedSummary = normalizeComparableText(finding.summary);
+
+  if (normalizedExplicitKey) {
+    return normalizedExplicitKey;
+  }
 
   if (normalizedTitle) {
     return normalizedTitle;

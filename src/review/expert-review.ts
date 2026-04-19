@@ -90,6 +90,7 @@ const structuredReviewDecisionSchema = {
       type: "object",
       properties: {
         severity: { enum: ["unknown", "low", "medium", "high", "critical"] },
+        key: { type: "string" },
         title: { type: "string" },
         summary: { type: "string" },
         recommendation: { type: "string" },
@@ -193,6 +194,7 @@ export async function runExpertReview(
         blocking_findings: [],
         non_blocking_findings: [
           {
+            key: "short-stable-finding-key",
             severity: "low | medium | high | critical | unknown",
             title: "Short finding title",
             summary: "One concise finding summary.",
@@ -211,6 +213,7 @@ export async function runExpertReview(
           "Return only valid JSON. Do not include Markdown, commentary, code fences, or hidden reasoning.",
           "The top-level JSON object must contain `review_decision` using this shape:",
           reviewDecisionExample,
+          "When reporting a finding, include a stable, generic `key` when you can name the same issue across repeated runs. Keep it lowercase, concise, and free of private names, paths, URLs, account identifiers, or tracker IDs.",
           "Use `accept` only when no before-merge work is required. Use `accept_with_follow_up` when the work passes but follow-up hardening or cleanup remains. Use `changes_requested` or `blocked` for findings that should fail the gate.",
         ].join("\n")
       : [
@@ -220,6 +223,7 @@ export async function runExpertReview(
           "```json",
           reviewDecisionExample,
           "```",
+          "When reporting a finding, include a stable, generic `key` when you can name the same issue across repeated runs. Keep it lowercase, concise, and free of private names, paths, URLs, account identifiers, or tracker IDs.",
           "Use `accept` only when no before-merge work is required. Use `accept_with_follow_up` when the work passes but follow-up hardening or cleanup remains. Use `changes_requested` or `blocked` for findings that should fail the gate.",
         ].join("\n");
 

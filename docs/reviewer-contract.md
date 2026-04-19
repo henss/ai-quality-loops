@@ -14,6 +14,7 @@ The reusable reviewer contract is the existing structured review-result shape:
 
 - `schemaVersion`, `workflow`, `expert`, `model`, and `summary` identify the review run without exposing raw source names.
 - `overallSeverity` and `findings` provide deterministic fields for downstream checks.
+- `findings[].key` is optional. Use it only when a reviewer or wrapper can provide a stable generic label for the same issue across repeated runs without embedding private names, paths, URLs, account identifiers, tracker IDs, or domain policy.
 - `provenance` contains sanitized descriptors only, such as generic source labels, not raw URLs, local paths, or private capture names.
 - `markdown` preserves human-readable review output after the same review-surface sanitization has been applied.
 

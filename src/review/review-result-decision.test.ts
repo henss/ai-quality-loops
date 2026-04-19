@@ -73,6 +73,7 @@ describe("structured review decision extraction", () => {
               "Review tenant-alpha at https://example.com/private/page?token=secret#notes before merge.",
             blocking_findings: [
               {
+                key: "private-tenant-alpha-fixture",
                 title: "Private fixture D:\\workspace\\tenant-alpha\\fixtures\\result.json",
                 summary:
                   "The reviewer echoed tenant-alpha and reviewer@example.com in the structured payload.",
@@ -122,6 +123,7 @@ describe("structured review decision extraction", () => {
     expect(serialized).not.toContain("D:\\workspace");
     expect(result.summary).toContain("[Project identifier redacted]");
     expect(result.summary).toContain("Remote URL");
+    expect(result.findings[0]?.key).toBe("private-[Project identifier redacted]-fixture");
     expect(result.findings[0]?.evidence).toEqual([
       "Local file path (.json file)",
       "Remote URL (host: example.com, path segments: 2, query redacted, fragment redacted)",

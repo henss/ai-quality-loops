@@ -67,6 +67,8 @@ Retry decisions should be explainable from the existing manifest and summary art
 - the retry selector used by the caller, such as "failed entries from prior summary" or "named entry requested by operator"
 - confirmation that the target reference, output paths, capture labels, and context references remain generic or caller-sanitized before the retry reaches AIQL
 
+Use `classifyCaptureReviewRetryEvidence(...)` when an adapter needs a deterministic readiness check over that evidence. The classifier reads only the existing `BatchReviewManifest` and `batchReviewSummary` shapes, plus explicit caller confirmations that the relevant target, output path, label, and context fields are generic. It reports `ready`, `incomplete`, or `rejected` without copying raw target paths or private capture semantics into the result.
+
 The retry evidence does not need a new package contract when it is just a short caller-owned note beside the rerun command. For example, `batch-review ./manifest.json --rerun-summary ./reviews/batch-summary.json --rerun-failed` already keeps retry selection tied to the prior summary artifact. Embedding repos can add their own local note that records which summary entry caused the retry, while keeping raw screenshot bytes, private entity names, capture-retention decisions, thresholds, approval, and routing outside this package.
 
 If the retry is for a visual capture adapter, the shared evidence should use generic labels such as `Capture 1`, `section-1 (overview)`, or the sanitized `targetSummary` emitted by AIQL. It should not include real room names, resident details, coordinates, private file paths, source URLs with query details, customer names, ticket identifiers, or company-specific workflow states.

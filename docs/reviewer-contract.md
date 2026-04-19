@@ -1,52 +1,47 @@
-# Reviewer Contract Synthetic Example
+# Reviewer Contract
 
-This note defines the public-safe reviewer-contract example for AI Quality Loops. It is intentionally synthetic: it does not include real tracker state, private repository paths, customer data, account names, product details, release policy, or company-specific workflow labels.
+AI Quality Loops publishes one reusable reviewer contract: the structured review-result JSON shape. Use it when a caller needs machine-readable findings from text, vision, or batch review output without moving caller policy, private source data, or routing decisions into this package.
 
-## Classification
+## Public Surface
 
-Packet output: artifact and proposal.
+The structured review-result contract includes:
 
-No new reusable tooling was added. The build-vs-buy scout check is not applicable because this session only adds a documentation note and a synthetic contract fixture; it does not add a shared helper, workflow automation, adapter, review loop, extraction tool, observability, scheduling, memory, agent infrastructure, or package-like code.
+- `schemaVersion`, `workflow`, `expert`, `model`, and `summary` for the review run.
+- `overallSeverity` and `findings` for deterministic checks.
+- `findings[].key` as an optional stable generic label for matching repeated findings across runs.
+- `provenance` as sanitized descriptors, not raw URLs, local paths, account names, tracker IDs, or private source names.
+- `markdown` as sanitized human-readable review output.
 
-## Public Contract Surface
+Validate payloads with `validateStructuredReviewResult(...)` or the published `schemas/structured-review-result.schema.json` file.
 
-The reusable reviewer contract is the existing structured review-result shape:
+## Synthetic Examples
 
-- `schemaVersion`, `workflow`, `expert`, `model`, and `summary` identify the review run without exposing raw source names.
-- `overallSeverity` and `findings` provide deterministic fields for downstream checks.
-- `findings[].key` is optional. Use it only when a reviewer or wrapper can provide a stable generic label for the same issue across repeated runs without embedding private names, paths, URLs, account identifiers, tracker IDs, or domain policy.
-- `provenance` contains sanitized descriptors only, such as generic source labels, not raw URLs, local paths, or private capture names.
-- `markdown` preserves human-readable review output after the same review-surface sanitization has been applied.
+- `examples/synthetic-reviewer-contract-review.manifest.json` is a runnable synthetic text-review manifest.
+- `examples/synthetic-reviewer-contract-review-context.json` defines the review focus for that manifest.
+- `examples/synthetic-reviewer-contract-review-context.md` is the synthetic target packet.
+- `examples/synthetic-reviewer-contract-result.fixture.json` is a checked structured-result fixture for consumer tests.
 
-The package already validates this shape with `validateStructuredReviewResult(...)` and the published `schemas/structured-review-result.schema.json` artifact.
+These examples demonstrate the contract only. They do not decide target selection, severity budgets, approval, remediation ownership, tracker routing, publication, deployment, retention, or real-world action.
 
-## Synthetic Fixture
+## Allowed In Shared Examples
 
-Use `examples/synthetic-reviewer-contract-result.fixture.json` when a consumer needs a public-safe example payload. The fixture demonstrates a text review over a made-up review packet with generic findings, synthetic evidence labels, and caller-owned action boundaries.
+- Generic review modes such as text, vision, or batch review.
+- Synthetic target labels such as `Synthetic review packet`.
+- Generic evidence labels such as `Evidence label A`.
+- Boundary statements saying policy, routing, and domain interpretation stay caller-owned.
+- Sanitized provenance descriptors that are already safe for a public artifact.
 
-The fixture is deliberately not a workflow recipe. It should not teach how to select targets, route findings, approve changes, open tickets, retain evidence, or map review output to domain action. Those choices stay in the embedding repo.
+## Rejected From Shared Examples
 
-## Boundary Rules
+- Real issue keys, tracker comments, source URLs, local paths, branch names, account names, or hostnames.
+- Customer, tenant, household, employee, company, or private project labels.
+- Private rubric rules, approval gates, routing policy, escalation aliases, release criteria, or source-retention policy.
+- Examples that imply AIQL decides publication, deployment, remediation, purchase, account action, household action, or other real-world effects.
 
-Allowed in the shared example:
+## Promotion Test
 
-- generic review modes such as text, vision, or batch summary review
-- synthetic target labels such as "Synthetic review packet"
-- generic evidence labels such as "Evidence label A"
-- caller-owned boundary statements that say policy, routing, and domain interpretation stay outside AIQL
-- sanitized provenance descriptors that are already safe to show in a public artifact
+Before adding another reviewer-contract example, ask:
 
-Rejected from the shared example:
+Can the example operate only on synthetic or caller-sanitized review content, published AIQL contracts, and generic evidence labels while target selection, private naming, thresholds, routing, and domain interpretation remain caller-owned?
 
-- real issue keys, tracker comments, source URLs, local paths, or branch names
-- customer, account, tenant, household, employee, or company-specific labels
-- private rubric rules, approval gates, routing policy, escalation aliases, or release criteria
-- examples that imply AIQL should decide publication, deployment, remediation, or real-world action
-
-## Extraction Question
-
-Before adding another reviewer-contract example or helper, ask:
-
-Can the example operate only on synthetic or caller-sanitized review content, published AIQL contracts, and generic evidence labels, while target selection, private naming, policy thresholds, routing, and domain interpretation remain caller-owned?
-
-If the answer is no or uncertain, keep the example in the embedding repo or reduce it to a sanitized fixture before moving it into AIQL.
+If the answer is no or uncertain, keep the example in the embedding repo or reduce it to a sanitized fixture before moving it here.

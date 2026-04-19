@@ -566,6 +566,60 @@ describe("public JSON contracts", () => {
     }
   });
 
+  it("ships a runnable public-safe synthetic reviewer-contract manifest", async () => {
+    const manifestPath = path.join(
+      process.cwd(),
+      "examples/synthetic-reviewer-contract-review.manifest.json",
+    );
+    const manifest = JSON.parse(await fs.readFile(manifestPath, "utf-8")) as unknown;
+    const parsed = parseBatchReviewManifest(manifest);
+
+    expect(parsed.defaults?.mode).toBe("expert");
+    expect(parsed.defaults?.expert).toBe("Evidence Reviewer");
+    expect(parsed.defaults?.contextPath).toBe(
+      "./examples/synthetic-reviewer-contract-review-context.json",
+    );
+    expect(parsed.reviews[0]).toEqual(
+      expect.objectContaining({
+        name: "Synthetic reviewer contract packet",
+        target: "./examples/synthetic-reviewer-contract-review-context.md",
+      }),
+    );
+
+    const contextJsonPath = path.join(
+      process.cwd(),
+      "examples/synthetic-reviewer-contract-review-context.json",
+    );
+    const targetPath = path.join(
+      process.cwd(),
+      parsed.reviews[0]!.target,
+    );
+    await expect(fs.access(contextJsonPath)).resolves.toBeUndefined();
+    await expect(fs.access(targetPath)).resolves.toBeUndefined();
+
+    const contextJson = await fs.readFile(contextJsonPath, "utf-8");
+    const targetMarkdown = await fs.readFile(targetPath, "utf-8");
+    const serialized = `${JSON.stringify(manifest)}\n${contextJson}\n${targetMarkdown}`.toLowerCase();
+    for (const privateBoundaryTerm of [
+      "stefan",
+      "linear",
+      "smartseer",
+      "ops-",
+      "customer",
+      "tenant",
+      "employee",
+      "company",
+      "https://",
+      "d:\\",
+      "/users/",
+      ".png",
+      ".jpg",
+      ".jpeg",
+    ]) {
+      expect(serialized).not.toContain(privateBoundaryTerm);
+    }
+  });
+
   it("ships a public-safe synthetic policy redactions fixture", async () => {
     const fixture = JSON.parse(
       await fs.readFile(
@@ -746,5 +800,6 @@ describe("public JSON contracts", () => {
     };
 
     expect(packageJson.files).toContain("examples");
+    expect(packageJson.files).toContain("docs");
   });
 });

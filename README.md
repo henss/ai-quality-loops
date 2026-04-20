@@ -46,6 +46,7 @@ The package publishes copy-ready starter manifests under `examples/` so embeddin
 - `examples/synthetic-reviewer-contract-review.manifest.json` for one runnable synthetic reviewer-contract check
 - `examples/synthetic-context-pack-quality-review.manifest.json` for one synthetic context-pack quality review with caller-owned source handling
 - `examples/synthetic-buyer-claim-caveat-review.manifest.json` for one synthetic buyer-claim caveat review with caller-owned sourcing and routing
+- `examples/synthetic-source-handle-redaction-corpus.fixture.json` for public-safe source-handle redaction regression cases across synthetic finance-like, household-like, organization-like, and creative-like domains
 - `examples/synthetic-policy-redactions.fixture.json` for public-safe caller-provided redaction-rule checks
 - `examples/synthetic-reviewer-contract-result.fixture.json` for a public-safe reviewer-contract fixture with generic evidence labels
 - `examples/synthetic-apartment-review-result.fixture.json` for a sanitized structured-result contract fixture with no private home data

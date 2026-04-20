@@ -1,0 +1,121 @@
+{
+  "schemaVersion": "1",
+  "reviewSurface": "Synthetic source-handle redaction regression corpus",
+  "purpose": "Public-safe regression cases for caller-provided source-handle redactions across synthetic domains.",
+  "boundary": [
+    "All cases are synthetic and use opaque source handles only.",
+    "The handles are retrieval hints, not proof, package-owned storage keys, or a portable source-resolution schema.",
+    "Real source retrieval, source contents, domain interpretation, approval, retention, routing, and policy stay caller-owned."
+  ],
+  "redactionRule": {
+    "pattern": "\\bsource:[a-z0-9][a-z0-9/_-]*\\b",
+    "replacement": "[Source handle redacted]"
+  },
+  "domains": [
+    {
+      "domain": "finance-like",
+      "intent": "Check that money-adjacent review notes can cite opaque handles without copying financial source contents.",
+      "cases": [
+        {
+          "name": "single budget note handle",
+          "input": "The review cites source:finance-sandbox/budget-note-a for a synthetic budget caveat.",
+          "expected": "The review cites [Source handle redacted] for a synthetic budget caveat.",
+          "mustNotContain": ["source:finance-sandbox/budget-note-a"]
+        },
+        {
+          "name": "two ledger-adjacent handles",
+          "input": "Compare source:finance-sandbox/ledger-summary-b with source:finance-sandbox/forecast-caveat-c before making a caller-owned decision.",
+          "expected": "Compare [Source handle redacted] with [Source handle redacted] before making a caller-owned decision.",
+          "mustNotContain": [
+            "source:finance-sandbox/ledger-summary-b",
+            "source:finance-sandbox/forecast-caveat-c"
+          ]
+        },
+        {
+          "name": "markdown evidence row",
+          "input": "| Evidence | Handle | Caveat |\n| --- | --- | --- |\n| Budget caveat | source:finance-sandbox/evidence-row-d | Handle is not proof. |",
+          "expected": "| Evidence | Handle | Caveat |\n| --- | --- | --- |\n| Budget caveat | [Source handle redacted] | Handle is not proof. |",
+          "mustNotContain": ["source:finance-sandbox/evidence-row-d"]
+        }
+      ]
+    },
+    {
+      "domain": "household-like",
+      "intent": "Check that home-adjacent review notes stay generic and do not expose room names, resident details, captures, or coordinates.",
+      "cases": [
+        {
+          "name": "generic zone observation",
+          "input": "A synthetic zone observation cites source:household-sandbox/zone-note-a for a layout caveat.",
+          "expected": "A synthetic zone observation cites [Source handle redacted] for a layout caveat.",
+          "mustNotContain": ["source:household-sandbox/zone-note-a"]
+        },
+        {
+          "name": "capture-derived caveat handle",
+          "input": "Do not copy the capture; keep source:household-sandbox/capture-caveat-b as an opaque retrieval hint.",
+          "expected": "Do not copy the capture; keep [Source handle redacted] as an opaque retrieval hint.",
+          "mustNotContain": ["source:household-sandbox/capture-caveat-b"]
+        },
+        {
+          "name": "json-like evidence field",
+          "input": "{\"label\":\"Zone evidence\",\"sourceHandle\":\"source:household-sandbox/evidence-field-c\",\"caveat\":\"synthetic only\"}",
+          "expected": "{\"label\":\"Zone evidence\",\"sourceHandle\":\"[Source handle redacted]\",\"caveat\":\"synthetic only\"}",
+          "mustNotContain": ["source:household-sandbox/evidence-field-c"]
+        }
+      ]
+    },
+    {
+      "domain": "organization-like",
+      "intent": "Check that company-like coordination notes redact source handles while keeping approval, ownership, and routing caller-owned.",
+      "cases": [
+        {
+          "name": "decision note handle",
+          "input": "The coordination review references source:org-sandbox/decision-note-a but does not quote the decision note.",
+          "expected": "The coordination review references [Source handle redacted] but does not quote the decision note.",
+          "mustNotContain": ["source:org-sandbox/decision-note-a"]
+        },
+        {
+          "name": "status and follow-up handles",
+          "input": "Use source:org-sandbox/status-b only with source:org-sandbox/follow-up-c when checking traceability.",
+          "expected": "Use [Source handle redacted] only with [Source handle redacted] when checking traceability.",
+          "mustNotContain": [
+            "source:org-sandbox/status-b",
+            "source:org-sandbox/follow-up-c"
+          ]
+        },
+        {
+          "name": "bracketed source handle",
+          "input": "Evidence label A [source:org-sandbox/review-packet-d] needs a caveat before any caller-owned routing.",
+          "expected": "Evidence label A [[Source handle redacted]] needs a caveat before any caller-owned routing.",
+          "mustNotContain": ["source:org-sandbox/review-packet-d"]
+        }
+      ]
+    },
+    {
+      "domain": "creative-like",
+      "intent": "Check that creative review notes can cite drafts, briefs, or critique packets without leaking source content.",
+      "cases": [
+        {
+          "name": "draft critique handle",
+          "input": "The creative review cites source:creative-sandbox/draft-critique-a for a synthetic tone caveat.",
+          "expected": "The creative review cites [Source handle redacted] for a synthetic tone caveat.",
+          "mustNotContain": ["source:creative-sandbox/draft-critique-a"]
+        },
+        {
+          "name": "brief and revision handles",
+          "input": "Do not merge source:creative-sandbox/brief-b with source:creative-sandbox/revision-note-c unless the caller verifies both sources.",
+          "expected": "Do not merge [Source handle redacted] with [Source handle redacted] unless the caller verifies both sources.",
+          "mustNotContain": [
+            "source:creative-sandbox/brief-b",
+            "source:creative-sandbox/revision-note-c"
+          ]
+        },
+        {
+          "name": "inline caveat sentence",
+          "input": "Handle source:creative-sandbox/caveat-d supports only a synthetic review-output note, not publication approval.",
+          "expected": "Handle [Source handle redacted] supports only a synthetic review-output note, not publication approval.",
+          "mustNotContain": ["source:creative-sandbox/caveat-d"]
+        }
+      ]
+    }
+  ]
+}

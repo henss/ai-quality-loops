@@ -26,6 +26,7 @@ The example files cover the repeatable workflow surfaces. The package also suppo
 | Review a synthetic context pack quality packet | `batch-review ./examples/synthetic-context-pack-quality-review.manifest.json` | Use this as a public-safe seam for checking context-pack scope, evidence labels, caveats, and caller-owned boundaries. |
 | Review a synthetic source-handle evidence pack | `batch-review ./examples/synthetic-source-handle-evidence-review.manifest.json` | Use this as a text-review seam for review-output packets that cite source handles without copying private truth; keep retrieval, storage, source interpretation, approval, and routing caller-owned. |
 | Review synthetic buyer-claim caveats | `batch-review ./examples/synthetic-buyer-claim-caveat-review.manifest.json` | Use this as a text-review seam for buyer-interest claims; keep real sources, outreach, spend, account creation, proof thresholds, and routing caller-owned. |
+| Check source-handle redaction cases | `defineReviewSurfaceRedactions(...)` with `./examples/synthetic-source-handle-redaction-corpus.fixture.json` | Use when a consumer needs public-safe regression cases for caller-owned source-handle redaction across synthetic domains. |
 | Check caller-owned redaction rules | `defineReviewSurfaceRedactions(...)` with `./examples/synthetic-policy-redactions.fixture.json` | Use when a consumer needs a public-safe fixture for project-local redaction behavior without moving policy names into AIQL. |
 | Validate a synthetic reviewer-contract fixture | `validateStructuredReviewResult(...)` with `./examples/synthetic-reviewer-contract-result.fixture.json` | Use when checking contract consumers against a public-safe fixture with generic evidence labels and caller-owned action boundaries. |
 | Pilot a sanitized PR review candidate handoff | `renderLinearCandidateHandoffYaml(...)` with `./examples/synthetic-pr-review-result.fixture.json` | Use when checking a no-write candidate packet before a caller-owned workflow handles pull-request selection, merge policy, and tracker writes. |
@@ -173,6 +174,16 @@ Typical edits:
 - treat source handles as opaque caller-owned retrieval hints, not proof, package-owned storage keys, or a portable resolution schema
 - keep real source retrieval, source contents, private facts, domain interpretation, retention policy, approval, implementation priority, and routing outside `ai-quality-loops`
 
+### `synthetic-source-handle-redaction-corpus.fixture.json`
+
+Use when you want public-safe regression cases for caller-owned source-handle redaction before review-output packets leave a private boundary.
+
+Typical edits:
+
+- keep the corpus synthetic or replace it only inside an embedding repo with caller-sanitized handles
+- use the fixture with `defineReviewSurfaceRedactions(...)` to check that source handles redact consistently in prose, Markdown rows, JSON-like snippets, and bracketed references
+- keep real source names, source contents, source resolution, approval, retention, domain interpretation, and routing outside `ai-quality-loops`
+
 ### `synthetic-buyer-claim-caveat-review.manifest.json`
 
 Use when you want a generic text review over synthetic or caller-sanitized buyer-interest claims before a caller-owned workflow uses them in research notes, positioning drafts, or decision support.
@@ -249,6 +260,7 @@ Typical edits:
 - The synthetic structured-result golden diff is comparison-focused. It intentionally excludes real source labels, tracker identifiers, local paths, account names, private facts, policy thresholds, and routing instructions.
 - The synthetic social evidence fixture is seam-focused. It intentionally excludes real account names, audience facts, source identities, brand strategy, publication decisions, and business routing.
 - The synthetic source-handle evidence fixture is seam-focused. It intentionally excludes real source names, source contents, tracker keys, private paths, domain facts, retention policy, approval status, implementation priority, and routing instructions.
+- The synthetic source-handle redaction corpus is regression-focused. It intentionally excludes real source names, source contents, tracker keys, private paths, domain facts, retention policy, approval status, implementation priority, and routing instructions.
 - The synthetic buyer-claim caveat fixture is seam-focused. It intentionally excludes real buyer identities, company names, source notes, outreach plans, spend decisions, account creation, proof thresholds, and venture-specific routing.
 - The synthetic policy redactions fixture is boundary-focused. It intentionally excludes real policy names, project identifiers, thresholds, approval, routing, and domain interpretation.
 - If you need repo-specific naming, redaction rules, or CI budgets, add that in the embedding repo instead of widening the shared package surface.

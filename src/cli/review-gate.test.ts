@@ -147,4 +147,76 @@ describe("review-gate CLI", () => {
       }),
     ]);
   });
+
+  it("fails added prompt-eval regression budgets when comparison telemetry is unavailable", async () => {
+    const comparisonPath = path.join(tempDir, "batch-comparison.json");
+    await fs.writeFile(
+      comparisonPath,
+      JSON.stringify({
+        inputs: {
+          before: { pathLabel: "Local file path (.json file)" },
+          after: { pathLabel: "Local file path (.json file)" },
+        },
+        comparison: {
+          counts: {
+            beforeEntries: 1,
+            afterEntries: 1,
+            added: 0,
+            removed: 0,
+            matched: 1,
+            statusChanged: 0,
+            severityMovement: {
+              improved: 0,
+              regressed: 0,
+              unchanged: 0,
+              unavailable: 1,
+            },
+            totalFindingsDelta: 0,
+            findingCountDelta: {
+              critical: 0,
+              high: 0,
+              medium: 0,
+              low: 0,
+              unknown: 0,
+            },
+            promptEvalCountDelta: 0,
+            addedPromptEvalCount: 0,
+            promptEvalCountUnavailable: 1,
+          },
+          added: [],
+          removed: [],
+          changed: [],
+          unchanged: [],
+        },
+      }),
+      "utf-8",
+    );
+
+    const result = await execa(
+      "pnpm",
+      [
+        "exec",
+        "tsx",
+        reviewGateCli,
+        "--batch-comparison",
+        comparisonPath,
+        "--max-added-prompt-eval-count",
+        "100",
+        "--json",
+      ],
+      { cwd: repoRoot, reject: false },
+    );
+
+    expect(result.exitCode).toBe(1);
+    const report = JSON.parse(result.stdout) as {
+      violations: Array<{ kind: string; actual: number; allowed: string }>;
+    };
+    expect(report.violations).toEqual([
+      expect.objectContaining({
+        kind: "batch-comparison-missing-prompt-eval-count",
+        actual: 1,
+        allowed: "0 unavailable prompt eval comparison entries",
+      }),
+    ]);
+  });
 });

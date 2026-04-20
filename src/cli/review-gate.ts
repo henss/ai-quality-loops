@@ -8,7 +8,8 @@ import {
 import type { StructuredReviewSeverity } from "../contracts/json-contracts.js";
 import { reportCliError } from "../shared/cli-errors.js";
 
-dotenv.config();
+process.env.DOTENV_CONFIG_QUIET = "true";
+dotenv.config({ quiet: true });
 
 function parsePathList(value: unknown): string[] {
   const rawValues = Array.isArray(value)

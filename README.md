@@ -77,7 +77,7 @@ The library works out-of-the-box with default example personas in `personas/univ
 - Review flows also attach prompt-safe provenance bullets such as `Content source` or `Capture mode`, using sanitized descriptors instead of raw local paths or sensitive URL details.
 - Targeted vision-review provenance preserves the planned capture label together with the sanitized requested section id, using values such as `section-1 (hero)` instead of collapsing everything to anonymous section counters.
 - Expert and vision review entrypoints can also emit one narrow structured review-result contract with summary, severity rollup, finding list, sanitized provenance descriptors, and sanitized Markdown. The structured-result builder applies the same generic URL/path/contact redaction plus caller-provided `extraRedactions` before publishing reviewer-contract strings.
-- Linear candidate handoff helpers can render and validate a strict no-write YAML packet from sanitized structured review results. The validation helper checks the public candidate packet shape and policy guardrails, while tracker writes and prioritization remain caller-owned.
+- Candidate handoff helpers can render and validate a strict no-write YAML packet from sanitized structured review results. The validation helper checks the public candidate packet shape and policy guardrails, while downstream writes and prioritization remain caller-owned.
 - The package also publishes JSON Schema artifacts for the batch-review manifest, batch-review summary, batch-review summary comparison, structured review-result, and generic high-stakes analysis review rubric contracts under `schemas/`, alongside thin `parse...` and `validate...` helpers exported from the package root for callers that want contract checks without adding a schema runtime first.
 - `CHROME_PATH`: (Optional) Path to your browser executable (defaults to Edge on Windows).
 - `OLLAMA_URL`: (Optional) URL to your Ollama instance (defaults to http://127.0.0.1:11434).
@@ -240,7 +240,7 @@ console.log(comparison.counts);
 console.log(comparison.changed.map((finding) => finding.key));
 ```
 
-Structured findings may include an optional `key` when a reviewer or wrapper can name the same issue across repeated runs. Keep keys generic and sanitized; omit them when a stable public-safe label would require private names, paths, URLs, account identifiers, tracker IDs, or domain-specific policy.
+Structured findings may include an optional `key` when a reviewer or wrapper can name the same issue across repeated runs. Keep keys generic and sanitized; omit them when a stable public-safe label would require private names, paths, URLs, account identifiers, work-item IDs, or domain-specific policy.
 
 The comparison helper stays intentionally narrow:
 

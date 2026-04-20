@@ -1,0 +1,14 @@
+{
+  "reviewSurface": "Synthetic Grocy public-safety packet",
+  "reviewFocus": [
+    "Apply the generic high-stakes analysis review dimensions to household stock, consume-by, recipe, chore, and reorder claims.",
+    "Flag unsupported safety, spoilage, allergy, emergency-readiness, or household-action claims when synthetic evidence is weak or missing.",
+    "Check that evidence labels are traceable without exposing real household members, addresses, device names, shopping accounts, private source paths, or caller-owned implementation policy.",
+    "Keep real sensor integrations, notification routing, health decisions, purchasing, disposal, and operational thresholds caller-owned."
+  ],
+  "outOfScope": [
+    "Do not decide that an item is safe to consume, must be discarded, should be purchased, or requires emergency action.",
+    "Do not infer real household habits, diets, medical needs, budgets, vendor accounts, device integrations, storage conditions, or address-level context.",
+    "Do not treat this fixture as a product recommendation, food-safety instruction, medical instruction, purchase approval, or production alert policy."
+  ]
+}

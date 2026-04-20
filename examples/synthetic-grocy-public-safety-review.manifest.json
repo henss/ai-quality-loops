@@ -1,0 +1,15 @@
+{
+  "defaults": {
+    "mode": "expert",
+    "expert": "UI/UX",
+    "contextPath": "./examples/synthetic-grocy-public-safety-review-context.json",
+    "outputDir": "./reviews/grocy-public-safety",
+    "structuredOutputDir": "./reviews/grocy-public-safety/json"
+  },
+  "reviews": [
+    {
+      "name": "Synthetic Grocy public-safety packet",
+      "target": "./examples/synthetic-grocy-public-safety-review-context.md"
+    }
+  ]
+}

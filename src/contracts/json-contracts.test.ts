@@ -445,6 +445,7 @@ describe("public JSON contracts", () => {
       "examples/sanitized-social-evidence-review.manifest.json",
       "examples/synthetic-context-pack-quality-review.manifest.json",
       "examples/synthetic-buyer-claim-caveat-review.manifest.json",
+      "examples/synthetic-grocy-public-safety-review.manifest.json",
     ];
 
     for (const examplePath of exampleManifestPaths) {
@@ -469,6 +470,18 @@ describe("public JSON contracts", () => {
       targetPath: "./examples/synthetic-buyer-claim-caveat-review-context.md",
       targetSummary:
         "Local file path (.md file, file: synthetic-buyer-claim-caveat-review-context.md)",
+    });
+  });
+
+  it("keeps the synthetic Grocy public-safety manifest public-safe and context-backed", async () => {
+    await expectPublicSafeTextManifestExample({
+      manifestPath: "examples/synthetic-grocy-public-safety-review.manifest.json",
+      contextPath: "./examples/synthetic-grocy-public-safety-review-context.json",
+      reviewName: "Synthetic Grocy public-safety packet",
+      reviewSurface: "Synthetic Grocy public-safety packet",
+      targetPath: "./examples/synthetic-grocy-public-safety-review-context.md",
+      targetSummary:
+        "Local file path (.md file, file: synthetic-grocy-public-safety-review-context.md)",
     });
   });
 

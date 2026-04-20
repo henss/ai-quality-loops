@@ -32,6 +32,7 @@ The example files cover the repeatable workflow surfaces. The package also suppo
 | Pilot a sanitized PR review candidate handoff | `renderLinearCandidateHandoffYaml(...)` and `validateLinearCandidateHandoffYaml(...)` with `./examples/synthetic-pr-review-result.fixture.json` | Use when checking a no-write candidate packet before a caller-owned workflow handles pull-request selection, merge policy, and tracker writes. |
 | Validate a sanitized structured-result fixture | `validateStructuredReviewResult(...)` with `./examples/synthetic-apartment-review-result.fixture.json` | Use when checking contract consumers against a fixture that contains no private home data. |
 | Compare a synthetic structured-result golden diff | `compareStructuredReviewResults(...)` with `./examples/synthetic-structured-result-golden-diff-before.fixture.json` and `./examples/synthetic-structured-result-golden-diff-after.fixture.json` | Use when checking comparison consumers against a public-safe expected diff fixture. |
+| Compare a synthetic multi-review disagreement pack | `batch-review-compare ./examples/synthetic-multi-review-disagreement-before-summary.fixture.json ./examples/synthetic-multi-review-disagreement-after-summary.fixture.json --json` | Use when checking consumers against improved, regressed, unchanged, recovered, added, and removed review entries in one public-safe calibration pack. |
 | Make lower-level local LLM calls | `generateTextWithOllama(...)` or `callOllamaVision(...)` | Use only when the review workflow is too high-level for the caller. |
 
 ## Included examples
@@ -250,6 +251,16 @@ Typical edits:
 - compare the helper output to `synthetic-structured-result-golden-diff.expected.json` when a wrapper needs a stable golden output shape
 - keep baseline selection, severity budgets, approval, routing, and remediation policy in the embedding repo
 
+### `synthetic-multi-review-disagreement-*.json`
+
+Use when you want a deterministic batch-summary fixture pair for consumers of `compareBatchReviewArtifactSummaries(...)`, `batch-review-compare --json`, or `review-gate --batch-comparison`.
+
+Typical edits:
+
+- keep the reviewer names and targets synthetic, or replace them only with caller-sanitized labels in an embedding repo
+- compare the helper output to `synthetic-multi-review-disagreement-comparison.expected.json` when a wrapper needs stable calibration coverage for improved, regressed, unchanged, recovered, added, and removed review entries
+- keep real reviewer assignment, source contents, thresholds, approval, routing, and remediation policy outside `ai-quality-loops`
+
 ## Boundary notes
 
 - The examples stay open-source-safe on purpose. They do not embed private domains, company personas, or project-specific output routing.
@@ -259,6 +270,7 @@ Typical edits:
 - The synthetic reviewer-contract manifest is runnable and intentionally excludes real target selection, issue keys, source URLs, local paths, account names, approval policy, routing, and retention decisions.
 - The synthetic context-pack quality manifest is seam-focused. It intentionally excludes real source names, source contents, tracker keys, private paths, source freshness, domain facts, approval state, retention policy, implementation priority, and routing instructions.
 - The synthetic structured-result golden diff is comparison-focused. It intentionally excludes real source labels, tracker identifiers, local paths, account names, private facts, policy thresholds, and routing instructions.
+- The synthetic multi-review disagreement fixtures are comparison-focused. They intentionally exclude real reviewer identities, project names, source contents, thresholds, approval, routing, and remediation policy.
 - The synthetic social evidence fixture is seam-focused. It intentionally excludes real account names, audience facts, source identities, brand strategy, publication decisions, and business routing.
 - The synthetic source-handle evidence fixture is seam-focused. It intentionally excludes real source names, source contents, tracker keys, private paths, domain facts, retention policy, approval status, implementation priority, and routing instructions.
 - The synthetic source-handle redaction corpus is regression-focused. It intentionally excludes real source names, source contents, tracker keys, private paths, domain facts, retention policy, approval status, implementation priority, and routing instructions.

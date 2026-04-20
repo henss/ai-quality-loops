@@ -1,0 +1,289 @@
+{
+  "counts": {
+    "beforeEntries": 5,
+    "afterEntries": 5,
+    "added": 1,
+    "removed": 1,
+    "matched": 4,
+    "statusChanged": 1,
+    "severityMovement": {
+      "improved": 1,
+      "regressed": 1,
+      "unchanged": 1,
+      "unavailable": 1
+    },
+    "totalFindingsDelta": 0,
+    "findingCountDelta": {
+      "critical": 0,
+      "high": 0,
+      "medium": 0,
+      "low": 0,
+      "unknown": 0
+    },
+    "promptEvalCountDelta": 55,
+    "addedPromptEvalCount": 125,
+    "promptEvalCountUnavailable": 0
+  },
+  "added": [
+    {
+      "resultKey": "consistency-review",
+      "index": 4,
+      "name": "Consistency reviewer",
+      "mode": "expert",
+      "targetSummary": "Synthetic review packet",
+      "status": "success",
+      "structuredResult": {
+        "overallSeverity": "low",
+        "totalFindings": 1,
+        "findingCounts": {
+          "critical": 0,
+          "high": 0,
+          "medium": 0,
+          "low": 1,
+          "unknown": 0
+        }
+      }
+    }
+  ],
+  "removed": [
+    {
+      "resultKey": "deprecated-review",
+      "index": 4,
+      "name": "Deprecated reviewer",
+      "mode": "expert",
+      "targetSummary": "Synthetic review packet",
+      "status": "success",
+      "structuredResult": {
+        "overallSeverity": "medium",
+        "totalFindings": 1,
+        "findingCounts": {
+          "critical": 0,
+          "high": 0,
+          "medium": 1,
+          "low": 0,
+          "unknown": 0
+        }
+      }
+    }
+  ],
+  "changed": [
+    {
+      "resultKey": "accessibility-review",
+      "before": {
+        "resultKey": "accessibility-review",
+        "index": 0,
+        "name": "Accessibility reviewer",
+        "mode": "expert",
+        "targetSummary": "Synthetic review packet",
+        "status": "success",
+        "structuredResult": {
+          "overallSeverity": "high",
+          "totalFindings": 3,
+          "findingCounts": {
+            "critical": 0,
+            "high": 1,
+            "medium": 1,
+            "low": 1,
+            "unknown": 0
+          }
+        }
+      },
+      "after": {
+        "resultKey": "accessibility-review",
+        "index": 0,
+        "name": "Accessibility reviewer",
+        "mode": "expert",
+        "targetSummary": "Synthetic review packet",
+        "status": "success",
+        "structuredResult": {
+          "overallSeverity": "medium",
+          "totalFindings": 2,
+          "findingCounts": {
+            "critical": 0,
+            "high": 0,
+            "medium": 1,
+            "low": 1,
+            "unknown": 0
+          }
+        }
+      },
+      "statusChange": {
+        "before": "success",
+        "after": "success",
+        "changed": false
+      },
+      "severityChange": {
+        "before": "high",
+        "after": "medium",
+        "direction": "improved"
+      },
+      "totalFindingsDelta": -1,
+      "findingCountDelta": {
+        "critical": 0,
+        "high": -1,
+        "medium": 0,
+        "low": 0,
+        "unknown": 0
+      }
+    },
+    {
+      "resultKey": "evidence-review",
+      "before": {
+        "resultKey": "evidence-review",
+        "index": 1,
+        "name": "Evidence reviewer",
+        "mode": "expert",
+        "targetSummary": "Synthetic review packet",
+        "status": "success",
+        "structuredResult": {
+          "overallSeverity": "medium",
+          "totalFindings": 2,
+          "findingCounts": {
+            "critical": 0,
+            "high": 0,
+            "medium": 1,
+            "low": 1,
+            "unknown": 0
+          }
+        }
+      },
+      "after": {
+        "resultKey": "evidence-review",
+        "index": 1,
+        "name": "Evidence reviewer",
+        "mode": "expert",
+        "targetSummary": "Synthetic review packet",
+        "status": "success",
+        "structuredResult": {
+          "overallSeverity": "high",
+          "totalFindings": 3,
+          "findingCounts": {
+            "critical": 0,
+            "high": 1,
+            "medium": 1,
+            "low": 1,
+            "unknown": 0
+          }
+        }
+      },
+      "statusChange": {
+        "before": "success",
+        "after": "success",
+        "changed": false
+      },
+      "severityChange": {
+        "before": "medium",
+        "after": "high",
+        "direction": "regressed"
+      },
+      "totalFindingsDelta": 1,
+      "findingCountDelta": {
+        "critical": 0,
+        "high": 1,
+        "medium": 0,
+        "low": 0,
+        "unknown": 0
+      }
+    },
+    {
+      "resultKey": "format-review",
+      "before": {
+        "resultKey": "format-review",
+        "index": 3,
+        "name": "Format reviewer",
+        "mode": "expert",
+        "targetSummary": "Synthetic review packet",
+        "status": "failure"
+      },
+      "after": {
+        "resultKey": "format-review",
+        "index": 3,
+        "name": "Format reviewer",
+        "mode": "expert",
+        "targetSummary": "Synthetic review packet",
+        "status": "success",
+        "structuredResult": {
+          "overallSeverity": "low",
+          "totalFindings": 1,
+          "findingCounts": {
+            "critical": 0,
+            "high": 0,
+            "medium": 0,
+            "low": 1,
+            "unknown": 0
+          }
+        }
+      },
+      "statusChange": {
+        "before": "failure",
+        "after": "success",
+        "changed": true
+      },
+      "severityChange": {
+        "after": "low",
+        "direction": "unavailable"
+      }
+    }
+  ],
+  "unchanged": [
+    {
+      "resultKey": "risk-review",
+      "before": {
+        "resultKey": "risk-review",
+        "index": 2,
+        "name": "Risk reviewer",
+        "mode": "expert",
+        "targetSummary": "Synthetic review packet",
+        "status": "success",
+        "structuredResult": {
+          "overallSeverity": "low",
+          "totalFindings": 1,
+          "findingCounts": {
+            "critical": 0,
+            "high": 0,
+            "medium": 0,
+            "low": 1,
+            "unknown": 0
+          }
+        }
+      },
+      "after": {
+        "resultKey": "risk-review",
+        "index": 2,
+        "name": "Risk reviewer",
+        "mode": "expert",
+        "targetSummary": "Synthetic review packet",
+        "status": "success",
+        "structuredResult": {
+          "overallSeverity": "low",
+          "totalFindings": 1,
+          "findingCounts": {
+            "critical": 0,
+            "high": 0,
+            "medium": 0,
+            "low": 1,
+            "unknown": 0
+          }
+        }
+      },
+      "statusChange": {
+        "before": "success",
+        "after": "success",
+        "changed": false
+      },
+      "severityChange": {
+        "before": "low",
+        "after": "low",
+        "direction": "unchanged"
+      },
+      "totalFindingsDelta": 0,
+      "findingCountDelta": {
+        "critical": 0,
+        "high": 0,
+        "medium": 0,
+        "low": 0,
+        "unknown": 0
+      }
+    }
+  ]
+}

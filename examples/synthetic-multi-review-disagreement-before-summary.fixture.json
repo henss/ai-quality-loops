@@ -1,0 +1,108 @@
+{
+  "manifestPath": "Synthetic multi-review calibration manifest",
+  "total": 5,
+  "succeeded": 4,
+  "failed": 1,
+  "results": [
+    {
+      "index": 0,
+      "name": "Accessibility reviewer",
+      "resultKey": "accessibility-review",
+      "mode": "expert",
+      "targetSummary": "Synthetic review packet",
+      "status": "success",
+      "structuredResult": {
+        "overallSeverity": "high",
+        "totalFindings": 3,
+        "findingCounts": {
+          "critical": 0,
+          "high": 1,
+          "medium": 1,
+          "low": 1,
+          "unknown": 0
+        }
+      },
+      "ollamaTelemetry": {
+        "promptEvalCount": 120
+      }
+    },
+    {
+      "index": 1,
+      "name": "Evidence reviewer",
+      "resultKey": "evidence-review",
+      "mode": "expert",
+      "targetSummary": "Synthetic review packet",
+      "status": "success",
+      "structuredResult": {
+        "overallSeverity": "medium",
+        "totalFindings": 2,
+        "findingCounts": {
+          "critical": 0,
+          "high": 0,
+          "medium": 1,
+          "low": 1,
+          "unknown": 0
+        }
+      },
+      "ollamaTelemetry": {
+        "promptEvalCount": 90
+      }
+    },
+    {
+      "index": 2,
+      "name": "Risk reviewer",
+      "resultKey": "risk-review",
+      "mode": "expert",
+      "targetSummary": "Synthetic review packet",
+      "status": "success",
+      "structuredResult": {
+        "overallSeverity": "low",
+        "totalFindings": 1,
+        "findingCounts": {
+          "critical": 0,
+          "high": 0,
+          "medium": 0,
+          "low": 1,
+          "unknown": 0
+        }
+      },
+      "ollamaTelemetry": {
+        "promptEvalCount": 80
+      }
+    },
+    {
+      "index": 3,
+      "name": "Format reviewer",
+      "resultKey": "format-review",
+      "mode": "expert",
+      "targetSummary": "Synthetic review packet",
+      "status": "failure",
+      "errorSummary": "Error: synthetic reviewer did not return structured output",
+      "ollamaTelemetry": {
+        "promptEvalCount": 20
+      }
+    },
+    {
+      "index": 4,
+      "name": "Deprecated reviewer",
+      "resultKey": "deprecated-review",
+      "mode": "expert",
+      "targetSummary": "Synthetic review packet",
+      "status": "success",
+      "structuredResult": {
+        "overallSeverity": "medium",
+        "totalFindings": 1,
+        "findingCounts": {
+          "critical": 0,
+          "high": 0,
+          "medium": 1,
+          "low": 0,
+          "unknown": 0
+        }
+      },
+      "ollamaTelemetry": {
+        "promptEvalCount": 50
+      }
+    }
+  ]
+}

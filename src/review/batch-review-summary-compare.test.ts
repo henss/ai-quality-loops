@@ -22,6 +22,11 @@ function createSummary(
   };
 }
 
+async function readExampleJson<T>(filename: string): Promise<T> {
+  const filePath = new URL(`../../examples/${filename}`, import.meta.url);
+  return JSON.parse(await fs.readFile(filePath, "utf-8")) as T;
+}
+
 describe("batch review summary compare", () => {
   let tempDir: string;
 
@@ -33,6 +38,24 @@ describe("batch review summary compare", () => {
 
   afterEach(async () => {
     await fs.rm(tempDir, { recursive: true, force: true });
+  });
+
+  it("keeps the synthetic multi-review disagreement calibration pack stable", async () => {
+    const [before, after, expected] = await Promise.all([
+      readExampleJson<BatchReviewArtifactSummary>(
+        "synthetic-multi-review-disagreement-before-summary.fixture.json",
+      ),
+      readExampleJson<BatchReviewArtifactSummary>(
+        "synthetic-multi-review-disagreement-after-summary.fixture.json",
+      ),
+      readExampleJson<ReturnType<typeof compareBatchReviewArtifactSummaries>>(
+        "synthetic-multi-review-disagreement-comparison.expected.json",
+      ),
+    ]);
+
+    const comparison = compareBatchReviewArtifactSummaries({ before, after });
+
+    expect(JSON.parse(JSON.stringify(comparison))).toEqual(expected);
   });
 
   it("compares entry and severity movement by resultKey", () => {

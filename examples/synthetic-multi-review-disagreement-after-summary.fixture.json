@@ -1,0 +1,118 @@
+{
+  "manifestPath": "Synthetic multi-review calibration manifest",
+  "total": 5,
+  "succeeded": 5,
+  "failed": 0,
+  "results": [
+    {
+      "index": 0,
+      "name": "Accessibility reviewer",
+      "resultKey": "accessibility-review",
+      "mode": "expert",
+      "targetSummary": "Synthetic review packet",
+      "status": "success",
+      "structuredResult": {
+        "overallSeverity": "medium",
+        "totalFindings": 2,
+        "findingCounts": {
+          "critical": 0,
+          "high": 0,
+          "medium": 1,
+          "low": 1,
+          "unknown": 0
+        }
+      },
+      "ollamaTelemetry": {
+        "promptEvalCount": 110
+      }
+    },
+    {
+      "index": 1,
+      "name": "Evidence reviewer",
+      "resultKey": "evidence-review",
+      "mode": "expert",
+      "targetSummary": "Synthetic review packet",
+      "status": "success",
+      "structuredResult": {
+        "overallSeverity": "high",
+        "totalFindings": 3,
+        "findingCounts": {
+          "critical": 0,
+          "high": 1,
+          "medium": 1,
+          "low": 1,
+          "unknown": 0
+        }
+      },
+      "ollamaTelemetry": {
+        "promptEvalCount": 130
+      }
+    },
+    {
+      "index": 2,
+      "name": "Risk reviewer",
+      "resultKey": "risk-review",
+      "mode": "expert",
+      "targetSummary": "Synthetic review packet",
+      "status": "success",
+      "structuredResult": {
+        "overallSeverity": "low",
+        "totalFindings": 1,
+        "findingCounts": {
+          "critical": 0,
+          "high": 0,
+          "medium": 0,
+          "low": 1,
+          "unknown": 0
+        }
+      },
+      "ollamaTelemetry": {
+        "promptEvalCount": 70
+      }
+    },
+    {
+      "index": 3,
+      "name": "Format reviewer",
+      "resultKey": "format-review",
+      "mode": "expert",
+      "targetSummary": "Synthetic review packet",
+      "status": "success",
+      "structuredResult": {
+        "overallSeverity": "low",
+        "totalFindings": 1,
+        "findingCounts": {
+          "critical": 0,
+          "high": 0,
+          "medium": 0,
+          "low": 1,
+          "unknown": 0
+        }
+      },
+      "ollamaTelemetry": {
+        "promptEvalCount": 45
+      }
+    },
+    {
+      "index": 4,
+      "name": "Consistency reviewer",
+      "resultKey": "consistency-review",
+      "mode": "expert",
+      "targetSummary": "Synthetic review packet",
+      "status": "success",
+      "structuredResult": {
+        "overallSeverity": "low",
+        "totalFindings": 1,
+        "findingCounts": {
+          "critical": 0,
+          "high": 0,
+          "medium": 0,
+          "low": 1,
+          "unknown": 0
+        }
+      },
+      "ollamaTelemetry": {
+        "promptEvalCount": 60
+      }
+    }
+  ]
+}

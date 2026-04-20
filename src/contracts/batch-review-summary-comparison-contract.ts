@@ -50,6 +50,9 @@ export interface BatchReviewSummaryComparison {
     severityMovement: Record<BatchReviewSummarySeverityDirection, number>;
     totalFindingsDelta: number;
     findingCountDelta: Record<StructuredReviewSeverity, number>;
+    promptEvalCountDelta?: number;
+    addedPromptEvalCount?: number;
+    promptEvalCountUnavailable?: number;
   };
   added: BatchReviewSummaryEntrySnapshot[];
   removed: BatchReviewSummaryEntrySnapshot[];
@@ -489,6 +492,27 @@ export function parseBatchReviewSummaryComparisonReport(
           value.comparison.counts.findingCountDelta,
           "comparison.counts.findingCountDelta",
         ),
+        promptEvalCountDelta:
+          value.comparison.counts.promptEvalCountDelta === undefined
+            ? undefined
+            : readRequiredSignedInteger(
+                value.comparison.counts.promptEvalCountDelta,
+                "comparison.counts.promptEvalCountDelta",
+              ),
+        addedPromptEvalCount:
+          value.comparison.counts.addedPromptEvalCount === undefined
+            ? undefined
+            : readRequiredInteger(
+                value.comparison.counts.addedPromptEvalCount,
+                "comparison.counts.addedPromptEvalCount",
+              ),
+        promptEvalCountUnavailable:
+          value.comparison.counts.promptEvalCountUnavailable === undefined
+            ? undefined
+            : readRequiredInteger(
+                value.comparison.counts.promptEvalCountUnavailable,
+                "comparison.counts.promptEvalCountUnavailable",
+              ),
       },
       added: value.comparison.added.map((entry, index) =>
         parseSnapshot(entry, `comparison.added[${index}]`),

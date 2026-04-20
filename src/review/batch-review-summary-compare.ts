@@ -195,17 +195,33 @@ export function compareBatchReviewArtifactSummaries(input: {
   } satisfies Record<BatchReviewSummarySeverityDirection, number>;
   let statusChanged = 0;
   let totalFindingsDelta = 0;
+  let promptEvalCountDelta = 0;
+  let addedPromptEvalCount = 0;
+  let promptEvalCountUnavailable = 0;
 
   for (const resultKey of [...resultKeys].sort()) {
     const before = beforeResults.get(resultKey);
     const after = afterResults.get(resultKey);
 
     if (!before && after) {
+      const promptEvalCount = after.ollamaTelemetry?.promptEvalCount;
+      if (promptEvalCount === undefined) {
+        promptEvalCountUnavailable += 1;
+      } else {
+        promptEvalCountDelta += promptEvalCount;
+        addedPromptEvalCount += promptEvalCount;
+      }
       added.push(createEntrySnapshot(after));
       continue;
     }
 
     if (before && !after) {
+      const promptEvalCount = before.ollamaTelemetry?.promptEvalCount;
+      if (promptEvalCount === undefined) {
+        promptEvalCountUnavailable += 1;
+      } else {
+        promptEvalCountDelta -= promptEvalCount;
+      }
       removed.push(createEntrySnapshot(before));
       continue;
     }
@@ -221,6 +237,18 @@ export function compareBatchReviewArtifactSummaries(input: {
     }
     if (comparison.totalFindingsDelta !== undefined) {
       totalFindingsDelta += comparison.totalFindingsDelta;
+    }
+    const beforePromptEvalCount = before.ollamaTelemetry?.promptEvalCount;
+    const afterPromptEvalCount = after.ollamaTelemetry?.promptEvalCount;
+    if (
+      beforePromptEvalCount === undefined ||
+      afterPromptEvalCount === undefined
+    ) {
+      promptEvalCountUnavailable += 1;
+    } else {
+      const delta = afterPromptEvalCount - beforePromptEvalCount;
+      promptEvalCountDelta += delta;
+      addedPromptEvalCount += Math.max(0, delta);
     }
     if (comparison.findingCountDelta) {
       for (const severity of REVIEW_SEVERITY_ORDER) {
@@ -246,6 +274,9 @@ export function compareBatchReviewArtifactSummaries(input: {
       severityMovement,
       totalFindingsDelta,
       findingCountDelta,
+      promptEvalCountDelta,
+      addedPromptEvalCount,
+      promptEvalCountUnavailable,
     },
     added: sortSnapshots(added),
     removed: sortSnapshots(removed),
@@ -317,6 +348,7 @@ export function formatBatchReviewSummaryComparisonReport(
       `unavailable=${comparison.counts.severityMovement.unavailable}.`,
     ].join(" "),
     `Finding count delta: total=${comparison.counts.totalFindingsDelta}; ${formatSeverityCountDelta(comparison.counts.findingCountDelta)}.`,
+    `Prompt eval count delta: total=${comparison.counts.promptEvalCountDelta ?? 0}; added=${comparison.counts.addedPromptEvalCount ?? 0}; unavailable=${comparison.counts.promptEvalCountUnavailable ?? 0}.`,
     ...formatEntrySection("Added entries:", comparison.added.map(formatSnapshot)),
     ...formatEntrySection("Removed entries:", comparison.removed.map(formatSnapshot)),
     ...formatEntrySection(

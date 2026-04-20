@@ -346,10 +346,12 @@ batch-review ./review-manifest.json --rerun-summary ./reviews/batch-summary.json
 review-gate --result ./reviews/json/homepage-hero-vision-review.json --fail-on-severity critical
 review-gate --result ./reviews/json/homepage-hero-vision-review.json --result ./reviews/json/pricing-vision-review.json --max-high 0 --max-medium 2
 review-gate --batch-summary ./reviews/batch-summary.json --max-failed-reviews 0 --json
+review-gate --batch-summary ./reviews/batch-summary.json --max-prompt-eval-count 250000
 batch-review-compare ./reviews/previous-batch-summary.json ./reviews/current-batch-summary.json
 batch-review-compare ./reviews/previous-batch-summary.json ./reviews/current-batch-summary.json --json
 batch-review-compare ./reviews/previous-batch-summary.json ./reviews/current-batch-summary.json --json > ./reviews/batch-comparison.json
 review-gate --batch-comparison ./reviews/batch-comparison.json --max-added-critical 0 --max-added-high 0 --max-severity-regressions 0
+review-gate --batch-comparison ./reviews/batch-comparison.json --max-added-prompt-eval-count 50000
 review-focus-lint --path ./reviews --require-user-benefit --forbid "Layout & Usability,Navigation"
 ```
 
@@ -399,11 +401,12 @@ Use `review-gate` when CI or a repo-local script needs one explicit pass/fail de
 - `--batch-comparison` reads one or more `batch-review-compare --json` reports and applies delta budgets to the comparison contract instead of rereading raw summaries.
 - `--fail-on-severity`, `--max-critical`, `--max-high`, `--max-medium`, `--max-low`, `--max-unknown`, and `--max-failed-reviews` keep policy explicit instead of hiding repo-specific heuristics in the package.
 - `--max-added-critical`, `--max-added-high`, `--max-added-medium`, `--max-added-low`, `--max-added-unknown`, and `--max-severity-regressions` keep regression budgets caller-owned for comparison reports.
+- `--max-prompt-eval-count` and `--max-added-prompt-eval-count` let callers cap batch input volume and repeated-run input growth from published telemetry, which is useful for cached-input-style regression checks without making package-owned cost policy.
 - `--json` emits a machine-readable report with counts, thresholds, violations, and sanitized input labels.
 
 The surface stays explicit: `review-gate --batch-summary` consumes only published per-entry `structuredResult` rollups and never infers repo-specific policy defaults. If a summary entry does not include a rollup, severity budgets report that missing rollup instead of silently treating the entry as clean.
 
-For comparison reports, added finding budgets count positive per-severity finding deltas on matched entries plus findings from added entries with structured rollups. Severity regression budgets count matched entries whose overall severity worsened. Removed entries, baseline storage, and approval policy remain caller-owned.
+For comparison reports, added finding budgets count positive per-severity finding deltas on matched entries plus findings from added entries with structured rollups. Severity regression budgets count matched entries whose overall severity worsened. Added prompt-eval budgets count positive `ollamaTelemetry.promptEvalCount` deltas on matched entries plus counts from added entries, and report unavailable telemetry instead of silently treating missing counts as clean. Removed entries, baseline storage, cached-input interpretation, and approval policy remain caller-owned.
 
 ### Review Focus Lint CLI
 
@@ -424,6 +427,7 @@ Use `batch-review-compare` when a repeated manifest run needs a deterministic tw
 - It compares exactly two published batch-review summary JSON artifacts.
 - It matches entries by the summary `resultKey` and reports added, removed, status-changed, and unchanged entries.
 - It reports aggregate severity movement and finding-count deltas only from the per-entry `structuredResult` rollups already present in the summaries.
+- It reports aggregate prompt-eval count deltas only from per-entry `ollamaTelemetry.promptEvalCount` values already present in the summaries.
 - Its `--json` output is covered by the published `batchReviewSummaryComparison` schema path and `validateBatchReviewSummaryComparisonReport(...)` helper so wrappers can validate the contract without scraping CLI implementation details.
 - It does not infer baselines, read structured output paths, or add approval policy; use `review-gate --batch-comparison` when CI needs explicit delta budgets for the JSON report.
 

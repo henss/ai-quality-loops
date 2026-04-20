@@ -60,6 +60,10 @@ function createThresholds(options: Record<string, unknown>): ReviewGateThreshold
       options.maxFailedReviews,
       "--max-failed-reviews",
     ),
+    maxPromptEvalCount: parseOptionalBudget(
+      options.maxPromptEvalCount,
+      "--max-prompt-eval-count",
+    ),
   };
 
   const maxFindings = {
@@ -91,13 +95,19 @@ function createThresholds(options: Record<string, unknown>): ReviewGateThreshold
     options.maxSeverityRegressions,
     "--max-severity-regressions",
   );
+  const maxAddedPromptEvalCount = parseOptionalBudget(
+    options.maxAddedPromptEvalCount,
+    "--max-added-prompt-eval-count",
+  );
 
   if (
     maxSeverityRegressions !== undefined ||
+    maxAddedPromptEvalCount !== undefined ||
     Object.values(maxAddedFindings).some((value) => value !== undefined)
   ) {
     thresholds.batchComparison = {
       maxSeverityRegressions,
+      maxAddedPromptEvalCount,
       maxAddedFindings,
     };
   }
@@ -109,7 +119,9 @@ function hasAnyThreshold(thresholds: ReviewGateThresholds): boolean {
   return Boolean(
     thresholds.failOnSeverity ||
       thresholds.maxFailedReviews !== undefined ||
+      thresholds.maxPromptEvalCount !== undefined ||
       thresholds.batchComparison?.maxSeverityRegressions !== undefined ||
+      thresholds.batchComparison?.maxAddedPromptEvalCount !== undefined ||
       Object.values(thresholds.batchComparison?.maxAddedFindings || {}).some(
         (value) => value !== undefined,
       ) ||
@@ -147,6 +159,10 @@ async function main() {
       "--max-failed-reviews <count>",
       "Allow at most this many failed reviews across loaded batch summaries.",
     )
+    .option(
+      "--max-prompt-eval-count <count>",
+      "Allow at most this many prompt eval counts across loaded batch summaries with telemetry.",
+    )
     .option("--max-critical <count>", "Allow at most this many critical findings.")
     .option("--max-high <count>", "Allow at most this many high findings.")
     .option("--max-medium <count>", "Allow at most this many medium findings.")
@@ -175,6 +191,10 @@ async function main() {
     .option(
       "--max-severity-regressions <count>",
       "Allow at most this many matched-entry severity regressions across batch comparison reports.",
+    )
+    .option(
+      "--max-added-prompt-eval-count <count>",
+      "Allow at most this many added prompt eval counts across batch comparison reports.",
     )
     .option("--json", "Emit the gate result as JSON")
     .action(async (options) => {

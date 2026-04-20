@@ -14,6 +14,10 @@ import {
   type LoadedBatchReviewSummaryComparisonReport,
   type ReviewGateComparisonThresholds,
 } from "./review-gate-comparison.js";
+import {
+  countBatchReviewPromptEval,
+  createPromptEvalBudgetViolations,
+} from "./review-gate-prompt-eval.js";
 import { createStructuredReviewSeverityCounts } from "./review-result.js";
 
 export {
@@ -45,6 +49,7 @@ export interface LoadedBatchReviewArtifactSummary {
 export interface ReviewGateThresholds {
   failOnSeverity?: StructuredReviewSeverity;
   maxFailedReviews?: number;
+  maxPromptEvalCount?: number;
   maxFindings?: Partial<Record<StructuredReviewSeverity, number>>;
   batchComparison?: ReviewGateComparisonThresholds;
 }
@@ -53,9 +58,13 @@ export type ReviewGateViolationKind =
   | "severity-threshold"
   | "finding-budget"
   | "failed-review-budget"
+  | "prompt-eval-budget"
+  | "missing-prompt-eval-count"
   | "missing-structured-rollup"
   | "batch-comparison-added-finding-budget"
-  | "batch-comparison-severity-regression-budget";
+  | "batch-comparison-severity-regression-budget"
+  | "batch-comparison-added-prompt-eval-budget"
+  | "batch-comparison-missing-prompt-eval-count";
 
 export interface ReviewGateViolation {
   kind: ReviewGateViolationKind;
@@ -77,6 +86,10 @@ export interface ReviewGateCounts {
   highestObservedSeverity: StructuredReviewSeverity;
   batchComparisonAddedFindings: Record<StructuredReviewSeverity, number>;
   batchComparisonSeverityRegressions: number;
+  batchReviewPromptEvalCount: number;
+  batchReviewPromptEvalMissing: number;
+  batchComparisonAddedPromptEvalCount: number;
+  batchComparisonPromptEvalUnavailable: number;
 }
 
 export interface ReviewGateReport {
@@ -171,7 +184,9 @@ export function formatReviewGateReport(report: ReviewGateReport): string {
     `Highest observed severity: ${report.counts.highestObservedSeverity}.`,
     `Finding counts: ${formatSeverityCounts(report.counts.findingCounts)}.`,
     `Batch review status counts: passed=${report.counts.passedBatchReviews}, failed=${report.counts.failedBatchReviews}, total=${report.counts.batchReviewTotals}.`,
+    `Batch review prompt eval count: total=${report.counts.batchReviewPromptEvalCount}, missing=${report.counts.batchReviewPromptEvalMissing}.`,
     `Batch comparison deltas: added findings ${formatSeverityCounts(report.counts.batchComparisonAddedFindings)}; severity regressions=${report.counts.batchComparisonSeverityRegressions}.`,
+    `Batch comparison prompt eval deltas: added=${report.counts.batchComparisonAddedPromptEvalCount}, unavailable=${report.counts.batchComparisonPromptEvalUnavailable}.`,
   ];
 
   if (report.violations.length > 0) {
@@ -255,6 +270,9 @@ export function evaluateReviewGate(input: {
   );
   let batchSummaryResultsMissingStructuredRollups = 0;
   let batchSummaryStructuredRollupCount = 0;
+  const batchReviewPromptEval = countBatchReviewPromptEval(
+    batchSummaries.map((loadedSummary) => loadedSummary.summary),
+  );
 
   for (const loadedSummary of batchSummaries) {
     for (const result of loadedSummary.summary.results) {
@@ -346,6 +364,13 @@ export function evaluateReviewGate(input: {
     });
   }
 
+  violations.push(
+    ...createPromptEvalBudgetViolations({
+      counts: batchReviewPromptEval,
+      maxPromptEvalCount: thresholds.maxPromptEvalCount,
+    }),
+  );
+
   for (const severity of REVIEW_SEVERITY_ORDER) {
     const allowed = thresholds.batchComparison?.maxAddedFindings?.[severity];
     if (allowed === undefined) {
@@ -377,6 +402,31 @@ export function evaluateReviewGate(input: {
     });
   }
 
+  if (
+    thresholds.batchComparison?.maxAddedPromptEvalCount !== undefined &&
+    batchComparisonCounts.promptEvalCountUnavailable > 0
+  ) {
+    violations.push({
+      kind: "batch-comparison-missing-prompt-eval-count",
+      actual: batchComparisonCounts.promptEvalCountUnavailable,
+      allowed: "0 unavailable prompt eval comparison entries",
+      message: `Cannot fully apply the added prompt eval budget because ${batchComparisonCounts.promptEvalCountUnavailable} batch comparison entr${batchComparisonCounts.promptEvalCountUnavailable === 1 ? "y has" : "ies have"} unavailable prompt eval counts.`,
+    });
+  }
+
+  if (
+    thresholds.batchComparison?.maxAddedPromptEvalCount !== undefined &&
+    batchComparisonCounts.addedPromptEvalCount >
+      thresholds.batchComparison.maxAddedPromptEvalCount
+  ) {
+    violations.push({
+      kind: "batch-comparison-added-prompt-eval-budget",
+      actual: batchComparisonCounts.addedPromptEvalCount,
+      allowed: thresholds.batchComparison.maxAddedPromptEvalCount,
+      message: `Observed ${batchComparisonCounts.addedPromptEvalCount} added prompt eval count across batch comparison reports, which exceeds the max-added-prompt-eval-count budget (${thresholds.batchComparison.maxAddedPromptEvalCount}).`,
+    });
+  }
+
   const report: ReviewGateReport = {
     ok: violations.length === 0,
     summary:
@@ -398,6 +448,14 @@ export function evaluateReviewGate(input: {
               batchComparisonAddedFindings: batchComparisonCounts.addedFindings,
               batchComparisonSeverityRegressions:
                 batchComparisonCounts.severityRegressions,
+              batchReviewPromptEvalCount:
+                batchReviewPromptEval.promptEvalCount,
+              batchReviewPromptEvalMissing:
+                batchReviewPromptEval.missingPromptEvalCount,
+              batchComparisonAddedPromptEvalCount:
+                batchComparisonCounts.addedPromptEvalCount,
+              batchComparisonPromptEvalUnavailable:
+                batchComparisonCounts.promptEvalCountUnavailable,
             },
             violations: [],
             inputs: {
@@ -421,6 +479,13 @@ export function evaluateReviewGate(input: {
       batchComparisonAddedFindings: batchComparisonCounts.addedFindings,
       batchComparisonSeverityRegressions:
         batchComparisonCounts.severityRegressions,
+      batchReviewPromptEvalCount: batchReviewPromptEval.promptEvalCount,
+      batchReviewPromptEvalMissing:
+        batchReviewPromptEval.missingPromptEvalCount,
+      batchComparisonAddedPromptEvalCount:
+        batchComparisonCounts.addedPromptEvalCount,
+      batchComparisonPromptEvalUnavailable:
+        batchComparisonCounts.promptEvalCountUnavailable,
     },
     violations,
     inputs: {

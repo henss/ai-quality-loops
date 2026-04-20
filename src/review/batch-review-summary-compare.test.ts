@@ -157,6 +157,9 @@ describe("batch review summary compare", () => {
         low: -1,
         unknown: 0,
       },
+      promptEvalCountDelta: 0,
+      addedPromptEvalCount: 0,
+      promptEvalCountUnavailable: 4,
     });
     expect(comparison.added.map((entry) => entry.resultKey)).toEqual([
       "pricing-vision",
@@ -242,6 +245,7 @@ describe("batch review summary compare", () => {
       "Entries: before=1, after=1, matched=1, added=0, removed=0, statusChanged=0.",
       "Severity movement among matched entries: improved=1, regressed=0, unchanged=0, unavailable=0.",
       "Finding count delta: total=-1; critical=0, high=-1, medium=1, low=-1, unknown=0.",
+      "Prompt eval count delta: total=0; added=0; unavailable=1.",
       "Changed matched entries:",
       "- homepage-vision: status unchanged; severity high->medium (improved); findings delta=-1",
     ].join("\n"));
@@ -269,6 +273,51 @@ describe("batch review summary compare", () => {
     expect(() =>
       compareBatchReviewArtifactSummaries({ before, after }),
     ).toThrow('duplicate resultKey "readme-expert"');
+  });
+
+  it("summarizes prompt eval count deltas from batch telemetry", () => {
+    const before = createSummary([
+      {
+        index: 0,
+        resultKey: "readme-expert",
+        mode: "expert",
+        targetSummary: "Local file path (.md file)",
+        status: "success",
+        ollamaTelemetry: { promptEvalCount: 100 },
+      },
+      {
+        index: 1,
+        resultKey: "removed-expert",
+        mode: "expert",
+        targetSummary: "Local file path (.md file)",
+        status: "success",
+        ollamaTelemetry: { promptEvalCount: 50 },
+      },
+    ]);
+    const after = createSummary([
+      {
+        index: 0,
+        resultKey: "readme-expert",
+        mode: "expert",
+        targetSummary: "Local file path (.md file)",
+        status: "success",
+        ollamaTelemetry: { promptEvalCount: 140 },
+      },
+      {
+        index: 2,
+        resultKey: "added-expert",
+        mode: "expert",
+        targetSummary: "Local file path (.md file)",
+        status: "success",
+        ollamaTelemetry: { promptEvalCount: 25 },
+      },
+    ]);
+
+    const comparison = compareBatchReviewArtifactSummaries({ before, after });
+
+    expect(comparison.counts.promptEvalCountDelta).toBe(15);
+    expect(comparison.counts.addedPromptEvalCount).toBe(65);
+    expect(comparison.counts.promptEvalCountUnavailable).toBe(0);
   });
 
   it("formats a public-safe launch outcome evidence summary from comparison and gate data", () => {

@@ -25,11 +25,14 @@ export interface LoadedBatchReviewSummaryComparisonReport {
 export interface ReviewGateComparisonThresholds {
   maxAddedFindings?: Partial<Record<StructuredReviewSeverity, number>>;
   maxSeverityRegressions?: number;
+  maxAddedPromptEvalCount?: number;
 }
 
 export interface ReviewGateComparisonCounts {
   addedFindings: Record<StructuredReviewSeverity, number>;
   severityRegressions: number;
+  addedPromptEvalCount: number;
+  promptEvalCountUnavailable: number;
 }
 
 export async function loadBatchReviewSummaryComparisonReports(
@@ -57,10 +60,15 @@ export function countBatchReviewComparisonDeltas(
 ): ReviewGateComparisonCounts {
   const addedFindings = createStructuredReviewSeverityCounts();
   let severityRegressions = 0;
+  let addedPromptEvalCount = 0;
+  let promptEvalCountUnavailable = 0;
 
   for (const loadedComparison of batchComparisons) {
     const comparison = loadedComparison.report.comparison;
     severityRegressions += comparison.counts.severityMovement.regressed;
+    addedPromptEvalCount += comparison.counts.addedPromptEvalCount ?? 0;
+    promptEvalCountUnavailable +=
+      comparison.counts.promptEvalCountUnavailable ?? 0;
 
     for (const added of comparison.added) {
       if (!added.structuredResult) {
@@ -89,5 +97,7 @@ export function countBatchReviewComparisonDeltas(
   return {
     addedFindings,
     severityRegressions,
+    addedPromptEvalCount,
+    promptEvalCountUnavailable,
   };
 }

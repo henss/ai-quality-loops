@@ -172,6 +172,56 @@ describe("review gate", () => {
     ]);
   });
 
+  it("applies prompt eval count budgets to batch summary telemetry", async () => {
+    const summaryPath = path.join(tempDir, "batch-summary.json");
+    await fs.writeFile(
+      summaryPath,
+      JSON.stringify(
+        {
+          manifestPath: "Local file path (.json file)",
+          total: 2,
+          succeeded: 2,
+          failed: 0,
+          results: [
+            {
+              index: 0,
+              mode: "expert",
+              targetSummary: "Local file path (.md file)",
+              status: "success",
+              ollamaTelemetry: { promptEvalCount: 120 },
+            },
+            {
+              index: 1,
+              mode: "expert",
+              targetSummary: "Local file path (.md file)",
+              status: "success",
+              ollamaTelemetry: { promptEvalCount: 80 },
+            },
+          ],
+        },
+        null,
+        2,
+      ),
+    );
+
+    const report = await runReviewGate({
+      batchSummaryPaths: [summaryPath],
+      thresholds: {
+        maxPromptEvalCount: 150,
+      },
+    });
+
+    expect(report.ok).toBe(false);
+    expect(report.counts.batchReviewPromptEvalCount).toBe(200);
+    expect(report.violations).toEqual([
+      expect.objectContaining({
+        kind: "prompt-eval-budget",
+        actual: 200,
+        allowed: 150,
+      }),
+    ]);
+  });
+
   it("applies severity budgets to batch summary structured-result rollups", async () => {
     const summaryPath = path.join(tempDir, "batch-summary.json");
     await fs.writeFile(
@@ -339,6 +389,9 @@ describe("review gate", () => {
                 low: 0,
                 unknown: 0,
               },
+              promptEvalCountDelta: 40,
+              addedPromptEvalCount: 75,
+              promptEvalCountUnavailable: 0,
             },
             added: [
               {
@@ -438,6 +491,7 @@ describe("review gate", () => {
             high: 0,
           },
           maxSeverityRegressions: 0,
+          maxAddedPromptEvalCount: 50,
         },
       },
     });
@@ -449,6 +503,7 @@ describe("review gate", () => {
       high: 1,
     });
     expect(report.counts.batchComparisonSeverityRegressions).toBe(1);
+    expect(report.counts.batchComparisonAddedPromptEvalCount).toBe(75);
     expect(report.violations).toEqual([
       expect.objectContaining({
         kind: "batch-comparison-added-finding-budget",
@@ -467,9 +522,17 @@ describe("review gate", () => {
         actual: 1,
         allowed: 0,
       }),
+      expect.objectContaining({
+        kind: "batch-comparison-added-prompt-eval-budget",
+        actual: 75,
+        allowed: 50,
+      }),
     ]);
     expect(formatReviewGateReport(report)).toContain(
       "Batch comparison deltas: added findings critical=1, high=1",
+    );
+    expect(formatReviewGateReport(report)).toContain(
+      "Batch comparison prompt eval deltas: added=75",
     );
   });
 

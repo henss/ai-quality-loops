@@ -43,7 +43,10 @@
             "statusChanged": { "type": "integer", "minimum": 0 },
             "severityMovement": { "$ref": "#/$defs/severityMovementCounts" },
             "totalFindingsDelta": { "type": "integer" },
-            "findingCountDelta": { "$ref": "#/$defs/signedSeverityCounts" }
+            "findingCountDelta": { "$ref": "#/$defs/signedSeverityCounts" },
+            "promptEvalCountDelta": { "type": "integer" },
+            "addedPromptEvalCount": { "type": "integer", "minimum": 0 },
+            "promptEvalCountUnavailable": { "type": "integer", "minimum": 0 }
           }
         },
         "added": {

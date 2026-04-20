@@ -1,4 +1,4 @@
-// Repo-local TypeScript agent-surface standard.
+// Managed by llm-orchestrator TypeScript agent-surface standard.
 import fs from "node:fs";
 import path from "node:path";
 import { Node, Project, SyntaxKind, type SourceFile } from "ts-morph";
@@ -8,7 +8,10 @@ interface ParsedArgs {
   targetPath?: string;
   exportNames: string[];
   tsConfigFilePath?: string;
+  helpRequested?: true;
 }
+
+const USAGE = "Usage: pnpm refactor:extract-exports -- --source <file> --target <file> --exports Foo,bar [--tsconfig <path>]";
 
 interface ExtractableDeclaration {
   exportName: string;
@@ -21,6 +24,7 @@ function parseArgs(argv: string[]): ParsedArgs {
   for (let index = 0; index < argv.length; index += 1) {
     const value = argv[index];
     if (value === "--") continue;
+    if (value === "--help" || value === "-h") { parsed.helpRequested = true; continue; }
     if (value === "--source") {
       parsed.sourcePath = argv[index + 1];
       index += 1;
@@ -183,8 +187,9 @@ function removeOriginalDeclarations(declarations: ExtractableDeclaration[]): voi
 
 function main(): void {
   const args = parseArgs(process.argv.slice(2));
+  if (args.helpRequested) { console.log(USAGE); return; }
   if (!args.sourcePath || !args.targetPath || args.exportNames.length === 0) {
-    throw new Error("Usage: pnpm refactor:extract-exports -- --source <file> --target <file> --exports Foo,bar [--tsconfig <path>]");
+    throw new Error(USAGE);
   }
 
   const sourcePath = path.resolve(args.sourcePath);

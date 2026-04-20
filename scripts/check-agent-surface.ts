@@ -1,14 +1,12 @@
-// Repo-local TypeScript agent-surface standard.
+// Managed by llm-orchestrator TypeScript agent-surface standard.
 import { spawnSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import { ESLint } from "eslint";
-
 interface BudgetOverride {
   maxLines: number;
   reason: string;
 }
-
 interface BudgetConfig {
   defaults: {
     sourceMaxLines: number;
@@ -18,7 +16,6 @@ interface BudgetConfig {
   };
   overrides: Record<string, BudgetOverride>;
 }
-
 interface FileReport {
   filePath: string;
   lines: number;
@@ -27,35 +24,22 @@ interface FileReport {
   softLimit: number;
   kind: "source" | "test";
 }
-
 interface ParsedArgs {
   staged: boolean;
   changedAgainst?: string;
   files: string[];
 }
-
 interface RuleDelta {
   ruleId: string;
   baselineCount: number;
   currentCount: number;
 }
-
 const BLOCKING_RULE_IDS = new Set(["complexity", "max-depth", "max-lines-per-function", "max-params"]);
 const MIN_MEANINGFUL_OVERSIZE_REDUCTION_LINES = 5;
 const MIN_MEANINGFUL_OVERSIZE_REDUCTION_RATIO = 0.03;
 const repoRoot = process.cwd();
 const configPath = path.join(repoRoot, "agent-surface-budgets.json");
 const config = JSON.parse(fs.readFileSync(configPath, "utf8")) as BudgetConfig;
-const ESLINT_CONFIG_CANDIDATES = [
-  "eslint.config.js",
-  "eslint.config.mjs",
-  "eslint.config.cjs",
-  ".eslintrc.js",
-  ".eslintrc.cjs",
-  ".eslintrc.json",
-  ".eslintrc",
-];
-
 function parseArgs(argv: string[]): ParsedArgs {
   const parsed: ParsedArgs = { staged: false, files: [] };
   for (let index = 0; index < argv.length; index += 1) {
@@ -74,7 +58,6 @@ function parseArgs(argv: string[]): ParsedArgs {
   }
   return parsed;
 }
-
 function runGit(args: string[]): string {
   const result = spawnSync("git", args, { cwd: repoRoot, encoding: "utf8" });
   if (result.status !== 0) {
@@ -82,7 +65,6 @@ function runGit(args: string[]): string {
   }
   return result.stdout;
 }
-
 function listChangedFiles(args: ParsedArgs): string[] {
   if (args.files.length > 0) return args.files;
   if (args.staged) {
@@ -178,7 +160,13 @@ function findLineViolations(reports: FileReport[], changedOnly: boolean): string
     const baselineLines = report.baselineLines;
     const messagePrefix = `- ${report.filePath}: ${report.lines} lines exceeds ${report.maxLines}`;
     if (!changedOnly) {
-      violations.push(messagePrefix);
+      if (baselineLines === undefined) {
+        violations.push(`${messagePrefix}\n  reason: new file must stay within the hard budget.`);
+      } else if (baselineLines > report.maxLines && report.lines > baselineLines) {
+        violations.push(`${messagePrefix}\n  reason: oversize file grew from baseline ${baselineLines}.`);
+      } else if (baselineLines <= report.maxLines) {
+        violations.push(`${messagePrefix}\n  reason: file crossed the hard budget from baseline ${baselineLines}.`);
+      }
       continue;
     }
     if (baselineLines === undefined) {
@@ -199,19 +187,14 @@ function findLineViolations(reports: FileReport[], changedOnly: boolean): string
 }
 
 async function loadStructuralRuleViolations(reports: FileReport[], baselineRef: string): Promise<Map<string, RuleDelta[]>> {
-  const hasEslintConfig = ESLINT_CONFIG_CANDIDATES.some((candidate) =>
-    fs.existsSync(path.join(repoRoot, candidate)),
-  );
-  if (!hasEslintConfig) {
-    return new Map<string, RuleDelta[]>();
-  }
-
   const eslint = new ESLint({ cwd: repoRoot });
   const currentResults = await eslint.lintFiles(reports.map((report) => report.filePath));
   const baselineResults = new Map<string, number>();
+  const baselinePaths = new Set<string>();
   for (const report of reports) {
     const baselineText = getGitFileText(baselineRef, report.filePath);
     if (!baselineText) continue;
+    baselinePaths.add(report.filePath);
     const [result] = await eslint.lintText(baselineText, { filePath: path.join(repoRoot, report.filePath) });
     for (const message of result.messages) {
       if (!message.ruleId || !BLOCKING_RULE_IDS.has(message.ruleId)) continue;
@@ -219,10 +202,10 @@ async function loadStructuralRuleViolations(reports: FileReport[], baselineRef: 
       baselineResults.set(key, (baselineResults.get(key) ?? 0) + 1);
     }
   }
-
   const deltas = new Map<string, RuleDelta[]>();
   for (const result of currentResults) {
     const relativePath = toRepoRelative(result.filePath);
+    if (!baselinePaths.has(relativePath)) continue;
     const counts = new Map<string, number>();
     for (const message of result.messages) {
       if (!message.ruleId || !BLOCKING_RULE_IDS.has(message.ruleId)) continue;

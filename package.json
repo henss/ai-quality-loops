@@ -51,7 +51,11 @@
     "git-hooks:install": "powershell -ExecutionPolicy Bypass -File .\\scripts\\install-git-hooks.ps1",
     "check:agent-surface": "tsx scripts/check-agent-surface.ts",
     "check:agent-surface:staged": "tsx scripts/check-agent-surface.ts --staged",
-    "refactor:extract-exports": "tsx scripts/refactor-extract-exports.ts"
+    "refactor:extract-exports": "tsx scripts/refactor-extract-exports.ts",
+    "check:agent-surface:preedit": "tsx scripts/check-agent-surface.ts",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "lint:typechecked": "eslint . --config eslint.typechecked.config.mjs"
   },
   "dependencies": {
     "cac": "^7.0.0",
@@ -65,6 +69,9 @@
     "vitest": "^1.6.1",
     "eslint": "^10.2.0",
     "ts-morph": "^27.0.2",
-    "tsx": "4.21.0"
+    "tsx": "4.21.0",
+    "@eslint/js": "^10.0.1",
+    "globals": "^16.5.0",
+    "typescript-eslint": "^8.50.0"
   }
 }

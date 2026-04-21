@@ -3,12 +3,14 @@
   "reviewFocus": [
     "Check whether each claim is supported by generic evidence labels.",
     "Flag missing caveats when evidence is summarized, incomplete, or caller-owned.",
+    "Flag any claim that implies external action readiness without approval, release, or routing evidence.",
     "Check that the result can be represented as the structured review-result contract.",
     "Keep target selection, severity budgets, approval, routing, remediation, publication, and retention caller-owned."
   ],
   "outOfScope": [
     "Do not infer private facts, account details, source contents, production readiness, or external approval.",
     "Do not decide publication, deployment, remediation ownership, tracker routing, retention, or real-world action.",
+    "Do not infer private repositories, issue trackers, products, companies, or domain programs from placeholder wording.",
     "Do not treat generic evidence labels as proof outside this synthetic fixture."
   ]
 }

@@ -3,10 +3,11 @@
   "workflow": "expert",
   "expert": "Evidence Reviewer",
   "model": "synthetic-reviewer-contract-fixture",
-  "summary": "Synthetic reviewer-contract fixture with generic evidence labels and caller-owned action boundaries.",
+  "summary": "Synthetic reviewer-contract fixture with generic evidence labels, stable finding keys, and caller-owned action boundaries.",
   "overallSeverity": "medium",
   "findings": [
     {
+      "key": "evidence-support-gap",
       "title": "Evidence label needs clearer support",
       "summary": "The synthetic packet asks the reviewer to check whether a claim is supported, but the shared fixture uses only generic evidence labels instead of real source names or source paths.",
       "severity": "medium",
@@ -17,12 +18,14 @@
       ]
     },
     {
-      "title": "Action boundary stays caller-owned",
-      "summary": "The shared contract can report a review concern, but it does not decide approval, routing, remediation, or publication.",
-      "severity": "low",
-      "recommendation": "Keep downstream policy and action mapping in the embedding repo.",
+      "key": "external-action-readiness-unsupported",
+      "title": "External-action readiness is unsupported",
+      "summary": "The synthetic packet includes an external-action readiness claim, but the shared fixture includes no approval, release, or routing evidence and cannot authorize a real-world step.",
+      "severity": "medium",
+      "recommendation": "Keep approval, routing, remediation, and publication gates in the caller-owned workflow until sanitized action evidence is supplied.",
       "evidence": [
-        "Boundary note: synthetic fixture only"
+        "Evidence label C",
+        "Boundary note: caller-owned action gate"
       ]
     }
   ],
@@ -36,9 +39,13 @@
       "value": "Structured review-result contract"
     },
     {
+      "label": "Evidence basis",
+      "value": "Generic evidence labels only"
+    },
+    {
       "label": "Privacy boundary",
       "value": "No real source paths, tracker identifiers, account data, or domain policy"
     }
   ],
-  "markdown": "# Summary\nSynthetic reviewer-contract fixture with generic evidence labels only.\n\n## Findings\n- Medium: Evidence label needs clearer support.\n- Low: Action boundary stays caller-owned.\n\n## Boundary\nNo target selection, private naming, policy thresholds, routing, or domain interpretation is part of this fixture."
+  "markdown": "# Summary\nSynthetic reviewer-contract fixture with generic evidence labels and stable finding keys only.\n\n## Findings\n- Medium: Evidence label needs clearer support.\n- Medium: External-action readiness is unsupported.\n\n## Boundary\nNo target selection, private naming, policy thresholds, routing, or domain interpretation is part of this fixture."
 }

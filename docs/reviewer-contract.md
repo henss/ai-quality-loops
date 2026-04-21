@@ -29,6 +29,7 @@ These examples demonstrate the contract only. They do not decide target selectio
 - Generic review modes such as text, vision, or batch review.
 - Synthetic target labels such as `Synthetic review packet`.
 - Generic evidence labels such as `Evidence label A`.
+- Stable generic finding keys such as `evidence-support-gap`.
 - Boundary statements saying policy, routing, and domain interpretation stay caller-owned.
 - Sanitized provenance descriptors that are already safe for a public artifact.
 

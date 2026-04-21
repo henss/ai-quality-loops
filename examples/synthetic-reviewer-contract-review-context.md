@@ -12,11 +12,12 @@ Check whether the packet makes supported claims while preserving caller-owned ac
 | --- | --- | --- |
 | The reviewed note identifies a repeated issue. | Evidence label A | The label is synthetic and does not represent a real source. |
 | The reviewed note proposes one follow-up. | Evidence label B | The caller still owns priority, routing, and remediation. |
-| The reviewed note is ready for external action. | Evidence label C | This claim is intentionally weak; the packet provides no approval, release, or routing evidence. |
+| The reviewed note is ready for external action. | Evidence label C | This claim is intentionally weak; the packet provides no approval, release, or routing evidence and must remain caller-gated. |
 
 ## Expected Reviewer Posture
 
 - Report unsupported or over-broad claims as findings.
 - Use generic evidence labels only.
+- Prefer stable generic finding keys when the same boundary or support gap could recur across runs.
 - Keep recommendations limited to caller-owned confirmation, caveats, or review preparation.
 - Do not approve publication, deployment, remediation ownership, tracker routing, retention, or real-world action.

@@ -1,0 +1,15 @@
+{
+  "defaults": {
+    "mode": "expert",
+    "expert": "Efficiency",
+    "contextPath": "./examples/synthetic-finance-signal-routing-review-context.json",
+    "outputDir": "./reviews/finance-signal-routing",
+    "structuredOutputDir": "./reviews/finance-signal-routing/json"
+  },
+  "reviews": [
+    {
+      "name": "Synthetic finance-signal routing packet",
+      "target": "./examples/synthetic-finance-signal-routing-review-context.md"
+    }
+  ]
+}

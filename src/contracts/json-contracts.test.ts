@@ -444,6 +444,7 @@ describe("public JSON contracts", () => {
       "examples/synthetic-zone-vision-probe.manifest.json",
       "examples/sanitized-social-evidence-review.manifest.json",
       "examples/synthetic-context-pack-quality-review.manifest.json",
+      "examples/synthetic-finance-signal-routing-review.manifest.json",
       "examples/synthetic-buyer-claim-caveat-review.manifest.json",
       "examples/synthetic-grocy-public-safety-review.manifest.json",
       "examples/synthetic-scheduling-fallback-review.manifest.json",
@@ -521,6 +522,19 @@ describe("public JSON contracts", () => {
       targetPath: "./examples/synthetic-context-pack-quality-review-context.md",
       targetSummary:
         "Local file path (.md file, file: synthetic-context-pack-quality-review-context.md)",
+    });
+  });
+
+  it("keeps the synthetic finance-signal routing manifest public-safe and context-backed", async () => {
+    await expectPublicSafeTextManifestExample({
+      manifestPath: "examples/synthetic-finance-signal-routing-review.manifest.json",
+      contextPath: "./examples/synthetic-finance-signal-routing-review-context.json",
+      expert: "Efficiency",
+      reviewName: "Synthetic finance-signal routing packet",
+      reviewSurface: "Synthetic finance-signal routing packet",
+      targetPath: "./examples/synthetic-finance-signal-routing-review-context.md",
+      targetSummary:
+        "Local file path (.md file, file: synthetic-finance-signal-routing-review-context.md)",
     });
   });
 

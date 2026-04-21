@@ -1,0 +1,13 @@
+{
+  "reviewSurface": "Synthetic finance-signal routing packet",
+  "reviewFocus": [
+    "Check that the packet uses source handles only and keeps finance-sensitive evidence at bounded signal level instead of copying balances, account identifiers, transaction detail, or institution-specific records.",
+    "Check that the packet keeps routing advisory, reversible, and caller-owned rather than implying spend, escalation, approval, or schedule authority.",
+    "Check that freshness, uncertainty, and no-write constraints remain explicit when finance pressure signals are stale, incomplete, or caller-computed."
+  ],
+  "outOfScope": [
+    "Resolving the underlying sources, verifying private records, or reconstructing real finance state.",
+    "Approving spend, changing cadence, sending alerts, routing work, or touching production systems.",
+    "Inferring entity names, threshold values, account structure, counterparties, or company operating policy from the bounded labels."
+  ]
+}

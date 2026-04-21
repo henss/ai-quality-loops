@@ -58,6 +58,7 @@ describe("runExpertReview", () => {
             non_blocking_findings: [],
             required_before_merge: ["Add a distinct destructive-action warning state."],
             follow_up: [],
+            next_step_actions: ["revise_artifact"],
           },
         },
         null,
@@ -90,6 +91,7 @@ describe("runExpertReview", () => {
         verdict: "changes_requested",
         blocking: true,
         max_severity: "high",
+        next_step_actions: ["revise_artifact"],
       }),
       provenance: [
         {
@@ -166,6 +168,7 @@ describe("runExpertReview", () => {
           non_blocking_findings: [],
           required_before_merge: [],
           follow_up: [],
+          next_step_actions: [],
         },
       }),
       generatedChars: 120,

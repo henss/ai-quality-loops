@@ -29,6 +29,36 @@
       ]
     }
   ],
+  "decision": {
+    "schema": "peer_review_decision_v1",
+    "verdict": "accept_with_follow_up",
+    "confidence": "medium",
+    "blocking": false,
+    "max_severity": "medium",
+    "summary": "The fixture is safe to keep as a reviewer-contract example, but it still needs clearer evidence support and caller-owned follow-up handling.",
+    "blocking_findings": [],
+    "non_blocking_findings": [
+      {
+        "key": "evidence-support-gap",
+        "title": "Evidence label needs clearer support",
+        "summary": "The synthetic packet asks the reviewer to check whether a claim is supported, but the shared fixture uses only generic evidence labels instead of real source names or source paths.",
+        "severity": "medium",
+        "recommendation": "Ask the caller-owned workflow to provide a sanitized evidence summary before treating the claim as reviewable.",
+        "evidence": [
+          "Evidence label A",
+          "Synthetic claim note"
+        ]
+      }
+    ],
+    "required_before_merge": [],
+    "follow_up": [
+      "Keep approval, routing, remediation, and publication gates in the caller-owned workflow."
+    ],
+    "next_step_actions": [
+      "collect_more_evidence",
+      "track_follow_up"
+    ]
+  },
   "provenance": [
     {
       "label": "Content source",

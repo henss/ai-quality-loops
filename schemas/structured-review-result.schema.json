@@ -110,6 +110,19 @@
           "items": {
             "type": "string"
           }
+        },
+        "next_step_actions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "revise_artifact",
+              "collect_more_evidence",
+              "rerun_review",
+              "request_caller_review",
+              "track_follow_up"
+            ]
+          }
         }
       }
     },

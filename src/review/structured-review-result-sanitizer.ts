@@ -85,6 +85,7 @@ export function sanitizeStructuredReviewDecision(
       options,
     ),
     follow_up: sanitizeStructuredReviewStringArray(decision.follow_up, options),
+    next_step_actions: [...decision.next_step_actions],
   };
 }
 

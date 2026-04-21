@@ -69,6 +69,10 @@ describe("synthetic reviewer-contract public fixtures", () => {
             label: "Privacy boundary",
           }),
         ]),
+        decision: expect.objectContaining({
+          verdict: "accept_with_follow_up",
+          next_step_actions: ["collect_more_evidence", "track_follow_up"],
+        }),
       }),
     });
 

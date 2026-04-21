@@ -67,6 +67,18 @@ const structuredReviewDecisionSchema = {
         },
         required_before_merge: { type: "array", items: { type: "string" } },
         follow_up: { type: "array", items: { type: "string" } },
+        next_step_actions: {
+          type: "array",
+          items: {
+            enum: [
+              "revise_artifact",
+              "collect_more_evidence",
+              "rerun_review",
+              "request_caller_review",
+              "track_follow_up",
+            ],
+          },
+        },
       },
       required: [
         "schema",
@@ -79,6 +91,7 @@ const structuredReviewDecisionSchema = {
         "non_blocking_findings",
         "required_before_merge",
         "follow_up",
+        "next_step_actions",
       ],
       additionalProperties: false,
     },
@@ -202,6 +215,7 @@ export async function runExpertReview(
         ],
         required_before_merge: [],
         follow_up: [],
+        next_step_actions: ["track_follow_up"],
       },
     },
     null,
@@ -215,6 +229,7 @@ export async function runExpertReview(
           reviewDecisionExample,
           "When reporting a finding, include a stable, generic `key` when you can name the same issue across repeated runs. Keep it lowercase, concise, and free of private names, paths, URLs, account identifiers, or tracker IDs.",
           "Use `accept` only when no before-merge work is required. Use `accept_with_follow_up` when the work passes but follow-up hardening or cleanup remains. Use `changes_requested` or `blocked` for findings that should fail the gate.",
+          "Populate `next_step_actions` with only safe generic action labels: `revise_artifact`, `collect_more_evidence`, `rerun_review`, `request_caller_review`, or `track_follow_up`.",
         ].join("\n")
       : [
           "Provide your review in Markdown.",
@@ -225,6 +240,7 @@ export async function runExpertReview(
           "```",
           "When reporting a finding, include a stable, generic `key` when you can name the same issue across repeated runs. Keep it lowercase, concise, and free of private names, paths, URLs, account identifiers, or tracker IDs.",
           "Use `accept` only when no before-merge work is required. Use `accept_with_follow_up` when the work passes but follow-up hardening or cleanup remains. Use `changes_requested` or `blocked` for findings that should fail the gate.",
+          "Populate `next_step_actions` with only safe generic action labels: `revise_artifact`, `collect_more_evidence`, `rerun_review`, `request_caller_review`, or `track_follow_up`.",
         ].join("\n");
 
   const finalPrompt = buildReviewEnvelope({

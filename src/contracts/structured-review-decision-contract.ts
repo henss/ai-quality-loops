@@ -11,6 +11,12 @@ export type StructuredReviewDecisionVerdict =
   | "process_failed";
 
 export type StructuredReviewDecisionConfidence = "low" | "medium" | "high";
+export type StructuredReviewNextStepAction =
+  | "revise_artifact"
+  | "collect_more_evidence"
+  | "rerun_review"
+  | "request_caller_review"
+  | "track_follow_up";
 
 export interface StructuredReviewDecision {
   schema: "peer_review_decision_v1";
@@ -23,6 +29,7 @@ export interface StructuredReviewDecision {
   non_blocking_findings: StructuredReviewFinding[];
   required_before_merge: string[];
   follow_up: string[];
+  next_step_actions: StructuredReviewNextStepAction[];
 }
 
 const SEVERITIES: StructuredReviewSeverity[] = [
@@ -40,6 +47,13 @@ const VERDICTS: StructuredReviewDecisionVerdict[] = [
   "process_failed",
 ];
 const CONFIDENCE_VALUES: StructuredReviewDecisionConfidence[] = ["low", "medium", "high"];
+const NEXT_STEP_ACTIONS: StructuredReviewNextStepAction[] = [
+  "revise_artifact",
+  "collect_more_evidence",
+  "rerun_review",
+  "request_caller_review",
+  "track_follow_up",
+];
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -71,6 +85,29 @@ function readOptionalStringArray(value: unknown, fieldName: string): string[] {
   }
 
   return value.map((item) => item.trim()).filter(Boolean);
+}
+
+function readOptionalNextStepActions(
+  value: unknown,
+  fieldName: string,
+): StructuredReviewNextStepAction[] | undefined {
+  if (value === undefined) {
+    return undefined;
+  }
+
+  if (!Array.isArray(value)) {
+    throw new Error(`Manifest field "${fieldName}" must be an array.`);
+  }
+
+  return value.map((item, index) => {
+    if (NEXT_STEP_ACTIONS.includes(item as StructuredReviewNextStepAction)) {
+      return item as StructuredReviewNextStepAction;
+    }
+
+    throw new Error(
+      `Manifest field "${fieldName}[${index}]" must be one of ${NEXT_STEP_ACTIONS.join(", ")}.`,
+    );
+  });
 }
 
 function readSeverity(value: unknown, fieldName: string): StructuredReviewSeverity {
@@ -132,6 +169,33 @@ function readFindings(value: unknown, fieldName: string): StructuredReviewFindin
   return value.map((item, index) => readFinding(item, `${fieldName}[${index}]`));
 }
 
+export function deriveStructuredReviewNextStepActions(input: {
+  verdict: StructuredReviewDecisionVerdict;
+  blocking: boolean;
+  required_before_merge: string[];
+  follow_up: string[];
+}): StructuredReviewNextStepAction[] {
+  const actions = new Set<StructuredReviewNextStepAction>();
+
+  if (input.required_before_merge.length > 0 || input.verdict === "changes_requested") {
+    actions.add("revise_artifact");
+  }
+
+  if (input.follow_up.length > 0 || input.verdict === "accept_with_follow_up") {
+    actions.add("track_follow_up");
+  }
+
+  if (input.verdict === "blocked") {
+    actions.add(input.blocking ? "request_caller_review" : "collect_more_evidence");
+  }
+
+  if (input.verdict === "process_failed") {
+    actions.add("rerun_review");
+  }
+
+  return [...actions];
+}
+
 export function parseStructuredReviewDecision(value: unknown): StructuredReviewDecision {
   if (!isRecord(value)) {
     throw new Error('Manifest field "decision" must be an object.');
@@ -141,11 +205,27 @@ export function parseStructuredReviewDecision(value: unknown): StructuredReviewD
     throw new Error('Manifest field "decision.schema" must equal "peer_review_decision_v1".');
   }
 
+  const required_before_merge = readOptionalStringArray(
+    value.required_before_merge,
+    "decision.required_before_merge",
+  );
+  const follow_up = readOptionalStringArray(value.follow_up, "decision.follow_up");
+  const next_step_actions =
+    readOptionalNextStepActions(value.next_step_actions, "decision.next_step_actions") ??
+    deriveStructuredReviewNextStepActions({
+      verdict: readVerdict(value.verdict, "decision.verdict"),
+      blocking: readRequiredBoolean(value.blocking, "decision.blocking"),
+      required_before_merge,
+      follow_up,
+    });
+  const verdict = readVerdict(value.verdict, "decision.verdict");
+  const blocking = readRequiredBoolean(value.blocking, "decision.blocking");
+
   return {
     schema: "peer_review_decision_v1",
-    verdict: readVerdict(value.verdict, "decision.verdict"),
+    verdict,
     confidence: readConfidence(value.confidence, "decision.confidence"),
-    blocking: readRequiredBoolean(value.blocking, "decision.blocking"),
+    blocking,
     max_severity: readSeverity(value.max_severity, "decision.max_severity"),
     summary: readRequiredString(value.summary, "decision.summary"),
     blocking_findings: readFindings(value.blocking_findings, "decision.blocking_findings"),
@@ -153,10 +233,8 @@ export function parseStructuredReviewDecision(value: unknown): StructuredReviewD
       value.non_blocking_findings,
       "decision.non_blocking_findings",
     ),
-    required_before_merge: readOptionalStringArray(
-      value.required_before_merge,
-      "decision.required_before_merge",
-    ),
-    follow_up: readOptionalStringArray(value.follow_up, "decision.follow_up"),
+    required_before_merge,
+    follow_up,
+    next_step_actions,
   };
 }

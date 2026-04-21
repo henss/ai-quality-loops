@@ -40,6 +40,7 @@ describe("structured review decision extraction", () => {
               ],
               required_before_merge: [],
               follow_up: ["Verify the negative assertion in a later slice."],
+              next_step_actions: ["track_follow_up"],
             },
           },
           null,
@@ -55,6 +56,7 @@ describe("structured review decision extraction", () => {
       verdict: "accept_with_follow_up",
       blocking: false,
       max_severity: "medium",
+      next_step_actions: ["track_follow_up"],
     });
   });
 
@@ -89,6 +91,7 @@ describe("structured review decision extraction", () => {
             non_blocking_findings: [],
             required_before_merge: ["Remove policy-alpha-42 routing text."],
             follow_up: ["Audit reviewer@example.com mentions later."],
+            next_step_actions: ["revise_artifact", "track_follow_up"],
           },
         },
         null,
@@ -129,5 +132,42 @@ describe("structured review decision extraction", () => {
       "Remote URL (host: example.com, path segments: 2, query redacted, fragment redacted)",
     ]);
     expect(result.provenance[0]?.value).toBe("Local file path (.md file)");
+    expect(result.decision?.next_step_actions).toEqual([
+      "revise_artifact",
+      "track_follow_up",
+    ]);
+  });
+
+  it("derives safe next-step actions when older decision payloads omit the taxonomy", () => {
+    const result = buildStructuredReviewResult({
+      workflow: "expert",
+      expert: "TASK ACCEPTANCE REVIEWER",
+      model: "qwen3.5:27b",
+      provenance: [{ label: "Content source", value: "Local file path (.md file)" }],
+      markdown: [
+        "```json",
+        JSON.stringify(
+          {
+            review_decision: {
+              schema: "peer_review_decision_v1",
+              verdict: "process_failed",
+              confidence: "low",
+              blocking: true,
+              max_severity: "unknown",
+              summary: "The run failed before a reliable review could complete.",
+              blocking_findings: [],
+              non_blocking_findings: [],
+              required_before_merge: [],
+              follow_up: [],
+            },
+          },
+          null,
+          2,
+        ),
+        "```",
+      ].join("\n"),
+    });
+
+    expect(result.decision?.next_step_actions).toEqual(["rerun_review"]);
   });
 });

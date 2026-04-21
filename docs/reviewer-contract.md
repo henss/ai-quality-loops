@@ -8,6 +8,7 @@ The structured review-result contract includes:
 
 - `schemaVersion`, `workflow`, `expert`, `model`, and `summary` for the review run.
 - `overallSeverity` and `findings` for deterministic checks.
+- `decision.next_step_actions` as a small safe next-step taxonomy for caller-owned routing, evidence collection, reruns, or follow-up tracking without embedding domain policy.
 - `findings[].key` as an optional stable generic label for matching repeated findings across runs.
 - `provenance` as sanitized descriptors, not raw URLs, local paths, account names, tracker IDs, or private source names.
 - `markdown` as sanitized human-readable review output.
@@ -30,6 +31,7 @@ These examples demonstrate the contract only. They do not decide target selectio
 - Synthetic target labels such as `Synthetic review packet`.
 - Generic evidence labels such as `Evidence label A`.
 - Stable generic finding keys such as `evidence-support-gap`.
+- Safe next-step action labels such as `collect_more_evidence` or `track_follow_up`.
 - Boundary statements saying policy, routing, and domain interpretation stay caller-owned.
 - Sanitized provenance descriptors that are already safe for a public artifact.
 

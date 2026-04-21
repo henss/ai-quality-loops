@@ -446,6 +446,7 @@ describe("public JSON contracts", () => {
       "examples/synthetic-context-pack-quality-review.manifest.json",
       "examples/synthetic-buyer-claim-caveat-review.manifest.json",
       "examples/synthetic-grocy-public-safety-review.manifest.json",
+      "examples/synthetic-scheduling-fallback-review.manifest.json",
     ];
 
     for (const examplePath of exampleManifestPaths) {
@@ -482,6 +483,19 @@ describe("public JSON contracts", () => {
       targetPath: "./examples/synthetic-grocy-public-safety-review-context.md",
       targetSummary:
         "Local file path (.md file, file: synthetic-grocy-public-safety-review-context.md)",
+    });
+  });
+
+  it("keeps the synthetic scheduling fallback manifest public-safe and context-backed", async () => {
+    await expectPublicSafeTextManifestExample({
+      manifestPath: "examples/synthetic-scheduling-fallback-review.manifest.json",
+      contextPath: "./examples/synthetic-scheduling-fallback-review-context.json",
+      expert: "Efficiency",
+      reviewName: "Synthetic scheduling fallback packet",
+      reviewSurface: "Synthetic scheduling fallback packet",
+      targetPath: "./examples/synthetic-scheduling-fallback-review-context.md",
+      targetSummary:
+        "Local file path (.md file, file: synthetic-scheduling-fallback-review-context.md)",
     });
   });
 

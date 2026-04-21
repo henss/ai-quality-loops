@@ -27,6 +27,7 @@ The example files cover the repeatable workflow surfaces. The package also suppo
 | Review a synthetic source-handle evidence pack | `batch-review ./examples/synthetic-source-handle-evidence-review.manifest.json` | Use this as a text-review seam for review-output packets that cite source handles without copying private truth; keep retrieval, storage, source interpretation, approval, and routing caller-owned. |
 | Review synthetic buyer-claim caveats | `batch-review ./examples/synthetic-buyer-claim-caveat-review.manifest.json` | Use this as a text-review seam for buyer-interest claims; keep real sources, outreach, spend, account creation, proof thresholds, and routing caller-owned. |
 | Review synthetic household-inventory safety caveats | `batch-review ./examples/synthetic-grocy-public-safety-review.manifest.json` | Use this as a text-review seam for Grocy-style stock, consume-by, recipe, chore, and reorder artifacts; keep real exports, health interpretation, purchasing, disposal, alerting, and routing caller-owned. |
+| Review a synthetic scheduling fallback packet | `batch-review ./examples/synthetic-scheduling-fallback-review.manifest.json` | Use this as a text-review seam for proposal-first fallback planning when one schedule source is unreachable; keep real source checks, writes, retries, approvals, and communications caller-owned. |
 | Check source-handle redaction cases | `defineReviewSurfaceRedactions(...)` with `./examples/synthetic-source-handle-redaction-corpus.fixture.json` | Use when a consumer needs public-safe regression cases for caller-owned source-handle redaction across synthetic domains. |
 | Check caller-owned redaction rules | `defineReviewSurfaceRedactions(...)` with `./examples/synthetic-policy-redactions.fixture.json` | Use when a consumer needs a public-safe fixture for project-local redaction behavior without moving policy names into AIQL. |
 | Validate a synthetic reviewer-contract fixture | `validateStructuredReviewResult(...)` with `./examples/synthetic-reviewer-contract-result.fixture.json` | Use when checking contract consumers against a public-safe fixture with generic evidence labels and caller-owned action boundaries. |
@@ -215,6 +216,21 @@ Typical edits:
 - keep or adapt the context file so review stays focused on authority boundaries, evidence traceability, uncertainty, adverse scenarios, and reversible recommendations
 - switch `expert` or `promptLibraryPath` to a caller-owned reviewer when project policy needs one
 - keep real household members, addresses, product identifiers, device integrations, source freshness, food-safety interpretation, health decisions, purchasing, disposal, alerting, and routing outside `ai-quality-loops`
+
+### `synthetic-scheduling-fallback-review.manifest.json`
+
+Use when you want a generic text review over a proposal-first fallback packet before a caller-owned workflow decides whether to retry reads, draft recovery blocks, or touch a real scheduling surface.
+
+```bash
+batch-review ./examples/synthetic-scheduling-fallback-review.manifest.json
+```
+
+Typical edits:
+
+- replace the synthetic context target with a sanitized fallback-planning packet from your repo
+- keep the review focused on reachability claims, health uncertainty, caveat preservation, and no-write continuation boundaries
+- switch `expert` or `promptLibraryPath` only if your embedding repo owns a scheduling reviewer persona
+- keep real calendar data, planner health checks, retries, writes, notifications, approvals, and routing outside `ai-quality-loops`
 
 ### `synthetic-policy-redactions.fixture.json`
 

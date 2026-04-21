@@ -1,0 +1,15 @@
+{
+  "defaults": {
+    "mode": "expert",
+    "expert": "Efficiency",
+    "contextPath": "./examples/synthetic-scheduling-fallback-review-context.json",
+    "outputDir": "./reviews/scheduling-fallback",
+    "structuredOutputDir": "./reviews/scheduling-fallback/json"
+  },
+  "reviews": [
+    {
+      "name": "Synthetic scheduling fallback packet",
+      "target": "./examples/synthetic-scheduling-fallback-review-context.md"
+    }
+  ]
+}

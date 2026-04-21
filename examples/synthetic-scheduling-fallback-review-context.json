@@ -1,0 +1,14 @@
+{
+  "reviewSurface": "Synthetic scheduling fallback packet",
+  "reviewFocus": [
+    "Check whether the packet supports a proposal-first fallback review when a primary schedule source is unreachable and a secondary planner has not been confirmed healthy.",
+    "Flag unsupported assumptions about availability, urgency, authority, retry readiness, or permission to write changes.",
+    "Keep recommendations limited to reversible draft options, explicit evidence gaps, and caller-owned confirmation steps.",
+    "Keep real calendar data, account health checks, recovery policy, task reprioritization, outbound communication, and external scheduling writes caller-owned."
+  ],
+  "outOfScope": [
+    "Do not infer a real personal schedule, account state, timezone commitments, health needs, or automation readiness from this synthetic packet.",
+    "Do not approve schedule writes, rescheduling, cancellation, attendee messaging, notification delivery, or external follow-up.",
+    "Do not treat synthetic availability labels, fallback options, or recovery notes as live permission or source-of-truth schedule data."
+  ]
+}

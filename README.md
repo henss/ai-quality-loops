@@ -47,6 +47,7 @@ The package publishes copy-ready starter manifests under `examples/` so embeddin
 - `examples/synthetic-context-pack-quality-review.manifest.json` for one synthetic context-pack quality review with caller-owned source handling
 - `examples/synthetic-buyer-claim-caveat-review.manifest.json` for one synthetic buyer-claim caveat review with caller-owned sourcing and routing
 - `examples/synthetic-grocy-public-safety-review.manifest.json` for one synthetic household-inventory public-safety review with caller-owned action boundaries
+- `examples/synthetic-scheduling-fallback-review.manifest.json` for one synthetic scheduling-fallback review with caller-owned source checks and no-write recovery boundaries
 - `examples/synthetic-source-handle-redaction-corpus.fixture.json` for public-safe source-handle redaction regression cases across synthetic finance-like, household-like, organization-like, and creative-like domains
 - `examples/synthetic-policy-redactions.fixture.json` for public-safe caller-provided redaction-rule checks
 - `examples/synthetic-reviewer-contract-result.fixture.json` for a public-safe reviewer-contract fixture with generic evidence labels

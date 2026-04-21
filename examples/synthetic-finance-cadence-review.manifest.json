@@ -1,0 +1,15 @@
+{
+  "defaults": {
+    "mode": "expert",
+    "expert": "Efficiency",
+    "contextPath": "./examples/synthetic-finance-cadence-review-context.json",
+    "outputDir": "./reviews/finance-cadence",
+    "structuredOutputDir": "./reviews/finance-cadence/json"
+  },
+  "reviews": [
+    {
+      "name": "Synthetic recovery-safe finance cadence packet",
+      "target": "./examples/synthetic-finance-cadence-review-context.md"
+    }
+  ]
+}

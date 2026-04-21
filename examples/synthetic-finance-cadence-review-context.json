@@ -1,0 +1,14 @@
+{
+  "reviewSurface": "Synthetic recovery-safe finance cadence packet",
+  "reviewFocus": [
+    "Check whether the cadence recommendation stays analysis-only and avoids implying spend, execution, escalation, or policy approval.",
+    "Flag cadence claims that are not proportional to the supplied synthetic evidence labels or that hide missing evidence freshness checks.",
+    "Check that recovery-load caveats remain explicit instead of being flattened into confident schedule recommendations.",
+    "Keep threshold policy, financial interpretation, scheduling, approval, and real-world routing caller-owned."
+  ],
+  "outOfScope": [
+    "Do not infer real budget health, account state, runway, portfolio posture, tax posture, payment urgency, or regulatory obligations.",
+    "Do not approve schedule changes, spend, transfers, filings, outreach, alerts, or irreversible follow-up.",
+    "Do not treat the fixture as a private finance memo, company operating record, or investment recommendation."
+  ]
+}

@@ -22,6 +22,7 @@ The example files cover the repeatable workflow surfaces. The package also suppo
 | Summarize launch outcome evidence | `formatLaunchOutcomeEvidenceSummary(comparisonReport, { gate })` | Produces a compact, public-safe Markdown evidence note from sanitized comparison and optional gate results without deciding launch readiness. |
 | Probe image-review quality with a synthetic visual target | `vision-preview --manifest ./examples/synthetic-zone-vision-probe.manifest.json --entry-name "Synthetic zone overview"` | Uses generic zones only; keep real capture handling, thresholds, and routing caller-owned. |
 | Review a sanitized social evidence packet | `batch-review ./examples/sanitized-social-evidence-review.manifest.json` | Use this as a text-review seam for redacted evidence packets; keep real sources, proof thresholds, and publication routing caller-owned. |
+| Review a synthetic creative packet | `batch-review ./examples/synthetic-creative-review-packet.manifest.json` | Use this as a public-safe seam for caller-sanitized creative-review packets; keep asset selection, release approval, and brand authority caller-owned. |
 | Review a synthetic reviewer-contract packet | `batch-review ./examples/synthetic-reviewer-contract-review.manifest.json` | Use this as a runnable public-safe contract example before wiring caller-owned target selection, severity budgets, and routing. |
 | Review a synthetic context pack quality packet | `batch-review ./examples/synthetic-context-pack-quality-review.manifest.json` | Use this as a public-safe seam for checking context-pack scope, evidence labels, caveats, and caller-owned boundaries. |
 | Review a synthetic source-handle evidence pack | `batch-review ./examples/synthetic-source-handle-evidence-review.manifest.json` | Use this as a text-review seam for review-output packets that cite source handles without copying private truth; keep retrieval, storage, source interpretation, approval, and routing caller-owned. |
@@ -133,6 +134,21 @@ Typical edits:
 - keep or adapt the sanitized context file so review stays focused on claim support, caveats, traceability, and authority boundaries
 - switch `expert` or `promptLibraryPath` to a caller-owned evidence reviewer when project policy needs one
 - keep real account data, raw screenshots, source collection, proof thresholds, publication approval, and action routing outside `ai-quality-loops`
+
+### `synthetic-creative-review-packet.manifest.json`
+
+Use when you want a generic text review over a synthetic or caller-sanitized creative packet before a caller-owned workflow decides whether the creative direction is ready for a deeper review.
+
+```bash
+batch-review ./examples/synthetic-creative-review-packet.manifest.json
+```
+
+Typical edits:
+
+- replace the synthetic target with a caller-owned packet that uses only sanitized evidence labels, qualitative reviewer notes, explicit caveats, and bounded next-step language
+- keep or adapt the context file so review stays focused on claim proportionality, creative-direction caveats, generic evidence handles, and caller-owned authority boundaries
+- switch `expert` or `promptLibraryPath` to a caller-owned creative reviewer when project policy needs one
+- keep real asset files, private mood boards, release timing, brand approval, budget, and channel strategy outside `ai-quality-loops`
 
 ### `synthetic-reviewer-contract-review.manifest.json`
 

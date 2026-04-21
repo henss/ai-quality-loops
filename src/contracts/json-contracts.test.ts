@@ -442,6 +442,7 @@ describe("public JSON contracts", () => {
       "examples/webpage-vision-sweep.manifest.json",
       "examples/screenshot-batch-run.manifest.json",
       "examples/synthetic-zone-vision-probe.manifest.json",
+      "examples/synthetic-creative-review-packet.manifest.json",
       "examples/sanitized-social-evidence-review.manifest.json",
       "examples/synthetic-context-pack-quality-review.manifest.json",
       "examples/synthetic-finance-signal-routing-review.manifest.json",
@@ -497,6 +498,18 @@ describe("public JSON contracts", () => {
       targetPath: "./examples/synthetic-scheduling-fallback-review-context.md",
       targetSummary:
         "Local file path (.md file, file: synthetic-scheduling-fallback-review-context.md)",
+    });
+  });
+
+  it("keeps the synthetic creative-review manifest public-safe and context-backed", async () => {
+    await expectPublicSafeTextManifestExample({
+      manifestPath: "examples/synthetic-creative-review-packet.manifest.json",
+      contextPath: "./examples/synthetic-creative-review-context.json",
+      reviewName: "Synthetic creative review packet",
+      reviewSurface: "Sanitized creative review packet",
+      targetPath: "./examples/synthetic-creative-review-context.md",
+      targetSummary:
+        "Local file path (.md file, file: synthetic-creative-review-context.md)",
     });
   });
 

@@ -1,0 +1,15 @@
+{
+  "defaults": {
+    "mode": "expert",
+    "expert": "UI/UX",
+    "contextPath": "./examples/synthetic-creative-review-context.json",
+    "outputDir": "./reviews/creative-review",
+    "structuredOutputDir": "./reviews/creative-review/json"
+  },
+  "reviews": [
+    {
+      "name": "Synthetic creative review packet",
+      "target": "./examples/synthetic-creative-review-context.md"
+    }
+  ]
+}

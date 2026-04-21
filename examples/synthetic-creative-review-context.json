@@ -1,0 +1,14 @@
+{
+  "reviewSurface": "Sanitized creative review packet",
+  "reviewFocus": [
+    "Check whether the packet gives a reviewer enough bounded evidence to critique the proposed creative direction without inventing private campaign truth.",
+    "Flag claims that turn small-sample reactions, mood-board intent, or qualitative notes into strong audience, performance, or approval conclusions.",
+    "Check that evidence labels, review goals, and next-step language stay generic enough for a caller-sanitized packet.",
+    "Keep final asset approval, publication timing, brand authority, budget, channel strategy, and follow-up routing caller-owned."
+  ],
+  "outOfScope": [
+    "Do not infer real brand identity, campaign schedule, customer segment, conversion intent, or unpublished creative assets.",
+    "Do not approve release, select a winning concept, assign work, or turn the packet into a production brief.",
+    "Do not treat generic evidence labels, anonymized reactions, or reviewer notes as proof of audience performance."
+  ]
+}

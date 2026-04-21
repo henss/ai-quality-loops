@@ -34,7 +34,7 @@ describe("diff-table snapshot repro", () => {
 
 ## Local Evidence
 
-Running this temporary repro with the repo's current `vitest` dependency (`pnpm vitest run .runtime/vitest-diff-table-repro.test.ts`, Vitest 1.6.1) produced a snapshot mismatch where the only material change was:
+Running the checked-in repro with the repo's current `vitest` dependency (`pnpm vitest run src/review/vitest-diff-table-repro.test.ts`, Vitest 1.6.1) captures the snapshot mismatch payload and confirms that the only material change is:
 
 ```text
 - | visible label | pass | pass |
@@ -42,6 +42,8 @@ Running this temporary repro with the repo's current `vitest` dependency (`pnpm 
 ```
 
 That is enough evidence to carry a minimal upstream-shaped note if maintainers want a small discussion example. It is not enough evidence to add an AIQL helper, formatter, snapshot serializer, or workflow automation.
+
+The repro lives in `src/review/vitest-diff-table-repro.test.ts`. It runs a temporary failing Vitest fixture in a child process, then asserts only on the redacted diff lines needed for the upstream-shaped discussion without leaving the main suite in a misleading snapshot-failed state.
 
 ## Boundary Decision
 

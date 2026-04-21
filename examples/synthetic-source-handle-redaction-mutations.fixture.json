@@ -1,0 +1,133 @@
+{
+  "schemaVersion": "1",
+  "reviewSurface": "Synthetic source-handle redaction mutation fixture",
+  "purpose": "Public-safe mutation cases for caller-provided source-handle redactions across synthetic domains.",
+  "boundary": [
+    "All cases are synthetic and keep source handles as opaque retrieval hints only.",
+    "The mutations stress formatting changes around handles, not source resolution, storage, or policy semantics.",
+    "Real source retrieval, source contents, domain interpretation, approval, retention, routing, and policy stay caller-owned."
+  ],
+  "redactionRule": {
+    "pattern": "\\bsource:[a-z0-9][a-z0-9/_-]*\\b",
+    "replacement": "[Source handle redacted]"
+  },
+  "domains": [
+    {
+      "domain": "finance-like",
+      "intent": "Check that finance-adjacent review notes still redact opaque handles when punctuation or structured formatting mutates around them.",
+      "cases": [
+        {
+          "name": "parenthetical handle mutation",
+          "mutation": "parenthetical punctuation",
+          "input": "A synthetic budget caveat (source:finance-sandbox/variance-note-a) still needs a caller-owned check.",
+          "expected": "A synthetic budget caveat ([Source handle redacted]) still needs a caller-owned check.",
+          "mustNotContain": ["source:finance-sandbox/variance-note-a"]
+        },
+        {
+          "name": "comma-delimited handle mutation",
+          "mutation": "comma-delimited pair",
+          "input": "Trace source:finance-sandbox/forecast-b, source:finance-sandbox/risk-note-c, then keep the decision caller-owned.",
+          "expected": "Trace [Source handle redacted], [Source handle redacted], then keep the decision caller-owned.",
+          "mustNotContain": [
+            "source:finance-sandbox/forecast-b",
+            "source:finance-sandbox/risk-note-c"
+          ]
+        },
+        {
+          "name": "yaml-like handle mutation",
+          "mutation": "yaml-like field",
+          "input": "evidence:\n  handle: source:finance-sandbox/packet-d\n  caveat: synthetic only",
+          "expected": "evidence:\n  handle: [Source handle redacted]\n  caveat: synthetic only",
+          "mustNotContain": ["source:finance-sandbox/packet-d"]
+        }
+      ]
+    },
+    {
+      "domain": "household-like",
+      "intent": "Check that household-adjacent notes stay generic while mutation cases cover quoted handles, list items, and inline labels.",
+      "cases": [
+        {
+          "name": "quoted handle mutation",
+          "mutation": "quoted sentence fragment",
+          "input": "Keep \"source:household-sandbox/layout-note-a\" as a synthetic retrieval hint only.",
+          "expected": "Keep \"[Source handle redacted]\" as a synthetic retrieval hint only.",
+          "mustNotContain": ["source:household-sandbox/layout-note-a"]
+        },
+        {
+          "name": "markdown checklist mutation",
+          "mutation": "markdown checklist",
+          "input": "- Review source:household-sandbox/capture-b before any caller-owned follow-up.",
+          "expected": "- Review [Source handle redacted] before any caller-owned follow-up.",
+          "mustNotContain": ["source:household-sandbox/capture-b"]
+        },
+        {
+          "name": "label equals handle mutation",
+          "mutation": "inline label assignment",
+          "input": "sourceHandle=source:household-sandbox/zone-c; caveat=synthetic only",
+          "expected": "sourceHandle=[Source handle redacted]; caveat=synthetic only",
+          "mustNotContain": ["source:household-sandbox/zone-c"]
+        }
+      ]
+    },
+    {
+      "domain": "organization-like",
+      "intent": "Check that coordination-style notes redact mutated handles without implying package-owned routing or approval semantics.",
+      "cases": [
+        {
+          "name": "braced handle mutation",
+          "mutation": "curly-brace wrapper",
+          "input": "The synthetic coordination note cites {source:org-sandbox/decision-a} for traceability only.",
+          "expected": "The synthetic coordination note cites {[Source handle redacted]} for traceability only.",
+          "mustNotContain": ["source:org-sandbox/decision-a"]
+        },
+        {
+          "name": "slash-separated handle mutation",
+          "mutation": "slash-delimited sequence",
+          "input": "Compare source:org-sandbox/status-b / source:org-sandbox/follow-up-c only if the caller verifies the split correctly.",
+          "expected": "Compare [Source handle redacted] / [Source handle redacted] only if the caller verifies the split correctly.",
+          "mustNotContain": [
+            "source:org-sandbox/status-b",
+            "source:org-sandbox/follow-up-c"
+          ]
+        },
+        {
+          "name": "blockquote handle mutation",
+          "mutation": "blockquote evidence line",
+          "input": "> Evidence handle: source:org-sandbox/review-note-d",
+          "expected": "> Evidence handle: [Source handle redacted]",
+          "mustNotContain": ["source:org-sandbox/review-note-d"]
+        }
+      ]
+    },
+    {
+      "domain": "creative-like",
+      "intent": "Check that creative review notes still redact handles when the surrounding text mutates into lightweight markup or revision shorthand.",
+      "cases": [
+        {
+          "name": "backticked handle mutation",
+          "mutation": "inline code wrapper",
+          "input": "Keep `source:creative-sandbox/brief-a` opaque inside the synthetic critique note.",
+          "expected": "Keep `[Source handle redacted]` opaque inside the synthetic critique note.",
+          "mustNotContain": ["source:creative-sandbox/brief-a"]
+        },
+        {
+          "name": "double-colon handle mutation",
+          "mutation": "revision shorthand",
+          "input": "revision::source:creative-sandbox/draft-b::needs caveat",
+          "expected": "revision::[Source handle redacted]::needs caveat",
+          "mustNotContain": ["source:creative-sandbox/draft-b"]
+        },
+        {
+          "name": "markdown table list mutation",
+          "mutation": "pipe-delimited row with two handles",
+          "input": "| Draft | source:creative-sandbox/tone-c | source:creative-sandbox/alt-d |",
+          "expected": "| Draft | [Source handle redacted] | [Source handle redacted] |",
+          "mustNotContain": [
+            "source:creative-sandbox/tone-c",
+            "source:creative-sandbox/alt-d"
+          ]
+        }
+      ]
+    }
+  ]
+}

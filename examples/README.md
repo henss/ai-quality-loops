@@ -30,6 +30,7 @@ The example files cover the repeatable workflow surfaces. The package also suppo
 | Review synthetic household-inventory safety caveats | `batch-review ./examples/synthetic-grocy-public-safety-review.manifest.json` | Use this as a text-review seam for Grocy-style stock, consume-by, recipe, chore, and reorder artifacts; keep real exports, health interpretation, purchasing, disposal, alerting, and routing caller-owned. |
 | Review a synthetic scheduling fallback packet | `batch-review ./examples/synthetic-scheduling-fallback-review.manifest.json` | Use this as a text-review seam for proposal-first fallback planning when one schedule source is unreachable; keep real source checks, writes, retries, approvals, and communications caller-owned. |
 | Check source-handle redaction cases | `defineReviewSurfaceRedactions(...)` with `./examples/synthetic-source-handle-redaction-corpus.fixture.json` | Use when a consumer needs public-safe regression cases for caller-owned source-handle redaction across synthetic domains. |
+| Check source-handle redaction mutations | `defineReviewSurfaceRedactions(...)` with `./examples/synthetic-source-handle-redaction-mutations.fixture.json` | Use when a consumer needs public-safe mutation coverage for caller-owned source-handle redaction across punctuation, lightweight markup, and structured-text variants. |
 | Check caller-owned redaction rules | `defineReviewSurfaceRedactions(...)` with `./examples/synthetic-policy-redactions.fixture.json` | Use when a consumer needs a public-safe fixture for project-local redaction behavior without moving policy names into AIQL. |
 | Validate a synthetic reviewer-contract fixture | `validateStructuredReviewResult(...)` with `./examples/synthetic-reviewer-contract-result.fixture.json` | Use when checking contract consumers against a public-safe fixture with generic evidence labels and caller-owned action boundaries. |
 | Pilot a sanitized PR review candidate handoff | `renderLinearCandidateHandoffYaml(...)` and `validateLinearCandidateHandoffYaml(...)` with `./examples/synthetic-pr-review-result.fixture.json` | Use when checking a no-write candidate packet before a caller-owned workflow handles pull-request selection, merge policy, and tracker writes. |
@@ -188,6 +189,16 @@ Typical edits:
 - use the fixture with `defineReviewSurfaceRedactions(...)` to check that source handles redact consistently in prose, Markdown rows, JSON-like snippets, and bracketed references
 - keep real source names, source contents, source resolution, approval, retention, domain interpretation, and routing outside `ai-quality-loops`
 
+### `synthetic-source-handle-redaction-mutations.fixture.json`
+
+Use when you want public-safe mutation coverage for caller-owned source-handle redaction before review-output packets leave a private boundary.
+
+Typical edits:
+
+- keep the fixture synthetic or replace it only inside an embedding repo with caller-sanitized handles
+- use the fixture with `defineReviewSurfaceRedactions(...)` to check that source handles still redact after punctuation, checklist, quote, blockquote, table, code, yaml-like, and shorthand mutations
+- keep real source names, source contents, source resolution, approval, retention, domain interpretation, and routing outside `ai-quality-loops`
+
 ### `synthetic-buyer-claim-caveat-review.manifest.json`
 
 Use when you want a generic text review over synthetic or caller-sanitized buyer-interest claims before a caller-owned workflow uses them in research notes, positioning drafts, or decision support.
@@ -322,6 +333,7 @@ Typical edits:
 - The synthetic social evidence fixture is seam-focused. It intentionally excludes real account names, audience facts, source identities, brand strategy, publication decisions, and business routing.
 - The synthetic source-handle evidence fixture is seam-focused. It intentionally excludes real source names, source contents, tracker keys, private paths, domain facts, retention policy, approval status, implementation priority, and routing instructions.
 - The synthetic source-handle redaction corpus is regression-focused. It intentionally excludes real source names, source contents, tracker keys, private paths, domain facts, retention policy, approval status, implementation priority, and routing instructions.
+- The synthetic source-handle redaction mutation fixture is mutation-focused. It intentionally excludes real source names, source contents, tracker keys, private paths, domain facts, retention policy, approval status, implementation priority, and routing instructions.
 - The synthetic buyer-claim caveat fixture is seam-focused. It intentionally excludes real buyer identities, company names, source notes, outreach plans, spend decisions, account creation, proof thresholds, and venture-specific routing.
 - The synthetic finance cadence fixture is seam-focused. It intentionally excludes real financial records, entity names, threshold values, approval ownership, schedule state, alerting policy, spend decisions, and routing instructions.
 - The synthetic Grocy public-safety fixture is seam-focused. It intentionally excludes real household members, addresses, product identifiers, device integrations, source freshness, food-safety interpretation, health decisions, purchasing, disposal, alerting, and routing.

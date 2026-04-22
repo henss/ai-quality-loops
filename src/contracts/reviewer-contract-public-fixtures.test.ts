@@ -35,6 +35,12 @@ interface ParsedPublicFixtureContext {
   reviewSurface: string;
 }
 
+interface CheckedInStructuredArtifact {
+  markdownArtifactText: string;
+  structuredArtifactText: string;
+  structuredArtifact: unknown;
+}
+
 async function readManifestContextTarget(options: {
   manifestPath: string;
   contextPath: string;
@@ -67,6 +73,64 @@ function expectPublicSafeSerializedContent(serialized: string): void {
   for (const privateBoundaryTerm of PRIVATE_BOUNDARY_TERMS) {
     expect(normalized).not.toContain(privateBoundaryTerm);
   }
+}
+
+async function readCheckedInStructuredArtifact(options: {
+  markdownPath: string;
+  structuredPath: string;
+}): Promise<CheckedInStructuredArtifact> {
+  const markdownArtifactText = await readExampleFile(options.markdownPath);
+  const structuredArtifactText = await readExampleFile(options.structuredPath);
+  const structuredArtifact = JSON.parse(structuredArtifactText) as unknown;
+
+  return {
+    markdownArtifactText,
+    structuredArtifactText,
+    structuredArtifact,
+  };
+}
+
+function expectSyntheticContextPackStructuredArtifact(
+  structuredArtifact: unknown,
+): void {
+  const validation = validateStructuredReviewResult(structuredArtifact);
+
+  expect(validation).toEqual({
+    ok: true,
+    value: expect.objectContaining({
+      workflow: "expert",
+      summary: expect.stringContaining("empty audit fields"),
+      findings: expect.arrayContaining([
+        expect.objectContaining({
+          key: "empty-audit-boundary",
+          evidence: expect.arrayContaining([
+            "Research-source audit intentionally omitted",
+            "Public-source list intentionally omitted",
+          ]),
+        }),
+        expect.objectContaining({
+          key: "automated-action-readiness-unsupported",
+          severity: "high",
+        }),
+      ]),
+      provenance: expect.arrayContaining([
+        expect.objectContaining({
+          label: "Privacy boundary",
+          value: "No public-source list or copied source truth in shared artifact",
+        }),
+      ]),
+    }),
+  });
+}
+
+function expectSyntheticContextPackMarkdownArtifact(
+  markdownArtifactText: string,
+): void {
+  expect(markdownArtifactText).toContain("Output classification: review");
+  expect(markdownArtifactText).toContain("public-source list empty");
+  expect(markdownArtifactText).toContain(
+    "any real web, registry, tracker, or approval check already passed",
+  );
 }
 
 describe("synthetic reviewer-contract public fixtures", () => {
@@ -148,7 +212,9 @@ describe("synthetic reviewer-contract public fixtures", () => {
       `${fixture.manifestText}\n${fixture.contextText}\n${fixture.targetText}`,
     );
   });
+});
 
+describe("synthetic context-pack public fixtures", () => {
   it("ships a context-pack example that keeps source auditing caller-owned", async () => {
     const fixture = await readManifestContextTarget({
       manifestPath: "examples/synthetic-context-pack-quality-review.manifest.json",
@@ -171,22 +237,39 @@ describe("synthetic reviewer-contract public fixtures", () => {
     ]);
     expect(fixture.context.reviewSurface).toBe("Synthetic context pack quality packet");
     expect(fixture.context.reviewFocus).toContain(
-      "Treat the omitted research-source audit as intentional synthetic scope; do not infer that source freshness, retrieval coverage, or approval checks already happened.",
+      "Treat the omitted research-source audit and public-source list as intentional synthetic scope; do not infer that source freshness, retrieval coverage, public-source selection, or approval checks already happened.",
     );
     expect(fixture.context.outOfScope).toContain(
       "Do not infer private source contents, real tracker state, account details, or production readiness.",
     );
     expect(fixture.targetText).toContain("Research-source audit");
+    expect(fixture.targetText).toContain("Public-source list");
     expect(fixture.targetText).toContain("Intentionally omitted in this synthetic example.");
     expect(fixture.targetText).toContain(
-      "real callers must audit source freshness, retrieval coverage, and approval in their own boundary.",
+      "real callers must audit source freshness, retrieval coverage, public-source selection, and approval in their own boundary.",
     );
     expect(fixture.targetText).toContain(
-      "Treat the missing research-source audit as intentional fixture scope",
+      "Treat the missing research-source audit and public-source list as intentional fixture scope",
     );
 
     expectPublicSafeSerializedContent(
       `${fixture.manifestText}\n${fixture.contextText}\n${fixture.targetText}`,
+    );
+  });
+
+  it("ships a checked-in synthetic context-pack review artifact with an explicit no-public-sources boundary", async () => {
+    const artifact = await readCheckedInStructuredArtifact({
+      markdownPath:
+        "reviews/context-pack-quality/synthetic-context-pack-quality-packet-expert-review.md",
+      structuredPath:
+        "reviews/context-pack-quality/json/synthetic-context-pack-quality-packet-expert-review.json",
+    });
+
+    expectSyntheticContextPackStructuredArtifact(artifact.structuredArtifact);
+    expectSyntheticContextPackMarkdownArtifact(artifact.markdownArtifactText);
+
+    expectPublicSafeSerializedContent(
+      `${artifact.markdownArtifactText}\n${artifact.structuredArtifactText}`,
     );
   });
 });

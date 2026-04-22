@@ -178,7 +178,7 @@ Typical edits:
 
 - replace the synthetic target with a caller-owned pack that uses only sanitized source handles, generic evidence labels, scoped claims, caveats, and continuation boundaries
 - keep or adapt the context file so review stays focused on pack scope, evidence traceability, copied-truth risk, unsupported readiness claims, and caller-owned authority boundaries
-- treat the omitted research-source audit as fixture scope, not as proof that freshness, retrieval coverage, or approval already passed
+- treat the omitted research-source audit and public-source list as fixture scope, not as proof that freshness, retrieval coverage, public-source selection, or approval already passed
 - switch `expert` or `promptLibraryPath` to a caller-owned reviewer when project policy needs one
 - keep real source retrieval, source contents, private facts, source freshness, approval, retention, prioritization, routing, and domain interpretation outside `ai-quality-loops`
 
@@ -372,7 +372,7 @@ Typical edits:
 - The synthetic PR review fixture is adapter-pilot focused. It intentionally excludes real repository names, issue keys, branch names, source paths, hostnames, account names, reviewer assignments, merge policy, priority, and tracker writes.
 - The synthetic reviewer-contract manifest is runnable and intentionally excludes real target selection, issue keys, source URLs, local paths, account names, approval policy, routing, and retention decisions.
 - The synthetic context-pack quality manifest is seam-focused. It intentionally excludes real source names, source contents, tracker keys, private paths, source freshness, domain facts, approval state, retention policy, implementation priority, and routing instructions.
-- The synthetic context-pack quality manifest also leaves the research-source audit empty on purpose because the fixture uses opaque evidence labels only; callers must still own source freshness, retrieval-coverage, and approval checks.
+- The synthetic context-pack quality manifest also leaves the research-source audit and any public-source list empty on purpose because the fixture uses opaque evidence labels only; callers must still own source freshness, retrieval coverage, public-source selection, and approval checks.
 - The synthetic structured-result golden diff is comparison-focused. It intentionally excludes real source labels, tracker identifiers, local paths, account names, private facts, policy thresholds, and routing instructions.
 - The synthetic multi-review disagreement fixtures are comparison-focused. They intentionally exclude real reviewer identities, project names, source contents, thresholds, approval, routing, and remediation policy.
 - The synthetic multi-model disagreement report is template-focused. It intentionally excludes real model-routing policy, approval thresholds, tracker writes, reviewer identities, project names, and same-run arbitration logic.

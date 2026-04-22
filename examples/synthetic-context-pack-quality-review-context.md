@@ -12,7 +12,8 @@ Check whether the packet gives a downstream reviewer enough bounded, traceable c
 | --- | --- | --- |
 | Objective | Review one sanitized handoff for quality and boundary fit. | The objective is synthetic and does not represent a real workflow. |
 | Evidence registry | Evidence label A, Evidence label B, Evidence label C. | Labels are opaque handles, not source contents or proof. |
-| Research-source audit | Intentionally omitted in this synthetic example. | The fixture uses opaque evidence labels only; real callers must audit source freshness, retrieval coverage, and approval in their own boundary. |
+| Research-source audit | Intentionally omitted in this synthetic example. | The fixture uses opaque evidence labels only; real callers must audit source freshness, retrieval coverage, public-source selection, and approval in their own boundary. |
+| Public-source list | Intentionally omitted in this synthetic example. | The shared surface does not imply that any web, paper, registry, or tracker source was copied into this packet. |
 | Constraints | Keep source interpretation, approval, routing, and retention caller-owned. | The embedding repo must supply its own policy and thresholds. |
 | Known gaps | The pack does not include source freshness, owner approval, or action priority. | A reviewer should not infer readiness from missing fields. |
 | Continuation | Prepare a caller-owned follow-up note if quality gaps remain. | The package does not decide follow-up routing or external action. |
@@ -28,7 +29,7 @@ Check whether the packet gives a downstream reviewer enough bounded, traceable c
 ## Expected Reviewer Posture
 
 - Report missing evidence, ambiguous registry labels, copied-truth risk, and over-broad readiness claims as findings.
-- Treat the missing research-source audit as intentional fixture scope, not as hidden proof that source checks already passed.
+- Treat the missing research-source audit and public-source list as intentional fixture scope, not as hidden proof that source checks already passed.
 - Use generic evidence labels only.
 - Keep recommendations limited to pack-quality fixes, caller-owned confirmation, and boundary clarification.
 - Do not approve publication, deployment, remediation ownership, tracker routing, retention, scheduling, or real-world action.

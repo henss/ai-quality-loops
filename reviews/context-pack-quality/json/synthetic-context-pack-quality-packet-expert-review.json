@@ -1,0 +1,128 @@
+{
+  "schemaVersion": "1",
+  "workflow": "expert",
+  "expert": "Efficiency",
+  "model": "local-ollama-first-synthetic-review",
+  "summary": "The synthetic context-pack packet is a valid AIQL review surface only when the empty audit fields remain an explicit opaque-evidence boundary rather than implied proof that real source checks already passed.",
+  "overallSeverity": "high",
+  "findings": [
+    {
+      "key": "empty-audit-boundary",
+      "title": "Empty audit fields must remain an explicit synthetic boundary",
+      "summary": "The omitted research-source audit and public-source list are acceptable only because the packet explicitly uses opaque evidence labels and synthetic scope; future edits must not imply hidden source checks.",
+      "severity": "high",
+      "evidence": [
+        "Evidence label A",
+        "Research-source audit intentionally omitted",
+        "Public-source list intentionally omitted"
+      ]
+    },
+    {
+      "key": "automated-action-readiness-unsupported",
+      "title": "Automated downstream readiness is unsupported",
+      "summary": "The packet does not supply source freshness, approval, routing, or public-source selection evidence, so it cannot support automated downstream action.",
+      "severity": "high",
+      "evidence": [
+        "Evidence label C",
+        "Known gaps: source freshness, owner approval, action priority"
+      ]
+    },
+    {
+      "key": "opaque-label-traceability-limit",
+      "title": "Opaque evidence labels limit standalone traceability",
+      "summary": "Generic evidence labels preserve the open-source boundary but require caller-owned registry resolution before a downstream reviewer can treat them as actionable support.",
+      "severity": "medium",
+      "evidence": [
+        "Evidence label A",
+        "Evidence label B",
+        "Evidence label C"
+      ]
+    },
+    {
+      "key": "context-pack-not-memory-store",
+      "title": "The shared packet must not become a memory store or tracker mirror",
+      "summary": "The public-safe seam works because AIQL reviews pack quality only; retrieval, interpretation, retention, and routing stay caller-owned.",
+      "severity": "medium",
+      "evidence": [
+        "Boundary note: caller-owned retrieval and routing"
+      ]
+    }
+  ],
+  "decision": {
+    "schema": "peer_review_decision_v1",
+    "verdict": "accept_with_follow_up",
+    "confidence": "high",
+    "blocking": false,
+    "max_severity": "high",
+    "summary": "The synthetic context-pack packet is a valid AIQL review surface only when the empty audit fields remain an explicit opaque-evidence boundary rather than implied proof that real source checks already passed.",
+    "blocking_findings": [],
+    "non_blocking_findings": [
+      {
+        "key": "empty-audit-boundary",
+        "title": "Empty audit fields must remain an explicit synthetic boundary",
+        "summary": "The omitted research-source audit and public-source list are acceptable only because the packet explicitly uses opaque evidence labels and synthetic scope; future edits must not imply hidden source checks.",
+        "severity": "high",
+        "evidence": [
+          "Evidence label A",
+          "Research-source audit intentionally omitted",
+          "Public-source list intentionally omitted"
+        ]
+      },
+      {
+        "key": "automated-action-readiness-unsupported",
+        "title": "Automated downstream readiness is unsupported",
+        "summary": "The packet does not supply source freshness, approval, routing, or public-source selection evidence, so it cannot support automated downstream action.",
+        "severity": "high",
+        "evidence": [
+          "Evidence label C",
+          "Known gaps: source freshness, owner approval, action priority"
+        ]
+      },
+      {
+        "key": "opaque-label-traceability-limit",
+        "title": "Opaque evidence labels limit standalone traceability",
+        "summary": "Generic evidence labels preserve the open-source boundary but require caller-owned registry resolution before a downstream reviewer can treat them as actionable support.",
+        "severity": "medium",
+        "evidence": [
+          "Evidence label A",
+          "Evidence label B",
+          "Evidence label C"
+        ]
+      },
+      {
+        "key": "context-pack-not-memory-store",
+        "title": "The shared packet must not become a memory store or tracker mirror",
+        "summary": "The public-safe seam works because AIQL reviews pack quality only; retrieval, interpretation, retention, and routing stay caller-owned.",
+        "severity": "medium",
+        "evidence": [
+          "Boundary note: caller-owned retrieval and routing"
+        ]
+      }
+    ],
+    "required_before_merge": [],
+    "follow_up": [
+      "Keep the empty research-source audit and public-source list documented as intentional synthetic scope whenever this example is copied.",
+      "Require embedding repos to resolve opaque evidence labels through their own registry before using the packet for any real decision or routing step.",
+      "Avoid extracting source-audit or context-pack automation until repeated public use cases justify a narrower generic seam."
+    ]
+  },
+  "provenance": [
+    {
+      "label": "Content source",
+      "value": "Local file path (.md file)"
+    },
+    {
+      "label": "Evidence basis",
+      "value": "Generic evidence labels only"
+    },
+    {
+      "label": "Privacy boundary",
+      "value": "No public-source list or copied source truth in shared artifact"
+    }
+  ],
+  "markdown": "# Synthetic Context Pack Quality Review\n\nOutput classification: review\n\n## Summary\n\nThe synthetic ContextWeave-style pack-quality packet is a valid AIQL review surface because it stays bounded to one downstream review, uses opaque evidence labels instead of copied source truth, and explicitly leaves the research-source audit and public-source list empty. That omission must remain a visible synthetic boundary rather than being mistaken for proof that any real web, registry, tracker, or approval check already passed.\n",
+  "diagnostics": {
+    "source": "checked_in_synthetic_artifact",
+    "decisionParsed": true
+  }
+}

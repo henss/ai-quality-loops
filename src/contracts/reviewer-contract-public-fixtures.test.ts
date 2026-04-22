@@ -29,6 +29,38 @@ async function readExampleFile(relativePath: string): Promise<string> {
   return fs.readFile(path.join(process.cwd(), relativePath), "utf-8");
 }
 
+interface ParsedPublicFixtureContext {
+  reviewFocus: string[];
+  outOfScope: string[];
+  reviewSurface: string;
+}
+
+async function readManifestContextTarget(options: {
+  manifestPath: string;
+  contextPath: string;
+  targetPath: string;
+}): Promise<{
+  manifestText: string;
+  parsedManifest: ReturnType<typeof parseBatchReviewManifest>;
+  contextText: string;
+  context: ParsedPublicFixtureContext;
+  targetText: string;
+}> {
+  const manifestText = await readExampleFile(options.manifestPath);
+  const parsedManifest = parseBatchReviewManifest(JSON.parse(manifestText));
+  const contextText = await readExampleFile(options.contextPath);
+  const context = JSON.parse(contextText) as ParsedPublicFixtureContext;
+  const targetText = await readExampleFile(options.targetPath);
+
+  return {
+    manifestText,
+    parsedManifest,
+    contextText,
+    context,
+    targetText,
+  };
+}
+
 function expectPublicSafeSerializedContent(serialized: string): void {
   const normalized = serialized.toLowerCase();
 
@@ -80,53 +112,81 @@ describe("synthetic reviewer-contract public fixtures", () => {
   });
 
   it("ships a runnable manifest and context pair that keeps external action caller-gated", async () => {
-    const manifestText = await readExampleFile(
-      "examples/synthetic-reviewer-contract-review.manifest.json",
-    );
-    const manifest = JSON.parse(manifestText) as unknown;
-    const parsed = parseBatchReviewManifest(manifest);
+    const fixture = await readManifestContextTarget({
+      manifestPath: "examples/synthetic-reviewer-contract-review.manifest.json",
+      contextPath: "examples/synthetic-reviewer-contract-review-context.json",
+      targetPath: "examples/synthetic-reviewer-contract-review-context.md",
+    });
 
-    expect(parsed.defaults).toEqual(
+    expect(fixture.parsedManifest.defaults).toEqual(
       expect.objectContaining({
         mode: "expert",
         expert: "Evidence Reviewer",
         contextPath: "./examples/synthetic-reviewer-contract-review-context.json",
       }),
     );
-    expect(parsed.reviews).toEqual([
+    expect(fixture.parsedManifest.reviews).toEqual([
       expect.objectContaining({
         name: "Synthetic reviewer contract packet",
         target: "./examples/synthetic-reviewer-contract-review-context.md",
       }),
     ]);
-
-    const contextText = await readExampleFile(
-      "examples/synthetic-reviewer-contract-review-context.json",
-    );
-    const context = JSON.parse(contextText) as {
-      reviewFocus: string[];
-      outOfScope: string[];
-      reviewSurface: string;
-    };
-    expect(context.reviewSurface).toBe("Synthetic reviewer-contract packet");
-    expect(context.reviewFocus).toContain(
+    expect(fixture.context.reviewSurface).toBe("Synthetic reviewer-contract packet");
+    expect(fixture.context.reviewFocus).toContain(
       "Flag any claim that implies external action readiness without approval, release, or routing evidence.",
     );
-    expect(context.outOfScope).toContain(
+    expect(fixture.context.outOfScope).toContain(
       "Do not infer private repositories, issue trackers, products, companies, or domain programs from placeholder wording.",
     );
-
-    const targetText = await readExampleFile(
-      "examples/synthetic-reviewer-contract-review-context.md",
-    );
-    expect(targetText).toContain("Evidence label C");
-    expect(targetText).toContain("must remain caller-gated");
-    expect(targetText).toContain(
+    expect(fixture.targetText).toContain("Evidence label C");
+    expect(fixture.targetText).toContain("must remain caller-gated");
+    expect(fixture.targetText).toContain(
       "Prefer stable generic finding keys when the same boundary or support gap could recur across runs.",
     );
 
     expectPublicSafeSerializedContent(
-      `${manifestText}\n${contextText}\n${targetText}`,
+      `${fixture.manifestText}\n${fixture.contextText}\n${fixture.targetText}`,
+    );
+  });
+
+  it("ships a context-pack example that keeps source auditing caller-owned", async () => {
+    const fixture = await readManifestContextTarget({
+      manifestPath: "examples/synthetic-context-pack-quality-review.manifest.json",
+      contextPath: "examples/synthetic-context-pack-quality-review-context.json",
+      targetPath: "examples/synthetic-context-pack-quality-review-context.md",
+    });
+
+    expect(fixture.parsedManifest.defaults).toEqual(
+      expect.objectContaining({
+        mode: "expert",
+        expert: "Efficiency",
+        contextPath: "./examples/synthetic-context-pack-quality-review-context.json",
+      }),
+    );
+    expect(fixture.parsedManifest.reviews).toEqual([
+      expect.objectContaining({
+        name: "Synthetic context pack quality packet",
+        target: "./examples/synthetic-context-pack-quality-review-context.md",
+      }),
+    ]);
+    expect(fixture.context.reviewSurface).toBe("Synthetic context pack quality packet");
+    expect(fixture.context.reviewFocus).toContain(
+      "Treat the omitted research-source audit as intentional synthetic scope; do not infer that source freshness, retrieval coverage, or approval checks already happened.",
+    );
+    expect(fixture.context.outOfScope).toContain(
+      "Do not infer private source contents, real tracker state, account details, or production readiness.",
+    );
+    expect(fixture.targetText).toContain("Research-source audit");
+    expect(fixture.targetText).toContain("Intentionally omitted in this synthetic example.");
+    expect(fixture.targetText).toContain(
+      "real callers must audit source freshness, retrieval coverage, and approval in their own boundary.",
+    );
+    expect(fixture.targetText).toContain(
+      "Treat the missing research-source audit as intentional fixture scope",
+    );
+
+    expectPublicSafeSerializedContent(
+      `${fixture.manifestText}\n${fixture.contextText}\n${fixture.targetText}`,
     );
   });
 });

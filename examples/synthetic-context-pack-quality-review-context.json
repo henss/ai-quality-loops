@@ -3,6 +3,7 @@
   "reviewFocus": [
     "Check whether the context pack gives a downstream reviewer enough bounded evidence to act without broad rediscovery.",
     "Flag missing or ambiguous evidence registry entries, copied-truth risk, unsupported readiness claims, and weak continuation boundaries.",
+    "Treat the omitted research-source audit as intentional synthetic scope; do not infer that source freshness, retrieval coverage, or approval checks already happened.",
     "Check that the pack remains a caller-owned context handoff rather than a package-owned memory store, tracker mirror, or routing policy.",
     "Keep private source retrieval, source interpretation, approval, action routing, retention, and domain decisions caller-owned."
   ],

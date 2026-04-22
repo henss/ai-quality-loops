@@ -20,6 +20,7 @@ The example files cover the repeatable workflow surfaces. The package also suppo
 | Gate a local or CI check with explicit budgets | `review-gate --result ./reviews/result.json --max-high 0` | Use `--batch-summary` for a whole manifest run or `--batch-comparison` for explicit comparison-report delta budgets. |
 | Compare two batch summary artifacts | `batch-review-compare ./reviews/previous-summary.json ./reviews/current-summary.json --json` | Feed the JSON report into `review-gate --batch-comparison` when CI should fail on caller-owned regression budgets. |
 | Summarize launch outcome evidence | `formatLaunchOutcomeEvidenceSummary(comparisonReport, { gate })` | Produces a compact, public-safe Markdown evidence note from sanitized comparison and optional gate results without deciding launch readiness. |
+| Format a multi-model disagreement note | `formatMultiModelDisagreementReport(comparisonReport, { baselineLabel, candidateLabel })` | Produces a compact, public-safe Markdown triage template from two comparable batch-summary artifacts without deciding acceptance or routing. |
 | Probe image-review quality with a synthetic visual target | `vision-preview --manifest ./examples/synthetic-zone-vision-probe.manifest.json --entry-name "Synthetic zone overview"` | Uses generic zones only; keep real capture handling, thresholds, and routing caller-owned. |
 | Review a sanitized social evidence packet | `batch-review ./examples/sanitized-social-evidence-review.manifest.json` | Use this as a text-review seam for redacted evidence packets; keep real sources, proof thresholds, and publication routing caller-owned. |
 | Review a synthetic creative packet | `batch-review ./examples/synthetic-creative-review-packet.manifest.json` | Use this as a public-safe seam for caller-sanitized creative-review packets; keep asset selection, release approval, and brand authority caller-owned. |
@@ -352,6 +353,16 @@ Typical edits:
 - compare the helper output to `synthetic-multi-review-disagreement-comparison.expected.json` when a wrapper needs stable calibration coverage for improved, regressed, unchanged, recovered, added, and removed review entries
 - keep real reviewer assignment, source contents, thresholds, approval, routing, and remediation policy outside `ai-quality-loops`
 
+### `synthetic-multi-model-disagreement-report.md`
+
+Use when you want a public-safe markdown example for consumers of `formatMultiModelDisagreementReport(...)`.
+
+Typical edits:
+
+- keep the baseline and candidate labels generic, or replace them only with caller-sanitized cohort labels
+- use the template only when disagreement is already represented by two comparable published batch summaries
+- keep same-run arbitration, reviewer clustering, acceptance policy, thresholds, tracker writes, and remediation routing outside `ai-quality-loops`
+
 ## Boundary notes
 
 - The examples stay open-source-safe on purpose. They do not embed private domains, company personas, or project-specific output routing.
@@ -362,6 +373,7 @@ Typical edits:
 - The synthetic context-pack quality manifest is seam-focused. It intentionally excludes real source names, source contents, tracker keys, private paths, source freshness, domain facts, approval state, retention policy, implementation priority, and routing instructions.
 - The synthetic structured-result golden diff is comparison-focused. It intentionally excludes real source labels, tracker identifiers, local paths, account names, private facts, policy thresholds, and routing instructions.
 - The synthetic multi-review disagreement fixtures are comparison-focused. They intentionally exclude real reviewer identities, project names, source contents, thresholds, approval, routing, and remediation policy.
+- The synthetic multi-model disagreement report is template-focused. It intentionally excludes real model-routing policy, approval thresholds, tracker writes, reviewer identities, project names, and same-run arbitration logic.
 - The synthetic social evidence fixture is seam-focused. It intentionally excludes real account names, audience facts, source identities, brand strategy, publication decisions, and business routing.
 - The synthetic source-handle evidence fixture is seam-focused. It intentionally excludes real source names, source contents, tracker keys, private paths, domain facts, retention policy, approval status, implementation priority, and routing instructions.
 - The synthetic source-handle redaction corpus is regression-focused. It intentionally excludes real source names, source contents, tracker keys, private paths, domain facts, retention policy, approval status, implementation priority, and routing instructions.

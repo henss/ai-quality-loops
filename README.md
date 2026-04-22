@@ -29,6 +29,7 @@ Use the package when you need repeatable LLM-assisted review workflows that stay
 - **Rerun selected batch entries** from a prior summary when only failed or named reviews need another pass.
 - **Gate CI or local checks** with explicit severity and finding-count budgets using `review-gate`.
 - **Compare two batch summaries** to see added, removed, status-changed, and severity-moved review entries.
+- **Format a multi-model disagreement report** from two comparable batch-summary artifacts when model-cohort differences need a public-safe triage note.
 - **Check local prerequisites** before a costly run, including personas, Ollama models, browser availability, and optional context files.
 - **Call the underlying Ollama helpers** when you need lower-level text or vision generation instead of the review workflow.
 
@@ -54,6 +55,7 @@ The package publishes copy-ready starter manifests under `examples/` so embeddin
 - `examples/synthetic-reviewer-contract-result.fixture.json` for a public-safe reviewer-contract fixture with generic evidence labels
 - `examples/synthetic-apartment-review-result.fixture.json` for a sanitized structured-result contract fixture with no private home data
 - `examples/synthetic-structured-result-golden-diff-*.json` for a public-safe before/after comparison fixture and expected diff
+- `examples/synthetic-multi-model-disagreement-report.md` for a public-safe markdown template generated from two comparable batch-summary artifacts
 - `examples/ci-review-gate-check.md` for one generic CI check recipe that wires `batch-review`, structured outputs, and `review-gate`
 
 Use the companion notes in `examples/README.md` to decide which example to copy, which targets must be replaced, and when to use `vision-sections`, `vision-preview --manifest`, `batch-review`, and `review-gate` together.
@@ -184,6 +186,39 @@ console.log(JSON_CONTRACT_SCHEMA_FILES.batchReviewSummaryComparison);
 console.log(JSON_CONTRACT_SCHEMA_FILES.highStakesAnalysisReviewRubric);
 console.log(JSON_CONTRACT_SCHEMA_FILES.structuredReviewResult);
 ```
+
+When two comparable batch-summary artifacts represent different model cohorts and a caller needs a compact disagreement note instead of raw comparison JSON, format the existing comparison contract directly:
+
+```typescript
+import {
+  compareBatchReviewArtifactSummaries,
+  formatMultiModelDisagreementReport
+} from 'ai-quality-loops';
+
+const comparison = compareBatchReviewArtifactSummaries({
+  before: baselineSummary,
+  after: candidateSummary
+});
+
+const disagreementReport = formatMultiModelDisagreementReport({
+  inputs: {
+    before: { pathLabel: 'Baseline summary' },
+    after: { pathLabel: 'Candidate summary' }
+  },
+  comparison
+}, {
+  baselineLabel: 'Baseline model cohort',
+  candidateLabel: 'Candidate model cohort'
+});
+
+console.log(disagreementReport);
+```
+
+The disagreement template stays intentionally narrow:
+
+- it assumes disagreement is already expressed by two comparable published batch summaries
+- it highlights changed, added, removed, and stable entries without inferring approval or routing policy
+- it does not add same-run arbitration, reviewer clustering, or project-specific acceptance heuristics
 
 ### Visual Audit (Vision Review)
 

@@ -25,6 +25,17 @@ Check whether a caller-sanitized creative packet gives a reviewer enough bounded
 | The concept appears ready for a caller-owned readiness review after minor concept polish. | Layout draft B | This remains a conceptual assessment; approval, production checks, and routing stay caller-owned. |
 | The creative packet is safe to share with downstream reviewers. | Caveat note D | The packet stays safe only while labels remain sanitized and private assets stay outside AIQL. |
 
+## Rubric Anchors
+
+Use the packet as a bounded rubric pass for:
+
+- claim proportionality between qualitative notes and the stated conclusion
+- evidence label clarity without exposing private assets
+- boundary discipline around approval, release, and concept selection
+- caveat preservation when claims are summarized
+- next-step hygiene that keeps revision and readiness caller-owned
+- shared-surface safety across names, paths, dates, and unpublished materials
+
 ## Expected Reviewer Posture
 
 - Report overconfident audience or readiness claims as findings.

@@ -147,9 +147,11 @@ batch-review ./examples/synthetic-creative-review-packet.manifest.json
 Typical edits:
 
 - replace the synthetic target with a caller-owned packet that uses only sanitized evidence labels, qualitative reviewer notes, explicit caveats, and bounded next-step language
-- keep or adapt the context file so review stays focused on claim proportionality, creative-direction caveats, generic evidence handles, and caller-owned authority boundaries
+- keep or adapt the context file so review stays focused on claim proportionality, evidence-label clarity, caveat preservation, next-step hygiene, and caller-owned authority boundaries
 - switch `expert` or `promptLibraryPath` to a caller-owned creative reviewer when project policy needs one
 - keep real asset files, private mood boards, release timing, brand approval, budget, and channel strategy outside `ai-quality-loops`
+
+See `docs/sanitized-creative-review-rubric-pass-pilot.md` for the generic rubric-pass boundary and extraction test.
 
 ### `synthetic-reviewer-contract-review.manifest.json`
 

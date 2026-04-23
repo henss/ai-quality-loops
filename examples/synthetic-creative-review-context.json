@@ -6,6 +6,86 @@
     "Check that evidence labels, review goals, and next-step language stay generic enough for a caller-sanitized packet.",
     "Keep final asset approval, publication timing, brand authority, budget, channel strategy, and follow-up routing caller-owned."
   ],
+  "rubricDimensions": [
+    {
+      "id": "claim-proportionality",
+      "label": "Claim Proportionality",
+      "reviewQuestion": "Do qualitative notes, concept language, and small-sample reactions stay framed as bounded observations instead of validated audience or performance outcomes?",
+      "passSignals": [
+        "Claims stay qualitative and concept-level",
+        "Audience, trust, or readiness language keeps explicit caveats"
+      ],
+      "failSignals": [
+        "Small-sample reactions become broad audience proof",
+        "Concept polish is described as validated performance improvement"
+      ]
+    },
+    {
+      "id": "evidence-label-clarity",
+      "label": "Evidence Label Clarity",
+      "reviewQuestion": "Do generic evidence handles remain legible enough for critique without exposing private assets, source locations, or unpublished material?",
+      "passSignals": [
+        "Handles are generic but distinguish palette, layout, reaction, and caveat inputs",
+        "Reviewers can see which claim depends on which evidence label"
+      ],
+      "failSignals": [
+        "Evidence handles are too opaque to support critique",
+        "Private asset references or source paths leak into the packet"
+      ]
+    },
+    {
+      "id": "boundary-discipline",
+      "label": "Boundary Discipline",
+      "reviewQuestion": "Does the packet stay inside creative critique and avoid implying concept approval, release readiness, or brand authority?",
+      "passSignals": [
+        "Final concept choice stays caller-owned",
+        "Approval and publication language is explicitly deferred"
+      ],
+      "failSignals": [
+        "The review implies final concept selection",
+        "Readiness language bypasses caller-owned approval"
+      ]
+    },
+    {
+      "id": "caveat-preservation",
+      "label": "Caveat Preservation",
+      "reviewQuestion": "Do caveats remain attached to each claim so downstream summaries cannot flatten them into confident assertions?",
+      "passSignals": [
+        "Each claim retains its evidence limit or uncertainty note",
+        "Qualitative support is restated as bounded, not universal"
+      ],
+      "failSignals": [
+        "Summary language drops the key caveat",
+        "Confidence is stated without noting evidence limits"
+      ]
+    },
+    {
+      "id": "next-step-hygiene",
+      "label": "Next-Step Hygiene",
+      "reviewQuestion": "Are suggested next steps limited to caller-owned revision, deeper review, or clarification work instead of irreversible creative decisions?",
+      "passSignals": [
+        "Follow-up remains reversible and critique-oriented",
+        "Next steps point to caller-owned revision or readiness checks"
+      ],
+      "failSignals": [
+        "The packet directs release or production action",
+        "Follow-up assumes stakeholder approval already exists"
+      ]
+    },
+    {
+      "id": "shared-surface-safety",
+      "label": "Shared-Surface Safety",
+      "reviewQuestion": "Does the packet avoid private brand names, campaign dates, audience facts, repository paths, or unpublished asset details?",
+      "passSignals": [
+        "The packet uses only sanitized creative descriptors",
+        "No private operational or brand-specific detail appears"
+      ],
+      "failSignals": [
+        "Private identifiers or unpublished asset detail appears",
+        "Shared examples imply a real campaign or private operating context"
+      ]
+    }
+  ],
   "outOfScope": [
     "Do not infer real brand identity, campaign schedule, customer segment, conversion intent, or unpublished creative assets.",
     "Do not approve release, select a winning concept, assign work, or turn the packet into a production brief.",

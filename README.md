@@ -25,6 +25,7 @@ Use the package when you need repeatable LLM-assisted review workflows that stay
 - **Format a sponsor memo** from one structured review result when an approver needs a compact decision readout.
 - **Compare two structured review results** when you need a deterministic before/after regression summary.
 - **Adjudicate two reviewer outputs** when one target has conflicting structured review results and a sponsor needs a bounded tie-break note.
+- **Compare several reviewer outputs** when one target has multiple structured review results and a caller needs a bounded cross-review consensus readout.
 - **Discover page sections** before targeted visual review so manifest entries can point at stable fragment ids.
 - **Preview targeted captures** before spending model time on a vision run.
 - **Run manifest-driven batch reviews** across several text, page, and screenshot targets with consistent output paths.
@@ -61,6 +62,7 @@ The package publishes copy-ready starter manifests under `examples/` so embeddin
 - `examples/synthetic-review-sponsor-memo.md` for a public-safe sponsor-facing memo rendered from one structured review result
 - `examples/synthetic-reviewer-disagreement-left.fixture.json` and `examples/synthetic-reviewer-disagreement-right.fixture.json` for a public-safe two-reviewer disagreement pair over one synthetic target
 - `examples/synthetic-reviewer-disagreement-adjudication.md` for a public-safe sponsor-facing tie-break note rendered from two structured review results
+- `examples/synthetic-cross-review-consensus-report.md` for a public-safe three-reviewer consensus readout rendered from several structured review results
 - `examples/synthetic-structured-result-golden-diff-*.json` for a public-safe before/after comparison fixture and expected diff
 - `examples/synthetic-multi-model-disagreement-report.md` for a public-safe markdown template generated from two comparable batch-summary artifacts
 - `examples/ci-review-gate-check.md` for one generic CI check recipe that wires `batch-review`, structured outputs, and `review-gate`
@@ -294,6 +296,40 @@ The adjudication seam stays intentionally narrow:
 - it classifies disagreement into presence, severity, evidence, recommendation, and wording buckets using deterministic field-level differences
 - it produces a sponsor-facing tie-break note without deciding approval, routing, or remediation ownership
 - it keeps reviewer assignment, same-run orchestration, clustering, thresholds, and tracker writes outside AIQL
+
+When several published structured review results cover the same target and a caller needs a compact convergence/divergence readout instead of pairwise notes, compare the set directly:
+
+```typescript
+import {
+  compareCrossReviewConsensus,
+  formatCrossReviewConsensusReport
+} from 'ai-quality-loops';
+
+const comparison = compareCrossReviewConsensus({
+  reviews: [
+    { label: 'Reviewer A', result: reviewerAResult },
+    { label: 'Reviewer B', result: reviewerBResult },
+    { label: 'Reviewer C', result: reviewerCResult }
+  ]
+});
+
+const report = formatCrossReviewConsensusReport({
+  inputs: [
+    { label: 'Reviewer A structured result' },
+    { label: 'Reviewer B structured result' },
+    { label: 'Reviewer C structured result' }
+  ],
+  comparison
+});
+
+console.log(report);
+```
+
+The cross-review consensus seam stays intentionally narrow:
+
+- it compares published structured review-result artifacts for one target without creating a new reviewer loop
+- it groups findings by the existing stable generic key normalization and summarizes where reviewers align on presence, severity, wording, recommendation, and evidence
+- it keeps reviewer weighting, arbitration thresholds, approval policy, and downstream routing outside AIQL
 
 ### Visual Audit (Vision Review)
 

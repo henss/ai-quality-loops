@@ -22,6 +22,7 @@ Use the package when you need repeatable LLM-assisted review workflows that stay
 - **Run one focused text review** with a named expert persona against a README, code file, spec, or raw text input.
 - **Run one visual review** against a webpage, local HTML file, or screenshot-backed target.
 - **Save structured review results** so downstream tools can route findings without parsing Markdown.
+- **Format a sponsor memo** from one structured review result when an approver needs a compact decision readout.
 - **Compare two structured review results** when you need a deterministic before/after regression summary.
 - **Discover page sections** before targeted visual review so manifest entries can point at stable fragment ids.
 - **Preview targeted captures** before spending model time on a vision run.
@@ -54,6 +55,7 @@ The package publishes copy-ready starter manifests under `examples/` so embeddin
 - `examples/synthetic-policy-redactions.fixture.json` for public-safe caller-provided redaction-rule checks
 - `examples/synthetic-reviewer-contract-result.fixture.json` for a public-safe reviewer-contract fixture with generic evidence labels
 - `examples/synthetic-apartment-review-result.fixture.json` for a sanitized structured-result contract fixture with no private home data
+- `examples/synthetic-review-sponsor-memo.md` for a public-safe sponsor-facing memo rendered from one structured review result
 - `examples/synthetic-structured-result-golden-diff-*.json` for a public-safe before/after comparison fixture and expected diff
 - `examples/synthetic-multi-model-disagreement-report.md` for a public-safe markdown template generated from two comparable batch-summary artifacts
 - `examples/ci-review-gate-check.md` for one generic CI check recipe that wires `batch-review`, structured outputs, and `review-gate`
@@ -83,6 +85,7 @@ The library works out-of-the-box with default example personas in `personas/univ
 - Review flows also attach prompt-safe provenance bullets such as `Content source` or `Capture mode`, using sanitized descriptors instead of raw local paths or sensitive URL details.
 - Targeted vision-review provenance preserves the planned capture label together with the sanitized requested section id, using values such as `section-1 (hero)` instead of collapsing everything to anonymous section counters.
 - Expert and vision review entrypoints can also emit one narrow structured review-result contract with summary, severity rollup, finding list, sanitized provenance descriptors, and sanitized Markdown. The structured-result builder applies the same generic URL/path/contact redaction plus caller-provided `extraRedactions` before publishing reviewer-contract strings.
+- Sponsor memo helpers can turn one sanitized structured review result into a compact approver-facing memo with sponsor posture, confidence, evidence pointers, open questions, and an explicit caller-owned boundary.
 - Candidate handoff helpers can render and validate a strict no-write YAML packet from sanitized structured review results. The validation helper checks the public candidate packet shape and policy guardrails, while downstream writes and prioritization remain caller-owned.
 - The package also publishes JSON Schema artifacts for the batch-review manifest, batch-review summary, batch-review summary comparison, structured review-result, and generic high-stakes analysis review rubric contracts under `schemas/`, alongside thin `parse...` and `validate...` helpers exported from the package root for callers that want contract checks without adding a schema runtime first.
 - `CHROME_PATH`: (Optional) Path to your browser executable (defaults to Edge on Windows).
@@ -220,6 +223,28 @@ The disagreement template stays intentionally narrow:
 - it assumes disagreement is already expressed by two comparable published batch summaries
 - it highlights changed, added, removed, and stable entries without inferring approval or routing policy
 - it does not add same-run arbitration, reviewer clustering, or project-specific acceptance heuristics
+
+When one structured review result needs a compact sponsor-facing readout instead of raw JSON, format the review result directly:
+
+```typescript
+import {
+  formatReviewSponsorMemo,
+  parseStructuredReviewResult
+} from 'ai-quality-loops';
+
+const result = parseStructuredReviewResult(reviewResultJson);
+const memo = formatReviewSponsorMemo(result, {
+  sourceLabel: 'Synthetic PR review adapter pilot'
+});
+
+console.log(memo);
+```
+
+The sponsor memo stays intentionally narrow:
+
+- it formats one published structured review-result artifact
+- it highlights sponsor posture, reviewer confidence, evidence pointers, and open questions without deciding approval or routing
+- it keeps private source interpretation, tracker writes, and downstream action in the embedding workflow
 
 ### Visual Audit (Vision Review)
 

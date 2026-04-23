@@ -1,0 +1,39 @@
+{
+  "schemaVersion": "1",
+  "workflow": "expert",
+  "expert": "Synthetic reviewer B",
+  "model": "qwen3.5:32b",
+  "summary": "Synthetic reviewer B softens one shared finding, adds one boundary concern, and keeps one agreement.",
+  "overallSeverity": "medium",
+  "findings": [
+    {
+      "key": "claim-support",
+      "title": "Claim support",
+      "summary": "The packet still needs a caveat before it can reuse the evidence.",
+      "severity": "medium",
+      "recommendation": "Add the caveat and cite the exact evidence label.",
+      "evidence": ["Evidence A", "Evidence C"]
+    },
+    {
+      "key": "sponsor-language",
+      "title": "Sponsor language",
+      "summary": "The summary sounds too close to approval guidance.",
+      "severity": "medium",
+      "recommendation": "Restate that approval remains caller-owned."
+    },
+    {
+      "key": "source-traceability",
+      "title": "Source traceability",
+      "summary": "Evidence labels stay generic and traceable.",
+      "severity": "medium",
+      "evidence": ["Evidence B"]
+    }
+  ],
+  "provenance": [
+    {
+      "label": "Content source",
+      "value": "Synthetic reviewer disagreement packet"
+    }
+  ],
+  "markdown": "# Summary\nSynthetic reviewer B softens one shared finding, adds one boundary concern, and keeps one agreement."
+}

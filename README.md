@@ -24,6 +24,7 @@ Use the package when you need repeatable LLM-assisted review workflows that stay
 - **Save structured review results** so downstream tools can route findings without parsing Markdown.
 - **Format a sponsor memo** from one structured review result when an approver needs a compact decision readout.
 - **Compare two structured review results** when you need a deterministic before/after regression summary.
+- **Adjudicate two reviewer outputs** when one target has conflicting structured review results and a sponsor needs a bounded tie-break note.
 - **Discover page sections** before targeted visual review so manifest entries can point at stable fragment ids.
 - **Preview targeted captures** before spending model time on a vision run.
 - **Run manifest-driven batch reviews** across several text, page, and screenshot targets with consistent output paths.
@@ -57,6 +58,8 @@ The package publishes copy-ready starter manifests under `examples/` so embeddin
 - `examples/synthetic-reviewer-contract-result.fixture.json` for a public-safe reviewer-contract fixture with generic evidence labels
 - `examples/synthetic-apartment-review-result.fixture.json` for a sanitized structured-result contract fixture with no private home data
 - `examples/synthetic-review-sponsor-memo.md` for a public-safe sponsor-facing memo rendered from one structured review result
+- `examples/synthetic-reviewer-disagreement-left.fixture.json` and `examples/synthetic-reviewer-disagreement-right.fixture.json` for a public-safe two-reviewer disagreement pair over one synthetic target
+- `examples/synthetic-reviewer-disagreement-adjudication.md` for a public-safe sponsor-facing tie-break note rendered from two structured review results
 - `examples/synthetic-structured-result-golden-diff-*.json` for a public-safe before/after comparison fixture and expected diff
 - `examples/synthetic-multi-model-disagreement-report.md` for a public-safe markdown template generated from two comparable batch-summary artifacts
 - `examples/ci-review-gate-check.md` for one generic CI check recipe that wires `batch-review`, structured outputs, and `review-gate`
@@ -248,6 +251,45 @@ The sponsor memo stays intentionally narrow:
 - it formats one published structured review-result artifact
 - it highlights sponsor posture, reviewer confidence, evidence pointers, and open questions without deciding approval or routing
 - it keeps private source interpretation, tracker writes, and downstream action in the embedding workflow
+
+When two published structured review results cover the same target and a caller needs a deterministic tie-break note instead of raw comparison data, adjudicate the disagreement directly:
+
+```typescript
+import {
+  adjudicateReviewerDisagreement,
+  compareStructuredReviewResults,
+  formatReviewerDisagreementAdjudication
+} from 'ai-quality-loops';
+
+const adjudication = adjudicateReviewerDisagreement({
+  left: reviewerAResult,
+  right: reviewerBResult
+});
+
+const note = formatReviewerDisagreementAdjudication({
+  inputs: {
+    left: { pathLabel: 'Reviewer A result' },
+    right: { pathLabel: 'Reviewer B result' }
+  },
+  comparison: compareStructuredReviewResults({
+    before: reviewerAResult,
+    after: reviewerBResult
+  }),
+  adjudication
+}, {
+  leftLabel: 'Reviewer A',
+  rightLabel: 'Reviewer B'
+});
+
+console.log(note);
+```
+
+The adjudication seam stays intentionally narrow:
+
+- it compares exactly two published structured review-result artifacts for one target
+- it classifies disagreement into presence, severity, evidence, recommendation, and wording buckets using deterministic field-level differences
+- it produces a sponsor-facing tie-break note without deciding approval, routing, or remediation ownership
+- it keeps reviewer assignment, same-run orchestration, clustering, thresholds, and tracker writes outside AIQL
 
 ### Visual Audit (Vision Review)
 

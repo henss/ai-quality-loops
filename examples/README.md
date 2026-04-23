@@ -15,6 +15,7 @@ The example files cover the repeatable workflow surfaces. The package also suppo
 | Find stable page fragments for targeted vision review | `vision-sections https://example.com --json` | Copy the suggested `sections` values into a manifest or direct review call. |
 | Preview browser captures before spending model time | `vision-preview --manifest ./examples/webpage-vision-sweep.manifest.json --entry-name "Homepage hero"` | Also works with a direct URL or local HTML file. |
 | Compare two structured review-result JSON files | `review-compare ./reviews/previous.json ./reviews/current.json --json` | Use for single-target before/after checks. |
+| Adjudicate two reviewer outputs for one target | `formatReviewerDisagreementAdjudication(...)` with `adjudicateReviewerDisagreement(...)` | Produces a compact, public-safe tie-break note from two structured review results without deciding approval or routing. |
 | Run several repeatable reviews from one checked-in plan | `batch-review ./examples/webpage-vision-sweep.manifest.json` | Use the starter manifests below as copy-ready shapes. |
 | Rerun only failed or named batch entries | `batch-review ./manifest.json --rerun-summary ./reviews/batch-summary.json --rerun-failed` | Keeps retry selection tied to the prior summary artifact. |
 | Gate a local or CI check with explicit budgets | `review-gate --result ./reviews/result.json --max-high 0` | Use `--batch-summary` for a whole manifest run or `--batch-comparison` for explicit comparison-report delta budgets. |
@@ -362,6 +363,16 @@ Typical edits:
 - compare the helper output to `synthetic-structured-result-golden-diff.expected.json` when a wrapper needs a stable golden output shape
 - keep baseline selection, severity budgets, approval, routing, and remediation policy in the embedding repo
 
+### `synthetic-reviewer-disagreement-*.fixture.json`
+
+Use when you want a deterministic two-reviewer fixture pair for consumers of `adjudicateReviewerDisagreement(...)` and `formatReviewerDisagreementAdjudication(...)`.
+
+Typical edits:
+
+- keep the reviewer labels synthetic, or replace them only with caller-sanitized labels in an embedding repo
+- compare the helper output to `synthetic-reviewer-disagreement-adjudication.md` when a wrapper needs a stable sponsor-facing tie-break note
+- keep reviewer assignment, same-run orchestration, thresholds, approval, routing, and remediation policy outside `ai-quality-loops`
+
 ### `synthetic-multi-review-disagreement-*.json`
 
 Use when you want a deterministic batch-summary fixture pair for consumers of `compareBatchReviewArtifactSummaries(...)`, `batch-review-compare --json`, or `review-gate --batch-comparison`.
@@ -392,6 +403,7 @@ Typical edits:
 - The synthetic context-pack quality manifest is seam-focused. It intentionally excludes real source names, source contents, tracker keys, private paths, source freshness, domain facts, approval state, retention policy, implementation priority, and routing instructions.
 - The synthetic context-pack quality manifest also leaves the research-source audit and any public-source list empty on purpose because the fixture uses opaque evidence labels only; callers must still own source freshness, retrieval coverage, public-source selection, and approval checks.
 - The synthetic structured-result golden diff is comparison-focused. It intentionally excludes real source labels, tracker identifiers, local paths, account names, private facts, policy thresholds, and routing instructions.
+- The synthetic reviewer-disagreement fixtures are adjudication-focused. They intentionally exclude real reviewer identities, project names, source contents, approval thresholds, routing, and remediation policy.
 - The synthetic multi-review disagreement fixtures are comparison-focused. They intentionally exclude real reviewer identities, project names, source contents, thresholds, approval, routing, and remediation policy.
 - The synthetic multi-model disagreement report is template-focused. It intentionally excludes real model-routing policy, approval thresholds, tracker writes, reviewer identities, project names, and same-run arbitration logic.
 - The synthetic social evidence fixture is seam-focused. It intentionally excludes real account names, audience facts, source identities, brand strategy, publication decisions, and business routing.

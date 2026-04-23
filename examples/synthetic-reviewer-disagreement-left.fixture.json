@@ -1,0 +1,38 @@
+{
+  "schemaVersion": "1",
+  "workflow": "expert",
+  "expert": "Synthetic reviewer A",
+  "model": "qwen3.5:32b",
+  "summary": "Synthetic reviewer A sees one higher-severity claim risk and one stable agreement.",
+  "overallSeverity": "high",
+  "findings": [
+    {
+      "key": "claim-support",
+      "title": "Claim support",
+      "summary": "The packet overstates what the cited evidence proves.",
+      "severity": "high",
+      "recommendation": "Add a caveat before reusing the claim.",
+      "evidence": ["Evidence A"]
+    },
+    {
+      "key": "approval-boundary",
+      "title": "Approval boundary",
+      "summary": "The summary avoids approval language.",
+      "severity": "low"
+    },
+    {
+      "key": "source-traceability",
+      "title": "Source traceability",
+      "summary": "Evidence labels stay generic and traceable.",
+      "severity": "medium",
+      "evidence": ["Evidence B"]
+    }
+  ],
+  "provenance": [
+    {
+      "label": "Content source",
+      "value": "Synthetic reviewer disagreement packet"
+    }
+  ],
+  "markdown": "# Summary\nSynthetic reviewer A sees one higher-severity claim risk and one stable agreement."
+}

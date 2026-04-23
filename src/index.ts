@@ -18,6 +18,7 @@ export * from "./review/review-result-linear-handoff.js";
 export * from "./review/review-result-linear-handoff-quality-gate.js";
 export * from "./review/review-result-comparison.js";
 export * from "./review/review-result-compare.js";
+export * from "./review/reviewer-disagreement-adjudicator.js";
 export * from "./review/vision-section-discovery.js";
 export * from "./review/capture-review-retry-evidence.js";
 export * from "./review/batch-review.js";

@@ -6,6 +6,7 @@ Structured results are the public contract for reusable AIQL review output. They
 
 - Checking whether a review emitted valid JSON.
 - Comparing one review result against a later result.
+- Adjudicating two reviewer outputs over one target when a caller needs a deterministic tie-break note.
 - Feeding caller-owned CI or local gates with finding counts and severities.
 - Building downstream summaries from sanitized finding titles, summaries, recommendations, evidence labels, and provenance descriptors.
 
@@ -57,3 +58,39 @@ const comparison = compareStructuredReviewResults({
 ```
 
 The comparison groups findings by `findings[].key` when present, then by normalized title or summary. Use stable generic keys when repeated runs may reword the same finding. Do not put private source names, issue IDs, URLs, paths, account identifiers, or policy labels in keys.
+
+## Reviewer Disagreement Adjudication
+
+Use `adjudicateReviewerDisagreement(...)` plus `formatReviewerDisagreementAdjudication(...)` when two published structured review results cover the same target and a caller needs one bounded sponsor-facing tie-break note:
+
+```ts
+import {
+  adjudicateReviewerDisagreement,
+  compareStructuredReviewResults,
+  formatReviewerDisagreementAdjudication
+} from "ai-quality-loops";
+
+const adjudication = adjudicateReviewerDisagreement({
+  left: reviewerAResult,
+  right: reviewerBResult
+});
+
+const note = formatReviewerDisagreementAdjudication({
+  inputs: {
+    left: { pathLabel: "Reviewer A result" },
+    right: { pathLabel: "Reviewer B result" }
+  },
+  comparison: compareStructuredReviewResults({
+    before: reviewerAResult,
+    after: reviewerBResult
+  }),
+  adjudication
+});
+```
+
+The adjudication seam remains public-safe and deliberately limited:
+
+- It works only from two already-published structured review-result artifacts.
+- It uses deterministic field-level differences to bucket disagreement into finding presence, severity, evidence, recommendation, and wording.
+- It helps a caller summarize likely root-cause gaps and tie-break questions without deciding approval, routing, or remediation policy.
+- If a workflow needs reviewer assignment policy, same-run orchestration, multi-review clustering, or tracker writes, keep that layer in the embedding repo.

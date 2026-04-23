@@ -5,26 +5,32 @@
     "confidence": "high",
     "blocking": false,
     "max_severity": "low",
-    "summary": "The synthetic bridge packet correctly enforces opaque handles and advisory semantics, but requires follow-up to ensure finding keys remain stable across runs.",
+    "summary": "The synthetic bridge packet correctly enforces boundary discipline and opaque source semantics, but requires follow-up to ensure finding keys remain stable across runs.",
     "blocking_findings": [],
     "non_blocking_findings": [
       {
         "severity": "low",
-        "title": "Finding key stability needs verification",
-        "summary": "Evidence C notes a generic finding key is reuse-ready, but the caveat warns that not all findings are equally portable; follow-up should confirm key stability across runs.",
-        "key": "finding-key-stability-check"
+        "title": "Verify finding key stability across runs",
+        "summary": "Evidence C suggests stable finding keys are ready, but the caveat notes that not all findings are equally portable; ensure all keys remain generic.",
+        "key": "stable-finding-key-verification"
       },
       {
         "severity": "low",
-        "title": "Caller-owned authority underspecified",
-        "summary": "Evidence B indicates the caller-owned authority note is underspecified; follow-up should tighten the public-safe bridge packet template.",
-        "key": "caller-authority-specification"
+        "title": "Clarify authority gap in bridge template",
+        "summary": "Evidence B indicates a need for clearer explanation of caller-owned authority; tighten the public-safe bridge packet template.",
+        "key": "caller-owned-authority-clarity"
+      },
+      {
+        "severity": "low",
+        "title": "Ensure no-write boundary is explicit",
+        "summary": "Evidence D confirms the bridge output must remain advisory; verify this constraint is consistently applied in downstream templates.",
+        "key": "no-write-boundary-enforcement"
       }
     ],
     "required_before_merge": [],
     "follow_up": [
-      "Verify that all reusable finding keys remain stable and generic across multiple bridge runs.",
-      "Tighten the public-safe bridge packet template to better specify caller-owned authority boundaries."
+      "Validate that all finding keys in the packet remain generic and do not encode private naming or caller-owned identifiers.",
+      "Review the bridge packet template to ensure the authority note explicitly states that downstream routing and writes remain caller-owned."
     ],
     "next_step_actions": [
       "track_follow_up"

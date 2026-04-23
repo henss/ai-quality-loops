@@ -277,7 +277,7 @@ batch-review ./examples/synthetic-private-domain-bridge-review.manifest.json
 Typical edits:
 
 - replace the synthetic target only in an embedding repo with a caller-sanitized bridge packet that contains opaque source handles, bounded redacted evidence, and generic reusable findings
-- keep or adapt the context file so review stays focused on source-handle opacity, redaction sufficiency, reusable-finding discipline, and caller-owned authority boundaries
+- keep or adapt the context file so review stays focused on source-handle opacity, redaction sufficiency, reusable-finding discipline, stable generic finding keys, and caller-owned authority boundaries
 - switch `expert` or `promptLibraryPath` only if the embedding repo owns a more specific bridge-review persona
 - keep real source resolution, private labels, priority, routing, approval, and adapter orchestration outside `ai-quality-loops`
 

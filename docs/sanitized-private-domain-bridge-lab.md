@@ -29,9 +29,13 @@ The lab is strongest when it checks:
 
 - source-handle opacity: the packet treats handles as retrieval hints, not proof or package-owned records
 - redacted evidence discipline: each bridge claim stays supported without reconstructing private details
-- reusable finding hygiene: proposed findings remain generic and avoid private labels, repository names, project semantics, or company-specific routing
+- reusable finding hygiene: proposed findings remain generic, prefer stable generic keys only when they remain portable across runs, and avoid private labels, repository names, project semantics, or company-specific routing
 - authority boundary: the bridge output stays analysis-only and does not imply queue writes, prioritization, merge decisions, or external action
 - open-source fit: the shared artifact remains useful as a public example without leaking the original domain
+
+## One Checked Lab Run
+
+The checked synthetic bridge example in `examples/synthetic-private-domain-bridge-review.*` is the reference lab slice for this repo. It now makes the caller-owned authority note explicit and uses stable generic finding keys only where the labels remain reusable without private naming. The matching checked review artifacts under `reviews/private-domain-bridge/` show the bridge as an analysis-only seam, not an adapter implementation or downstream routing surface.
 
 ## Shared Boundary
 
@@ -52,4 +56,4 @@ The embedding workflow owns:
 
 ## Generic Extraction Question
 
-The extraction remains generic only while the shared surface reviews a caller-sanitized bridge packet whose inputs are opaque source handles plus bounded redacted evidence and whose outputs are reusable findings with no writes, no project authority, and no private identifiers. If a future slice needs source resolution, project-specific prioritization, private policy, adapter orchestration, or downstream mutation, keep that logic in the embedding repo instead of widening AIQL.
+The extraction remains generic only while the shared surface reviews a caller-sanitized bridge packet whose inputs are opaque source handles plus bounded redacted evidence and whose outputs are reusable findings with stable generic keys, no writes, no project authority, and no private identifiers. If a future slice needs source resolution, project-specific prioritization, private policy, adapter orchestration, or downstream mutation, keep that logic in the embedding repo instead of widening AIQL.

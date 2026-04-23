@@ -14,26 +14,26 @@
       "structuredOutputPath": "Local file path (.json file)",
       "structuredResult": {
         "overallSeverity": "low",
-        "totalFindings": 2,
+        "totalFindings": 3,
         "findingCounts": {
           "critical": 0,
           "high": 0,
           "medium": 0,
-          "low": 2,
+          "low": 3,
           "unknown": 0
         }
       },
       "status": "success",
-      "durationMs": 8537,
-      "outputChars": 1409,
+      "durationMs": 10251,
+      "outputChars": 1760,
       "decisionParsed": true,
       "ollamaTelemetry": {
-        "totalDurationMs": 8521,
-        "loadDurationMs": 183,
-        "promptEvalCount": 1395,
-        "promptEvalDurationMs": 1460,
-        "evalCount": 333,
-        "evalDurationMs": 6168
+        "totalDurationMs": 10224,
+        "loadDurationMs": 281,
+        "promptEvalCount": 1588,
+        "promptEvalDurationMs": 1898,
+        "evalCount": 408,
+        "evalDurationMs": 7350
       }
     }
   ]

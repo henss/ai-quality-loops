@@ -3,20 +3,27 @@
   "workflow": "expert",
   "expert": "REPOSITORY & AI EFFICIENCY SPECIALIST",
   "model": "qwen3.5:27b",
-  "summary": "The synthetic bridge packet correctly enforces opaque handles and advisory semantics, but requires follow-up to ensure finding keys remain stable across runs.",
+  "summary": "The synthetic bridge packet correctly enforces boundary discipline and opaque source semantics, but requires follow-up to ensure finding keys remain stable across runs.",
   "overallSeverity": "low",
   "findings": [
     {
-      "key": "finding-key-stability-check",
-      "title": "Finding key stability needs verification",
-      "summary": "Evidence C notes a generic finding key is reuse-ready, but the caveat warns that not all findings are equally portable; follow-up should confirm key stability across runs.",
+      "key": "stable-finding-key-verification",
+      "title": "Verify finding key stability across runs",
+      "summary": "Evidence C suggests stable finding keys are ready, but the caveat notes that not all findings are equally portable; ensure all keys remain generic.",
       "severity": "low",
       "evidence": []
     },
     {
-      "key": "caller-authority-specification",
-      "title": "Caller-owned authority underspecified",
-      "summary": "Evidence B indicates the caller-owned authority note is underspecified; follow-up should tighten the public-safe bridge packet template.",
+      "key": "caller-owned-authority-clarity",
+      "title": "Clarify authority gap in bridge template",
+      "summary": "Evidence B indicates a need for clearer explanation of caller-owned authority; tighten the public-safe bridge packet template.",
+      "severity": "low",
+      "evidence": []
+    },
+    {
+      "key": "no-write-boundary-enforcement",
+      "title": "Ensure no-write boundary is explicit",
+      "summary": "Evidence D confirms the bridge output must remain advisory; verify this constraint is consistently applied in downstream templates.",
       "severity": "low",
       "evidence": []
     }
@@ -27,28 +34,35 @@
     "confidence": "high",
     "blocking": false,
     "max_severity": "low",
-    "summary": "The synthetic bridge packet correctly enforces opaque handles and advisory semantics, but requires follow-up to ensure finding keys remain stable across runs.",
+    "summary": "The synthetic bridge packet correctly enforces boundary discipline and opaque source semantics, but requires follow-up to ensure finding keys remain stable across runs.",
     "blocking_findings": [],
     "non_blocking_findings": [
       {
-        "key": "finding-key-stability-check",
-        "title": "Finding key stability needs verification",
-        "summary": "Evidence C notes a generic finding key is reuse-ready, but the caveat warns that not all findings are equally portable; follow-up should confirm key stability across runs.",
+        "key": "stable-finding-key-verification",
+        "title": "Verify finding key stability across runs",
+        "summary": "Evidence C suggests stable finding keys are ready, but the caveat notes that not all findings are equally portable; ensure all keys remain generic.",
         "severity": "low",
         "evidence": []
       },
       {
-        "key": "caller-authority-specification",
-        "title": "Caller-owned authority underspecified",
-        "summary": "Evidence B indicates the caller-owned authority note is underspecified; follow-up should tighten the public-safe bridge packet template.",
+        "key": "caller-owned-authority-clarity",
+        "title": "Clarify authority gap in bridge template",
+        "summary": "Evidence B indicates a need for clearer explanation of caller-owned authority; tighten the public-safe bridge packet template.",
+        "severity": "low",
+        "evidence": []
+      },
+      {
+        "key": "no-write-boundary-enforcement",
+        "title": "Ensure no-write boundary is explicit",
+        "summary": "Evidence D confirms the bridge output must remain advisory; verify this constraint is consistently applied in downstream templates.",
         "severity": "low",
         "evidence": []
       }
     ],
     "required_before_merge": [],
     "follow_up": [
-      "Verify that all reusable finding keys remain stable and generic across multiple bridge runs.",
-      "Tighten the public-safe bridge packet template to better specify caller-owned authority boundaries."
+      "Validate that all finding keys in the packet remain generic and do not encode private naming or caller-owned identifiers.",
+      "Review the bridge packet template to ensure the authority note explicitly states that downstream routing and writes remain caller-owned."
     ],
     "next_step_actions": [
       "track_follow_up"
@@ -60,18 +74,18 @@
       "value": "Local file path (.md file)"
     }
   ],
-  "markdown": "{\n  \"review_decision\": {\n    \"schema\": \"peer_review_decision_v1\",\n    \"verdict\": \"accept_with_follow_up\",\n    \"confidence\": \"high\",\n    \"blocking\": false,\n    \"max_severity\": \"low\",\n    \"summary\": \"The synthetic bridge packet correctly enforces opaque handles and advisory semantics, but requires follow-up to ensure finding keys remain stable across runs.\",\n    \"blocking_findings\": [],\n    \"non_blocking_findings\": [\n      {\n        \"severity\": \"low\",\n        \"title\": \"Finding key stability needs verification\",\n        \"summary\": \"Evidence C notes a generic finding key is reuse-ready, but the caveat warns that not all findings are equally portable; follow-up should confirm key stability across runs.\",\n        \"key\": \"finding-key-stability-check\"\n      },\n      {\n        \"severity\": \"low\",\n        \"title\": \"Caller-owned authority underspecified\",\n        \"summary\": \"Evidence B indicates the caller-owned authority note is underspecified; follow-up should tighten the public-safe bridge packet template.\",\n        \"key\": \"caller-authority-specification\"\n      }\n    ],\n    \"required_before_merge\": [],\n    \"follow_up\": [\n      \"Verify that all reusable finding keys remain stable and generic across multiple bridge runs.\",\n      \"Tighten the public-safe bridge packet template to better specify caller-owned authority boundaries.\"\n    ],\n    \"next_step_actions\": [\n      \"track_follow_up\"\n    ]\n  }\n}",
+  "markdown": "{\n  \"review_decision\": {\n    \"schema\": \"peer_review_decision_v1\",\n    \"verdict\": \"accept_with_follow_up\",\n    \"confidence\": \"high\",\n    \"blocking\": false,\n    \"max_severity\": \"low\",\n    \"summary\": \"The synthetic bridge packet correctly enforces boundary discipline and opaque source semantics, but requires follow-up to ensure finding keys remain stable across runs.\",\n    \"blocking_findings\": [],\n    \"non_blocking_findings\": [\n      {\n        \"severity\": \"low\",\n        \"title\": \"Verify finding key stability across runs\",\n        \"summary\": \"Evidence C suggests stable finding keys are ready, but the caveat notes that not all findings are equally portable; ensure all keys remain generic.\",\n        \"key\": \"stable-finding-key-verification\"\n      },\n      {\n        \"severity\": \"low\",\n        \"title\": \"Clarify authority gap in bridge template\",\n        \"summary\": \"Evidence B indicates a need for clearer explanation of caller-owned authority; tighten the public-safe bridge packet template.\",\n        \"key\": \"caller-owned-authority-clarity\"\n      },\n      {\n        \"severity\": \"low\",\n        \"title\": \"Ensure no-write boundary is explicit\",\n        \"summary\": \"Evidence D confirms the bridge output must remain advisory; verify this constraint is consistently applied in downstream templates.\",\n        \"key\": \"no-write-boundary-enforcement\"\n      }\n    ],\n    \"required_before_merge\": [],\n    \"follow_up\": [\n      \"Validate that all finding keys in the packet remain generic and do not encode private naming or caller-owned identifiers.\",\n      \"Review the bridge packet template to ensure the authority note explicitly states that downstream routing and writes remain caller-owned.\"\n    ],\n    \"next_step_actions\": [\n      \"track_follow_up\"\n    ]\n  }\n}",
   "diagnostics": {
-    "elapsedMs": 6655,
-    "outputChars": 1409,
+    "elapsedMs": 7809,
+    "outputChars": 1760,
     "decisionParsed": true,
     "ollamaTelemetry": {
-      "totalDurationMs": 8521,
-      "loadDurationMs": 183,
-      "promptEvalCount": 1395,
-      "promptEvalDurationMs": 1460,
-      "evalCount": 333,
-      "evalDurationMs": 6168
+      "totalDurationMs": 10224,
+      "loadDurationMs": 281,
+      "promptEvalCount": 1588,
+      "promptEvalDurationMs": 1898,
+      "evalCount": 408,
+      "evalDurationMs": 7350
     }
   }
 }

@@ -273,3 +273,42 @@ describe("synthetic context-pack public fixtures", () => {
     );
   });
 });
+
+describe("synthetic private-domain bridge public fixtures", () => {
+  it("ships a bridge packet example with stable generic keys and explicit caller-owned authority", async () => {
+    const fixture = await readManifestContextTarget({
+      manifestPath: "examples/synthetic-private-domain-bridge-review.manifest.json",
+      contextPath: "examples/synthetic-private-domain-bridge-review-context.json",
+      targetPath: "examples/synthetic-private-domain-bridge-review-context.md",
+    });
+
+    expect(fixture.parsedManifest.defaults).toEqual(
+      expect.objectContaining({
+        mode: "expert",
+        expert: "Efficiency",
+        contextPath: "./examples/synthetic-private-domain-bridge-review-context.json",
+      }),
+    );
+    expect(fixture.parsedManifest.reviews).toEqual([
+      expect.objectContaining({
+        name: "Synthetic private-domain bridge packet",
+        target: "./examples/synthetic-private-domain-bridge-review-context.md",
+      }),
+    ]);
+    expect(fixture.context.reviewSurface).toBe("Synthetic private-domain bridge packet");
+    expect(fixture.context.reviewFocus).toContain(
+      "Check that stable finding keys are used only when they stay generic across runs and do not depend on private naming or caller-owned identifiers.",
+    );
+    expect(fixture.context.outOfScope).toContain(
+      "Assigning priority, writing queue state, changing ownership, or approving downstream execution.",
+    );
+    expect(fixture.targetText).toContain("This bridge packet is analysis-only.");
+    expect(fixture.targetText).toContain("caller-owned-authority-gap");
+    expect(fixture.targetText).toContain("stable-finding-key-ready");
+    expect(fixture.targetText).toContain("not as a source of truth about a real project");
+
+    expectPublicSafeSerializedContent(
+      `${fixture.manifestText}\n${fixture.contextText}\n${fixture.targetText}`,
+    );
+  });
+});

@@ -2,12 +2,13 @@
   "reviewSurface": "Synthetic private-domain bridge packet",
   "reviewFocus": [
     "Check that the packet exposes only opaque source handles, redacted evidence notes, and reusable finding candidates rather than raw private-domain truth.",
-    "Check that reusable findings stay generic enough for open-source maintenance and do not encode project names, repository facts, actor identity, or company-specific routing.",
+    "Check that reusable findings stay generic enough for open-source maintenance and do not encode project names, repository facts, actor identity, or private-domain routing.",
+    "Check that stable finding keys are used only when they stay generic across runs and do not depend on private naming or caller-owned identifiers.",
     "Check that the bridge output remains advisory and caller-owned instead of implying queue writes, priority assignment, approval, or execution authority."
   ],
   "outOfScope": [
     "Resolving the underlying sources, verifying private artifacts, or reconstructing the original domain lane.",
     "Assigning priority, writing queue state, changing ownership, or approving downstream execution.",
-    "Inferring repository names, tracker identifiers, account names, private implementation notes, or company policy from the redacted packet."
+    "Inferring repository names, tracker identifiers, account names, private implementation notes, or private policy from the redacted packet."
   ]
 }

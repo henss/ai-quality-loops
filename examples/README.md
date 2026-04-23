@@ -389,6 +389,8 @@ Typical edits:
 - compare the helper output to `synthetic-reviewer-disagreement-adjudication.md` when a wrapper needs a stable sponsor-facing tie-break note
 - keep reviewer assignment, same-run orchestration, thresholds, approval, routing, and remediation policy outside `ai-quality-loops`
 
+Use `docs/reviewer-disagreement-explainer.md` when a consumer needs the artifact boundary and the remaining generic-vs-domain-specific extraction question in one place instead of inferring it from the fixture pair alone.
+
 ### `synthetic-multi-review-disagreement-*.json`
 
 Use when you want a deterministic batch-summary fixture pair for consumers of `compareBatchReviewArtifactSummaries(...)`, `batch-review-compare --json`, or `review-gate --batch-comparison`.

@@ -95,6 +95,8 @@ The adjudication seam remains public-safe and deliberately limited:
 - It helps a caller summarize likely root-cause gaps and tie-break questions without deciding approval, routing, or remediation policy.
 - If a workflow needs reviewer assignment policy, same-run orchestration, multi-review clustering, or tracker writes, keep that layer in the embedding repo.
 
+Use `docs/reviewer-disagreement-explainer.md` when a downstream consumer needs the artifact-focused boundary, usage test, and explicit generic-vs-domain-specific extraction question for this seam.
+
 ## Escalation Signal Classification
 
 Use `classifyReviewEscalationSignals(...)` when a caller wants one generic list of notable review-output signals without hard-coding verdict, severity, and next-step interpretation in multiple wrappers:

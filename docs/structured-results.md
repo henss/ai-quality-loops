@@ -94,3 +94,20 @@ The adjudication seam remains public-safe and deliberately limited:
 - It uses deterministic field-level differences to bucket disagreement into finding presence, severity, evidence, recommendation, and wording.
 - It helps a caller summarize likely root-cause gaps and tie-break questions without deciding approval, routing, or remediation policy.
 - If a workflow needs reviewer assignment policy, same-run orchestration, multi-review clustering, or tracker writes, keep that layer in the embedding repo.
+
+## Escalation Signal Classification
+
+Use `classifyReviewEscalationSignals(...)` when a caller wants one generic list of notable review-output signals without hard-coding verdict, severity, and next-step interpretation in multiple wrappers:
+
+```ts
+import { classifyReviewEscalationSignals } from "ai-quality-loops";
+
+const report = classifyReviewEscalationSignals(reviewResult);
+```
+
+The classifier is intentionally narrow:
+
+- It reads only the published `StructuredReviewResult` contract.
+- It emits generic signal ids for severe findings, blocking or failed decisions, and caller-review or evidence-collection next steps.
+- It does not assign owners, mutate trackers, decide whether a queue should be escalated, or map signals to domain-specific policy.
+- If a workflow needs issue creation, escalation aliases, approval thresholds, release policy, or private-domain routing, keep that layer in the embedding repo.

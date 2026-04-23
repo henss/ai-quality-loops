@@ -44,6 +44,34 @@ Use the schema file when a wrapper validates outside TypeScript:
 schemas/structured-review-result.schema.json
 ```
 
+## Sponsor-Packet Handoff Gate
+
+Use `validateReviewResultSponsorPacketHandoff(...)` when one structured review result is about to become a sponsor memo plus backlog-candidate handoff and the caller wants an explicit public-safe quality gate before routing:
+
+```ts
+import {
+  formatReviewSponsorMemo,
+  renderLinearCandidateHandoffYaml,
+  validateReviewResultSponsorPacketHandoff
+} from "ai-quality-loops";
+
+const handoffGate = validateReviewResultSponsorPacketHandoff(reviewResult);
+if (!handoffGate.ok) {
+  throw handoffGate.error;
+}
+
+const memo = formatReviewSponsorMemo(reviewResult);
+const candidateYaml = renderLinearCandidateHandoffYaml(reviewResult);
+```
+
+The gate remains deliberately limited:
+
+- It reads only one published `StructuredReviewResult`.
+- It checks that the result has at least one candidate-worthy finding at the configured severities.
+- It requires actionable recommendations and evidence labels for those findings by default.
+- It treats missing explicit decisions, rerun-required reviews, and evidence-collection-required reviews as handoff-quality failures instead of inferring readiness.
+- It does not decide sponsorship, priority, ownership, tracker writes, or domain-specific routing.
+
 ## Comparison
 
 Use `compareStructuredReviewResults(...)` when a caller needs deterministic single-target before/after comparison:

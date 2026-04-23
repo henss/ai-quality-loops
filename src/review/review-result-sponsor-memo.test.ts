@@ -27,6 +27,31 @@ function createStructuredResult(
   };
 }
 
+async function loadSyntheticSponsorMemoExample(): Promise<{
+  expected: string;
+  result: StructuredReviewResult;
+}> {
+  const fixture = JSON.parse(
+    await fs.readFile(
+      path.join(process.cwd(), "examples/synthetic-pr-review-result.fixture.json"),
+      "utf-8",
+    ),
+  ) as unknown;
+  const expected = await fs.readFile(
+    path.join(process.cwd(), "examples/synthetic-review-sponsor-memo.md"),
+    "utf-8",
+  );
+  const validation = validateStructuredReviewResult(fixture);
+  if (!validation.ok) {
+    throw validation.error;
+  }
+
+  return {
+    expected,
+    result: validation.value,
+  };
+}
+
 describe("review result sponsor memo formatter", () => {
   it("formats a sponsor memo from a decision-bearing structured review result", () => {
     const memo = formatReviewSponsorMemo({
@@ -129,27 +154,15 @@ describe("review result sponsor memo formatter", () => {
   });
 
   it("matches the public synthetic sponsor memo example", async () => {
-    const fixture = JSON.parse(
-      await fs.readFile(
-        path.join(process.cwd(), "examples/synthetic-pr-review-result.fixture.json"),
-        "utf-8",
-      ),
-    ) as unknown;
-    const expected = await fs.readFile(
-      path.join(process.cwd(), "examples/synthetic-review-sponsor-memo.md"),
-      "utf-8",
-    );
-    const validation = validateStructuredReviewResult(fixture);
-    if (!validation.ok) {
-      throw validation.error;
-    }
-
-    const memo = formatReviewSponsorMemo(validation.value, {
+    const { expected, result } = await loadSyntheticSponsorMemoExample();
+    const memo = formatReviewSponsorMemo(result, {
       sourceLabel: "Synthetic PR review adapter pilot",
     });
 
     expect(memo).toBe(expected);
-    expect(memo).toContain("Sponsor posture: hold sponsorship");
+    expect(memo).toContain(
+      "Sponsor posture: pause sponsorship and request caller review before proceeding.",
+    );
     expect(memo).not.toContain("Low-severity wording cleanup");
   });
 });

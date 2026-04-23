@@ -27,13 +27,16 @@ No dependency was adopted. Local ownership is cheaper here because the pilot is 
 The pilot uses:
 
 - `examples/synthetic-pr-review-result.fixture.json` as a synthetic structured review result.
+- `validateReviewResultSponsorPacketHandoff(...)` as the sponsor-packet quality gate before downstream backlog-candidate routing.
 - The existing no-write candidate-handoff renderer.
 - `validateLinearCandidateHandoffYaml(...)` as the strict quality gate for the rendered YAML contract.
 - `examples/synthetic-pr-review-candidate-handoff.expected.yaml` as the expected downstream candidate packet.
 
 The generated handoff contains only generic candidate findings, generic evidence labels, severity labels, and an explicit policy block stating that queue writes and prioritization remain caller-owned. Low-severity findings are omitted by default.
 
-The quality gate parses the deterministic handoff YAML subset and rejects malformed candidate labels, unexpected schema values, write-enabled policy fields, non-caller prioritization, invalid workflow values, and invalid severities. It is intentionally not a general YAML parser.
+The sponsor-packet handoff gate reads the structured review result before routing and rejects missing explicit decisions, missing actionable candidate recommendations, missing evidence labels, incomplete review signals such as rerun-required or collect-more-evidence, and empty candidate sets at the configured severities.
+
+The YAML quality gate parses the deterministic handoff YAML subset and rejects malformed candidate labels, unexpected schema values, write-enabled policy fields, non-caller prioritization, invalid workflow values, and invalid severities. It is intentionally not a general YAML parser.
 
 ## Boundary
 

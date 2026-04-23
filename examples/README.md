@@ -40,6 +40,7 @@ The example files cover the repeatable workflow surfaces. The package also suppo
 | Check caller-owned redaction rules | `defineReviewSurfaceRedactions(...)` with `./examples/synthetic-policy-redactions.fixture.json` | Use when a consumer needs a public-safe fixture for project-local redaction behavior without moving policy names into AIQL. |
 | Validate a synthetic reviewer-contract fixture | `validateStructuredReviewResult(...)` with `./examples/synthetic-reviewer-contract-result.fixture.json` | Use when checking contract consumers against a public-safe fixture with generic evidence labels and caller-owned action boundaries. |
 | Pilot a sanitized PR review candidate handoff | `renderLinearCandidateHandoffYaml(...)` and `validateLinearCandidateHandoffYaml(...)` with `./examples/synthetic-pr-review-result.fixture.json` | Use when checking a no-write candidate packet before a caller-owned workflow handles pull-request selection, merge policy, and tracker writes. |
+| Gate a sponsor packet before backlog-candidate routing | `validateReviewResultSponsorPacketHandoff(...)` with `./examples/synthetic-pr-review-result.fixture.json` | Use when a wrapper needs an explicit decision, actionable candidate recommendations, and evidence labels before handing sponsor-facing review output to downstream triage. |
 | Validate a sanitized structured-result fixture | `validateStructuredReviewResult(...)` with `./examples/synthetic-apartment-review-result.fixture.json` | Use when checking contract consumers against a fixture that contains no private home data. |
 | Compare a synthetic structured-result golden diff | `compareStructuredReviewResults(...)` with `./examples/synthetic-structured-result-golden-diff-before.fixture.json` and `./examples/synthetic-structured-result-golden-diff-after.fixture.json` | Use when checking comparison consumers against a public-safe expected diff fixture. |
 | Compare a synthetic multi-review disagreement pack | `batch-review-compare ./examples/synthetic-multi-review-disagreement-before-summary.fixture.json ./examples/synthetic-multi-review-disagreement-after-summary.fixture.json --json` | Use when checking consumers against improved, regressed, unchanged, recovered, added, and removed review entries in one public-safe calibration pack. |
@@ -366,6 +367,7 @@ Typical edits:
 
 - keep evidence labels synthetic or replace them only with caller-sanitized labels
 - compare `renderLinearCandidateHandoffYaml(...)` output to `synthetic-pr-review-candidate-handoff.expected.yaml` when a wrapper needs a stable no-write candidate packet
+- run `validateReviewResultSponsorPacketHandoff(...)` before rendering sponsor-facing packets when a wrapper needs a stricter source-quality gate over structured review results
 - run `validateLinearCandidateHandoffYaml(...)` before downstream handoff when a wrapper needs a strict quality gate for the YAML contract
 - keep pull-request selection, source retrieval, inline placement, reviewer assignment, merge authority, priority, tracker writes, and repository policy in the embedding repo
 

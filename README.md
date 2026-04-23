@@ -23,6 +23,7 @@ Use the package when you need repeatable LLM-assisted review workflows that stay
 - **Run one visual review** against a webpage, local HTML file, or screenshot-backed target.
 - **Save structured review results** so downstream tools can route findings without parsing Markdown.
 - **Format a sponsor memo** from one structured review result when an approver needs a compact decision readout.
+- **Gate sponsor-packet handoffs** before backlog-candidate routing when one structured review result needs an explicit decision, actionable findings, and evidence labels.
 - **Compare two structured review results** when you need a deterministic before/after regression summary.
 - **Adjudicate two reviewer outputs** when one target has conflicting structured review results and a sponsor needs a bounded tie-break note.
 - **Compare several reviewer outputs** when one target has multiple structured review results and a caller needs a bounded cross-review consensus readout.
@@ -98,6 +99,7 @@ The library works out-of-the-box with default example personas in `personas/univ
 - Targeted vision-review provenance preserves the planned capture label together with the sanitized requested section id, using values such as `section-1 (hero)` instead of collapsing everything to anonymous section counters.
 - Expert and vision review entrypoints can also emit one narrow structured review-result contract with summary, severity rollup, finding list, sanitized provenance descriptors, and sanitized Markdown. The structured-result builder applies the same generic URL/path/contact redaction plus caller-provided `extraRedactions` before publishing reviewer-contract strings.
 - Sponsor memo helpers can turn one sanitized structured review result into a compact approver-facing memo with sponsor posture, confidence, evidence pointers, open questions, and an explicit caller-owned boundary.
+- Sponsor-packet handoff helpers can validate whether one structured review result is fit to become a sponsor memo plus no-write backlog-candidate packet, keeping decision completeness, actionability, and evidence checks explicit before downstream routing.
 - Candidate handoff helpers can render and validate a strict no-write YAML packet from sanitized structured review results. The validation helper checks the public candidate packet shape and policy guardrails, while downstream writes and prioritization remain caller-owned.
 - The package also publishes JSON Schema artifacts for the batch-review manifest, batch-review summary, batch-review summary comparison, structured review-result, and generic high-stakes analysis review rubric contracts under `schemas/`, alongside thin `parse...` and `validate...` helpers exported from the package root for callers that want contract checks without adding a schema runtime first.
 - `CHROME_PATH`: (Optional) Path to your browser executable (defaults to Edge on Windows).
@@ -257,6 +259,38 @@ The sponsor memo stays intentionally narrow:
 - it formats one published structured review-result artifact
 - it highlights sponsor posture, reviewer confidence, evidence pointers, and open questions without deciding approval or routing
 - it keeps private source interpretation, tracker writes, and downstream action in the embedding workflow
+
+When a caller wants to turn one structured review result into a sponsor packet plus backlog-candidate handoff, run the sponsor-packet gate before rendering downstream artifacts:
+
+```typescript
+import {
+  formatReviewSponsorMemo,
+  renderLinearCandidateHandoffYaml,
+  validateReviewResultSponsorPacketHandoff
+} from 'ai-quality-loops';
+
+const handoffGate = validateReviewResultSponsorPacketHandoff(result);
+if (!handoffGate.ok) {
+  throw handoffGate.error;
+}
+
+const memo = formatReviewSponsorMemo(result, {
+  sourceLabel: 'Synthetic PR review adapter pilot'
+});
+const candidateYaml = renderLinearCandidateHandoffYaml(result, {
+  sourceLabel: 'Synthetic PR review adapter pilot'
+});
+
+console.log(memo);
+console.log(candidateYaml);
+```
+
+The sponsor-packet gate stays intentionally narrow:
+
+- it checks one published structured review-result artifact before sponsor-packet handoff
+- it requires candidate-worthy findings at configured severities, plus actionable recommendations and evidence labels by default
+- it treats missing explicit decisions, rerun-required reviews, and evidence-collection-required reviews as handoff-quality problems instead of silently routing them downstream
+- it keeps sponsorship policy, prioritization, ownership, tracker writes, and domain interpretation in the embedding workflow
 
 When two published structured review results cover the same target and a caller needs a deterministic tie-break note instead of raw comparison data, adjudicate the disagreement directly:
 

@@ -12,9 +12,9 @@ This memo summarizes one sanitized AIQL reviewer output for a caller-owned spons
 
 ## Sponsor Decision
 
-- Sponsor posture: hold sponsorship until the highest-severity findings are addressed or explicitly accepted by the caller.
-- Reviewer confidence: not provided in the structured review result.
-- Practical decision: Synthetic PR review result with generic evidence labels and caller-owned merge policy.
+- Sponsor posture: pause sponsorship and request caller review before proceeding.
+- Reviewer confidence: medium.
+- Practical decision: The reviewer found sponsor-relevant backlog candidates, but the caller should attach validation evidence before downstream triage.
 
 ## Evidence Pointers
 
@@ -26,6 +26,8 @@ This memo summarizes one sanitized AIQL reviewer output for a caller-owned spons
 
 ## Open Questions
 
+- What is the caller plan for: Attach a sanitized validation summary?
+- Who owns the follow-up for: Keep merge policy, owner assignment, and tracker writes caller-owned?
 - Has the caller completed the recommended action for Validation evidence is missing?
 - Has the caller completed the recommended action for Merge authority remains caller-owned?
 

@@ -15,6 +15,7 @@ export * from "./review/vision-preview.js";
 export * from "./review/review-result.js";
 export * from "./review/escalation-signal-classifier.js";
 export * from "./review/review-result-sponsor-memo.js";
+export * from "./review/review-result-sponsor-packet-quality-gate.js";
 export * from "./review/review-result-linear-handoff.js";
 export * from "./review/review-result-linear-handoff-quality-gate.js";
 export * from "./review/review-result-comparison.js";

@@ -38,6 +38,59 @@
       ]
     }
   ],
+  "decision": {
+    "schema": "peer_review_decision_v1",
+    "verdict": "blocked",
+    "confidence": "medium",
+    "blocking": true,
+    "max_severity": "high",
+    "summary": "The reviewer found sponsor-relevant backlog candidates, but the caller should attach validation evidence before downstream triage.",
+    "blocking_findings": [
+      {
+        "key": "missing-validation-evidence",
+        "title": "Validation evidence is missing",
+        "summary": "The synthetic change record describes a review-sensitive behavior change but does not include a caller-owned validation result.",
+        "severity": "high",
+        "recommendation": "Ask the embedding workflow to attach a sanitized validation summary before downstream triage.",
+        "evidence": [
+          "PR evidence label A",
+          "Validation slot: missing"
+        ]
+      }
+    ],
+    "non_blocking_findings": [
+      {
+        "key": "merge-authority-boundary",
+        "title": "Merge authority remains caller-owned",
+        "summary": "The handoff can name a review concern but must not decide merge, assignment, priority, or repository policy.",
+        "severity": "medium",
+        "recommendation": "Keep merge policy, owner assignment, and tracker writes in the embedding workflow.",
+        "evidence": [
+          "Boundary note: synthetic fixture only"
+        ]
+      },
+      {
+        "key": "wording-cleanup",
+        "title": "Low-severity wording cleanup",
+        "summary": "The synthetic packet has a minor wording issue that is not candidate-worthy by default.",
+        "severity": "low",
+        "recommendation": "Leave low-severity editorial routing to the caller when needed.",
+        "evidence": [
+          "Optional note: synthetic fixture only"
+        ]
+      }
+    ],
+    "required_before_merge": [
+      "Attach a sanitized validation summary"
+    ],
+    "follow_up": [
+      "Keep merge policy, owner assignment, and tracker writes caller-owned"
+    ],
+    "next_step_actions": [
+      "request_caller_review",
+      "track_follow_up"
+    ]
+  },
   "provenance": [
     {
       "label": "Content source",

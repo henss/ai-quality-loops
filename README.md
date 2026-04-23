@@ -69,6 +69,7 @@ Use the companion notes in `examples/README.md` to decide which example to copy,
 Use `docs/reviewer-contract.md` when you need the open-source-safe boundary for structured reviewer-contract examples.
 Use `docs/structured-results.md` when you need the open-source-safe boundary for validating, comparing, or gating structured review-result JSON.
 Use `docs/downstream-agent-read-efficiency-pilot.md` when you need a public-safe pilot shape for measuring downstream-agent reads avoided by narrow packets, registry evidence, and bounded repo-local checks.
+Use `docs/local-ollama-reviewer-capability-map.md` when you need a public-safe map of which local Ollama capability classes currently satisfy the package's published reviewer-contract seams.
 Use `docs/local-review-model-economics-benchmark-proposal.md` when you need a public-safe proposal for comparing fixed local review packs with existing batch-summary telemetry before adding benchmark automation.
 Use `docs/recurring-review-failure-eval-harness.md` when you need the public-safe boundary for rehearsing recurring review-packet failures before another live run.
 Use `docs/sanitized-creative-review-rubric-pass-pilot.md` when you need a public-safe pilot shape for a caller-sanitized creative-review rubric pass that keeps concept choice, approval, release timing, and brand authority caller-owned.

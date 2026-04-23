@@ -1,0 +1,77 @@
+{
+  "schemaVersion": "1",
+  "workflow": "expert",
+  "expert": "REPOSITORY & AI EFFICIENCY SPECIALIST",
+  "model": "qwen3.5:27b",
+  "summary": "The synthetic bridge packet correctly enforces opaque handles and advisory semantics, but requires follow-up to ensure finding keys remain stable across runs.",
+  "overallSeverity": "low",
+  "findings": [
+    {
+      "key": "finding-key-stability-check",
+      "title": "Finding key stability needs verification",
+      "summary": "Evidence C notes a generic finding key is reuse-ready, but the caveat warns that not all findings are equally portable; follow-up should confirm key stability across runs.",
+      "severity": "low",
+      "evidence": []
+    },
+    {
+      "key": "caller-authority-specification",
+      "title": "Caller-owned authority underspecified",
+      "summary": "Evidence B indicates the caller-owned authority note is underspecified; follow-up should tighten the public-safe bridge packet template.",
+      "severity": "low",
+      "evidence": []
+    }
+  ],
+  "decision": {
+    "schema": "peer_review_decision_v1",
+    "verdict": "accept_with_follow_up",
+    "confidence": "high",
+    "blocking": false,
+    "max_severity": "low",
+    "summary": "The synthetic bridge packet correctly enforces opaque handles and advisory semantics, but requires follow-up to ensure finding keys remain stable across runs.",
+    "blocking_findings": [],
+    "non_blocking_findings": [
+      {
+        "key": "finding-key-stability-check",
+        "title": "Finding key stability needs verification",
+        "summary": "Evidence C notes a generic finding key is reuse-ready, but the caveat warns that not all findings are equally portable; follow-up should confirm key stability across runs.",
+        "severity": "low",
+        "evidence": []
+      },
+      {
+        "key": "caller-authority-specification",
+        "title": "Caller-owned authority underspecified",
+        "summary": "Evidence B indicates the caller-owned authority note is underspecified; follow-up should tighten the public-safe bridge packet template.",
+        "severity": "low",
+        "evidence": []
+      }
+    ],
+    "required_before_merge": [],
+    "follow_up": [
+      "Verify that all reusable finding keys remain stable and generic across multiple bridge runs.",
+      "Tighten the public-safe bridge packet template to better specify caller-owned authority boundaries."
+    ],
+    "next_step_actions": [
+      "track_follow_up"
+    ]
+  },
+  "provenance": [
+    {
+      "label": "Content source",
+      "value": "Local file path (.md file)"
+    }
+  ],
+  "markdown": "{\n  \"review_decision\": {\n    \"schema\": \"peer_review_decision_v1\",\n    \"verdict\": \"accept_with_follow_up\",\n    \"confidence\": \"high\",\n    \"blocking\": false,\n    \"max_severity\": \"low\",\n    \"summary\": \"The synthetic bridge packet correctly enforces opaque handles and advisory semantics, but requires follow-up to ensure finding keys remain stable across runs.\",\n    \"blocking_findings\": [],\n    \"non_blocking_findings\": [\n      {\n        \"severity\": \"low\",\n        \"title\": \"Finding key stability needs verification\",\n        \"summary\": \"Evidence C notes a generic finding key is reuse-ready, but the caveat warns that not all findings are equally portable; follow-up should confirm key stability across runs.\",\n        \"key\": \"finding-key-stability-check\"\n      },\n      {\n        \"severity\": \"low\",\n        \"title\": \"Caller-owned authority underspecified\",\n        \"summary\": \"Evidence B indicates the caller-owned authority note is underspecified; follow-up should tighten the public-safe bridge packet template.\",\n        \"key\": \"caller-authority-specification\"\n      }\n    ],\n    \"required_before_merge\": [],\n    \"follow_up\": [\n      \"Verify that all reusable finding keys remain stable and generic across multiple bridge runs.\",\n      \"Tighten the public-safe bridge packet template to better specify caller-owned authority boundaries.\"\n    ],\n    \"next_step_actions\": [\n      \"track_follow_up\"\n    ]\n  }\n}",
+  "diagnostics": {
+    "elapsedMs": 6655,
+    "outputChars": 1409,
+    "decisionParsed": true,
+    "ollamaTelemetry": {
+      "totalDurationMs": 8521,
+      "loadDurationMs": 183,
+      "promptEvalCount": 1395,
+      "promptEvalDurationMs": 1460,
+      "evalCount": 333,
+      "evalDurationMs": 6168
+    }
+  }
+}

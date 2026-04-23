@@ -1,0 +1,40 @@
+{
+  "manifestPath": "Local file path (.json file)",
+  "total": 1,
+  "succeeded": 1,
+  "failed": 0,
+  "results": [
+    {
+      "index": 0,
+      "name": "Synthetic private-domain bridge packet",
+      "resultKey": "synthetic-private-domain-bridge-packet-expert",
+      "mode": "expert",
+      "targetSummary": "Local file path (.md file, file: synthetic-private-domain-bridge-review-context.md)",
+      "outputPath": "Local file path (.md file)",
+      "structuredOutputPath": "Local file path (.json file)",
+      "structuredResult": {
+        "overallSeverity": "low",
+        "totalFindings": 2,
+        "findingCounts": {
+          "critical": 0,
+          "high": 0,
+          "medium": 0,
+          "low": 2,
+          "unknown": 0
+        }
+      },
+      "status": "success",
+      "durationMs": 8537,
+      "outputChars": 1409,
+      "decisionParsed": true,
+      "ollamaTelemetry": {
+        "totalDurationMs": 8521,
+        "loadDurationMs": 183,
+        "promptEvalCount": 1395,
+        "promptEvalDurationMs": 1460,
+        "evalCount": 333,
+        "evalDurationMs": 6168
+      }
+    }
+  ]
+}

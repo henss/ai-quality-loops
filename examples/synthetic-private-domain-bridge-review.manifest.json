@@ -1,0 +1,15 @@
+{
+  "defaults": {
+    "mode": "expert",
+    "expert": "Efficiency",
+    "contextPath": "./examples/synthetic-private-domain-bridge-review-context.json",
+    "outputDir": "./reviews/private-domain-bridge",
+    "structuredOutputDir": "./reviews/private-domain-bridge/json"
+  },
+  "reviews": [
+    {
+      "name": "Synthetic private-domain bridge packet",
+      "target": "./examples/synthetic-private-domain-bridge-review-context.md"
+    }
+  ]
+}

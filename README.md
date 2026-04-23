@@ -65,6 +65,7 @@ Use the companion notes in `examples/README.md` to decide which example to copy,
 Use `docs/reviewer-contract.md` when you need the open-source-safe boundary for structured reviewer-contract examples.
 Use `docs/structured-results.md` when you need the open-source-safe boundary for validating, comparing, or gating structured review-result JSON.
 Use `docs/downstream-agent-read-efficiency-pilot.md` when you need a public-safe pilot shape for measuring downstream-agent reads avoided by narrow packets, registry evidence, and bounded repo-local checks.
+Use `docs/local-review-model-economics-benchmark-proposal.md` when you need a public-safe proposal for comparing fixed local review packs with existing batch-summary telemetry before adding benchmark automation.
 Use `docs/sanitized-creative-review-rubric-pass-pilot.md` when you need a public-safe pilot shape for a caller-sanitized creative-review rubric pass that keeps concept choice, approval, release timing, and brand authority caller-owned.
 Use `docs/recovery-safe-finance-cadence-review-pilot.md` when you need a public-safe pilot shape for analysis-only finance cadence review under recovery-load caveats and caller-owned action boundaries.
 Use `docs/sanitized-private-domain-bridge-lab.md` when you need a public-safe bridge-lab shape for one caller-owned private lane that exposes only opaque source handles, redacted evidence notes, and reusable findings.

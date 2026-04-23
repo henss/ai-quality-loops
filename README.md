@@ -53,6 +53,7 @@ The package publishes copy-ready starter manifests under `examples/` so embeddin
 - `examples/synthetic-private-domain-bridge-review.manifest.json` for one synthetic bridge-lab review with opaque source handles, redacted evidence, and caller-owned downstream authority
 - `examples/synthetic-grocy-public-safety-review.manifest.json` for one synthetic household-inventory public-safety review with caller-owned action boundaries
 - `examples/synthetic-scheduling-fallback-review.manifest.json` for one synthetic scheduling-fallback review with caller-owned source checks and no-write recovery boundaries
+- `examples/synthetic-recurring-review-failure-eval.manifest.json` for one synthetic recurring-failure rehearsal pack that checks missing evidence handles, stale deterministic inputs, command noise, and verification-wrapper mismatches
 - `examples/synthetic-source-handle-redaction-corpus.fixture.json` for public-safe source-handle redaction regression cases across synthetic finance-like, household-like, organization-like, and creative-like domains
 - `examples/synthetic-policy-redactions.fixture.json` for public-safe caller-provided redaction-rule checks
 - `examples/synthetic-reviewer-contract-result.fixture.json` for a public-safe reviewer-contract fixture with generic evidence labels
@@ -69,6 +70,7 @@ Use `docs/reviewer-contract.md` when you need the open-source-safe boundary for 
 Use `docs/structured-results.md` when you need the open-source-safe boundary for validating, comparing, or gating structured review-result JSON.
 Use `docs/downstream-agent-read-efficiency-pilot.md` when you need a public-safe pilot shape for measuring downstream-agent reads avoided by narrow packets, registry evidence, and bounded repo-local checks.
 Use `docs/local-review-model-economics-benchmark-proposal.md` when you need a public-safe proposal for comparing fixed local review packs with existing batch-summary telemetry before adding benchmark automation.
+Use `docs/recurring-review-failure-eval-harness.md` when you need the public-safe boundary for rehearsing recurring review-packet failures before another live run.
 Use `docs/sanitized-creative-review-rubric-pass-pilot.md` when you need a public-safe pilot shape for a caller-sanitized creative-review rubric pass that keeps concept choice, approval, release timing, and brand authority caller-owned.
 Use `docs/recovery-safe-finance-cadence-review-pilot.md` when you need a public-safe pilot shape for analysis-only finance cadence review under recovery-load caveats and caller-owned action boundaries.
 Use `docs/sanitized-private-domain-bridge-lab.md` when you need a public-safe bridge-lab shape for one caller-owned private lane that exposes only opaque source handles, redacted evidence notes, and reusable findings.

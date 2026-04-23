@@ -1,0 +1,63 @@
+# Recurring Review-Failure Eval Harness
+
+This note defines the public-safe boundary for a small recurring review-failure eval harness. The goal is to rehearse repeated review-packet failure modes before another live packet run, without moving private repo state, tracker context, or domain routing into `ai-quality-loops`.
+
+## Boundary
+
+AIQL owns a narrow reusable harness:
+
+- one checked-in synthetic batch-review manifest that exercises recurring review-packet failure modes
+- one checked-in structured-result fixture pack for deterministic offline harness checks
+- `evaluateRecurringReviewFailureHarness(...)` and `formatRecurringReviewFailureHarnessReport(...)` for checking whether structured review results surfaced the expected recurring failure signals
+
+The embedding workflow still owns:
+
+- target selection for real packets
+- source retrieval, storage, and freshness checks
+- command execution, verification authority, and rerun policy
+- tracker routing, prioritization, approvals, and any real-world action
+
+## Included Failure Modes
+
+- missing evidence handles
+- stale deterministic inputs
+- repeated command noise that obscures the verification signal
+- verification-wrapper mismatches
+
+These cases stay intentionally generic. They do not encode private repository names, tracker identifiers, company policy, or live operator context.
+
+## Local Usage
+
+Run the synthetic pack through the existing local-first review surface:
+
+```bash
+batch-review ./examples/synthetic-recurring-review-failure-eval.manifest.json --summary-output ./reviews/recurring-review-failure-eval/batch-summary.json
+review-gate --batch-summary ./reviews/recurring-review-failure-eval/batch-summary.json --max-failed-reviews 0
+```
+
+If a caller has structured review-result JSON artifacts for each case, evaluate them with the harness:
+
+```ts
+import {
+  RECURRING_REVIEW_FAILURE_EVAL_CASES,
+  evaluateRecurringReviewFailureHarness,
+  formatRecurringReviewFailureHarnessReport,
+} from "ai-quality-loops";
+
+const report = evaluateRecurringReviewFailureHarness({
+  cases: RECURRING_REVIEW_FAILURE_EVAL_CASES,
+  observedResults,
+});
+
+console.log(formatRecurringReviewFailureHarnessReport(report));
+```
+
+The harness stays intentionally narrow:
+
+- it checks only the published structured review-result contract
+- it evaluates finding keys, reusable signal groups, next-step actions, and minimum severity
+- it does not add approval heuristics, scheduling policy, or tracker writes
+
+## Generic-vs-Domain-Specific Extraction Question
+
+The harness remains generic only while the eval cases stay synthetic or caller-sanitized and the pass/fail check reads only structured review-result artifacts. If a future slice needs repo-specific command policy, packet assembly rules, private tracker context, or domain-specific approval thresholds, keep that logic in the embedding repo instead of widening AIQL.

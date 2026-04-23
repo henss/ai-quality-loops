@@ -34,6 +34,7 @@ The example files cover the repeatable workflow surfaces. The package also suppo
 | Review a synthetic recovery-safe finance cadence packet | `batch-review ./examples/synthetic-finance-cadence-review.manifest.json` | Use this as a text-review seam for analysis-only cadence reasoning; keep real records, thresholds, scheduling, approval, and action routing caller-owned. |
 | Review synthetic household-inventory safety caveats | `batch-review ./examples/synthetic-grocy-public-safety-review.manifest.json` | Use this as a text-review seam for Grocy-style stock, consume-by, recipe, chore, and reorder artifacts; keep real exports, health interpretation, purchasing, disposal, alerting, and routing caller-owned. |
 | Review a synthetic scheduling fallback packet | `batch-review ./examples/synthetic-scheduling-fallback-review.manifest.json` | Use this as a text-review seam for proposal-first fallback planning when one schedule source is unreachable; keep real source checks, writes, retries, approvals, and communications caller-owned. |
+| Run a recurring review-failure eval pack | `batch-review ./examples/synthetic-recurring-review-failure-eval.manifest.json` | Use this as a public-safe rehearsal pack for repeated reviewer failures such as missing evidence handles, stale deterministic inputs, command noise, and verification-wrapper mismatches before another live run. |
 | Check source-handle redaction cases | `defineReviewSurfaceRedactions(...)` with `./examples/synthetic-source-handle-redaction-corpus.fixture.json` | Use when a consumer needs public-safe regression cases for caller-owned source-handle redaction across synthetic domains. |
 | Check source-handle redaction mutations | `defineReviewSurfaceRedactions(...)` with `./examples/synthetic-source-handle-redaction-mutations.fixture.json` | Use when a consumer needs public-safe mutation coverage for caller-owned source-handle redaction across punctuation, lightweight markup, and structured-text variants. |
 | Check caller-owned redaction rules | `defineReviewSurfaceRedactions(...)` with `./examples/synthetic-policy-redactions.fixture.json` | Use when a consumer needs a public-safe fixture for project-local redaction behavior without moving policy names into AIQL. |
@@ -312,6 +313,21 @@ Typical edits:
 - switch `expert` or `promptLibraryPath` only if your embedding repo owns a scheduling reviewer persona
 - keep real calendar data, planner health checks, retries, writes, notifications, approvals, and routing outside `ai-quality-loops`
 
+### `synthetic-recurring-review-failure-eval.manifest.json`
+
+Use when you want one public-safe recurring-failure rehearsal pack before another live packet run.
+
+```bash
+batch-review ./examples/synthetic-recurring-review-failure-eval.manifest.json --summary-output ./reviews/recurring-review-failure-eval/batch-summary.json
+review-gate --batch-summary ./reviews/recurring-review-failure-eval/batch-summary.json --max-failed-reviews 0
+```
+
+Typical edits:
+
+- keep the checked-in pack synthetic, or replace targets only inside an embedding repo with caller-sanitized recurring failure packets
+- use `evaluateRecurringReviewFailureHarness(...)` with structured review-result artifacts when a wrapper needs a deterministic coverage check over recurring failure modes
+- keep real tracker routing, command policy, source retrieval, approval, and execution authority outside `ai-quality-loops`
+
 ### `synthetic-policy-redactions.fixture.json`
 
 Use when you want a public-safe fixture for caller-provided `extraRedactions` behavior without checking in private identifiers or project policy.
@@ -410,6 +426,7 @@ Typical edits:
 - The synthetic source-handle evidence fixture is seam-focused. It intentionally excludes real source names, source contents, tracker keys, private paths, domain facts, retention policy, approval status, implementation priority, and routing instructions.
 - The synthetic source-handle redaction corpus is regression-focused. It intentionally excludes real source names, source contents, tracker keys, private paths, domain facts, retention policy, approval status, implementation priority, and routing instructions.
 - The synthetic source-handle redaction mutation fixture is mutation-focused. It intentionally excludes real source names, source contents, tracker keys, private paths, domain facts, retention policy, approval status, implementation priority, and routing instructions.
+- The synthetic recurring review-failure eval pack is rehearsal-focused. It intentionally excludes real repo names, tracker identifiers, private verification policy, command authority, and live operator context.
 - The synthetic buyer-claim caveat fixture is seam-focused. It intentionally excludes real buyer identities, company names, source notes, outreach plans, spend decisions, account creation, proof thresholds, and venture-specific routing.
 - The synthetic finance cadence fixture is seam-focused. It intentionally excludes real financial records, entity names, threshold values, approval ownership, schedule state, alerting policy, spend decisions, and routing instructions.
 - The synthetic private-domain bridge fixture is seam-focused. It intentionally excludes real source contents, repository names, tracker identifiers, account names, private implementation notes, project-specific priority, routing, and approval instructions.

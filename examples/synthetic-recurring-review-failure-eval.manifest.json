@@ -1,0 +1,27 @@
+{
+  "defaults": {
+    "mode": "expert",
+    "expert": "Evidence Reviewer",
+    "contextPath": "./examples/synthetic-recurring-review-failure-eval-context.json",
+    "outputDir": "./reviews/recurring-review-failure-eval",
+    "structuredOutputDir": "./reviews/recurring-review-failure-eval/json"
+  },
+  "reviews": [
+    {
+      "name": "Recurring failure eval - missing evidence handles",
+      "target": "./examples/synthetic-recurring-review-failure-missing-evidence-handles.md"
+    },
+    {
+      "name": "Recurring failure eval - stale deterministic inputs",
+      "target": "./examples/synthetic-recurring-review-failure-stale-deterministic-inputs.md"
+    },
+    {
+      "name": "Recurring failure eval - repeated command noise",
+      "target": "./examples/synthetic-recurring-review-failure-command-noise.md"
+    },
+    {
+      "name": "Recurring failure eval - verification wrapper mismatch",
+      "target": "./examples/synthetic-recurring-review-failure-verification-wrapper-mismatch.md"
+    }
+  ]
+}

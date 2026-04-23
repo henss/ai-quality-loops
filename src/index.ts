@@ -21,6 +21,7 @@ export * from "./review/review-result-compare.js";
 export * from "./review/reviewer-disagreement-adjudicator.js";
 export * from "./review/vision-section-discovery.js";
 export * from "./review/capture-review-retry-evidence.js";
+export * from "./review/recurring-review-failure-eval.js";
 export * from "./review/batch-review.js";
 export * from "./review/batch-review-summary-compare.js";
 export * from "./review/launch-outcome-evidence-summary.js";

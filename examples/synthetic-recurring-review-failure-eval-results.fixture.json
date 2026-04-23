@@ -1,0 +1,264 @@
+{
+  "schema": "synthetic_recurring_review_failure_eval_results_v1",
+  "purpose": "Public-safe calibration fixtures for recurring review-failure eval coverage.",
+  "results": [
+    {
+      "caseId": "missing-evidence-handles",
+      "result": {
+        "schemaVersion": "1",
+        "workflow": "expert",
+        "expert": "Evidence Reviewer",
+        "model": "synthetic-recurring-review-failure-eval",
+        "summary": "The packet leaves one evidence handle unresolved, so traceability is incomplete.",
+        "overallSeverity": "medium",
+        "findings": [
+          {
+            "key": "missing-evidence-handle",
+            "title": "Evidence handle is missing",
+            "summary": "One source handle is missing or opaque, so the packet should not be treated as traceable.",
+            "severity": "medium",
+            "recommendation": "Collect the missing evidence handle before treating the packet as ready.",
+            "evidence": [
+              "Evidence label A",
+              "Source handle omitted"
+            ]
+          }
+        ],
+        "decision": {
+          "schema": "peer_review_decision_v1",
+          "verdict": "accept_with_follow_up",
+          "confidence": "medium",
+          "blocking": false,
+          "max_severity": "medium",
+          "summary": "The packet is usable only after the caller-owned workflow restores traceability.",
+          "blocking_findings": [],
+          "non_blocking_findings": [
+            {
+              "key": "missing-evidence-handle",
+              "title": "Evidence handle is missing",
+              "summary": "One source handle is missing or opaque, so the packet should not be treated as traceable.",
+              "severity": "medium",
+              "recommendation": "Collect the missing evidence handle before treating the packet as ready.",
+              "evidence": [
+                "Evidence label A",
+                "Source handle omitted"
+              ]
+            }
+          ],
+          "required_before_merge": [],
+          "follow_up": [
+            "Keep source retrieval and storage caller-owned."
+          ],
+          "next_step_actions": [
+            "collect_more_evidence"
+          ]
+        },
+        "provenance": [
+          {
+            "label": "Content source",
+            "value": "Synthetic recurring review-failure eval packet"
+          },
+          {
+            "label": "Privacy boundary",
+            "value": "No real source names, tracker identifiers, or private repository details"
+          }
+        ],
+        "markdown": "# Summary\nThe packet leaves one evidence handle unresolved, so traceability is incomplete."
+      }
+    },
+    {
+      "caseId": "stale-deterministic-inputs",
+      "result": {
+        "schemaVersion": "1",
+        "workflow": "expert",
+        "expert": "Evidence Reviewer",
+        "model": "synthetic-recurring-review-failure-eval",
+        "summary": "The deterministic input snapshot is stale and risks drift against the current packet.",
+        "overallSeverity": "medium",
+        "findings": [
+          {
+            "key": "stale-deterministic-input",
+            "title": "Deterministic input is stale",
+            "summary": "The baseline snapshot is outdated, so the reviewer needs refreshed evidence before trusting it.",
+            "severity": "medium",
+            "recommendation": "Collect refreshed deterministic input and track follow-up on the drift source.",
+            "evidence": [
+              "Comparison baseline",
+              "Older than one review cycle"
+            ]
+          }
+        ],
+        "decision": {
+          "schema": "peer_review_decision_v1",
+          "verdict": "accept_with_follow_up",
+          "confidence": "medium",
+          "blocking": false,
+          "max_severity": "medium",
+          "summary": "The packet needs refreshed deterministic input before another live run relies on it.",
+          "blocking_findings": [],
+          "non_blocking_findings": [
+            {
+              "key": "stale-deterministic-input",
+              "title": "Deterministic input is stale",
+              "summary": "The baseline snapshot is outdated, so the reviewer needs refreshed evidence before trusting it.",
+              "severity": "medium",
+              "recommendation": "Collect refreshed deterministic input and track follow-up on the drift source.",
+              "evidence": [
+                "Comparison baseline",
+                "Older than one review cycle"
+              ]
+            }
+          ],
+          "required_before_merge": [],
+          "follow_up": [
+            "Refresh the stale deterministic input in the caller-owned workflow."
+          ],
+          "next_step_actions": [
+            "collect_more_evidence",
+            "track_follow_up"
+          ]
+        },
+        "provenance": [
+          {
+            "label": "Content source",
+            "value": "Synthetic recurring review-failure eval packet"
+          },
+          {
+            "label": "Privacy boundary",
+            "value": "No real source names, tracker identifiers, or private repository details"
+          }
+        ],
+        "markdown": "# Summary\nThe deterministic input snapshot is stale and risks drift against the current packet."
+      }
+    },
+    {
+      "caseId": "repeated-command-noise",
+      "result": {
+        "schemaVersion": "1",
+        "workflow": "expert",
+        "expert": "Evidence Reviewer",
+        "model": "synthetic-recurring-review-failure-eval",
+        "summary": "Repeated command noise obscures the verification signal and should be reduced.",
+        "overallSeverity": "medium",
+        "findings": [
+          {
+            "key": "command-noise-obscures-signal",
+            "title": "Command noise obscures signal",
+            "summary": "The packet repeats command output until the actual verification evidence is hard to locate.",
+            "severity": "medium",
+            "recommendation": "Revise the artifact to keep concise evidence and strip repeated command log spam.",
+            "evidence": [
+              "Repeated command excerpt",
+              "Verification note"
+            ]
+          }
+        ],
+        "decision": {
+          "schema": "peer_review_decision_v1",
+          "verdict": "changes_requested",
+          "confidence": "medium",
+          "blocking": false,
+          "max_severity": "medium",
+          "summary": "The packet should be revised so the verification signal remains easy to audit.",
+          "blocking_findings": [],
+          "non_blocking_findings": [
+            {
+              "key": "command-noise-obscures-signal",
+              "title": "Command noise obscures signal",
+              "summary": "The packet repeats command output until the actual verification evidence is hard to locate.",
+              "severity": "medium",
+              "recommendation": "Revise the artifact to keep concise evidence and strip repeated command log spam.",
+              "evidence": [
+                "Repeated command excerpt",
+                "Verification note"
+              ]
+            }
+          ],
+          "required_before_merge": [
+            "Reduce repeated command noise and keep the concise verification evidence."
+          ],
+          "follow_up": [],
+          "next_step_actions": [
+            "revise_artifact"
+          ]
+        },
+        "provenance": [
+          {
+            "label": "Content source",
+            "value": "Synthetic recurring review-failure eval packet"
+          },
+          {
+            "label": "Privacy boundary",
+            "value": "No real source names, tracker identifiers, or private repository details"
+          }
+        ],
+        "markdown": "# Summary\nRepeated command noise obscures the verification signal and should be reduced."
+      }
+    },
+    {
+      "caseId": "verification-wrapper-mismatch",
+      "result": {
+        "schemaVersion": "1",
+        "workflow": "expert",
+        "expert": "Evidence Reviewer",
+        "model": "synthetic-recurring-review-failure-eval",
+        "summary": "The verification wrapper cites a different command than the output shown, so the check is misaligned.",
+        "overallSeverity": "high",
+        "findings": [
+          {
+            "key": "verification-wrapper-mismatch",
+            "title": "Verification wrapper mismatch",
+            "summary": "The wrapper summary and the cited command disagree, so the run should be rerun with caller review.",
+            "severity": "high",
+            "recommendation": "Rerun the review and request caller review before trusting the verification evidence.",
+            "evidence": [
+              "Wrapper claim",
+              "Cited command"
+            ]
+          }
+        ],
+        "decision": {
+          "schema": "peer_review_decision_v1",
+          "verdict": "blocked",
+          "confidence": "medium",
+          "blocking": true,
+          "max_severity": "high",
+          "summary": "The packet should not be treated as defended until the verification mismatch is resolved.",
+          "blocking_findings": [
+            {
+              "key": "verification-wrapper-mismatch",
+              "title": "Verification wrapper mismatch",
+              "summary": "The wrapper summary and the cited command disagree, so the run should be rerun with caller review.",
+              "severity": "high",
+              "recommendation": "Rerun the review and request caller review before trusting the verification evidence.",
+              "evidence": [
+                "Wrapper claim",
+                "Cited command"
+              ]
+            }
+          ],
+          "non_blocking_findings": [],
+          "required_before_merge": [
+            "Restate the actual verification command or rerun it."
+          ],
+          "follow_up": [],
+          "next_step_actions": [
+            "rerun_review",
+            "request_caller_review"
+          ]
+        },
+        "provenance": [
+          {
+            "label": "Content source",
+            "value": "Synthetic recurring review-failure eval packet"
+          },
+          {
+            "label": "Privacy boundary",
+            "value": "No real source names, tracker identifiers, or private repository details"
+          }
+        ],
+        "markdown": "# Summary\nThe verification wrapper cites a different command than the output shown, so the check is misaligned."
+      }
+    }
+  ]
+}

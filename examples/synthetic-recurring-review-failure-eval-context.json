@@ -1,0 +1,14 @@
+{
+  "reviewSurface": "Synthetic recurring review-failure eval pack",
+  "reviewFocus": [
+    "Check whether the reviewer catches recurring failure modes before the packet is treated as ready for another live run.",
+    "Flag missing evidence handles, stale deterministic inputs, repeated command noise, and verification-wrapper mismatches with generic reusable findings only.",
+    "Keep source retrieval, command execution, tracker routing, approval, and domain interpretation caller-owned.",
+    "Prefer stable generic finding keys when one recurring failure mode stays reusable across repeated review packets."
+  ],
+  "outOfScope": [
+    "Do not infer private repositories, tracker state, private policy, user data, or live operator intent from the synthetic packet.",
+    "Do not approve publication, execution, remediation ownership, scheduling, deployment, or any other real-world action.",
+    "Do not treat synthetic evidence labels, wrapper notes, or command snippets as proof outside this eval pack."
+  ]
+}

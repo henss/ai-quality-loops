@@ -253,6 +253,53 @@ function expectSyntheticVentureConceptBriefMarkdownArtifact(
   expect(markdownArtifactText).toContain('"key": "readiness_claim_exceeds_support"');
 }
 
+function expectSyntheticPrivateDomainBridgeStructuredArtifact(
+  structuredArtifact: unknown,
+): void {
+  const validation = validateStructuredReviewResult(structuredArtifact);
+
+  expect(validation).toEqual({
+    ok: true,
+    value: expect.objectContaining({
+      workflow: "expert",
+      summary: expect.stringContaining("opaque source semantics"),
+      findings: expect.arrayContaining([
+        expect.objectContaining({
+          key: "stable-finding-key-verification",
+          severity: "low",
+        }),
+        expect.objectContaining({
+          key: "caller-owned-authority-clarity",
+          severity: "low",
+        }),
+        expect.objectContaining({
+          key: "no-write-boundary-enforcement",
+          severity: "low",
+        }),
+      ]),
+      decision: expect.objectContaining({
+        verdict: "accept_with_follow_up",
+        blocking: false,
+        next_step_actions: ["track_follow_up"],
+      }),
+      provenance: expect.arrayContaining([
+        expect.objectContaining({
+          label: "Content source",
+          value: "Local file path (.md file)",
+        }),
+      ]),
+    }),
+  });
+}
+
+function expectSyntheticPrivateDomainBridgeMarkdownArtifact(
+  markdownArtifactText: string,
+): void {
+  expect(markdownArtifactText).toContain('"verdict": "accept_with_follow_up"');
+  expect(markdownArtifactText).toContain("opaque source semantics");
+  expect(markdownArtifactText).toContain('"key": "no-write-boundary-enforcement"');
+}
+
 describe("synthetic reviewer-contract public fixtures", () => {
   it("ships a structured-result fixture with stable generic keys and caller-owned boundaries", async () => {
     const fixtureText = await readExampleFile(
@@ -440,6 +487,26 @@ describe("synthetic private-domain bridge public fixtures", () => {
 
     expectPublicSafeSerializedContent(
       `${fixture.manifestText}\n${fixture.contextText}\n${fixture.targetText}`,
+    );
+  });
+
+  it("ships a checked-in bridge review artifact that stays advisory and public-safe", async () => {
+    const artifact = await readCheckedInStructuredArtifact({
+      markdownPath:
+        "reviews/private-domain-bridge/synthetic-private-domain-bridge-packet-expert-review.md",
+      structuredPath:
+        "reviews/private-domain-bridge/json/synthetic-private-domain-bridge-packet-expert-review.json",
+    });
+
+    expectSyntheticPrivateDomainBridgeStructuredArtifact(
+      artifact.structuredArtifact,
+    );
+    expectSyntheticPrivateDomainBridgeMarkdownArtifact(
+      artifact.markdownArtifactText,
+    );
+
+    expectPublicSafeSerializedContent(
+      `${artifact.markdownArtifactText}\n${artifact.structuredArtifactText}`,
     );
   });
 });

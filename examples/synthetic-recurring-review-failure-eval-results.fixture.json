@@ -259,6 +259,138 @@
         ],
         "markdown": "# Summary\nThe verification wrapper cites a different command than the output shown, so the check is misaligned."
       }
+    },
+    {
+      "caseId": "launch-evidence-regression-omission",
+      "result": {
+        "schemaVersion": "1",
+        "workflow": "expert",
+        "expert": "Evidence Reviewer",
+        "model": "synthetic-recurring-review-failure-eval",
+        "summary": "The launch outcome evidence summary omits added, removed, and regressed comparison signals while claiming stability.",
+        "overallSeverity": "medium",
+        "findings": [
+          {
+            "key": "launch-evidence-regression-omission",
+            "title": "Launch evidence omits comparison regression signals",
+            "summary": "The evidence summary skips added, removed, and regressed review entries while still describing the launch surface as stable.",
+            "severity": "medium",
+            "recommendation": "Revise the artifact and collect the omitted comparison evidence before reusing the launch note.",
+            "evidence": [
+              "Launch outcome evidence summary",
+              "Added review entry omitted",
+              "Severity movement omitted"
+            ]
+          }
+        ],
+        "decision": {
+          "schema": "peer_review_decision_v1",
+          "verdict": "changes_requested",
+          "confidence": "medium",
+          "blocking": false,
+          "max_severity": "medium",
+          "summary": "The launch evidence note should be revised before another caller reuses it as a stability summary.",
+          "blocking_findings": [],
+          "non_blocking_findings": [
+            {
+              "key": "launch-evidence-regression-omission",
+              "title": "Launch evidence omits comparison regression signals",
+              "summary": "The evidence summary skips added, removed, and regressed review entries while still describing the launch surface as stable.",
+              "severity": "medium",
+              "recommendation": "Revise the artifact and collect the omitted comparison evidence before reusing the launch note.",
+              "evidence": [
+                "Launch outcome evidence summary",
+                "Added review entry omitted",
+                "Severity movement omitted"
+              ]
+            }
+          ],
+          "required_before_merge": [
+            "Restore the omitted comparison details in the launch evidence note."
+          ],
+          "follow_up": [],
+          "next_step_actions": [
+            "revise_artifact",
+            "collect_more_evidence"
+          ]
+        },
+        "provenance": [
+          {
+            "label": "Content source",
+            "value": "Synthetic recurring review-failure eval packet"
+          },
+          {
+            "label": "Privacy boundary",
+            "value": "No real source names, tracker identifiers, or private repository details"
+          }
+        ],
+        "markdown": "# Summary\nThe launch outcome evidence summary omits added, removed, and regressed comparison signals while claiming stability."
+      }
+    },
+    {
+      "caseId": "launch-evidence-gate-overclaim",
+      "result": {
+        "schemaVersion": "1",
+        "workflow": "expert",
+        "expert": "Evidence Reviewer",
+        "model": "synthetic-recurring-review-failure-eval",
+        "summary": "The gate result was not provided, but the launch evidence note still says the review surface is defended.",
+        "overallSeverity": "high",
+        "findings": [
+          {
+            "key": "launch-evidence-gate-overclaim",
+            "title": "Launch evidence overclaims missing gate coverage",
+            "summary": "The gate result is absent, so the defended launch readiness claim is an overclaim that needs caller review and more evidence.",
+            "severity": "high",
+            "recommendation": "Request caller review and collect the missing gate evidence before repeating the defended-readiness claim.",
+            "evidence": [
+              "Gate result not provided",
+              "Defended launch readiness claim"
+            ]
+          }
+        ],
+        "decision": {
+          "schema": "peer_review_decision_v1",
+          "verdict": "blocked",
+          "confidence": "medium",
+          "blocking": true,
+          "max_severity": "high",
+          "summary": "The launch evidence note should not be treated as defended until caller-owned gate evidence is provided.",
+          "blocking_findings": [
+            {
+              "key": "launch-evidence-gate-overclaim",
+              "title": "Launch evidence overclaims missing gate coverage",
+              "summary": "The gate result is absent, so the defended launch readiness claim is an overclaim that needs caller review and more evidence.",
+              "severity": "high",
+              "recommendation": "Request caller review and collect the missing gate evidence before repeating the defended-readiness claim.",
+              "evidence": [
+                "Gate result not provided",
+                "Defended launch readiness claim"
+              ]
+            }
+          ],
+          "non_blocking_findings": [],
+          "required_before_merge": [
+            "Attach caller-owned gate evidence or remove the defended-readiness claim."
+          ],
+          "follow_up": [],
+          "next_step_actions": [
+            "request_caller_review",
+            "collect_more_evidence"
+          ]
+        },
+        "provenance": [
+          {
+            "label": "Content source",
+            "value": "Synthetic recurring review-failure eval packet"
+          },
+          {
+            "label": "Privacy boundary",
+            "value": "No real source names, tracker identifiers, or private repository details"
+          }
+        ],
+        "markdown": "# Summary\nThe gate result was not provided, but the launch evidence note still says the review surface is defended."
+      }
     }
   ]
 }

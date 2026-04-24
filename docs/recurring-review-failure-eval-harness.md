@@ -23,6 +23,8 @@ The embedding workflow still owns:
 - stale deterministic inputs
 - repeated command noise that obscures the verification signal
 - verification-wrapper mismatches
+- launch-evidence notes that omit added, removed, or regressed comparison signals
+- launch-evidence notes that imply threshold pass or defended readiness without gate evidence
 
 These cases stay intentionally generic. They do not encode private repository names, tracker identifiers, company policy, or live operator context.
 

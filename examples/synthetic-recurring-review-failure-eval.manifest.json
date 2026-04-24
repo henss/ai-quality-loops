@@ -22,6 +22,14 @@
     {
       "name": "Recurring failure eval - verification wrapper mismatch",
       "target": "./examples/synthetic-recurring-review-failure-verification-wrapper-mismatch.md"
+    },
+    {
+      "name": "Recurring failure eval - launch evidence regression omission",
+      "target": "./examples/synthetic-recurring-review-failure-launch-evidence-regression-omission.md"
+    },
+    {
+      "name": "Recurring failure eval - launch evidence gate overclaim",
+      "target": "./examples/synthetic-recurring-review-failure-launch-evidence-gate-overclaim.md"
     }
   ]
 }

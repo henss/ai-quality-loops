@@ -205,59 +205,89 @@ export function formatRecurringReviewFailureHarnessReport(
 
 export const RECURRING_REVIEW_FAILURE_EVAL_CASES = Object.freeze([
   {
-      caseId: "missing-evidence-handles",
-      reviewName: "Recurring failure eval - missing evidence handles",
-      failureMode: "missing evidence handles",
-      summary:
-        "Reviewer should flag unresolved or opaque evidence handles instead of treating the packet as traceable.",
-      requiredFindingKeys: ["missing-evidence-handle"],
-      requiredSignalGroups: [
-        ["evidence handle", "source handle"],
-        ["missing", "opaque", "unresolved"],
-      ],
-      requiredNextStepActions: ["collect_more_evidence"],
-      minimumSeverity: "medium",
+    caseId: "missing-evidence-handles",
+    reviewName: "Recurring failure eval - missing evidence handles",
+    failureMode: "missing evidence handles",
+    summary:
+      "Reviewer should flag unresolved or opaque evidence handles instead of treating the packet as traceable.",
+    requiredFindingKeys: ["missing-evidence-handle"],
+    requiredSignalGroups: [
+      ["evidence handle", "source handle"],
+      ["missing", "opaque", "unresolved"],
+    ],
+    requiredNextStepActions: ["collect_more_evidence"],
+    minimumSeverity: "medium",
   },
   {
-      caseId: "stale-deterministic-inputs",
-      reviewName: "Recurring failure eval - stale deterministic inputs",
-      failureMode: "stale deterministic inputs",
-      summary:
-        "Reviewer should call out stale or drifted deterministic inputs before treating a packet as current.",
-      requiredFindingKeys: ["stale-deterministic-input"],
-      requiredSignalGroups: [
-        ["stale", "outdated", "drift"],
-        ["deterministic input", "snapshot", "baseline"],
-      ],
-      requiredNextStepActions: ["collect_more_evidence", "track_follow_up"],
-      minimumSeverity: "medium",
+    caseId: "stale-deterministic-inputs",
+    reviewName: "Recurring failure eval - stale deterministic inputs",
+    failureMode: "stale deterministic inputs",
+    summary:
+      "Reviewer should call out stale or drifted deterministic inputs before treating a packet as current.",
+    requiredFindingKeys: ["stale-deterministic-input"],
+    requiredSignalGroups: [
+      ["stale", "outdated", "drift"],
+      ["deterministic input", "snapshot", "baseline"],
+    ],
+    requiredNextStepActions: ["collect_more_evidence", "track_follow_up"],
+    minimumSeverity: "medium",
   },
   {
-      caseId: "repeated-command-noise",
-      reviewName: "Recurring failure eval - repeated command noise",
-      failureMode: "repeated command noise",
-      summary:
-        "Reviewer should flag command-log repetition that obscures the real verification signal.",
-      requiredFindingKeys: ["command-noise-obscures-signal"],
-      requiredSignalGroups: [
-        ["command noise", "repeated command", "log spam"],
-        ["signal", "verification evidence", "concise evidence"],
-      ],
-      requiredNextStepActions: ["revise_artifact"],
-      minimumSeverity: "medium",
+    caseId: "repeated-command-noise",
+    reviewName: "Recurring failure eval - repeated command noise",
+    failureMode: "repeated command noise",
+    summary:
+      "Reviewer should flag command-log repetition that obscures the real verification signal.",
+    requiredFindingKeys: ["command-noise-obscures-signal"],
+    requiredSignalGroups: [
+      ["command noise", "repeated command", "log spam"],
+      ["signal", "verification evidence", "concise evidence"],
+    ],
+    requiredNextStepActions: ["revise_artifact"],
+    minimumSeverity: "medium",
   },
   {
-      caseId: "verification-wrapper-mismatch",
-      reviewName: "Recurring failure eval - verification wrapper mismatch",
-      failureMode: "verification-wrapper mismatch",
-      summary:
-        "Reviewer should catch when the wrapper claims one verification path but the cited command or output proves another.",
-      requiredFindingKeys: ["verification-wrapper-mismatch"],
-      requiredSignalGroups: [
-        ["verification wrapper", "wrapper"],
-        ["mismatch", "misaligned", "different command"],
-      ],
-      requiredNextStepActions: ["rerun_review", "request_caller_review"],
-      minimumSeverity: "medium",
+    caseId: "verification-wrapper-mismatch",
+    reviewName: "Recurring failure eval - verification wrapper mismatch",
+    failureMode: "verification-wrapper mismatch",
+    summary:
+      "Reviewer should catch when the wrapper claims one verification path but the cited command or output proves another.",
+    requiredFindingKeys: ["verification-wrapper-mismatch"],
+    requiredSignalGroups: [
+      ["verification wrapper", "wrapper"],
+      ["mismatch", "misaligned", "different command"],
+    ],
+    requiredNextStepActions: ["rerun_review", "request_caller_review"],
+    minimumSeverity: "medium",
+  },
+  {
+    caseId: "launch-evidence-regression-omission",
+    reviewName: "Recurring failure eval - launch evidence regression omission",
+    failureMode: "launch evidence regression omission",
+    summary:
+      "Reviewer should catch when a launch-outcome evidence note omits added, removed, or regressed review signals and still claims stability.",
+    requiredFindingKeys: ["launch-evidence-regression-omission"],
+    requiredSignalGroups: [
+      ["launch outcome evidence", "evidence summary"],
+      ["added", "removed", "regressed", "severity movement"],
+      ["omitted", "missing", "stability claim"],
+    ],
+    requiredNextStepActions: ["revise_artifact", "collect_more_evidence"],
+    minimumSeverity: "medium",
+  },
+  {
+    caseId: "launch-evidence-gate-overclaim",
+    reviewName: "Recurring failure eval - launch evidence gate overclaim",
+    failureMode: "launch evidence gate overclaim",
+    summary:
+      "Reviewer should reject launch-evidence notes that imply threshold pass or defended readiness when gate evidence was not provided.",
+    requiredFindingKeys: ["launch-evidence-gate-overclaim"],
+    requiredSignalGroups: [
+      ["gate result", "gate evidence", "threshold"],
+      ["not provided", "missing", "absent"],
+      ["launch readiness", "defended", "overclaim"],
+    ],
+    requiredNextStepActions: ["request_caller_review", "collect_more_evidence"],
+    minimumSeverity: "high",
   },
 ] satisfies ReadonlyArray<RecurringReviewFailureEvalCase>);

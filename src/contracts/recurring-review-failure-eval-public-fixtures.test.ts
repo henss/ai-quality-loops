@@ -49,7 +49,7 @@ describe("synthetic recurring review-failure eval public fixtures", () => {
         contextPath: "./examples/synthetic-recurring-review-failure-eval-context.json",
       }),
     );
-    expect(manifest.reviews).toHaveLength(4);
+    expect(manifest.reviews).toHaveLength(6);
 
     const targetTexts = await Promise.all(
       manifest.reviews.map(async (review) =>
@@ -61,6 +61,8 @@ describe("synthetic recurring review-failure eval public fixtures", () => {
     expect(targetTexts[1]).toContain("stale-deterministic-input");
     expect(targetTexts[2]).toContain("command-noise-obscures-signal");
     expect(targetTexts[3]).toContain("verification-wrapper-mismatch");
+    expect(targetTexts[4]).toContain("launch-evidence-regression-omission");
+    expect(targetTexts[5]).toContain("launch-evidence-gate-overclaim");
 
     const serialized = [manifestText, contextText, ...targetTexts].join("\n").toLowerCase();
     for (const blockedTerm of PUBLIC_SAFE_BLOCKLIST) {
@@ -84,7 +86,7 @@ describe("synthetic recurring review-failure eval public fixtures", () => {
       }>;
     };
 
-    expect(fixture.results).toHaveLength(4);
+    expect(fixture.results).toHaveLength(6);
 
     const observedResults = (fixture.results ?? []).map((entry) => {
       const validation = validateStructuredReviewResult(entry.result);

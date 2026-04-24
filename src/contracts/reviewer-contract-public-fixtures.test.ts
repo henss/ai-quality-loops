@@ -41,6 +41,16 @@ interface CheckedInStructuredArtifact {
   structuredArtifact: unknown;
 }
 
+interface StarterKitFixture {
+  manifestText: string;
+  parsedManifest: ReturnType<typeof parseBatchReviewManifest>;
+  contextText: string;
+  context: ParsedPublicFixtureContext;
+  targetText: string;
+  readmeText: string;
+  validationScriptText: string;
+}
+
 async function readManifestContextTarget(options: {
   manifestPath: string;
   contextPath: string;
@@ -88,6 +98,78 @@ async function readCheckedInStructuredArtifact(options: {
     structuredArtifactText,
     structuredArtifact,
   };
+}
+
+async function readStarterKitFixture(): Promise<StarterKitFixture> {
+  const manifestText = await readExampleFile(
+    "examples/reviewer-contract-starter-kit/review.manifest.template.json",
+  );
+  const contextText = await readExampleFile(
+    "examples/reviewer-contract-starter-kit/review-context.template.json",
+  );
+  const targetText = await readExampleFile(
+    "examples/reviewer-contract-starter-kit/review-target.template.md",
+  );
+  const readmeText = await readExampleFile(
+    "examples/reviewer-contract-starter-kit/README.md",
+  );
+  const validationScriptText = await readExampleFile(
+    "examples/reviewer-contract-starter-kit/validate-review-result.template.mjs",
+  );
+
+  return {
+    manifestText,
+    parsedManifest: parseBatchReviewManifest(JSON.parse(manifestText)),
+    contextText,
+    context: JSON.parse(contextText) as ParsedPublicFixtureContext,
+    targetText,
+    readmeText,
+    validationScriptText,
+  };
+}
+
+function expectStarterKitFixtureShape(fixture: StarterKitFixture): void {
+  expect(fixture.parsedManifest.defaults).toEqual(
+    expect.objectContaining({
+      mode: "expert",
+      expert: "Evidence Reviewer",
+      contextPath: "./review-context.template.json",
+    }),
+  );
+  expect(fixture.parsedManifest.reviews).toEqual([
+    expect.objectContaining({
+      name: "Starter reviewer contract packet",
+      target: "./review-target.template.md",
+      outputPath: "./reviews/reviewer-contract/starter-review-result.md",
+      structuredOutputPath:
+        "./reviews/reviewer-contract/json/starter-review-result.json",
+    }),
+  ]);
+  expect(fixture.context.reviewSurface).toBe("Starter reviewer-contract packet");
+  expect(fixture.context.reviewFocus).toContain(
+    "Flag any claim that implies approval, release readiness, remediation ownership, or external action without explicit supporting evidence.",
+  );
+  expect(fixture.context.outOfScope).toContain(
+    "Do not infer domain-specific systems, private repositories, or private programs from placeholder wording.",
+  );
+  expect(fixture.targetText).toContain("Evidence label C");
+  expect(fixture.targetText).toContain("caller-sanitized packet");
+  expect(fixture.targetText).toContain("Do not approve publication, deployment");
+}
+
+function expectStarterKitFixtureDocs(fixture: StarterKitFixture): void {
+  expect(fixture.readmeText).toContain(
+    "Copy these templates into your own repository",
+  );
+  expect(fixture.readmeText).toContain("Copy the four template files");
+  expect(fixture.readmeText).toContain("validate-review-result.template.mjs");
+  expect(fixture.readmeText).toContain("validateStructuredReviewResult(...)");
+  expect(fixture.readmeText).toContain("local-Ollama-first and analysis-only");
+  expect(fixture.validationScriptText).toContain(
+    'import {\n  JSON_CONTRACT_SCHEMA_FILES,\n  validateStructuredReviewResult,\n} from "ai-quality-loops";',
+  );
+  expect(fixture.validationScriptText).toContain("starter-review-result.json");
+  expect(fixture.validationScriptText).toContain("Published JSON Schema");
 }
 
 function expectSyntheticContextPackStructuredArtifact(
@@ -214,49 +296,13 @@ describe("synthetic reviewer-contract public fixtures", () => {
   });
 
   it("ships a minimal starter kit for external contributors without widening the shared boundary", async () => {
-    const manifestText = await readExampleFile(
-      "examples/reviewer-contract-starter-kit/review.manifest.template.json",
-    );
-    const parsedManifest = parseBatchReviewManifest(JSON.parse(manifestText));
-    const contextText = await readExampleFile(
-      "examples/reviewer-contract-starter-kit/review-context.template.json",
-    );
-    const context = JSON.parse(contextText) as ParsedPublicFixtureContext;
-    const targetText = await readExampleFile(
-      "examples/reviewer-contract-starter-kit/review-target.template.md",
-    );
-    const readmeText = await readExampleFile(
-      "examples/reviewer-contract-starter-kit/README.md",
-    );
+    const fixture = await readStarterKitFixture();
 
-    expect(parsedManifest.defaults).toEqual(
-      expect.objectContaining({
-        mode: "expert",
-        expert: "Evidence Reviewer",
-        contextPath: "./review-context.template.json",
-      }),
-    );
-    expect(parsedManifest.reviews).toEqual([
-      expect.objectContaining({
-        name: "Starter reviewer contract packet",
-        target: "./review-target.template.md",
-      }),
-    ]);
-    expect(context.reviewSurface).toBe("Starter reviewer-contract packet");
-    expect(context.reviewFocus).toContain(
-      "Flag any claim that implies approval, release readiness, remediation ownership, or external action without explicit supporting evidence.",
-    );
-    expect(context.outOfScope).toContain(
-      "Do not infer domain-specific systems, private repositories, or private programs from placeholder wording.",
-    );
-    expect(targetText).toContain("Evidence label C");
-    expect(targetText).toContain("caller-sanitized packet");
-    expect(targetText).toContain("Do not approve publication, deployment");
-    expect(readmeText).toContain("Copy these templates into your own repository");
-    expect(readmeText).toContain("local-Ollama-first and analysis-only");
+    expectStarterKitFixtureShape(fixture);
+    expectStarterKitFixtureDocs(fixture);
 
     expectPublicSafeSerializedContent(
-      `${manifestText}\n${contextText}\n${targetText}\n${readmeText}`,
+      `${fixture.manifestText}\n${fixture.contextText}\n${fixture.targetText}\n${fixture.readmeText}\n${fixture.validationScriptText}`,
     );
   });
 });

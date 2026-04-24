@@ -33,9 +33,10 @@ These examples demonstrate the contract only. They do not decide target selectio
 
 For the narrowest onboarding path, start with `examples/reviewer-contract-starter-kit/`:
 
-1. Copy the three template files into your repo.
+1. Copy the four template files into your repo.
 2. Replace the packet body with caller-sanitized content and keep evidence labels generic.
 3. Run `batch-review` against the copied manifest from your own repo.
+4. Optionally run the copied validation script against the emitted structured JSON before adding your own schema tooling.
 
 If you need repo-specific routing, CI budgets, or tracker writes, add them in the embedding repo instead of widening the shared reviewer-contract surface here.
 

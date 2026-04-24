@@ -181,8 +181,9 @@ Use when you want the smallest copy-ready starter kit for a caller-owned reviewe
 
 Typical edits:
 
-- copy the three template files into your repo and rename them as needed
+- copy the four template files into your repo and rename them as needed
 - replace the starter packet with caller-sanitized review content that uses generic evidence labels
+- keep the validation script only if you want a minimal contract check before wiring a larger schema-validation stack
 - keep repo-specific routing, approval, severity budgets, remediation ownership, retention, and real-world action outside `ai-quality-loops`
 - prefer this starter kit before adding repo-local wrappers or automation
 

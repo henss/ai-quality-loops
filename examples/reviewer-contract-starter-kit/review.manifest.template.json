@@ -2,14 +2,14 @@
   "defaults": {
     "mode": "expert",
     "expert": "Evidence Reviewer",
-    "contextPath": "./review-context.template.json",
-    "outputDir": "./reviews/reviewer-contract",
-    "structuredOutputDir": "./reviews/reviewer-contract/json"
+    "contextPath": "./review-context.template.json"
   },
   "reviews": [
     {
       "name": "Starter reviewer contract packet",
-      "target": "./review-target.template.md"
+      "target": "./review-target.template.md",
+      "outputPath": "./reviews/reviewer-contract/starter-review-result.md",
+      "structuredOutputPath": "./reviews/reviewer-contract/json/starter-review-result.json"
     }
   ]
 }

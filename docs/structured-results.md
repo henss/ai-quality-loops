@@ -22,6 +22,8 @@ Structured results are the public contract for reusable AIQL review output. They
 - `examples/synthetic-reviewer-contract-result.fixture.json` validates the base structured review-result shape.
 - `examples/synthetic-structured-result-golden-diff-before.fixture.json` and `examples/synthetic-structured-result-golden-diff-after.fixture.json` validate deterministic before/after comparison.
 - `examples/synthetic-structured-result-golden-diff.expected.json` is the expected output from `compareStructuredReviewResults(...)`.
+- `examples/synthetic-review-output-evidence-diff-before.fixture.json` and `examples/synthetic-review-output-evidence-diff-after.fixture.json` isolate an evidence-only comparison delta.
+- `examples/synthetic-review-output-evidence-diff.expected.json` and `examples/synthetic-review-output-evidence-diff.expected.md` lock the compact JSON and text outputs for that evidence-only delta.
 
 The fixtures use generic evidence labels and synthetic review packets only. Replace them in embedding repos only with caller-sanitized data.
 
@@ -86,6 +88,8 @@ const comparison = compareStructuredReviewResults({
 ```
 
 The comparison groups findings by `findings[].key` when present, then by normalized title or summary. Use stable generic keys when repeated runs may reword the same finding. Do not put private source names, issue IDs, URLs, paths, account identifiers, or policy labels in keys.
+
+The compact evidence-diff fixture stays generic only while the comparison consumes already-published structured review results with sanitized evidence labels. If a future workflow needs source-handle resolution, evidence ranking, or approval thresholds, keep that layer in the embedding repo instead of widening AIQL.
 
 ## Reviewer Disagreement Adjudication
 

@@ -869,6 +869,75 @@ describe("public JSON contracts", () => {
     }
   });
 
+  it("ships a public-safe compact review-output evidence diff fixture", async () => {
+    const beforeFixture = JSON.parse(
+      await fs.readFile(
+        path.join(
+          process.cwd(),
+          "examples/synthetic-review-output-evidence-diff-before.fixture.json",
+        ),
+        "utf-8",
+      ),
+    ) as unknown;
+    const afterFixture = JSON.parse(
+      await fs.readFile(
+        path.join(
+          process.cwd(),
+          "examples/synthetic-review-output-evidence-diff-after.fixture.json",
+        ),
+        "utf-8",
+      ),
+    ) as unknown;
+    const expectedComparison = JSON.parse(
+      await fs.readFile(
+        path.join(
+          process.cwd(),
+          "examples/synthetic-review-output-evidence-diff.expected.json",
+        ),
+        "utf-8",
+      ),
+    ) as unknown;
+
+    const beforeValidation = validateStructuredReviewResult(beforeFixture);
+    const afterValidation = validateStructuredReviewResult(afterFixture);
+    expect(beforeValidation.ok).toBe(true);
+    expect(afterValidation.ok).toBe(true);
+    if (!beforeValidation.ok || !afterValidation.ok) {
+      throw new Error("Synthetic review-output evidence diff fixtures must validate");
+    }
+
+    expect(
+      compareStructuredReviewResults({
+        before: beforeValidation.value,
+        after: afterValidation.value,
+      }),
+    ).toEqual(expectedComparison);
+
+    const serialized = JSON.stringify({
+      beforeFixture,
+      afterFixture,
+      expectedComparison,
+    }).toLowerCase();
+    for (const privateBoundaryTerm of [
+      "stefan",
+      "linear",
+      "smartseer",
+      "ops-",
+      "customer",
+      "tenant",
+      "employee",
+      "company",
+      "https://",
+      "d:\\",
+      "/users/",
+      ".png",
+      ".jpg",
+      ".jpeg",
+    ]) {
+      expect(serialized).not.toContain(privateBoundaryTerm);
+    }
+  });
+
   it("ships an apartment-agnostic synthetic vision probe without private home semantics", async () => {
     const manifestPath = path.join(
       process.cwd(),

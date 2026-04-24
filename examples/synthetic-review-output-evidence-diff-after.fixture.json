@@ -1,0 +1,43 @@
+{
+  "schemaVersion": "1",
+  "workflow": "expert",
+  "expert": "Evidence Reviewer",
+  "model": "synthetic-evidence-diff-fixture",
+  "summary": "Synthetic candidate review result for compact review-output evidence diff checks.",
+  "overallSeverity": "medium",
+  "findings": [
+    {
+      "key": "review-output-evidence-traceability",
+      "title": "Review-output evidence traceability needs one clearer label",
+      "summary": "The review-output packet names a reusable concern but still relies on a coarse evidence label.",
+      "severity": "medium",
+      "recommendation": "Keep the finding generic and add one clearer sanitized evidence label before caller-owned routing.",
+      "evidence": [
+        "Synthetic review-output packet",
+        "Evidence label A",
+        "Evidence label B"
+      ]
+    },
+    {
+      "key": "caller-owned-routing-boundary",
+      "title": "Caller-owned routing remains explicit",
+      "summary": "The comparison fixture leaves approval, routing, and remediation ownership outside AIQL.",
+      "severity": "low",
+      "recommendation": "Keep downstream routing in the embedding repo.",
+      "evidence": [
+        "Boundary note: fixture only"
+      ]
+    }
+  ],
+  "provenance": [
+    {
+      "label": "Comparison scope",
+      "value": "Compact review-output evidence diff fixture"
+    },
+    {
+      "label": "Privacy boundary",
+      "value": "Generic evidence labels only"
+    }
+  ],
+  "markdown": "# Summary\nSynthetic candidate review result for compact review-output evidence diff checks.\n\n## Findings\n- Medium: Review-output evidence traceability needs one clearer label.\n- Low: Caller-owned routing remains explicit.\n\n## Boundary\nThis fixture uses only generic labels and leaves approval, routing, and remediation caller-owned."
+}

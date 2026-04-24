@@ -3,9 +3,15 @@ import * as fs from "node:fs/promises";
 import * as os from "node:os";
 import * as path from "node:path";
 import {
+  compareStructuredReviewResults,
+} from "./review-result-comparison.js";
+import {
   formatReviewResultComparisonReport,
   runReviewResultComparison,
 } from "./review-result-compare.js";
+import {
+  validateStructuredReviewResult,
+} from "../contracts/json-contracts.js";
 import type { StructuredReviewResult } from "../contracts/json-contracts.js";
 
 function createResult(
@@ -220,5 +226,56 @@ describe("review result compare", () => {
       "Changed findings:",
       "- [high] Checkout CTA (was critical, improved; changed: summary, severity, recommendation)",
     ].join("\n"));
+  });
+
+  it("formats the compact review-output evidence diff fixture as an evidence-only change", async () => {
+    const beforeFixture = JSON.parse(
+      await fs.readFile(
+        path.join(
+          process.cwd(),
+          "examples/synthetic-review-output-evidence-diff-before.fixture.json",
+        ),
+        "utf-8",
+      ),
+    ) as unknown;
+    const afterFixture = JSON.parse(
+      await fs.readFile(
+        path.join(
+          process.cwd(),
+          "examples/synthetic-review-output-evidence-diff-after.fixture.json",
+        ),
+        "utf-8",
+      ),
+    ) as unknown;
+    const expectedReport = await fs.readFile(
+      path.join(
+        process.cwd(),
+        "examples/synthetic-review-output-evidence-diff.expected.md",
+      ),
+      "utf-8",
+    );
+
+    const beforeValidation = validateStructuredReviewResult(beforeFixture);
+    const afterValidation = validateStructuredReviewResult(afterFixture);
+    expect(beforeValidation.ok).toBe(true);
+    expect(afterValidation.ok).toBe(true);
+    if (!beforeValidation.ok || !afterValidation.ok) {
+      throw new Error(
+        "Synthetic review-output evidence diff fixtures must validate",
+      );
+    }
+
+    const report = {
+      inputs: {
+        before: { pathLabel: "Local file path (.json file)" },
+        after: { pathLabel: "Local file path (.json file)" },
+      },
+      comparison: compareStructuredReviewResults({
+        before: beforeValidation.value,
+        after: afterValidation.value,
+      }),
+    } satisfies Awaited<ReturnType<typeof runReviewResultComparison>>;
+
+    expect(formatReviewResultComparisonReport(report)).toBe(expectedReport.trimEnd());
   });
 });

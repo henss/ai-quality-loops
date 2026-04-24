@@ -29,6 +29,7 @@ The example files cover the repeatable workflow surfaces. The package also suppo
 | Review a synthetic context pack quality packet | `batch-review ./examples/synthetic-context-pack-quality-review.manifest.json` | Use this as a public-safe seam for checking context-pack scope, evidence labels, caveats, and caller-owned boundaries. |
 | Review a synthetic source-handle evidence pack | `batch-review ./examples/synthetic-source-handle-evidence-review.manifest.json` | Use this as a text-review seam for review-output packets that cite source handles without copying private truth; keep retrieval, storage, source interpretation, approval, and routing caller-owned. |
 | Review a synthetic finance-signal routing packet | `batch-review ./examples/synthetic-finance-signal-routing-review.manifest.json` | Use this as a text-review seam for finance-sensitive source-backed requests that must preserve source handles and coarse signals only; keep raw records, thresholds, sponsor interpretation, approval, and routing caller-owned. |
+| Review a synthetic blocker clarification packet | `batch-review ./examples/synthetic-blocker-clarification-review.manifest.json` | Use this as a text-review seam for caller-sanitized blocker disputes that need clarification questions and caveat discipline without deciding which side is correct or leaking product internals. |
 | Review a synthetic private-domain bridge packet | `batch-review ./examples/synthetic-private-domain-bridge-review.manifest.json` | Use this as a text-review seam for one caller-owned bridge packet that exposes only opaque source handles, redacted evidence, and reusable findings; keep source resolution, priority, routing, and private semantics caller-owned. |
 | Review synthetic buyer-claim caveats | `batch-review ./examples/synthetic-buyer-claim-caveat-review.manifest.json` | Use this as a text-review seam for buyer-interest claims; keep real sources, outreach, spend, account creation, proof thresholds, and routing caller-owned. |
 | Review a synthetic recovery-safe finance cadence packet | `batch-review ./examples/synthetic-finance-cadence-review.manifest.json` | Use this as a text-review seam for analysis-only cadence reasoning; keep real records, thresholds, scheduling, approval, and action routing caller-owned. |
@@ -270,6 +271,21 @@ Typical edits:
 - switch `expert` or `promptLibraryPath` to a caller-owned reviewer when project policy needs one
 - keep real financial records, entity names, threshold policy, approval, scheduling, alerts, spend decisions, and routing outside `ai-quality-loops`
 
+### `synthetic-blocker-clarification-review.manifest.json`
+
+Use when you want a generic text review over a synthetic or caller-sanitized blocker dispute packet before a caller-owned workflow decides whether a concern remains a blocker, becomes a caveat, or needs deeper evidence.
+
+```bash
+batch-review ./examples/synthetic-blocker-clarification-review.manifest.json
+```
+
+Typical edits:
+
+- replace the synthetic context target only in an embedding repo with a caller-sanitized packet that uses opaque source handles, bounded dispute notes, and explicit clarification questions
+- keep or adapt the context file so review stays focused on scope compression, blocker-threshold overclaim, evidence-classification gaps, private-detail leak risk, and caller-owned authority boundaries
+- switch `expert` or `promptLibraryPath` only if the embedding repo owns a more specific blocker-clarification reviewer persona
+- keep source resolution, roadmap priority, release approval, escalation policy, outbound messaging, and any domain-specific dispute semantics outside `ai-quality-loops`
+
 ### `synthetic-private-domain-bridge-review.manifest.json`
 
 Use when you want a generic text review over a synthetic or caller-sanitized bridge packet before a caller-owned adapter forwards reusable findings into a private workflow.
@@ -434,6 +450,7 @@ Typical edits:
 - The synthetic recurring review-failure eval pack is rehearsal-focused. It intentionally excludes real repo names, tracker identifiers, private verification policy, launch approval semantics, command authority, and live operator context.
 - The synthetic buyer-claim caveat fixture is seam-focused. It intentionally excludes real buyer identities, company names, source notes, outreach plans, spend decisions, account creation, proof thresholds, and venture-specific routing.
 - The synthetic finance cadence fixture is seam-focused. It intentionally excludes real financial records, entity names, threshold values, approval ownership, schedule state, alerting policy, spend decisions, and routing instructions.
+- The synthetic blocker clarification fixture is seam-focused. It intentionally excludes real product names, repository state, issue keys, customer identities, implementation details, launch timing, approval owners, and domain-specific dispute policy.
 - The synthetic private-domain bridge fixture is seam-focused. It intentionally excludes real source contents, repository names, tracker identifiers, account names, private implementation notes, project-specific priority, routing, and approval instructions.
 - The synthetic Grocy public-safety fixture is seam-focused. It intentionally excludes real household members, addresses, product identifiers, device integrations, source freshness, food-safety interpretation, health decisions, purchasing, disposal, alerting, and routing.
 - The synthetic policy redactions fixture is boundary-focused. It intentionally excludes real policy names, project identifiers, thresholds, approval, routing, and domain interpretation.

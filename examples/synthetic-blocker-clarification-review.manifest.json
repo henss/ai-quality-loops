@@ -1,0 +1,15 @@
+{
+  "defaults": {
+    "mode": "expert",
+    "expert": "Efficiency",
+    "contextPath": "./examples/synthetic-blocker-clarification-review-context.json",
+    "outputDir": "./reviews/blocker-clarification",
+    "structuredOutputDir": "./reviews/blocker-clarification/json"
+  },
+  "reviews": [
+    {
+      "name": "Synthetic blocker clarification packet",
+      "target": "./examples/synthetic-blocker-clarification-review-context.md"
+    }
+  ]
+}

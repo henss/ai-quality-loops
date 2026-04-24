@@ -1,0 +1,40 @@
+{
+  "manifestPath": "Local file path (.json file)",
+  "total": 1,
+  "succeeded": 1,
+  "failed": 0,
+  "results": [
+    {
+      "index": 0,
+      "name": "Synthetic blocker clarification packet",
+      "resultKey": "synthetic-blocker-clarification-packet-expert",
+      "mode": "expert",
+      "targetSummary": "Local file path (.md file, file: synthetic-blocker-clarification-review-context.md)",
+      "outputPath": "Local file path (.md file)",
+      "structuredOutputPath": "Local file path (.json file)",
+      "structuredResult": {
+        "overallSeverity": "low",
+        "totalFindings": 3,
+        "findingCounts": {
+          "critical": 0,
+          "high": 0,
+          "medium": 0,
+          "low": 3,
+          "unknown": 0
+        }
+      },
+      "status": "success",
+      "durationMs": 10259,
+      "outputChars": 1630,
+      "decisionParsed": true,
+      "ollamaTelemetry": {
+        "totalDurationMs": 10233,
+        "loadDurationMs": 176,
+        "promptEvalCount": 1749,
+        "promptEvalDurationMs": 2087,
+        "evalCount": 381,
+        "evalDurationMs": 7101
+      }
+    }
+  ]
+}

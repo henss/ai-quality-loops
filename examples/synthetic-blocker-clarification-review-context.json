@@ -1,0 +1,15 @@
+{
+  "reviewSurface": "Synthetic blocker clarification packet",
+  "reviewFocus": [
+    "Check whether the packet preserves a trust-safe blocker clarification boundary instead of pretending the dispute evidence already proves one side correct.",
+    "Flag copied-truth risk, missing clarification questions, overconfident blocker language, and any drift from advisory clarification into approval, routing, launch, or product-decision authority.",
+    "Check that the packet keeps source handles opaque, uses only bounded summaries, and avoids leaking private implementation detail through blocker labels, evidence notes, or stakeholder shorthand.",
+    "Prefer reversible clarification work such as narrower questions, explicit caveats, and evidence-scope checks over irreversible product or execution recommendations.",
+    "Keep source resolution, domain interpretation, prioritization, approval, escalation, and any real-world action caller-owned."
+  ],
+  "outOfScope": [
+    "Do not decide which side of the dispute is correct or whether the underlying blocker is real.",
+    "Do not infer product roadmaps, repository state, company roles, customer identities, or private implementation details from the opaque handles.",
+    "Do not approve launch, assign work, mutate tracker state, or recommend external communications."
+  ]
+}

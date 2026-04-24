@@ -21,9 +21,9 @@ Structured results are the public contract for reusable AIQL review output. They
 
 - `examples/synthetic-reviewer-contract-result.fixture.json` validates the base structured review-result shape.
 - `examples/synthetic-structured-result-golden-diff-before.fixture.json` and `examples/synthetic-structured-result-golden-diff-after.fixture.json` validate deterministic before/after comparison.
-- `examples/synthetic-structured-result-golden-diff.expected.json` is the expected output from `compareStructuredReviewResults(...)`.
+- `examples/synthetic-structured-result-golden-diff.expected.json` stores the expected comparison plus the before/after fixture provenance for `compareStructuredReviewResults(...)`.
 - `examples/synthetic-review-output-evidence-diff-before.fixture.json` and `examples/synthetic-review-output-evidence-diff-after.fixture.json` isolate an evidence-only comparison delta.
-- `examples/synthetic-review-output-evidence-diff.expected.json` and `examples/synthetic-review-output-evidence-diff.expected.md` lock the compact JSON and text outputs for that evidence-only delta.
+- `examples/synthetic-review-output-evidence-diff.expected.json` stores the expected comparison plus the before/after fixture provenance, and `examples/synthetic-review-output-evidence-diff.expected.md` locks the compact text output for that evidence-only delta.
 
 The fixtures use generic evidence labels and synthetic review packets only. Replace them in embedding repos only with caller-sanitized data.
 

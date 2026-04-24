@@ -1,91 +1,97 @@
 {
-  "overallSeverityChange": {
-    "before": "medium",
-    "after": "medium",
-    "direction": "unchanged"
+  "fixtureProvenance": {
+    "beforeFixture": "synthetic-review-output-evidence-diff-before.fixture.json",
+    "afterFixture": "synthetic-review-output-evidence-diff-after.fixture.json"
   },
-  "counts": {
-    "beforeFindings": 2,
-    "afterFindings": 2,
-    "added": 0,
-    "removed": 0,
-    "changed": 1,
-    "unchanged": 1,
-    "severityMovement": {
-      "improved": 0,
-      "regressed": 0,
-      "unchanged": 2
-    }
-  },
-  "added": [],
-  "removed": [],
-  "changed": [
-    {
-      "key": "review output evidence traceability",
-      "title": "Review-output evidence traceability needs one clearer label",
-      "before": {
+  "comparison": {
+    "overallSeverityChange": {
+      "before": "medium",
+      "after": "medium",
+      "direction": "unchanged"
+    },
+    "counts": {
+      "beforeFindings": 2,
+      "afterFindings": 2,
+      "added": 0,
+      "removed": 0,
+      "changed": 1,
+      "unchanged": 1,
+      "severityMovement": {
+        "improved": 0,
+        "regressed": 0,
+        "unchanged": 2
+      }
+    },
+    "added": [],
+    "removed": [],
+    "changed": [
+      {
         "key": "review output evidence traceability",
         "title": "Review-output evidence traceability needs one clearer label",
-        "summary": "The review-output packet names a reusable concern but still relies on a coarse evidence label.",
-        "severity": "medium",
-        "recommendation": "Keep the finding generic and add one clearer sanitized evidence label before caller-owned routing.",
-        "evidence": [
-          "Synthetic review-output packet",
-          "Evidence label A"
-        ]
-      },
-      "after": {
-        "key": "review output evidence traceability",
-        "title": "Review-output evidence traceability needs one clearer label",
-        "summary": "The review-output packet names a reusable concern but still relies on a coarse evidence label.",
-        "severity": "medium",
-        "recommendation": "Keep the finding generic and add one clearer sanitized evidence label before caller-owned routing.",
-        "evidence": [
-          "Synthetic review-output packet",
-          "Evidence label A",
-          "Evidence label B"
-        ]
-      },
-      "changedFields": [
-        "evidence"
-      ],
-      "severityChange": {
-        "before": "medium",
-        "after": "medium",
-        "direction": "unchanged"
+        "before": {
+          "key": "review output evidence traceability",
+          "title": "Review-output evidence traceability needs one clearer label",
+          "summary": "The review-output packet names a reusable concern but still relies on a coarse evidence label.",
+          "severity": "medium",
+          "recommendation": "Keep the finding generic and add one clearer sanitized evidence label before caller-owned routing.",
+          "evidence": [
+            "Synthetic review-output packet",
+            "Evidence label A"
+          ]
+        },
+        "after": {
+          "key": "review output evidence traceability",
+          "title": "Review-output evidence traceability needs one clearer label",
+          "summary": "The review-output packet names a reusable concern but still relies on a coarse evidence label.",
+          "severity": "medium",
+          "recommendation": "Keep the finding generic and add one clearer sanitized evidence label before caller-owned routing.",
+          "evidence": [
+            "Synthetic review-output packet",
+            "Evidence label A",
+            "Evidence label B"
+          ]
+        },
+        "changedFields": [
+          "evidence"
+        ],
+        "severityChange": {
+          "before": "medium",
+          "after": "medium",
+          "direction": "unchanged"
+        }
       }
-    }
-  ],
-  "unchanged": [
-    {
-      "key": "caller owned routing boundary",
-      "title": "Caller-owned routing remains explicit",
-      "before": {
+    ],
+    "unchanged": [
+      {
         "key": "caller owned routing boundary",
         "title": "Caller-owned routing remains explicit",
-        "summary": "The comparison fixture leaves approval, routing, and remediation ownership outside AIQL.",
-        "severity": "low",
-        "recommendation": "Keep downstream routing in the embedding repo.",
-        "evidence": [
-          "Boundary note: fixture only"
-        ]
-      },
-      "after": {
-        "key": "caller owned routing boundary",
-        "title": "Caller-owned routing remains explicit",
-        "summary": "The comparison fixture leaves approval, routing, and remediation ownership outside AIQL.",
-        "severity": "low",
-        "recommendation": "Keep downstream routing in the embedding repo.",
-        "evidence": [
-          "Boundary note: fixture only"
-        ]
-      },
-      "changedFields": [],
-      "severityChange": {
-        "before": "low",
-        "after": "low",
-        "direction": "unchanged"
+        "before": {
+          "key": "caller owned routing boundary",
+          "title": "Caller-owned routing remains explicit",
+          "summary": "The comparison fixture leaves approval, routing, and remediation ownership outside AIQL.",
+          "severity": "low",
+          "recommendation": "Keep downstream routing in the embedding repo.",
+          "evidence": [
+            "Boundary note: fixture only"
+          ]
+        },
+        "after": {
+          "key": "caller owned routing boundary",
+          "title": "Caller-owned routing remains explicit",
+          "summary": "The comparison fixture leaves approval, routing, and remediation ownership outside AIQL.",
+          "severity": "low",
+          "recommendation": "Keep downstream routing in the embedding repo.",
+          "evidence": [
+            "Boundary note: fixture only"
+          ]
+        },
+        "changedFields": [],
+        "severityChange": {
+          "before": "low",
+          "after": "low",
+          "direction": "unchanged"
+        }
       }
-    }
-  ]
+    ]
+  }
 }

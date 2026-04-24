@@ -1,8 +1,13 @@
 {
-  "counts": {
-    "beforeEntries": 5,
-    "afterEntries": 5,
-    "added": 1,
+  "fixtureProvenance": {
+    "beforeFixture": "synthetic-multi-review-disagreement-before-summary.fixture.json",
+    "afterFixture": "synthetic-multi-review-disagreement-after-summary.fixture.json"
+  },
+  "comparison": {
+    "counts": {
+      "beforeEntries": 5,
+      "afterEntries": 5,
+      "added": 1,
     "removed": 1,
     "matched": 4,
     "statusChanged": 1,
@@ -23,11 +28,11 @@
     "promptEvalCountDelta": 55,
     "addedPromptEvalCount": 125,
     "promptEvalCountUnavailable": 0
-  },
-  "added": [
-    {
-      "resultKey": "consistency-review",
-      "index": 4,
+    },
+    "added": [
+      {
+        "resultKey": "consistency-review",
+        "index": 4,
       "name": "Consistency reviewer",
       "mode": "expert",
       "targetSummary": "Synthetic review packet",
@@ -44,11 +49,11 @@
         }
       }
     }
-  ],
-  "removed": [
-    {
-      "resultKey": "deprecated-review",
-      "index": 4,
+    ],
+    "removed": [
+      {
+        "resultKey": "deprecated-review",
+        "index": 4,
       "name": "Deprecated reviewer",
       "mode": "expert",
       "targetSummary": "Synthetic review packet",
@@ -65,11 +70,11 @@
         }
       }
     }
-  ],
-  "changed": [
-    {
-      "resultKey": "accessibility-review",
-      "before": {
+    ],
+    "changed": [
+      {
+        "resultKey": "accessibility-review",
+        "before": {
         "resultKey": "accessibility-review",
         "index": 0,
         "name": "Accessibility reviewer",
@@ -224,11 +229,11 @@
         "direction": "unavailable"
       }
     }
-  ],
-  "unchanged": [
-    {
-      "resultKey": "risk-review",
-      "before": {
+    ],
+    "unchanged": [
+      {
+        "resultKey": "risk-review",
+        "before": {
         "resultKey": "risk-review",
         "index": 2,
         "name": "Risk reviewer",
@@ -285,5 +290,6 @@
         "unknown": 0
       }
     }
-  ]
+    ]
+  }
 }

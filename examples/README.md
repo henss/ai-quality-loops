@@ -408,7 +408,7 @@ Use when you want a deterministic before/after fixture for consumers of `compare
 Typical edits:
 
 - keep the before and after inputs synthetic, or replace them only with caller-sanitized structured review results
-- compare the helper output to `synthetic-structured-result-golden-diff.expected.json` when a wrapper needs a stable golden output shape
+- compare the helper output to the `comparison` block in `synthetic-structured-result-golden-diff.expected.json` when a wrapper needs a stable golden output shape with checked fixture provenance
 - keep baseline selection, severity budgets, approval, routing, and remediation policy in the embedding repo
 
 ### `synthetic-review-output-evidence-diff-*`
@@ -418,7 +418,7 @@ Use when you want a deterministic evidence-only before/after fixture for consume
 Typical edits:
 
 - keep the before and after inputs synthetic, or replace them only with caller-sanitized structured review results that differ only in evidence labels
-- compare the helper output to `synthetic-review-output-evidence-diff.expected.json` or `synthetic-review-output-evidence-diff.expected.md` when a wrapper needs a stable compact diff shape
+- compare the helper output to the `comparison` block in `synthetic-review-output-evidence-diff.expected.json` or to `synthetic-review-output-evidence-diff.expected.md` when a wrapper needs a stable compact diff shape with checked fixture provenance
 - keep source-handle resolution, evidence ranking, approval thresholds, routing, and remediation policy in the embedding repo
 
 ### `synthetic-reviewer-disagreement-*.fixture.json`
@@ -440,7 +440,7 @@ Use when you want a deterministic batch-summary fixture pair for consumers of `c
 Typical edits:
 
 - keep the reviewer names and targets synthetic, or replace them only with caller-sanitized labels in an embedding repo
-- compare the helper output to `synthetic-multi-review-disagreement-comparison.expected.json` when a wrapper needs stable calibration coverage for improved, regressed, unchanged, recovered, added, and removed review entries
+- compare the helper output to the `comparison` block in `synthetic-multi-review-disagreement-comparison.expected.json` when a wrapper needs stable calibration coverage for improved, regressed, unchanged, recovered, added, and removed review entries with checked fixture provenance
 - keep real reviewer assignment, source contents, thresholds, approval, routing, and remediation policy outside `ai-quality-loops`
 
 ### `synthetic-multi-model-disagreement-report.md`

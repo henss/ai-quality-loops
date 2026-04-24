@@ -9,6 +9,7 @@ import {
 } from "./batch-review-summary-compare.js";
 import { formatLaunchOutcomeEvidenceSummary } from "./launch-outcome-evidence-summary.js";
 import type { BatchReviewArtifactSummary } from "../contracts/json-contracts.js";
+import { unwrapComparisonFixtureArtifact } from "../shared/comparison-fixture-artifact.js";
 
 function createSummary(
   results: BatchReviewArtifactSummary["results"],
@@ -41,17 +42,25 @@ describe("batch review summary compare", () => {
   });
 
   it("keeps the synthetic multi-review disagreement calibration pack stable", async () => {
-    const [before, after, expected] = await Promise.all([
+    const [before, after, expectedArtifact] = await Promise.all([
       readExampleJson<BatchReviewArtifactSummary>(
         "synthetic-multi-review-disagreement-before-summary.fixture.json",
       ),
       readExampleJson<BatchReviewArtifactSummary>(
         "synthetic-multi-review-disagreement-after-summary.fixture.json",
       ),
-      readExampleJson<ReturnType<typeof compareBatchReviewArtifactSummaries>>(
+      readExampleJson(
         "synthetic-multi-review-disagreement-comparison.expected.json",
       ),
     ]);
+    const expected = unwrapComparisonFixtureArtifact<
+      ReturnType<typeof compareBatchReviewArtifactSummaries>
+    >(expectedArtifact, {
+      beforeFixture:
+        "synthetic-multi-review-disagreement-before-summary.fixture.json",
+      afterFixture:
+        "synthetic-multi-review-disagreement-after-summary.fixture.json",
+    });
 
     const comparison = compareBatchReviewArtifactSummaries({ before, after });
 

@@ -1,0 +1,15 @@
+{
+  "defaults": {
+    "mode": "expert",
+    "expert": "Efficiency",
+    "contextPath": "./examples/synthetic-venture-concept-brief-review-context.json",
+    "outputDir": "./reviews/venture-concept-briefs",
+    "structuredOutputDir": "./reviews/venture-concept-briefs/json"
+  },
+  "reviews": [
+    {
+      "name": "Synthetic venture concept brief packet",
+      "target": "./examples/synthetic-venture-concept-brief-review-context.md"
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "manifestPath": "Local file path (.json file)",
+  "total": 1,
+  "succeeded": 1,
+  "failed": 0,
+  "results": [
+    {
+      "index": 0,
+      "name": "Synthetic venture concept brief packet",
+      "resultKey": "synthetic-venture-concept-brief-packet-expert",
+      "mode": "expert",
+      "targetSummary": "Local file path (.md file, file: synthetic-venture-concept-brief-review-context.md)",
+      "outputPath": "Local file path (.md file)",
+      "structuredOutputPath": "Local file path (.json file)",
+      "structuredResult": {
+        "overallSeverity": "high",
+        "totalFindings": 3,
+        "findingCounts": {
+          "critical": 0,
+          "high": 1,
+          "medium": 1,
+          "low": 1,
+          "unknown": 0
+        }
+      },
+      "status": "success",
+      "durationMs": 10513,
+      "outputChars": 1578,
+      "decisionParsed": true,
+      "ollamaTelemetry": {
+        "totalDurationMs": 10497,
+        "loadDurationMs": 176,
+        "promptEvalCount": 1193,
+        "promptEvalDurationMs": 1471,
+        "evalCount": 380,
+        "evalDurationMs": 8190
+      }
+    }
+  ]
+}

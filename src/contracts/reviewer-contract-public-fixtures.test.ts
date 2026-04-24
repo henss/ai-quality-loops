@@ -215,6 +215,44 @@ function expectSyntheticContextPackMarkdownArtifact(
   );
 }
 
+function expectSyntheticVentureConceptBriefStructuredArtifact(
+  structuredArtifact: unknown,
+): void {
+  const validation = validateStructuredReviewResult(structuredArtifact);
+
+  expect(validation).toEqual({
+    ok: true,
+    value: expect.objectContaining({
+      workflow: "expert",
+      expert: "REPOSITORY & AI EFFICIENCY SPECIALIST",
+      summary: expect.stringContaining("readiness claim"),
+      overallSeverity: "high",
+      findings: expect.arrayContaining([
+        expect.objectContaining({
+          key: "readiness_claim_exceeds_support",
+          severity: "high",
+        }),
+        expect.objectContaining({
+          key: "missing_caveats_synthetic_evidence",
+          severity: "medium",
+        }),
+      ]),
+      decision: expect.objectContaining({
+        verdict: "changes_requested",
+        next_step_actions: ["revise_artifact"],
+      }),
+    }),
+  });
+}
+
+function expectSyntheticVentureConceptBriefMarkdownArtifact(
+  markdownArtifactText: string,
+): void {
+  expect(markdownArtifactText).toContain('"verdict": "changes_requested"');
+  expect(markdownArtifactText).toContain("Readiness claim exceeds synthetic support");
+  expect(markdownArtifactText).toContain('"key": "readiness_claim_exceeds_support"');
+}
+
 describe("synthetic reviewer-contract public fixtures", () => {
   it("ships a structured-result fixture with stable generic keys and caller-owned boundaries", async () => {
     const fixtureText = await readExampleFile(
@@ -402,6 +440,68 @@ describe("synthetic private-domain bridge public fixtures", () => {
 
     expectPublicSafeSerializedContent(
       `${fixture.manifestText}\n${fixture.contextText}\n${fixture.targetText}`,
+    );
+  });
+});
+
+describe("synthetic venture concept brief public fixtures", () => {
+  it("ships a concept-brief example that keeps proof thresholds and execution decisions caller-owned", async () => {
+    const fixture = await readManifestContextTarget({
+      manifestPath: "examples/synthetic-venture-concept-brief-review.manifest.json",
+      contextPath: "examples/synthetic-venture-concept-brief-review-context.json",
+      targetPath: "examples/synthetic-venture-concept-brief-review-context.md",
+    });
+
+    expect(fixture.parsedManifest.defaults).toEqual(
+      expect.objectContaining({
+        mode: "expert",
+        expert: "Efficiency",
+        contextPath: "./examples/synthetic-venture-concept-brief-review-context.json",
+      }),
+    );
+    expect(fixture.parsedManifest.reviews).toEqual([
+      expect.objectContaining({
+        name: "Synthetic venture concept brief packet",
+        target: "./examples/synthetic-venture-concept-brief-review-context.md",
+      }),
+    ]);
+    expect(fixture.context.reviewSurface).toBe(
+      "Synthetic venture concept brief packet",
+    );
+    expect(fixture.context.reviewFocus).toContain(
+      "Check whether the concept brief separates framing, directional signal, and execution readiness instead of collapsing them into one claim.",
+    );
+    expect(fixture.context.outOfScope).toContain(
+      "Do not infer real market size, buyer urgency, willingness to pay, fundraising merit, launch readiness, or implementation priority.",
+    );
+    expect(fixture.targetText).toContain("Evidence D");
+    expect(fixture.targetText).toContain("must remain caller-gated");
+    expect(fixture.targetText).toContain(
+      "Prefer stable generic finding keys when the same support or boundary gap could recur across runs.",
+    );
+
+    expectPublicSafeSerializedContent(
+      `${fixture.manifestText}\n${fixture.contextText}\n${fixture.targetText}`,
+    );
+  });
+
+  it("ships a checked-in synthetic venture concept brief review artifact with explicit readiness overclaim findings", async () => {
+    const artifact = await readCheckedInStructuredArtifact({
+      markdownPath:
+        "reviews/venture-concept-briefs/synthetic-venture-concept-brief-packet-expert-review.md",
+      structuredPath:
+        "reviews/venture-concept-briefs/json/synthetic-venture-concept-brief-packet-expert-review.json",
+    });
+
+    expectSyntheticVentureConceptBriefStructuredArtifact(
+      artifact.structuredArtifact,
+    );
+    expectSyntheticVentureConceptBriefMarkdownArtifact(
+      artifact.markdownArtifactText,
+    );
+
+    expectPublicSafeSerializedContent(
+      `${artifact.markdownArtifactText}\n${artifact.structuredArtifactText}`,
     );
   });
 });

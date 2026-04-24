@@ -1,0 +1,14 @@
+{
+  "reviewSurface": "Synthetic venture concept brief packet",
+  "reviewFocus": [
+    "Check whether the concept brief separates framing, directional signal, and execution readiness instead of collapsing them into one claim.",
+    "Flag missing caveats when the support is synthetic, proxy-based, qualitative, or conditional.",
+    "Check that evidence labels stay generic and traceable without exposing private notes, raw source truth, or project-specific identifiers.",
+    "Keep prioritization, outreach, spend, launch timing, publication, and follow-up routing caller-owned."
+  ],
+  "outOfScope": [
+    "Do not infer real market size, buyer urgency, willingness to pay, fundraising merit, launch readiness, or implementation priority.",
+    "Do not approve build commitments, outreach, spending, publication, or external promises.",
+    "Do not treat the fixture as a diligence memo, investment recommendation, or source of truth about a real market or product."
+  ]
+}

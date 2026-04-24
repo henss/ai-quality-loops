@@ -22,6 +22,8 @@ Validate payloads with `validateStructuredReviewResult(...)` or the published `s
 - `examples/synthetic-reviewer-contract-review.manifest.json` is a runnable synthetic text-review manifest.
 - `examples/synthetic-reviewer-contract-review-context.json` defines the review focus for that manifest.
 - `examples/synthetic-reviewer-contract-review-context.md` is the synthetic target packet.
+- `examples/synthetic-venture-concept-brief-review.manifest.json` is a runnable synthetic text-review manifest for concept-brief evidence discipline.
+- Its paired synthetic context packet keeps venture framing generic and analysis-only so proof thresholds, launch decisions, prioritization, spend, and follow-up routing stay caller-owned.
 - `examples/synthetic-context-pack-quality-review.manifest.json` is a synthetic context-pack quality review that keeps source retrieval, source interpretation, approval, routing, and retention caller-owned.
 - Its paired synthetic context packet intentionally leaves both the research-source audit and any public-source list empty because the shared fixture uses opaque evidence labels only; source freshness, retrieval coverage, public-source selection, and approval checks remain caller-owned.
 - `reviews/context-pack-quality/synthetic-context-pack-quality-packet-expert-review.md` and `reviews/context-pack-quality/json/synthetic-context-pack-quality-packet-expert-review.json` are checked-in synthetic review artifacts showing the expected public-safe verdict shape for that seam without turning the empty audit into proof that any real source check already passed.

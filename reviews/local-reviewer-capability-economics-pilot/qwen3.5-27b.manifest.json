@@ -1,0 +1,16 @@
+{
+  "defaults": {
+    "mode": "expert",
+    "expert": "Efficiency",
+    "model": "qwen3.5:27b",
+    "contextPath": "./examples/synthetic-reviewer-contract-review-context.json",
+    "outputDir": "./reviews/local-reviewer-capability-economics-pilot/qwen3.5-27b",
+    "structuredOutputDir": "./reviews/local-reviewer-capability-economics-pilot/qwen3.5-27b/json"
+  },
+  "reviews": [
+    {
+      "name": "Synthetic reviewer contract packet",
+      "target": "./examples/synthetic-reviewer-contract-review-context.md"
+    }
+  ]
+}

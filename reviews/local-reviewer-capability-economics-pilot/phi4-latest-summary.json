@@ -1,0 +1,40 @@
+{
+  "manifestPath": "Local file path (.json file)",
+  "total": 1,
+  "succeeded": 1,
+  "failed": 0,
+  "results": [
+    {
+      "index": 0,
+      "name": "Synthetic reviewer contract packet",
+      "resultKey": "synthetic-reviewer-contract-packet-expert",
+      "mode": "expert",
+      "targetSummary": "Local file path (.md file, file: synthetic-reviewer-contract-review-context.md)",
+      "outputPath": "Local file path (.md file)",
+      "structuredOutputPath": "Local file path (.json file)",
+      "structuredResult": {
+        "overallSeverity": "low",
+        "totalFindings": 1,
+        "findingCounts": {
+          "critical": 0,
+          "high": 0,
+          "medium": 0,
+          "low": 1,
+          "unknown": 0
+        }
+      },
+      "status": "success",
+      "durationMs": 21915,
+      "outputChars": 795,
+      "decisionParsed": true,
+      "ollamaTelemetry": {
+        "totalDurationMs": 21902,
+        "loadDurationMs": 17128,
+        "promptEvalCount": 956,
+        "promptEvalDurationMs": 139,
+        "evalCount": 174,
+        "evalDurationMs": 1296
+      }
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "manifestPath": "Local file path (.json file)",
+  "total": 1,
+  "succeeded": 0,
+  "failed": 1,
+  "results": [
+    {
+      "index": 0,
+      "name": "Synthetic reviewer contract packet",
+      "resultKey": "synthetic-reviewer-contract-packet-expert",
+      "mode": "expert",
+      "targetSummary": "Local file path (.md file, file: synthetic-reviewer-contract-review-context.md)",
+      "outputPath": "Local file path (.md file)",
+      "structuredOutputPath": "Local file path (.json file)",
+      "status": "failure",
+      "errorSummary": "Error: Structured expert review did not emit a valid peer_review_decision_v1 JSON object.",
+      "durationMs": 53593,
+      "outputChars": 0,
+      "decisionParsed": false
+    }
+  ]
+}

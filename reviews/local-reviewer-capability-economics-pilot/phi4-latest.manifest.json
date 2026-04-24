@@ -1,0 +1,16 @@
+{
+  "defaults": {
+    "mode": "expert",
+    "expert": "Efficiency",
+    "model": "phi4:latest",
+    "contextPath": "./examples/synthetic-reviewer-contract-review-context.json",
+    "outputDir": "./reviews/local-reviewer-capability-economics-pilot/phi4-latest",
+    "structuredOutputDir": "./reviews/local-reviewer-capability-economics-pilot/phi4-latest/json"
+  },
+  "reviews": [
+    {
+      "name": "Synthetic reviewer contract packet",
+      "target": "./examples/synthetic-reviewer-contract-review-context.md"
+    }
+  ]
+}

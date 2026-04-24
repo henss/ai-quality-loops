@@ -28,7 +28,7 @@ The example files cover the repeatable workflow surfaces. The package also suppo
 | Review a synthetic reviewer-contract packet | `batch-review ./examples/synthetic-reviewer-contract-review.manifest.json` | Use this as a runnable public-safe contract example before wiring caller-owned target selection, severity budgets, and routing. |
 | Review a synthetic context pack quality packet | `batch-review ./examples/synthetic-context-pack-quality-review.manifest.json` | Use this as a public-safe seam for checking context-pack scope, evidence labels, caveats, and caller-owned boundaries. |
 | Review a synthetic source-handle evidence pack | `batch-review ./examples/synthetic-source-handle-evidence-review.manifest.json` | Use this as a text-review seam for review-output packets that cite source handles without copying private truth; keep retrieval, storage, source interpretation, approval, and routing caller-owned. |
-| Review a synthetic finance-signal routing packet | `batch-review ./examples/synthetic-finance-signal-routing-review.manifest.json` | Use this as a text-review seam for finance-sensitive source-backed requests that must preserve source handles and coarse signals only; keep raw records, thresholds, approval, and routing caller-owned. |
+| Review a synthetic finance-signal routing packet | `batch-review ./examples/synthetic-finance-signal-routing-review.manifest.json` | Use this as a text-review seam for finance-sensitive source-backed requests that must preserve source handles and coarse signals only; keep raw records, thresholds, sponsor interpretation, approval, and routing caller-owned. |
 | Review a synthetic private-domain bridge packet | `batch-review ./examples/synthetic-private-domain-bridge-review.manifest.json` | Use this as a text-review seam for one caller-owned bridge packet that exposes only opaque source handles, redacted evidence, and reusable findings; keep source resolution, priority, routing, and private semantics caller-owned. |
 | Review synthetic buyer-claim caveats | `batch-review ./examples/synthetic-buyer-claim-caveat-review.manifest.json` | Use this as a text-review seam for buyer-interest claims; keep real sources, outreach, spend, account creation, proof thresholds, and routing caller-owned. |
 | Review a synthetic recovery-safe finance cadence packet | `batch-review ./examples/synthetic-finance-cadence-review.manifest.json` | Use this as a text-review seam for analysis-only cadence reasoning; keep real records, thresholds, scheduling, approval, and action routing caller-owned. |
@@ -216,8 +216,9 @@ Typical edits:
 
 - replace the synthetic context target only in an embedding repo with a caller-sanitized packet that keeps finance evidence at bounded signal level
 - keep or adapt the context file so review stays focused on source-handle semantics, bounded signal discipline, freshness caveats, and caller-owned routing boundaries
+- if a downstream workflow later formats a sponsor memo or runs the sponsor-packet handoff gate, feed those helpers only the sanitized structured review result, not the raw finance packet or source handles as proof
 - switch `expert` or `promptLibraryPath` to a caller-owned reviewer only when the embedding repo owns that routing policy
-- keep real balances, account identifiers, transaction detail, thresholds, approval, scheduling, escalation, and routing outside `ai-quality-loops`
+- keep real balances, account identifiers, transaction detail, thresholds, sponsor policy, approval, scheduling, escalation, and routing outside `ai-quality-loops`
 
 ### `synthetic-source-handle-redaction-corpus.fixture.json`
 

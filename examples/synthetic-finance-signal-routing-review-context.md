@@ -6,6 +6,8 @@ This synthetic context file is a placeholder target for a caller-owned finance-s
 
 A private workflow wants to route a finance-sensitive request into a bounded next step such as review, proposal, evidence summary, or blocker. The packet should preserve source handles and coarse finance signals only. The reviewer should treat this file as a neutral packet structure for checking bounded signal discipline, uncertainty, and authority boundaries, not as a source of truth about a real person, company, account, ledger, or compliance workflow.
 
+If a caller later turns the resulting structured review output into an auditable sponsor-facing memo or a no-write sponsor-packet quality-gate check, that downstream step must still rely on sanitized review-result fields rather than treating the packet's finance labels or source handles as proof. Sponsor interpretation, sponsorship policy, tracker writes, and downstream routing remain caller-owned.
+
 ## Source Handle Semantics
 
 The `source:*` values below are opaque, caller-owned retrieval hints. They are not proof, canonical records, package-managed storage keys, or a portable resolution schema. A caller-owned workflow must resolve, authorize, verify, and retain any underlying source content outside `ai-quality-loops`.

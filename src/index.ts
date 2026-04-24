@@ -62,6 +62,21 @@ export {
   type BatchReviewSummarySeverityDirection,
 } from "./contracts/batch-review-summary-comparison-contract.js";
 export {
+  CLAIM_EVIDENCE_SCORING_CONTRACT,
+  parseClaimEvidenceScoringContract,
+  validateClaimEvidenceScoringContract,
+  type ClaimEvidenceFixtureEvidenceItem,
+  type ClaimEvidenceFixtureEvidenceKind,
+  type ClaimEvidenceScoreLevel,
+  type ClaimEvidenceScoreValue,
+  type ClaimEvidenceScoringBoundary,
+  type ClaimEvidenceScoringContract,
+  type ClaimEvidenceScoringDimension,
+  type ClaimEvidenceScoringDimensionId,
+  type ClaimEvidenceScoringDisposition,
+  type ClaimEvidenceScoringSyntheticFixture,
+} from "./contracts/claim-evidence-scoring-contract.js";
+export {
   HIGH_STAKES_ANALYSIS_REVIEW_RUBRIC_CONTRACT,
   parseHighStakesAnalysisReviewRubricContract,
   validateHighStakesAnalysisReviewRubricContract,

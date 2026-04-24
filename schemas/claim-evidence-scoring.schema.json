@@ -1,0 +1,225 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/henss/ai-quality-loops/blob/main/schemas/claim-evidence-scoring.schema.json",
+  "title": "ClaimEvidenceScoringContract",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "contract",
+    "boundary",
+    "scoreLevels",
+    "dimensions",
+    "syntheticFixtures"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "1"
+    },
+    "contract": {
+      "const": "claim-evidence-scoring"
+    },
+    "boundary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "genericPurpose",
+        "allowedGenericInputs",
+        "callerOwnedInputs",
+        "prohibitedSharedContent"
+      ],
+      "properties": {
+        "genericPurpose": {
+          "type": "string",
+          "minLength": 1
+        },
+        "allowedGenericInputs": {
+          "$ref": "#/$defs/stringArray"
+        },
+        "callerOwnedInputs": {
+          "$ref": "#/$defs/stringArray"
+        },
+        "prohibitedSharedContent": {
+          "$ref": "#/$defs/stringArray"
+        }
+      }
+    },
+    "scoreLevels": {
+      "type": "array",
+      "minItems": 4,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["score", "label", "interpretation"],
+        "properties": {
+          "score": {
+            "type": "integer",
+            "enum": [0, 1, 2, 3]
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1
+          },
+          "interpretation": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "dimensions": {
+      "type": "array",
+      "minItems": 5,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "label",
+          "reviewQuestion",
+          "highScoreSignals",
+          "lowScoreSignals"
+        ],
+        "properties": {
+          "id": {
+            "$ref": "#/$defs/dimensionId"
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1
+          },
+          "reviewQuestion": {
+            "type": "string",
+            "minLength": 1
+          },
+          "highScoreSignals": {
+            "$ref": "#/$defs/stringArray"
+          },
+          "lowScoreSignals": {
+            "$ref": "#/$defs/stringArray"
+          }
+        }
+      }
+    },
+    "syntheticFixtures": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "claim",
+          "evidence",
+          "evidenceRefs",
+          "expectedScores",
+          "expectedDisposition",
+          "rationale"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "claim": {
+            "type": "string",
+            "minLength": 1
+          },
+          "evidence": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["id", "kind", "summary", "caveat"],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "kind": {
+                  "type": "string",
+                  "enum": [
+                    "directional-interview",
+                    "conditional-scenario",
+                    "repeated-job-note"
+                  ]
+                },
+                "summary": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "caveat": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            }
+          },
+          "evidenceRefs": {
+            "$ref": "#/$defs/stringArray"
+          },
+          "expectedScores": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "claim-proportionality",
+              "evidence-specificity",
+              "caveat-preservation",
+              "purchase-signal-discipline",
+              "authority-boundary"
+            ],
+            "properties": {
+              "claim-proportionality": {
+                "$ref": "#/$defs/scoreValue"
+              },
+              "evidence-specificity": {
+                "$ref": "#/$defs/scoreValue"
+              },
+              "caveat-preservation": {
+                "$ref": "#/$defs/scoreValue"
+              },
+              "purchase-signal-discipline": {
+                "$ref": "#/$defs/scoreValue"
+              },
+              "authority-boundary": {
+                "$ref": "#/$defs/scoreValue"
+              }
+            }
+          },
+          "expectedDisposition": {
+            "type": "string",
+            "enum": ["keep-caveated", "rewrite-narrower"]
+          },
+          "rationale": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "dimensionId": {
+      "type": "string",
+      "enum": [
+        "claim-proportionality",
+        "evidence-specificity",
+        "caveat-preservation",
+        "purchase-signal-discipline",
+        "authority-boundary"
+      ]
+    },
+    "scoreValue": {
+      "type": "integer",
+      "enum": [0, 1, 2, 3]
+    },
+    "stringArray": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  }
+}

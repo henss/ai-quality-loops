@@ -96,6 +96,7 @@ export const JSON_CONTRACT_SCHEMA_FILES = Object.freeze({
   batchReviewSummaryComparison:
     "schemas/batch-review-summary-comparison.schema.json",
   batchReviewSummary: "schemas/batch-review-summary.schema.json",
+  claimEvidenceScoring: "schemas/claim-evidence-scoring.schema.json",
   highStakesAnalysisReviewRubric:
     "schemas/high-stakes-analysis-review-rubric.schema.json",
   structuredReviewResult: "schemas/structured-review-result.schema.json",

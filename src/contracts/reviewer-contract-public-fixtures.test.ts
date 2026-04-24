@@ -212,6 +212,53 @@ describe("synthetic reviewer-contract public fixtures", () => {
       `${fixture.manifestText}\n${fixture.contextText}\n${fixture.targetText}`,
     );
   });
+
+  it("ships a minimal starter kit for external contributors without widening the shared boundary", async () => {
+    const manifestText = await readExampleFile(
+      "examples/reviewer-contract-starter-kit/review.manifest.template.json",
+    );
+    const parsedManifest = parseBatchReviewManifest(JSON.parse(manifestText));
+    const contextText = await readExampleFile(
+      "examples/reviewer-contract-starter-kit/review-context.template.json",
+    );
+    const context = JSON.parse(contextText) as ParsedPublicFixtureContext;
+    const targetText = await readExampleFile(
+      "examples/reviewer-contract-starter-kit/review-target.template.md",
+    );
+    const readmeText = await readExampleFile(
+      "examples/reviewer-contract-starter-kit/README.md",
+    );
+
+    expect(parsedManifest.defaults).toEqual(
+      expect.objectContaining({
+        mode: "expert",
+        expert: "Evidence Reviewer",
+        contextPath: "./review-context.template.json",
+      }),
+    );
+    expect(parsedManifest.reviews).toEqual([
+      expect.objectContaining({
+        name: "Starter reviewer contract packet",
+        target: "./review-target.template.md",
+      }),
+    ]);
+    expect(context.reviewSurface).toBe("Starter reviewer-contract packet");
+    expect(context.reviewFocus).toContain(
+      "Flag any claim that implies approval, release readiness, remediation ownership, or external action without explicit supporting evidence.",
+    );
+    expect(context.outOfScope).toContain(
+      "Do not infer domain-specific systems, private repositories, or private programs from placeholder wording.",
+    );
+    expect(targetText).toContain("Evidence label C");
+    expect(targetText).toContain("caller-sanitized packet");
+    expect(targetText).toContain("Do not approve publication, deployment");
+    expect(readmeText).toContain("Copy these templates into your own repository");
+    expect(readmeText).toContain("local-Ollama-first and analysis-only");
+
+    expectPublicSafeSerializedContent(
+      `${manifestText}\n${contextText}\n${targetText}\n${readmeText}`,
+    );
+  });
 });
 
 describe("synthetic context-pack public fixtures", () => {

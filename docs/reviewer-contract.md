@@ -17,6 +17,8 @@ Validate payloads with `validateStructuredReviewResult(...)` or the published `s
 
 ## Synthetic Examples
 
+- `examples/reviewer-contract-starter-kit/` is the minimal copy-ready starter kit for external contributors or embedding repos that want one reviewer-contract seam without adopting extra package-owned tooling.
+- Its templates show the smallest manifest, context file, and review packet shape that still preserves caller-owned authority boundaries.
 - `examples/synthetic-reviewer-contract-review.manifest.json` is a runnable synthetic text-review manifest.
 - `examples/synthetic-reviewer-contract-review-context.json` defines the review focus for that manifest.
 - `examples/synthetic-reviewer-contract-review-context.md` is the synthetic target packet.
@@ -26,6 +28,16 @@ Validate payloads with `validateStructuredReviewResult(...)` or the published `s
 - `examples/synthetic-reviewer-contract-result.fixture.json` is a checked structured-result fixture for consumer tests.
 
 These examples demonstrate the contract only. They do not decide target selection, severity budgets, approval, remediation ownership, tracker routing, publication, deployment, retention, or real-world action.
+
+## Starter Kit Use
+
+For the narrowest onboarding path, start with `examples/reviewer-contract-starter-kit/`:
+
+1. Copy the three template files into your repo.
+2. Replace the packet body with caller-sanitized content and keep evidence labels generic.
+3. Run `batch-review` against the copied manifest from your own repo.
+
+If you need repo-specific routing, CI budgets, or tracker writes, add them in the embedding repo instead of widening the shared reviewer-contract surface here.
 
 ## Allowed In Shared Examples
 

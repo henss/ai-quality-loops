@@ -1,0 +1,16 @@
+{
+  "reviewSurface": "Starter reviewer-contract packet",
+  "reviewFocus": [
+    "Check whether each claim is supported by caller-sanitized evidence labels or quoted packet text.",
+    "Flag missing caveats when evidence is summarized, partial, stale, or caller-owned.",
+    "Flag any claim that implies approval, release readiness, remediation ownership, or external action without explicit supporting evidence.",
+    "Check that the result can be represented as the structured review-result contract with generic finding keys when useful.",
+    "Keep target selection, severity budgets, approval, routing, remediation, publication, retention, and domain interpretation caller-owned."
+  ],
+  "outOfScope": [
+    "Do not infer private facts, account details, source contents, production readiness, or hidden approval state.",
+    "Do not decide publication, deployment, remediation ownership, tracker routing, retention, purchasing, or other real-world action.",
+    "Do not infer domain-specific systems, private repositories, or private programs from placeholder wording.",
+    "Do not treat generic evidence labels as proof outside the caller-owned packet."
+  ]
+}

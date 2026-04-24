@@ -1,0 +1,15 @@
+{
+  "defaults": {
+    "mode": "expert",
+    "expert": "Evidence Reviewer",
+    "contextPath": "./review-context.template.json",
+    "outputDir": "./reviews/reviewer-contract",
+    "structuredOutputDir": "./reviews/reviewer-contract/json"
+  },
+  "reviews": [
+    {
+      "name": "Starter reviewer contract packet",
+      "target": "./review-target.template.md"
+    }
+  ]
+}

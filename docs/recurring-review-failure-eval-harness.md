@@ -17,6 +17,8 @@ The embedding workflow still owns:
 - command execution, verification authority, and rerun policy
 - tracker routing, prioritization, approvals, and any real-world action
 
+The checked-in sanitized regression corpus lives at `examples/synthetic-process-failed-peer-review-regression-corpus.fixture.json`. It mirrors the reusable failure-mode expectations without copying any private packet content or tracker detail.
+
 ## Included Failure Modes
 
 - missing evidence handles
@@ -60,6 +62,10 @@ The harness stays intentionally narrow:
 - it evaluates finding keys, reusable signal groups, next-step actions, and minimum severity
 - it does not add approval heuristics, scheduling policy, or tracker writes
 
+Use the corpus fixture when a wrapper needs a human-readable list of the sanitized recurrent failure patterns, their packet targets, and the explicit extraction boundary without inferring that shape from the TypeScript cases alone.
+
 ## Generic-vs-Domain-Specific Extraction Question
 
 The harness remains generic only while the eval cases stay synthetic or caller-sanitized and the pass/fail check reads only structured review-result artifacts. If a future slice needs repo-specific command policy, packet assembly rules, private tracker context, or domain-specific approval thresholds, keep that logic in the embedding repo instead of widening AIQL.
+
+The current sanitized corpus intentionally stops at the six reusable patterns already normalized into the public eval pack. If another repeated process-failed review depends on bundle-specific packet assembly, private evidence routing, or domain policy that does not survive sanitization cleanly, leave that case outside AIQL until a generic public-safe shape repeats.

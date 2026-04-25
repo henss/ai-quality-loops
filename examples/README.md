@@ -38,6 +38,7 @@ The example files cover the repeatable workflow surfaces. The package also suppo
 | Review synthetic household-inventory safety caveats | `batch-review ./examples/synthetic-grocy-public-safety-review.manifest.json` | Use this as a text-review seam for Grocy-style stock, consume-by, recipe, chore, and reorder artifacts; keep real exports, health interpretation, purchasing, disposal, alerting, and routing caller-owned. |
 | Review a synthetic scheduling fallback packet | `batch-review ./examples/synthetic-scheduling-fallback-review.manifest.json` | Use this as a text-review seam for proposal-first fallback planning when one schedule source is unreachable; keep real source checks, writes, retries, approvals, and communications caller-owned. |
 | Run a recurring review-failure eval pack | `batch-review ./examples/synthetic-recurring-review-failure-eval.manifest.json` | Use this as a public-safe rehearsal pack for repeated reviewer failures such as missing evidence handles, stale deterministic inputs, command noise, verification-wrapper mismatches, and launch-evidence regressions before another live run. |
+| Inspect the sanitized process-failed peer-review corpus | `./examples/synthetic-process-failed-peer-review-regression-corpus.fixture.json` | Use when a consumer needs the reusable public-safe failure catalog, packet targets, and explicit extraction boundary behind the recurring review-failure eval pack. |
 | Check source-handle redaction cases | `defineReviewSurfaceRedactions(...)` with `./examples/synthetic-source-handle-redaction-corpus.fixture.json` | Use when a consumer needs public-safe regression cases for caller-owned source-handle redaction across synthetic domains. |
 | Check source-handle redaction mutations | `defineReviewSurfaceRedactions(...)` with `./examples/synthetic-source-handle-redaction-mutations.fixture.json` | Use when a consumer needs public-safe mutation coverage for caller-owned source-handle redaction across punctuation, lightweight markup, and structured-text variants. |
 | Check caller-owned redaction rules | `defineReviewSurfaceRedactions(...)` with `./examples/synthetic-policy-redactions.fixture.json` | Use when a consumer needs a public-safe fixture for project-local redaction behavior without moving policy names into AIQL. |
@@ -376,6 +377,16 @@ Typical edits:
 - keep the checked-in pack synthetic, or replace targets only inside an embedding repo with caller-sanitized recurring failure packets
 - use `evaluateRecurringReviewFailureHarness(...)` with structured review-result artifacts when a wrapper needs a deterministic coverage check over recurring failure modes
 - keep real tracker routing, command policy, source retrieval, approval, and execution authority outside `ai-quality-loops`
+
+### `synthetic-process-failed-peer-review-regression-corpus.fixture.json`
+
+Use when you want the curated public-safe catalog behind the recurring review-failure eval pack without inferring the reusable patterns from TypeScript or from private packet history.
+
+Typical edits:
+
+- keep the checked-in corpus synthetic, or replace packet paths only in an embedding repo with caller-sanitized recurrent failure packets
+- use the corpus when a wrapper needs the case list, expected finding keys, signal groups, next-step actions, and minimum severity in one reviewable artifact
+- keep bundle-specific packet assembly, tracker context, private evidence routing, approval thresholds, and real-world action outside `ai-quality-loops`
 
 ### `synthetic-policy-redactions.fixture.json`
 

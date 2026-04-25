@@ -1,0 +1,187 @@
+{
+  "schemaVersion": "1",
+  "reviewSurface": "Synthetic process-failed peer-review regression corpus",
+  "purpose": "Public-safe regression cases curated from repeated process-failed peer reviews and normalized into reusable review-failure modes.",
+  "boundary": [
+    "All cases are synthetic and caller-sanitized.",
+    "The corpus records reusable failure modes only; it does not preserve private packet contents, tracker context, repository identities, or organization-specific policy.",
+    "Real packet assembly, command execution, freshness checks, approval, and routing remain caller-owned."
+  ],
+  "cases": [
+    {
+      "caseId": "missing-evidence-handles",
+      "failureMode": "missing evidence handles",
+      "reviewName": "Recurring failure eval - missing evidence handles",
+      "sanitizedPacketPath": "./examples/synthetic-recurring-review-failure-missing-evidence-handles.md",
+      "summary": "Reviewer should flag unresolved or opaque evidence handles instead of treating the packet as traceable.",
+      "expectedFindingKeys": [
+        "missing-evidence-handle"
+      ],
+      "expectedSignalGroups": [
+        [
+          "evidence handle",
+          "source handle"
+        ],
+        [
+          "missing",
+          "opaque",
+          "unresolved"
+        ]
+      ],
+      "expectedNextStepActions": [
+        "collect_more_evidence"
+      ],
+      "minimumSeverity": "medium",
+      "sanitizedExcerpt": "Evidence labels stay generic, one source handle remains unresolved, and the packet overstates traceability until the caller restores the missing handle."
+    },
+    {
+      "caseId": "stale-deterministic-inputs",
+      "failureMode": "stale deterministic inputs",
+      "reviewName": "Recurring failure eval - stale deterministic inputs",
+      "sanitizedPacketPath": "./examples/synthetic-recurring-review-failure-stale-deterministic-inputs.md",
+      "summary": "Reviewer should call out stale or drifted deterministic inputs before treating a packet as current.",
+      "expectedFindingKeys": [
+        "stale-deterministic-input"
+      ],
+      "expectedSignalGroups": [
+        [
+          "stale",
+          "outdated",
+          "drift"
+        ],
+        [
+          "deterministic input",
+          "snapshot",
+          "baseline"
+        ]
+      ],
+      "expectedNextStepActions": [
+        "collect_more_evidence",
+        "track_follow_up"
+      ],
+      "minimumSeverity": "medium",
+      "sanitizedExcerpt": "A caller-owned baseline snapshot predates the latest review cycle, so the packet needs refreshed deterministic evidence before another run trusts it."
+    },
+    {
+      "caseId": "repeated-command-noise",
+      "failureMode": "repeated command noise",
+      "reviewName": "Recurring failure eval - repeated command noise",
+      "sanitizedPacketPath": "./examples/synthetic-recurring-review-failure-command-noise.md",
+      "summary": "Reviewer should flag command-log repetition that obscures the real verification signal.",
+      "expectedFindingKeys": [
+        "command-noise-obscures-signal"
+      ],
+      "expectedSignalGroups": [
+        [
+          "command noise",
+          "repeated command",
+          "log spam"
+        ],
+        [
+          "signal",
+          "verification evidence",
+          "concise evidence"
+        ]
+      ],
+      "expectedNextStepActions": [
+        "revise_artifact"
+      ],
+      "minimumSeverity": "medium",
+      "sanitizedExcerpt": "Repeated shell snippets crowd out the only concise verification note, so the artifact needs trimming before another reviewer can audit it efficiently."
+    },
+    {
+      "caseId": "verification-wrapper-mismatch",
+      "failureMode": "verification-wrapper mismatch",
+      "reviewName": "Recurring failure eval - verification wrapper mismatch",
+      "sanitizedPacketPath": "./examples/synthetic-recurring-review-failure-verification-wrapper-mismatch.md",
+      "summary": "Reviewer should catch when the wrapper claims one verification path but the cited command or output proves another.",
+      "expectedFindingKeys": [
+        "verification-wrapper-mismatch"
+      ],
+      "expectedSignalGroups": [
+        [
+          "verification wrapper",
+          "wrapper"
+        ],
+        [
+          "mismatch",
+          "misaligned",
+          "different command"
+        ]
+      ],
+      "expectedNextStepActions": [
+        "rerun_review",
+        "request_caller_review"
+      ],
+      "minimumSeverity": "medium",
+      "sanitizedExcerpt": "The wrapper summary names one verification route while the evidence block cites another command, so the packet should be rerun before it is trusted."
+    },
+    {
+      "caseId": "launch-evidence-regression-omission",
+      "failureMode": "launch evidence regression omission",
+      "reviewName": "Recurring failure eval - launch evidence regression omission",
+      "sanitizedPacketPath": "./examples/synthetic-recurring-review-failure-launch-evidence-regression-omission.md",
+      "summary": "Reviewer should catch when a launch-outcome evidence note omits added, removed, or regressed review signals and still claims stability.",
+      "expectedFindingKeys": [
+        "launch-evidence-regression-omission"
+      ],
+      "expectedSignalGroups": [
+        [
+          "launch outcome evidence",
+          "evidence summary"
+        ],
+        [
+          "added",
+          "removed",
+          "regressed",
+          "severity movement"
+        ],
+        [
+          "omitted",
+          "missing",
+          "stability claim"
+        ]
+      ],
+      "expectedNextStepActions": [
+        "revise_artifact",
+        "collect_more_evidence"
+      ],
+      "minimumSeverity": "medium",
+      "sanitizedExcerpt": "A launch evidence note keeps a stability claim but drops one added signal and one severity movement, so the comparison evidence needs restoration."
+    },
+    {
+      "caseId": "launch-evidence-gate-overclaim",
+      "failureMode": "launch evidence gate overclaim",
+      "reviewName": "Recurring failure eval - launch evidence gate overclaim",
+      "sanitizedPacketPath": "./examples/synthetic-recurring-review-failure-launch-evidence-gate-overclaim.md",
+      "summary": "Reviewer should reject launch-evidence notes that imply threshold pass or defended readiness when gate evidence was not provided.",
+      "expectedFindingKeys": [
+        "launch-evidence-gate-overclaim"
+      ],
+      "expectedSignalGroups": [
+        [
+          "gate result",
+          "gate evidence",
+          "threshold"
+        ],
+        [
+          "not provided",
+          "missing",
+          "absent"
+        ],
+        [
+          "launch readiness",
+          "defended",
+          "overclaim"
+        ]
+      ],
+      "expectedNextStepActions": [
+        "request_caller_review",
+        "collect_more_evidence"
+      ],
+      "minimumSeverity": "high",
+      "sanitizedExcerpt": "The packet claims the review surface is defended even though the gate result is absent, so the reviewer should block reuse until caller-owned evidence is attached."
+    }
+  ],
+  "openQuestion": "The current public-safe corpus captures the reusable process-failure patterns already normalized into the recurring eval pack. If another repeated failure depends on private packet assembly details or bundle-specific policy, keep it in the embedding repo until a generic sanitized shape repeats."
+}

@@ -262,6 +262,7 @@ console.log(digest);
 The source-handle digest stays intentionally narrow:
 
 - it consumes one published batch-review summary artifact and emits a compact Markdown digest
+- it includes a sanitized manifest artifact label plus human entry names so callers can audit the published bundle without reopening the raw summary JSON
 - it prioritizes failures, blocked or process-failed outcomes, and higher-severity entries without re-reading raw packet contents
 - it does not resolve source handles, verify source truth, set acceptance thresholds, or route follow-up work
 

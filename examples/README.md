@@ -407,6 +407,7 @@ Typical edits:
 
 - keep the summary synthetic, or replace it only with a caller-sanitized published batch-review summary in an embedding repo
 - compare the helper output to `synthetic-source-handle-review-bundle-digest.md` when a wrapper needs a stable compact digest shape
+- rely on the digest's sanitized manifest artifact line and human entry names for compact audit reads instead of reopening the full summary JSON when the published artifact already exists
 - keep packet assembly, source-handle resolution, source verification, thresholds, tracker context, and routing outside `ai-quality-loops`
 
 ### `synthetic-apartment-review-result.fixture.json`

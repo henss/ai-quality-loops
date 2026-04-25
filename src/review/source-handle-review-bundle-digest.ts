@@ -137,6 +137,10 @@ function formatEntryNote(
   extraRedactions?: ReviewSurfaceRedactions,
 ): string {
   const label = sanitizeDigestValue(entry.resultKey, extraRedactions);
+  const name = sanitizeDigestValue(
+    entry.name ?? "Unnamed review entry",
+    extraRedactions,
+  );
   const target = sanitizeDigestValue(entry.targetSummary, extraRedactions);
 
   if (entry.status === "failure") {
@@ -146,19 +150,19 @@ function formatEntryNote(
     const punctuatedFailureSummary = /[.!?]$/.test(failureSummary)
       ? failureSummary
       : `${failureSummary}.`;
-    return `- \`${label}\`: failure; target=${target}; error=${punctuatedFailureSummary}`;
+    return `- \`${label}\` (${name}): failure; target=${target}; error=${punctuatedFailureSummary}`;
   }
 
   const structuredResult = entry.structuredResult;
   if (!structuredResult) {
-    return `- \`${label}\`: success; target=${target}; structured rollup unavailable.`;
+    return `- \`${label}\` (${name}): success; target=${target}; structured rollup unavailable.`;
   }
 
   const decision = structuredResult.decision
     ? `; verdict=${structuredResult.decision.verdict}; confidence=${structuredResult.decision.confidence}`
     : "";
 
-  return `- \`${label}\`: success; target=${target}; severity=${structuredResult.overallSeverity}; findings=${structuredResult.totalFindings}${decision}.`;
+  return `- \`${label}\` (${name}): success; target=${target}; severity=${structuredResult.overallSeverity}; findings=${structuredResult.totalFindings}${decision}.`;
 }
 
 function buildCoverageGaps(summary: BatchReviewArtifactSummary): string[] {
@@ -224,6 +228,10 @@ export function formatSourceHandleReviewBundleDigest(
     "",
     "## Bundle Snapshot",
     "",
+    `- Manifest artifact: ${sanitizeDigestValue(
+      summary.manifestPath ?? "Manifest artifact unavailable",
+      options.extraRedactions,
+    )}.`,
     `- Reviews: total=${summary.total}; succeeded=${summary.succeeded}; failed=${summary.failed}.`,
     `- Modes: expert=${modeCounts.expert}; vision=${modeCounts.vision}.`,
     `- Structured rollups: available=${structuredRollups.available}; missing=${structuredRollups.missing}.`,

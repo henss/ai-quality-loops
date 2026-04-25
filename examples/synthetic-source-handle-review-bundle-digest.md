@@ -4,6 +4,7 @@ This digest is generated from sanitized AIQL batch-review summary artifacts for 
 
 ## Bundle Snapshot
 
+- Manifest artifact: Local file path (.json file).
 - Reviews: total=4; succeeded=3; failed=1.
 - Modes: expert=4; vision=0.
 - Structured rollups: available=3; missing=1.
@@ -12,10 +13,10 @@ This digest is generated from sanitized AIQL batch-review summary artifacts for 
 
 ## Priority Entry Notes
 
-- `bundle-digest-quality-expert`: failure; target=Local file path (.md file); error=Error: Failed to open Local file path (.md file).
-- `source-traceability-expert`: success; target=Local file path (.md file); severity=high; findings=3; verdict=changes_requested; confidence=medium.
-- `reread-budget-expert`: success; target=Local file path (.md file); severity=medium; findings=2.
-- `boundary-note-expert`: success; target=Local file path (.md file); severity=low; findings=1; verdict=accept_with_follow_up; confidence=high.
+- `bundle-digest-quality-expert` (Bundle digest quality): failure; target=Local file path (.md file); error=Error: Failed to open Local file path (.md file).
+- `source-traceability-expert` (Source traceability): success; target=Local file path (.md file); severity=high; findings=3; verdict=changes_requested; confidence=medium.
+- `reread-budget-expert` (Reread budget): success; target=Local file path (.md file); severity=medium; findings=2.
+- `boundary-note-expert` (Boundary note): success; target=Local file path (.md file); severity=low; findings=1; verdict=accept_with_follow_up; confidence=high.
 
 ## Coverage Gaps
 

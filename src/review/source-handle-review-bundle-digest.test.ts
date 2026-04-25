@@ -49,6 +49,7 @@ describe("source handle review bundle digest", () => {
         results: [
           {
             index: 0,
+            name: "Private reviewer reviewer@example.com",
             resultKey:
               "source:https://example.com/private/path?token=secret#fragment",
             mode: "expert",
@@ -65,6 +66,8 @@ describe("source handle review bundle digest", () => {
     expect(digest).not.toContain("D:\\workspace\\private");
     expect(digest).not.toContain("token=secret");
     expect(digest).not.toContain("reviewer@example.com");
+    expect(digest).toContain("- Manifest artifact: Local file path (.json file).");
+    expect(digest).toContain("(Private reviewer Email address)");
     expect(digest).toContain("Local file path (.md file)");
     expect(digest).toContain(
       "Remote URL (host: example.com, path segments: 2, query redacted, fragment redacted)",

@@ -1,10 +1,10 @@
 # Synthetic Buyer Claim Caveat Review Context
 
-This synthetic context file is a placeholder target for a caller-owned buyer-claim caveat review. It contains no real buyer names, company names, deal details, customer data, outreach plan, private repository paths, or proprietary research notes.
+This synthetic context file is a placeholder target for a caller-owned buyer-claim caveat review. It contains no real buyer names, organization labels, deal details, account data, outreach plan, private repository paths, or proprietary research notes.
 
 ## Intended Surface
 
-A draft research note wants to summarize directional buyer interest without overstating what synthetic or sanitized evidence proves. The reviewer should treat this file as a neutral caveat packet, not as a source of truth about a real market, customer segment, product, or venture.
+A draft research note wants to summarize directional buyer interest without overstating what synthetic or sanitized evidence proves. The reviewer should treat this file as a neutral caveat packet, not as a source of truth about a real market, buyer segment, product, or venture.
 
 ## Evidence Items
 

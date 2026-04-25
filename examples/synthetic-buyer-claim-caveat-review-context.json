@@ -3,7 +3,7 @@
   "reviewFocus": [
     "Check whether each buyer-facing claim is proportional to the supplied synthetic evidence.",
     "Flag missing caveats when evidence is directional, interview-based, small-sample, hypothetical, or not tied to a purchasing action.",
-    "Check that evidence labels are traceable without exposing real buyer identity, company names, private source paths, or proprietary research notes.",
+    "Check that evidence labels are traceable without exposing real buyer identity, organization labels, private source paths, or proprietary research notes.",
     "Keep sourcing, proof thresholds, outreach, spend, publication approval, and follow-up routing caller-owned."
   ],
   "outOfScope": [

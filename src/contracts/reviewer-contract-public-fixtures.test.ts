@@ -253,6 +253,51 @@ function expectSyntheticVentureConceptBriefMarkdownArtifact(
   expect(markdownArtifactText).toContain('"key": "readiness_claim_exceeds_support"');
 }
 
+function expectSyntheticBuyerClaimCaveatStructuredArtifact(
+  structuredArtifact: unknown,
+): void {
+  const validation = validateStructuredReviewResult(structuredArtifact);
+
+  expect(validation).toEqual({
+    ok: true,
+    value: expect.objectContaining({
+      workflow: "expert",
+      expert: "SKEPTICAL UI/UX CRITIC",
+      summary: expect.stringContaining("synthetic evidence limitations"),
+      overallSeverity: "medium",
+      findings: expect.arrayContaining([
+        expect.objectContaining({
+          key: "visual_hierarchy_caveat_weight",
+          severity: "medium",
+        }),
+        expect.objectContaining({
+          key: "missing_purchase_warning",
+          severity: "medium",
+        }),
+        expect.objectContaining({
+          key: "evidence_label_traceability",
+          severity: "low",
+        }),
+      ]),
+      decision: expect.objectContaining({
+        verdict: "accept_with_follow_up",
+        blocking: false,
+        next_step_actions: ["track_follow_up"],
+      }),
+    }),
+  });
+}
+
+function expectSyntheticBuyerClaimCaveatMarkdownArtifact(
+  markdownArtifactText: string,
+): void {
+  expect(markdownArtifactText).toContain('"verdict": "accept_with_follow_up"');
+  expect(markdownArtifactText).toContain(
+    "synthetic evidence limitations",
+  );
+  expect(markdownArtifactText).toContain('"key": "missing_purchase_warning"');
+}
+
 function expectSyntheticPrivateDomainBridgeStructuredArtifact(
   structuredArtifact: unknown,
 ): void {
@@ -564,6 +609,68 @@ describe("synthetic venture concept brief public fixtures", () => {
       artifact.structuredArtifact,
     );
     expectSyntheticVentureConceptBriefMarkdownArtifact(
+      artifact.markdownArtifactText,
+    );
+
+    expectPublicSafeSerializedContent(
+      `${artifact.markdownArtifactText}\n${artifact.structuredArtifactText}`,
+    );
+  });
+});
+
+describe("synthetic buyer-claim caveat public fixtures", () => {
+  it("ships a buyer-claim caveat example that keeps proof thresholds and execution decisions caller-owned", async () => {
+    const fixture = await readManifestContextTarget({
+      manifestPath: "examples/synthetic-buyer-claim-caveat-review.manifest.json",
+      contextPath: "examples/synthetic-buyer-claim-caveat-review-context.json",
+      targetPath: "examples/synthetic-buyer-claim-caveat-review-context.md",
+    });
+
+    expect(fixture.parsedManifest.defaults).toEqual(
+      expect.objectContaining({
+        mode: "expert",
+        expert: "UI/UX",
+        contextPath: "./examples/synthetic-buyer-claim-caveat-review-context.json",
+      }),
+    );
+    expect(fixture.parsedManifest.reviews).toEqual([
+      expect.objectContaining({
+        name: "Synthetic buyer claim caveat packet",
+        target: "./examples/synthetic-buyer-claim-caveat-review-context.md",
+      }),
+    ]);
+    expect(fixture.context.reviewSurface).toBe(
+      "Synthetic buyer claim caveat packet",
+    );
+    expect(fixture.context.reviewFocus).toContain(
+      "Check whether each buyer-facing claim is proportional to the supplied synthetic evidence.",
+    );
+    expect(fixture.context.outOfScope).toContain(
+      "Do not infer real buyer demand, revenue potential, willingness to pay, market size, procurement readiness, or investment merit.",
+    );
+    expect(fixture.targetText).toContain("Evidence B");
+    expect(fixture.targetText).toContain("conditional interest, not a commitment");
+    expect(fixture.targetText).toContain(
+      "Do not infer private project facts, approve outreach, recommend spend, create accounts, decide publication, or route follow-up work.",
+    );
+
+    expectPublicSafeSerializedContent(
+      `${fixture.manifestText}\n${fixture.contextText}\n${fixture.targetText}`,
+    );
+  });
+
+  it("ships a checked-in synthetic buyer-claim caveat review artifact with explicit caveat-weighting guidance", async () => {
+    const artifact = await readCheckedInStructuredArtifact({
+      markdownPath:
+        "reviews/buyer-claim-caveats/synthetic-buyer-claim-caveat-packet-expert-review.md",
+      structuredPath:
+        "reviews/buyer-claim-caveats/json/synthetic-buyer-claim-caveat-packet-expert-review.json",
+    });
+
+    expectSyntheticBuyerClaimCaveatStructuredArtifact(
+      artifact.structuredArtifact,
+    );
+    expectSyntheticBuyerClaimCaveatMarkdownArtifact(
       artifact.markdownArtifactText,
     );
 

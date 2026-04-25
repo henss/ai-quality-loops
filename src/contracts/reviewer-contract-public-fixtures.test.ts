@@ -262,21 +262,21 @@ function expectSyntheticPrivateDomainBridgeStructuredArtifact(
     ok: true,
     value: expect.objectContaining({
       workflow: "expert",
-      summary: expect.stringContaining("opaque source semantics"),
-      findings: expect.arrayContaining([
-        expect.objectContaining({
-          key: "stable-finding-key-verification",
-          severity: "low",
-        }),
-        expect.objectContaining({
-          key: "caller-owned-authority-clarity",
-          severity: "low",
-        }),
-        expect.objectContaining({
-          key: "no-write-boundary-enforcement",
-          severity: "low",
-        }),
-      ]),
+        summary: expect.stringContaining("opaque handles"),
+        findings: expect.arrayContaining([
+          expect.objectContaining({
+            key: "stable-finding-key-verification",
+            severity: "low",
+          }),
+          expect.objectContaining({
+            key: "boundary-caveat-missing",
+            severity: "low",
+          }),
+          expect.objectContaining({
+            key: "caller-owned-authority-gap",
+            severity: "low",
+          }),
+        ]),
       decision: expect.objectContaining({
         verdict: "accept_with_follow_up",
         blocking: false,
@@ -292,13 +292,13 @@ function expectSyntheticPrivateDomainBridgeStructuredArtifact(
   });
 }
 
-function expectSyntheticPrivateDomainBridgeMarkdownArtifact(
-  markdownArtifactText: string,
-): void {
-  expect(markdownArtifactText).toContain('"verdict": "accept_with_follow_up"');
-  expect(markdownArtifactText).toContain("opaque source semantics");
-  expect(markdownArtifactText).toContain('"key": "no-write-boundary-enforcement"');
-}
+  function expectSyntheticPrivateDomainBridgeMarkdownArtifact(
+    markdownArtifactText: string,
+  ): void {
+    expect(markdownArtifactText).toContain('"verdict": "accept_with_follow_up"');
+    expect(markdownArtifactText).toContain("opaque handles");
+    expect(markdownArtifactText).toContain('"key": "caller-owned-authority-gap"');
+  }
 
 describe("synthetic reviewer-contract public fixtures", () => {
   it("ships a structured-result fixture with stable generic keys and caller-owned boundaries", async () => {

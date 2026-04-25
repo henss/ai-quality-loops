@@ -3,13 +3,13 @@
   "workflow": "expert",
   "expert": "Evidence Reviewer",
   "model": "qwen3.5:27b",
-  "summary": "The launch evidence note omits material comparison signals including a new high-severity finding, a severity regression, and a removed coverage row.",
+  "summary": "Launch evidence note omits material comparison signals including added entries, severity regressions, and removed coverage.",
   "overallSeverity": "high",
   "findings": [
     {
       "key": "launch-evidence-regression-omission",
-      "title": "Launch evidence note omits material comparison signals",
-      "summary": "The evidence note claims no material regression while omitting an added high-severity finding, a severity regression from medium to high, and a removed coverage row.",
+      "title": "Launch evidence regression omission",
+      "summary": "Evidence note claims stability while omitting added review entry, severity regression, and removed coverage row.",
       "severity": "high",
       "evidence": []
     }
@@ -20,13 +20,13 @@
     "confidence": "high",
     "blocking": false,
     "max_severity": "high",
-    "summary": "The launch evidence note omits material comparison signals including a new high-severity finding, a severity regression, and a removed coverage row.",
+    "summary": "Launch evidence note omits material comparison signals including added entries, severity regressions, and removed coverage.",
     "blocking_findings": [],
     "non_blocking_findings": [
       {
         "key": "launch-evidence-regression-omission",
-        "title": "Launch evidence note omits material comparison signals",
-        "summary": "The evidence note claims no material regression while omitting an added high-severity finding, a severity regression from medium to high, and a removed coverage row.",
+        "title": "Launch evidence regression omission",
+        "summary": "Evidence note claims stability while omitting added review entry, severity regression, and removed coverage row.",
         "severity": "high",
         "evidence": []
       }
@@ -35,7 +35,7 @@
       "revise_artifact"
     ],
     "follow_up": [
-      "Ensure evidence notes explicitly list added, removed, and regressed signals before treating the artifact as defended."
+      "verify_comparison_signals_included"
     ],
     "next_step_actions": [
       "revise_artifact"
@@ -47,18 +47,18 @@
       "value": "Local file path (.md file)"
     }
   ],
-  "markdown": "{\n  \"review_decision\": {\n    \"schema\": \"peer_review_decision_v1\",\n    \"verdict\": \"changes_requested\",\n    \"confidence\": \"high\",\n    \"blocking\": false,\n    \"max_severity\": \"high\",\n    \"summary\": \"The launch evidence note omits material comparison signals including a new high-severity finding, a severity regression, and a removed coverage row.\",\n    \"blocking_findings\": [],\n    \"non_blocking_findings\": [\n      {\n        \"severity\": \"high\",\n        \"title\": \"Launch evidence note omits material comparison signals\",\n        \"summary\": \"The evidence note claims no material regression while omitting an added high-severity finding, a severity regression from medium to high, and a removed coverage row.\",\n        \"key\": \"launch-evidence-regression-omission\"\n      }\n    ],\n    \"required_before_merge\": [\n      \"revise_artifact\"\n    ],\n    \"follow_up\": [\n      \"Ensure evidence notes explicitly list added, removed, and regressed signals before treating the artifact as defended.\"\n    ],\n    \"next_step_actions\": [\n      \"revise_artifact\"\n    ]\n  }\n}",
+  "markdown": "{\n  \"review_decision\": {\n    \"schema\": \"peer_review_decision_v1\",\n    \"verdict\": \"changes_requested\",\n    \"confidence\": \"high\",\n    \"blocking\": false,\n    \"max_severity\": \"high\",\n    \"summary\": \"Launch evidence note omits material comparison signals including added entries, severity regressions, and removed coverage.\",\n    \"blocking_findings\": [],\n    \"non_blocking_findings\": [\n      {\n        \"severity\": \"high\",\n        \"title\": \"Launch evidence regression omission\",\n        \"summary\": \"Evidence note claims stability while omitting added review entry, severity regression, and removed coverage row.\",\n        \"key\": \"launch-evidence-regression-omission\"\n      }\n    ],\n    \"required_before_merge\": [\n      \"revise_artifact\"\n    ],\n    \"follow_up\": [\n      \"verify_comparison_signals_included\"\n    ],\n    \"next_step_actions\": [\n      \"revise_artifact\"\n    ]\n  }\n}",
   "diagnostics": {
-    "elapsedMs": 5174,
-    "outputChars": 1049,
+    "elapsedMs": 4806,
+    "outputChars": 869,
     "decisionParsed": true,
     "ollamaTelemetry": {
-      "totalDurationMs": 6752,
-      "loadDurationMs": 167,
+      "totalDurationMs": 6273,
+      "loadDurationMs": 171,
       "promptEvalCount": 1097,
-      "promptEvalDurationMs": 1241,
-      "evalCount": 267,
-      "evalDurationMs": 4819
+      "promptEvalDurationMs": 1129,
+      "evalCount": 230,
+      "evalDurationMs": 4422
     }
   }
 }

@@ -2,6 +2,8 @@
 
 This note records a first-hand local-Ollama trial over AIQL's public-safe recurring review-failure rehearsal pack. The goal was not to add another framework. The goal was to see whether recurring review cleanup work can be delegated to the existing AIQL surface, or whether the sanitized cases still need a manual reviewer as the reliable baseline.
 
+Originating tracker slice: `OPS-2051`.
+
 ## Classification
 
 Output classification: artifact.
@@ -38,10 +40,10 @@ Observed batch summary:
 
 - 6 reviews succeeded
 - 0 review executions failed
-- total wall-clock review time was 40,824 ms across the six cases
-- per-case durations stayed in a narrow 6.3 s to 8.5 s band
+- total wall-clock review time was 41,348 ms across the six cases
+- per-case durations stayed in a narrow 6.3 s to 7.8 s band
 
-Generated structured outputs live under `reviews/recurring-review-failure-eval/json/`.
+Generated structured outputs live under `reviews/recurring-review-failure-eval/json/`, and a direct rerun of `evaluateRecurringReviewFailureHarness(...)` over those artifacts still reports 3 passed and 3 failed.
 
 ## Delegation Trial Result
 
@@ -86,7 +88,7 @@ The other meaningful result is operational: before this session, the advertised 
 
 Keep the current recurring-review-failure surface as a delegated draft-review tool, not as a no-human-required gate.
 
-The next bounded useful step is one prompt-and-rubric tuning pass against the three failed cases only:
+The remaining follow-up is optional and narrow. If another caller wants to improve delegated acceptance coverage, the next bounded useful step is one prompt-and-rubric tuning pass against the three failed cases only:
 
 - stale deterministic inputs
 - verification wrapper mismatch

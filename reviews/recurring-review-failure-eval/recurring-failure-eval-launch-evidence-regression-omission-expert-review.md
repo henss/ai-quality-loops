@@ -5,13 +5,13 @@
     "confidence": "high",
     "blocking": false,
     "max_severity": "high",
-    "summary": "The launch evidence note omits material comparison signals including a new high-severity finding, a severity regression, and a removed coverage row.",
+    "summary": "Launch evidence note omits material comparison signals including added entries, severity regressions, and removed coverage.",
     "blocking_findings": [],
     "non_blocking_findings": [
       {
         "severity": "high",
-        "title": "Launch evidence note omits material comparison signals",
-        "summary": "The evidence note claims no material regression while omitting an added high-severity finding, a severity regression from medium to high, and a removed coverage row.",
+        "title": "Launch evidence regression omission",
+        "summary": "Evidence note claims stability while omitting added review entry, severity regression, and removed coverage row.",
         "key": "launch-evidence-regression-omission"
       }
     ],
@@ -19,7 +19,7 @@
       "revise_artifact"
     ],
     "follow_up": [
-      "Ensure evidence notes explicitly list added, removed, and regressed signals before treating the artifact as defended."
+      "verify_comparison_signals_included"
     ],
     "next_step_actions": [
       "revise_artifact"

@@ -5,7 +5,7 @@
     "confidence": "high",
     "blocking": false,
     "max_severity": "high",
-    "summary": "Verification wrapper mismatch detected between claimed command and cited evidence requires caller correction before artifact is defended.",
+    "summary": "Verification wrapper mismatch detected between claimed command and cited evidence requires caller restatement before artifact is defended.",
     "blocking_findings": [],
     "non_blocking_findings": [
       {
@@ -16,14 +16,15 @@
       }
     ],
     "required_before_merge": [
-      "verification-wrapper-mismatch"
+      "rerun_verification_step",
+      "restate_wrapper_claim"
     ],
     "follow_up": [
-      "Caller must rerun or restate verification step to align wrapper claim with cited command."
+      "confirm_command_alignment"
     ],
     "next_step_actions": [
-      "revise_artifact",
-      "request_caller_review"
+      "request_caller_review",
+      "revise_artifact"
     ]
   }
 }

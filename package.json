@@ -55,7 +55,10 @@
     "check:agent-surface:preedit": "tsx scripts/check-agent-surface.ts",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "lint:typechecked": "eslint . --config eslint.typechecked.config.mjs"
+    "lint:typechecked": "eslint . --config eslint.typechecked.config.mjs",
+    "arch": "depcruise . --exclude \"(^|/)(dist|build|coverage|.runtime|.sandbox-tmp)/\" --config .dependency-cruiser.cjs --ignore-known .dependency-cruiser-known-violations.json --output-type err",
+    "arch:baseline": "depcruise . --exclude \"(^|/)(dist|build|coverage|.runtime|.sandbox-tmp)/\" --config .dependency-cruiser.cjs --output-type baseline --output-to .dependency-cruiser-known-violations.json",
+    "arch:graph": "depcruise . --exclude \"(^|/)(dist|build|coverage|.runtime|.sandbox-tmp)/\" --config .dependency-cruiser.cjs --ignore-known .dependency-cruiser-known-violations.json --output-type mermaid"
   },
   "dependencies": {
     "cac": "^7.0.0",
@@ -72,6 +75,7 @@
     "tsx": "4.21.0",
     "@eslint/js": "^10.0.1",
     "globals": "^16.5.0",
-    "typescript-eslint": "^8.50.0"
+    "typescript-eslint": "^8.50.0",
+    "dependency-cruiser": "^17.3.10"
   }
 }

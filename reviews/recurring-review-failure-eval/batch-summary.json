@@ -30,16 +30,16 @@
         }
       },
       "status": "success",
-      "durationMs": 8483,
-      "outputChars": 1240,
+      "durationMs": 7840,
+      "outputChars": 1143,
       "decisionParsed": true,
       "ollamaTelemetry": {
-        "totalDurationMs": 8471,
-        "loadDurationMs": 907,
+        "totalDurationMs": 7828,
+        "loadDurationMs": 188,
         "promptEvalCount": 1038,
-        "promptEvalDurationMs": 1319,
-        "evalCount": 309,
-        "evalDurationMs": 5694
+        "promptEvalDurationMs": 1427,
+        "evalCount": 292,
+        "evalDurationMs": 5679
       }
     },
     {
@@ -68,16 +68,16 @@
         }
       },
       "status": "success",
-      "durationMs": 6291,
-      "outputChars": 975,
+      "durationMs": 6335,
+      "outputChars": 926,
       "decisionParsed": true,
       "ollamaTelemetry": {
-        "totalDurationMs": 6284,
-        "loadDurationMs": 170,
+        "totalDurationMs": 6326,
+        "loadDurationMs": 174,
         "promptEvalCount": 1029,
-        "promptEvalDurationMs": 1220,
-        "evalCount": 242,
-        "evalDurationMs": 4379
+        "promptEvalDurationMs": 1123,
+        "evalCount": 235,
+        "evalDurationMs": 4437
       }
     },
     {
@@ -106,16 +106,16 @@
         }
       },
       "status": "success",
-      "durationMs": 6375,
-      "outputChars": 934,
+      "durationMs": 6952,
+      "outputChars": 916,
       "decisionParsed": true,
       "ollamaTelemetry": {
-        "totalDurationMs": 6368,
-        "loadDurationMs": 165,
+        "totalDurationMs": 6943,
+        "loadDurationMs": 219,
         "promptEvalCount": 990,
-        "promptEvalDurationMs": 1181,
-        "evalCount": 238,
-        "evalDurationMs": 4354
+        "promptEvalDurationMs": 1254,
+        "evalCount": 235,
+        "evalDurationMs": 4788
       }
     },
     {
@@ -144,16 +144,16 @@
         }
       },
       "status": "success",
-      "durationMs": 6320,
-      "outputChars": 974,
+      "durationMs": 7173,
+      "outputChars": 936,
       "decisionParsed": true,
       "ollamaTelemetry": {
-        "totalDurationMs": 6309,
-        "loadDurationMs": 171,
+        "totalDurationMs": 7165,
+        "loadDurationMs": 186,
         "promptEvalCount": 1015,
-        "promptEvalDurationMs": 930,
-        "evalCount": 251,
-        "evalDurationMs": 4642
+        "promptEvalDurationMs": 1355,
+        "evalCount": 249,
+        "evalDurationMs": 4842
       }
     },
     {
@@ -182,16 +182,16 @@
         }
       },
       "status": "success",
-      "durationMs": 6758,
-      "outputChars": 1049,
+      "durationMs": 6281,
+      "outputChars": 869,
       "decisionParsed": true,
       "ollamaTelemetry": {
-        "totalDurationMs": 6752,
-        "loadDurationMs": 167,
+        "totalDurationMs": 6273,
+        "loadDurationMs": 171,
         "promptEvalCount": 1097,
-        "promptEvalDurationMs": 1241,
-        "evalCount": 267,
-        "evalDurationMs": 4819
+        "promptEvalDurationMs": 1129,
+        "evalCount": 230,
+        "evalDurationMs": 4422
       }
     },
     {
@@ -220,16 +220,16 @@
         }
       },
       "status": "success",
-      "durationMs": 6597,
+      "durationMs": 6767,
       "outputChars": 956,
       "decisionParsed": true,
       "ollamaTelemetry": {
-        "totalDurationMs": 6591,
-        "loadDurationMs": 164,
+        "totalDurationMs": 6760,
+        "loadDurationMs": 190,
         "promptEvalCount": 1030,
-        "promptEvalDurationMs": 1113,
+        "promptEvalDurationMs": 1205,
         "evalCount": 254,
-        "evalDurationMs": 4784
+        "evalDurationMs": 4820
       }
     }
   ]

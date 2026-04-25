@@ -5,27 +5,27 @@
     "confidence": "high",
     "blocking": false,
     "max_severity": "high",
-    "summary": "Packet contains traceability gaps due to missing evidence handles that prevent auditability before treating the artifact as defended.",
+    "summary": "Packet cites evidence labels without usable handles, breaking traceability and requiring artifact revision before live use.",
     "blocking_findings": [],
     "non_blocking_findings": [
       {
         "severity": "high",
-        "title": "Missing evidence handle for Claim 1",
-        "summary": "Evidence label A lacks a usable evidence handle boundary, preventing traceability audit.",
+        "title": "Missing evidence handle for traceability",
+        "summary": "Evidence label A lacks a usable handle, preventing auditability and violating traceability requirements.",
         "key": "missing-evidence-handle"
       },
       {
         "severity": "medium",
-        "title": "Opaque evidence handle for Claim 2",
-        "summary": "Evidence handle for label B is opaque and requires caller-owned retrieval to verify.",
+        "title": "Opaque evidence handle requires caller retrieval",
+        "summary": "Evidence label B uses an opaque handle that still requires caller-owned retrieval to verify.",
         "key": "opaque-evidence-handle"
       }
     ],
     "required_before_merge": [
-      "Provide usable evidence handles for all claims to ensure traceability."
+      "revise_artifact"
     ],
     "follow_up": [
-      "Verify evidence handle boundaries are specific enough to audit without exposing private details."
+      "collect_more_evidence"
     ],
     "next_step_actions": [
       "revise_artifact",

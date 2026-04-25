@@ -11,7 +11,7 @@
       {
         "severity": "medium",
         "title": "Repeated command noise obscures verification signal",
-        "summary": "Packet contains redundant command repetitions that drown out the actual verification evidence, reducing auditability.",
+        "summary": "Packet contains excessive repeated command noise that drowns out the actual verification evidence, reducing auditability.",
         "key": "command-noise-obscures-signal"
       }
     ],
@@ -19,7 +19,7 @@
       "revise_artifact"
     ],
     "follow_up": [
-      "Ensure verification notes are concise and command noise is removed before next review cycle."
+      "Ensure verification notes are concise and distinct from command noise."
     ],
     "next_step_actions": [
       "revise_artifact"

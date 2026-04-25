@@ -51,6 +51,7 @@ The package publishes copy-ready starter manifests under `examples/` so embeddin
 - `examples/sanitized-social-evidence-review.manifest.json` for one synthetic text review over redacted social-evidence claims
 - `examples/synthetic-reviewer-contract-review.manifest.json` for one runnable synthetic reviewer-contract check
 - `examples/synthetic-venture-concept-brief-review.manifest.json` for one synthetic venture concept brief review with caller-owned proof thresholds and follow-up decisions
+- `examples/synthetic-venture-buyer-claim-review.manifest.json` for one synthetic bridge packet that carries caveated venture-brief findings into buyer-claim review without moving acceptance policy into AIQL
 - `examples/synthetic-context-pack-quality-review.manifest.json` for one synthetic context-pack quality review with caller-owned source handling
 - `examples/synthetic-buyer-claim-caveat-review.manifest.json` for one synthetic buyer-claim caveat review with caller-owned sourcing and routing
 - `examples/synthetic-finance-cadence-review.manifest.json` for one synthetic recovery-safe finance cadence review with caller-owned thresholds, scheduling, and action policy
@@ -77,7 +78,7 @@ Use `docs/reviewer-disagreement-explainer.md` when you need the open-source-safe
 Use `docs/downstream-agent-read-efficiency-pilot.md` when you need a public-safe pilot shape for measuring downstream-agent reads avoided by narrow packets, registry evidence, and bounded repo-local checks.
 Use `docs/local-ollama-reviewer-capability-map.md` when you need a public-safe map of which local Ollama capability classes currently satisfy the package's published reviewer-contract seams.
 Use `docs/local-review-model-economics-benchmark-proposal.md` when you need a public-safe proposal for comparing fixed local review packs with existing batch-summary telemetry before adding benchmark automation.
-Use `docs/synthetic-venture-buyer-claim-bridge-proposal.md` when you need a public-safe proposal for translating one synthetic venture concept brief into a caller-owned buyer-claim review input without moving acceptance policy into AIQL.
+Use `docs/synthetic-venture-buyer-claim-bridge-proposal.md` when you need the public-safe proposal and extraction boundary for translating one synthetic venture concept brief into a caller-owned buyer-claim review input without moving acceptance policy into AIQL.
 Use `examples/synthetic-source-handle-review-bundle-digest.md` when you need a public-safe example of the compact source-handle bundle digest shape over a published batch summary.
 Use `docs/recurring-review-failure-eval-harness.md` when you need the public-safe boundary for rehearsing recurring review-packet failures before another live run.
 Use `docs/manual-vs-aiql-delegation-trial-recurring-review-tasks.md` when you need the public-safe trial readout for whether recurring review cleanup should stay manual, move to delegated draft triage, or remain human-accepted on the harnessed cases.

@@ -1,0 +1,14 @@
+{
+  "reviewSurface": "Synthetic venture-to-buyer claim bridge packet",
+  "reviewFocus": [
+    "Check that the packet treats the venture-to-buyer bridge as caller-owned translation, not as package-owned acceptance policy or workflow authority.",
+    "Flag any translated buyer-facing claim that upgrades qualitative, directional, or conditional evidence into validation, commitment, readiness, or launch proof.",
+    "Check that rejected venture-brief findings stay rejected and do not reappear as buyer proof through softened wording.",
+    "Keep source verification, freshness, proof thresholds, outreach, spend, publication approval, and downstream routing caller-owned."
+  ],
+  "outOfScope": [
+    "Do not infer real buyer demand, market size, willingness to pay, procurement readiness, fundraising merit, or launch readiness.",
+    "Do not approve outreach, account creation, spending, publication, implementation, or other real-world follow-up.",
+    "Do not treat the fixture as a diligence memo, investment recommendation, CRM note, or operating policy for a real venture."
+  ]
+}

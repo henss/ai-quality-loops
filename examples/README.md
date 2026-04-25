@@ -28,6 +28,7 @@ The example files cover the repeatable workflow surfaces. The package also suppo
 | Review a synthetic creative packet | `batch-review ./examples/synthetic-creative-review-packet.manifest.json` | Use this as a public-safe seam for caller-sanitized creative-review packets; keep asset selection, release approval, and brand authority caller-owned. |
 | Review a synthetic reviewer-contract packet | `batch-review ./examples/synthetic-reviewer-contract-review.manifest.json` | Use this as a runnable public-safe contract example before wiring caller-owned target selection, severity budgets, and routing. |
 | Review a synthetic venture concept brief | `batch-review ./examples/synthetic-venture-concept-brief-review.manifest.json` | Use this as a text-review seam for concept framing, evidence caveats, and readiness discipline; keep real proof thresholds, prioritization, spend, launch, and follow-up routing caller-owned. |
+| Review a synthetic venture-to-buyer bridge packet | `batch-review ./examples/synthetic-venture-buyer-claim-review.manifest.json` | Use this as a document-first bridge seam for translating caveated venture-brief findings into one buyer-claim packet; keep sentence promotion rules, proof thresholds, outreach, and routing caller-owned. |
 | Copy a minimal reviewer-contract starter kit | `./examples/reviewer-contract-starter-kit/` | Use this when an external contributor needs the smallest copy-ready manifest, context, and packet shape for a local-Ollama-first reviewer-contract setup. |
 | Review a synthetic context pack quality packet | `batch-review ./examples/synthetic-context-pack-quality-review.manifest.json` | Use this as a public-safe seam for checking context-pack scope, evidence labels, caveats, and caller-owned boundaries. |
 | Review a synthetic source-handle evidence pack | `batch-review ./examples/synthetic-source-handle-evidence-review.manifest.json` | Use this as a text-review seam for review-output packets that cite source handles without copying private truth; keep retrieval, storage, source interpretation, approval, and routing caller-owned. |
@@ -193,6 +194,21 @@ Typical edits:
 - keep or adapt the context file so review stays focused on support gaps, caveat preservation, concept-versus-readiness separation, and caller-owned authority boundaries
 - switch `expert` or `promptLibraryPath` to a caller-owned reviewer when project policy needs one
 - keep real market claims, buyer records, prioritization, spend, launch timing, fundraising posture, publication approval, and follow-up routing outside `ai-quality-loops`
+
+### `synthetic-venture-buyer-claim-review.manifest.json`
+
+Use when you want one synthetic bridge packet that demonstrates how a caller may carry caveated venture-brief findings into a buyer-claim review without moving acceptance policy into the package.
+
+```bash
+batch-review ./examples/synthetic-venture-buyer-claim-review.manifest.json
+```
+
+Typical edits:
+
+- replace the synthetic context target only in an embedding repo with a caller-sanitized bridge packet that keeps upstream findings, translation rules, and downstream claims explicit
+- keep or adapt the context file so review stays focused on evidence-class preservation, rejected-claim carry-forward risk, caveat survival, and caller-owned authority boundaries
+- switch `expert` or `promptLibraryPath` only if the embedding repo owns a more specific evidence reviewer persona
+- keep source verification, buyer records, proof thresholds, outreach, spend, publication approval, and venture-specific routing outside `ai-quality-loops`
 
 ### `reviewer-contract-starter-kit/`
 
@@ -510,6 +526,7 @@ Typical edits:
 - The synthetic apartment fixture is contract-focused. It intentionally excludes real room names, image paths, coordinates, operator-specific facts, and release or publication instructions.
 - The synthetic reviewer-contract fixture is contract-focused. It intentionally excludes real issue keys, source URLs, local paths, account names, approval policy, and routing instructions.
 - The synthetic venture concept brief fixture is seam-focused. It intentionally excludes real founder identities, organization labels, buyer records, market-sizing claims, spend policy, launch timing, fundraising posture, approval, and routing instructions.
+- The synthetic venture-to-buyer bridge fixture is seam-focused. It intentionally excludes real buyer identities, organization labels, source notes, proof thresholds, outreach policy, spend decisions, account creation, and venture-specific routing.
 - The reviewer-contract starter kit is onboarding-focused. It intentionally excludes scaffold commands, hosted services, remote-provider policy, tracker adapters, issue keys, source URLs, local paths, account names, approval policy, and routing instructions.
 - The synthetic PR review fixture is adapter-pilot focused. It intentionally excludes real repository names, issue keys, branch names, source paths, hostnames, account names, reviewer assignments, merge policy, priority, and tracker writes.
 - The synthetic reviewer-contract manifest is runnable and intentionally excludes real target selection, issue keys, source URLs, local paths, account names, approval policy, routing, and retention decisions.

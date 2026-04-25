@@ -618,6 +618,46 @@ describe("synthetic venture concept brief public fixtures", () => {
   });
 });
 
+describe("synthetic venture-to-buyer bridge public fixtures", () => {
+  it("ships a venture-to-buyer bridge example that keeps translation policy and execution decisions caller-owned", async () => {
+    const fixture = await readManifestContextTarget({
+      manifestPath: "examples/synthetic-venture-buyer-claim-review.manifest.json",
+      contextPath: "examples/synthetic-venture-buyer-claim-review-context.json",
+      targetPath: "examples/synthetic-venture-buyer-claim-review-context.md",
+    });
+
+    expect(fixture.parsedManifest.defaults).toEqual(
+      expect.objectContaining({
+        mode: "expert",
+        expert: "Evidence Reviewer",
+        contextPath: "./examples/synthetic-venture-buyer-claim-review-context.json",
+      }),
+    );
+    expect(fixture.parsedManifest.reviews).toEqual([
+      expect.objectContaining({
+        name: "Synthetic venture-to-buyer claim bridge packet",
+        target: "./examples/synthetic-venture-buyer-claim-review-context.md",
+      }),
+    ]);
+    expect(fixture.context.reviewSurface).toBe(
+      "Synthetic venture-to-buyer claim bridge packet",
+    );
+    expect(fixture.context.reviewFocus).toContain(
+      "Check that the packet treats the venture-to-buyer bridge as caller-owned translation, not as package-owned acceptance policy or workflow authority.",
+    );
+    expect(fixture.context.outOfScope).toContain(
+      "Do not approve outreach, account creation, spending, publication, implementation, or other real-world follow-up.",
+    );
+    expect(fixture.targetText).toContain("Caller-Owned Translation Gate");
+    expect(fixture.targetText).toContain("Claim C");
+    expect(fixture.targetText).toContain("should remain rejected");
+
+    expectPublicSafeSerializedContent(
+      `${fixture.manifestText}\n${fixture.contextText}\n${fixture.targetText}`,
+    );
+  });
+});
+
 describe("synthetic buyer-claim caveat public fixtures", () => {
   it("ships a buyer-claim caveat example that keeps proof thresholds and execution decisions caller-owned", async () => {
     const fixture = await readManifestContextTarget({

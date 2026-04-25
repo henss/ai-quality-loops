@@ -1,0 +1,15 @@
+{
+  "defaults": {
+    "mode": "expert",
+    "expert": "Evidence Reviewer",
+    "contextPath": "./examples/synthetic-venture-buyer-claim-review-context.json",
+    "outputDir": "./reviews/venture-buyer-claim-bridge",
+    "structuredOutputDir": "./reviews/venture-buyer-claim-bridge/json"
+  },
+  "reviews": [
+    {
+      "name": "Synthetic venture-to-buyer claim bridge packet",
+      "target": "./examples/synthetic-venture-buyer-claim-review-context.md"
+    }
+  ]
+}

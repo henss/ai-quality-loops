@@ -19,6 +19,8 @@ AIQL already publishes the two reusable public-safe seams that this pilot needs:
 
 Those examples are intentionally separate. The venture brief seam checks concept framing and readiness discipline. The buyer-claim seam checks buyer-interest proportionality. Neither seam decides when findings from the first are acceptable input for the second.
 
+This repo now also publishes `examples/synthetic-venture-buyer-claim-review.manifest.json` as a document-first bridge packet. It is intentionally narrow: the packet demonstrates the caller-owned translation seam, but it still does not decide whether a real caller should promote one sentence, run outreach, or act on the output.
+
 ## Missing Bridge Contract
 
 The packet gap is not core AIQL review capability. The gap is one explicit caller-owned acceptance contract that answers:
@@ -39,7 +41,7 @@ Keep the pilot proposal-only and caller-owned:
 3. Run the existing synthetic buyer-claim caveat review on that translated packet.
 4. Treat any surviving buyer claim as directional analysis only, not as authorization for outreach or execution.
 
-The bridge should stay document-first. Do not add a new package command, manifest generator, or package-owned workflow adapter unless repeated public-safe demand proves that the bridge itself is reusable beyond one caller-owned pilot.
+The bridge should stay document-first. The published runnable packet is enough for one pilot because it exercises the translation seam without adding a package command, manifest generator, or package-owned workflow adapter. Do not add those layers unless repeated public-safe demand proves that the bridge itself is reusable beyond one caller-owned pilot.
 
 ## Minimum Caller-Owned Acceptance Contract
 
@@ -70,4 +72,4 @@ The embedding workflow owns:
 
 ## Generic Extraction Question
 
-The extraction remains generic only while AIQL publishes two separate review seams plus a proposal-level note about the bridge contract. If a future slice needs automatic packet translation, acceptance heuristics, review chaining, source promotion, or venture-specific routing, keep that logic in the embedding workflow unless repeated public-safe demand proves a thinner shared seam.
+The extraction remains generic while AIQL publishes separate review seams plus one runnable synthetic bridge packet that keeps translation rules explicit and caller-owned. If a future slice needs automatic packet translation, acceptance heuristics, review chaining, source promotion, or venture-specific routing, keep that logic in the embedding workflow unless repeated public-safe demand proves a thinner shared seam.

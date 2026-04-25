@@ -274,6 +274,7 @@ describe("public JSON contracts", () => {
       "examples/synthetic-creative-review-packet.manifest.json",
       "examples/sanitized-social-evidence-review.manifest.json",
       "examples/synthetic-context-pack-quality-review.manifest.json",
+      "examples/synthetic-venture-buyer-claim-review.manifest.json",
       "examples/synthetic-finance-signal-routing-review.manifest.json",
       "examples/synthetic-buyer-claim-caveat-review.manifest.json",
       "examples/synthetic-grocy-public-safety-review.manifest.json",
@@ -302,6 +303,19 @@ describe("public JSON contracts", () => {
       targetPath: "./examples/synthetic-buyer-claim-caveat-review-context.md",
       targetSummary:
         "Local file path (.md file, file: synthetic-buyer-claim-caveat-review-context.md)",
+    });
+  });
+
+  it("keeps the synthetic venture-to-buyer bridge manifest public-safe and context-backed", async () => {
+    await expectPublicSafeTextManifestExample({
+      manifestPath: "examples/synthetic-venture-buyer-claim-review.manifest.json",
+      contextPath: "./examples/synthetic-venture-buyer-claim-review-context.json",
+      expert: "Evidence Reviewer",
+      reviewName: "Synthetic venture-to-buyer claim bridge packet",
+      reviewSurface: "Synthetic venture-to-buyer claim bridge packet",
+      targetPath: "./examples/synthetic-venture-buyer-claim-review-context.md",
+      targetSummary:
+        "Local file path (.md file, file: synthetic-venture-buyer-claim-review-context.md)",
     });
   });
 

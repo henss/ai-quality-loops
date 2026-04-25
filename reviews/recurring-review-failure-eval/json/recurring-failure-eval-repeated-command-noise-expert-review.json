@@ -1,0 +1,64 @@
+{
+  "schemaVersion": "1",
+  "workflow": "expert",
+  "expert": "Evidence Reviewer",
+  "model": "qwen3.5:27b",
+  "summary": "Repeated command noise obscures verification signal and requires artifact revision before treating as defended.",
+  "overallSeverity": "medium",
+  "findings": [
+    {
+      "key": "command-noise-obscures-signal",
+      "title": "Repeated command noise obscures verification signal",
+      "summary": "Packet contains redundant command repetitions that drown out the actual verification evidence, reducing auditability.",
+      "severity": "medium",
+      "evidence": []
+    }
+  ],
+  "decision": {
+    "schema": "peer_review_decision_v1",
+    "verdict": "changes_requested",
+    "confidence": "high",
+    "blocking": false,
+    "max_severity": "medium",
+    "summary": "Repeated command noise obscures verification signal and requires artifact revision before treating as defended.",
+    "blocking_findings": [],
+    "non_blocking_findings": [
+      {
+        "key": "command-noise-obscures-signal",
+        "title": "Repeated command noise obscures verification signal",
+        "summary": "Packet contains redundant command repetitions that drown out the actual verification evidence, reducing auditability.",
+        "severity": "medium",
+        "evidence": []
+      }
+    ],
+    "required_before_merge": [
+      "revise_artifact"
+    ],
+    "follow_up": [
+      "Ensure verification notes are concise and command noise is removed before next review cycle."
+    ],
+    "next_step_actions": [
+      "revise_artifact"
+    ]
+  },
+  "provenance": [
+    {
+      "label": "Content source",
+      "value": "Local file path (.md file)"
+    }
+  ],
+  "markdown": "{\n  \"review_decision\": {\n    \"schema\": \"peer_review_decision_v1\",\n    \"verdict\": \"changes_requested\",\n    \"confidence\": \"high\",\n    \"blocking\": false,\n    \"max_severity\": \"medium\",\n    \"summary\": \"Repeated command noise obscures verification signal and requires artifact revision before treating as defended.\",\n    \"blocking_findings\": [],\n    \"non_blocking_findings\": [\n      {\n        \"severity\": \"medium\",\n        \"title\": \"Repeated command noise obscures verification signal\",\n        \"summary\": \"Packet contains redundant command repetitions that drown out the actual verification evidence, reducing auditability.\",\n        \"key\": \"command-noise-obscures-signal\"\n      }\n    ],\n    \"required_before_merge\": [\n      \"revise_artifact\"\n    ],\n    \"follow_up\": [\n      \"Ensure verification notes are concise and command noise is removed before next review cycle.\"\n    ],\n    \"next_step_actions\": [\n      \"revise_artifact\"\n    ]\n  }\n}",
+  "diagnostics": {
+    "elapsedMs": 4859,
+    "outputChars": 934,
+    "decisionParsed": true,
+    "ollamaTelemetry": {
+      "totalDurationMs": 6368,
+      "loadDurationMs": 165,
+      "promptEvalCount": 990,
+      "promptEvalDurationMs": 1181,
+      "evalCount": 238,
+      "evalDurationMs": 4354
+    }
+  }
+}

@@ -1,0 +1,65 @@
+{
+  "schemaVersion": "1",
+  "workflow": "expert",
+  "expert": "Evidence Reviewer",
+  "model": "qwen3.5:27b",
+  "summary": "Verification wrapper mismatch detected between claimed command and cited evidence requires caller correction before artifact is defended.",
+  "overallSeverity": "high",
+  "findings": [
+    {
+      "key": "verification-wrapper-mismatch",
+      "title": "Verification wrapper mismatch",
+      "summary": "Wrapper claim cites pnpm verify:session but evidence shows pnpm test -- review-gate.test.ts, creating an audit gap.",
+      "severity": "high",
+      "evidence": []
+    }
+  ],
+  "decision": {
+    "schema": "peer_review_decision_v1",
+    "verdict": "changes_requested",
+    "confidence": "high",
+    "blocking": false,
+    "max_severity": "high",
+    "summary": "Verification wrapper mismatch detected between claimed command and cited evidence requires caller correction before artifact is defended.",
+    "blocking_findings": [],
+    "non_blocking_findings": [
+      {
+        "key": "verification-wrapper-mismatch",
+        "title": "Verification wrapper mismatch",
+        "summary": "Wrapper claim cites pnpm verify:session but evidence shows pnpm test -- review-gate.test.ts, creating an audit gap.",
+        "severity": "high",
+        "evidence": []
+      }
+    ],
+    "required_before_merge": [
+      "verification-wrapper-mismatch"
+    ],
+    "follow_up": [
+      "Caller must rerun or restate verification step to align wrapper claim with cited command."
+    ],
+    "next_step_actions": [
+      "revise_artifact",
+      "request_caller_review"
+    ]
+  },
+  "provenance": [
+    {
+      "label": "Content source",
+      "value": "Local file path (.md file)"
+    }
+  ],
+  "markdown": "{\n  \"review_decision\": {\n    \"schema\": \"peer_review_decision_v1\",\n    \"verdict\": \"changes_requested\",\n    \"confidence\": \"high\",\n    \"blocking\": false,\n    \"max_severity\": \"high\",\n    \"summary\": \"Verification wrapper mismatch detected between claimed command and cited evidence requires caller correction before artifact is defended.\",\n    \"blocking_findings\": [],\n    \"non_blocking_findings\": [\n      {\n        \"severity\": \"high\",\n        \"title\": \"Verification wrapper mismatch\",\n        \"summary\": \"Wrapper claim cites pnpm verify:session but evidence shows pnpm test -- review-gate.test.ts, creating an audit gap.\",\n        \"key\": \"verification-wrapper-mismatch\"\n      }\n    ],\n    \"required_before_merge\": [\n      \"verification-wrapper-mismatch\"\n    ],\n    \"follow_up\": [\n      \"Caller must rerun or restate verification step to align wrapper claim with cited command.\"\n    ],\n    \"next_step_actions\": [\n      \"revise_artifact\",\n      \"request_caller_review\"\n    ]\n  }\n}",
+  "diagnostics": {
+    "elapsedMs": 5043,
+    "outputChars": 974,
+    "decisionParsed": true,
+    "ollamaTelemetry": {
+      "totalDurationMs": 6309,
+      "loadDurationMs": 171,
+      "promptEvalCount": 1015,
+      "promptEvalDurationMs": 930,
+      "evalCount": 251,
+      "evalDurationMs": 4642
+    }
+  }
+}

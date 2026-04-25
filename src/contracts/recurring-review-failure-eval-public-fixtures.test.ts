@@ -8,6 +8,7 @@ import {
   RECURRING_REVIEW_FAILURE_EVAL_CASES,
   evaluateRecurringReviewFailureHarness,
 } from "../review/recurring-review-failure-eval.js";
+import { loadPersonaPrompt } from "../review/persona-catalog.js";
 
 const PUBLIC_SAFE_BLOCKLIST = [
   "stefan",
@@ -113,5 +114,15 @@ describe("synthetic recurring review-failure eval public fixtures", () => {
     for (const blockedTerm of PUBLIC_SAFE_BLOCKLIST) {
       expect(serialized).not.toContain(blockedTerm);
     }
+  });
+
+  it("resolves the recurring eval persona from the shipped prompt library", async () => {
+    const prompt = await loadPersonaPrompt({
+      expert: "Evidence Reviewer",
+    });
+
+    expect(prompt.personaName).toBe("Evidence Reviewer");
+    expect(prompt.personaPrompt).toContain("traceability");
+    expect(prompt.personaPrompt).toContain("authority-boundary");
   });
 });

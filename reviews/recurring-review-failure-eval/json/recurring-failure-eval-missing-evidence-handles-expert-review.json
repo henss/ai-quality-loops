@@ -1,0 +1,79 @@
+{
+  "schemaVersion": "1",
+  "workflow": "expert",
+  "expert": "Evidence Reviewer",
+  "model": "qwen3.5:27b",
+  "summary": "Packet contains traceability gaps due to missing evidence handles that prevent auditability before treating the artifact as defended.",
+  "overallSeverity": "high",
+  "findings": [
+    {
+      "key": "missing-evidence-handle",
+      "title": "Missing evidence handle for Claim 1",
+      "summary": "Evidence label A lacks a usable evidence handle boundary, preventing traceability audit.",
+      "severity": "high",
+      "evidence": []
+    },
+    {
+      "key": "opaque-evidence-handle",
+      "title": "Opaque evidence handle for Claim 2",
+      "summary": "Evidence handle for label B is opaque and requires caller-owned retrieval to verify.",
+      "severity": "medium",
+      "evidence": []
+    }
+  ],
+  "decision": {
+    "schema": "peer_review_decision_v1",
+    "verdict": "changes_requested",
+    "confidence": "high",
+    "blocking": false,
+    "max_severity": "high",
+    "summary": "Packet contains traceability gaps due to missing evidence handles that prevent auditability before treating the artifact as defended.",
+    "blocking_findings": [],
+    "non_blocking_findings": [
+      {
+        "key": "missing-evidence-handle",
+        "title": "Missing evidence handle for Claim 1",
+        "summary": "Evidence label A lacks a usable evidence handle boundary, preventing traceability audit.",
+        "severity": "high",
+        "evidence": []
+      },
+      {
+        "key": "opaque-evidence-handle",
+        "title": "Opaque evidence handle for Claim 2",
+        "summary": "Evidence handle for label B is opaque and requires caller-owned retrieval to verify.",
+        "severity": "medium",
+        "evidence": []
+      }
+    ],
+    "required_before_merge": [
+      "Provide usable evidence handles for all claims to ensure traceability."
+    ],
+    "follow_up": [
+      "Verify evidence handle boundaries are specific enough to audit without exposing private details."
+    ],
+    "next_step_actions": [
+      "revise_artifact",
+      "collect_more_evidence"
+    ]
+  },
+  "provenance": [
+    {
+      "label": "Content source",
+      "value": "Local file path (.md file)"
+    }
+  ],
+  "markdown": "{\n  \"review_decision\": {\n    \"schema\": \"peer_review_decision_v1\",\n    \"verdict\": \"changes_requested\",\n    \"confidence\": \"high\",\n    \"blocking\": false,\n    \"max_severity\": \"high\",\n    \"summary\": \"Packet contains traceability gaps due to missing evidence handles that prevent auditability before treating the artifact as defended.\",\n    \"blocking_findings\": [],\n    \"non_blocking_findings\": [\n      {\n        \"severity\": \"high\",\n        \"title\": \"Missing evidence handle for Claim 1\",\n        \"summary\": \"Evidence label A lacks a usable evidence handle boundary, preventing traceability audit.\",\n        \"key\": \"missing-evidence-handle\"\n      },\n      {\n        \"severity\": \"medium\",\n        \"title\": \"Opaque evidence handle for Claim 2\",\n        \"summary\": \"Evidence handle for label B is opaque and requires caller-owned retrieval to verify.\",\n        \"key\": \"opaque-evidence-handle\"\n      }\n    ],\n    \"required_before_merge\": [\n      \"Provide usable evidence handles for all claims to ensure traceability.\"\n    ],\n    \"follow_up\": [\n      \"Verify evidence handle boundaries are specific enough to audit without exposing private details.\"\n    ],\n    \"next_step_actions\": [\n      \"revise_artifact\",\n      \"collect_more_evidence\"\n    ]\n  }\n}",
+  "diagnostics": {
+    "elapsedMs": 6067,
+    "outputChars": 1240,
+    "decisionParsed": true,
+    "ollamaTelemetry": {
+      "totalDurationMs": 8471,
+      "loadDurationMs": 907,
+      "promptEvalCount": 1038,
+      "promptEvalDurationMs": 1319,
+      "evalCount": 309,
+      "evalDurationMs": 5694
+    }
+  }
+}

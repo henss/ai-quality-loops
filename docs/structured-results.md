@@ -24,6 +24,8 @@ Structured results are the public contract for reusable AIQL review output. They
 - `examples/synthetic-structured-result-golden-diff.expected.json` stores the expected comparison plus the before/after fixture provenance for `compareStructuredReviewResults(...)`.
 - `examples/synthetic-review-output-evidence-diff-before.fixture.json` and `examples/synthetic-review-output-evidence-diff-after.fixture.json` isolate an evidence-only comparison delta.
 - `examples/synthetic-review-output-evidence-diff.expected.json` stores the expected comparison plus the before/after fixture provenance, and `examples/synthetic-review-output-evidence-diff.expected.md` locks the compact text output for that evidence-only delta.
+- `examples/synthetic-compact-evidence-pack-diff-before.fixture.json` and `examples/synthetic-compact-evidence-pack-diff-after.fixture.json` isolate a compact evidence-pack comparison delta.
+- `examples/synthetic-compact-evidence-pack-diff.expected.json` stores the expected comparison plus the before/after fixture provenance, and `examples/synthetic-compact-evidence-pack-diff.expected.md` locks the compact text output for that evidence-pack delta.
 
 The fixtures use generic evidence labels and synthetic review packets only. Replace them in embedding repos only with caller-sanitized data.
 
@@ -90,6 +92,8 @@ const comparison = compareStructuredReviewResults({
 The comparison groups findings by `findings[].key` when present, then by normalized title or summary. Use stable generic keys when repeated runs may reword the same finding. Do not put private source names, issue IDs, URLs, paths, account identifiers, or policy labels in keys.
 
 The compact evidence-diff fixture stays generic only while the comparison consumes already-published structured review results with sanitized evidence labels. If a future workflow needs source-handle resolution, evidence ranking, or approval thresholds, keep that layer in the embedding repo instead of widening AIQL.
+
+The compact evidence-pack fixture follows the same boundary: it covers only before/after comparison over already-published structured review results with synthetic evidence labels. If a future workflow needs packet assembly, source resolution, or private evidence semantics, keep that layer in the embedding repo instead of widening AIQL.
 
 ## Reviewer Disagreement Adjudication
 

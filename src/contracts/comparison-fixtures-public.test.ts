@@ -106,4 +106,45 @@ describe("public comparison fixtures", () => {
       expect(serialized).not.toContain(privateBoundaryTerm);
     }
   });
+
+  it("keeps the compact evidence-pack diff fixture provenance in sync", async () => {
+    const [beforeFixture, afterFixture, expectedComparisonArtifact] =
+      await Promise.all([
+        loadExample("synthetic-compact-evidence-pack-diff-before.fixture.json"),
+        loadExample("synthetic-compact-evidence-pack-diff-after.fixture.json"),
+        loadExample("synthetic-compact-evidence-pack-diff.expected.json"),
+      ]);
+    const expectedComparison = unwrapComparisonFixtureArtifact<
+      ReturnType<typeof compareStructuredReviewResults>
+    >(expectedComparisonArtifact, {
+      beforeFixture: "synthetic-compact-evidence-pack-diff-before.fixture.json",
+      afterFixture: "synthetic-compact-evidence-pack-diff-after.fixture.json",
+    });
+
+    const beforeValidation = validateStructuredReviewResult(beforeFixture);
+    const afterValidation = validateStructuredReviewResult(afterFixture);
+    expect(beforeValidation.ok).toBe(true);
+    expect(afterValidation.ok).toBe(true);
+    if (!beforeValidation.ok || !afterValidation.ok) {
+      throw new Error(
+        "Synthetic compact evidence-pack diff fixtures must validate",
+      );
+    }
+
+    expect(
+      compareStructuredReviewResults({
+        before: beforeValidation.value,
+        after: afterValidation.value,
+      }),
+    ).toEqual(expectedComparison);
+
+    const serialized = JSON.stringify({
+      beforeFixture,
+      afterFixture,
+      expectedComparisonArtifact,
+    }).toLowerCase();
+    for (const privateBoundaryTerm of PUBLIC_SAFE_COMPARISON_BLOCKLIST) {
+      expect(serialized).not.toContain(privateBoundaryTerm);
+    }
+  });
 });

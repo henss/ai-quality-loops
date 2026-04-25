@@ -47,6 +47,7 @@ The example files cover the repeatable workflow surfaces. The package also suppo
 | Validate a sanitized structured-result fixture | `validateStructuredReviewResult(...)` with `./examples/synthetic-apartment-review-result.fixture.json` | Use when checking contract consumers against a fixture that contains no private home data. |
 | Compare a synthetic structured-result golden diff | `compareStructuredReviewResults(...)` with `./examples/synthetic-structured-result-golden-diff-before.fixture.json` and `./examples/synthetic-structured-result-golden-diff-after.fixture.json` | Use when checking comparison consumers against a public-safe expected diff fixture. |
 | Compare a compact review-output evidence diff | `compareStructuredReviewResults(...)` with `./examples/synthetic-review-output-evidence-diff-before.fixture.json` and `./examples/synthetic-review-output-evidence-diff-after.fixture.json` | Use when checking consumers against an evidence-only delta with locked compact JSON and text outputs. |
+| Compare a compact evidence-pack diff | `compareStructuredReviewResults(...)` with `./examples/synthetic-compact-evidence-pack-diff-before.fixture.json` and `./examples/synthetic-compact-evidence-pack-diff-after.fixture.json` | Use when checking public-safe review-contract consumers against a compact evidence-pack delta with locked compact JSON and text outputs. |
 | Compare a synthetic multi-review disagreement pack | `batch-review-compare ./examples/synthetic-multi-review-disagreement-before-summary.fixture.json ./examples/synthetic-multi-review-disagreement-after-summary.fixture.json --json` | Use when checking consumers against improved, regressed, unchanged, recovered, added, and removed review entries in one public-safe calibration pack. |
 | Make lower-level local LLM calls | `generateTextWithOllama(...)` or `callOllamaVision(...)` | Use only when the review workflow is too high-level for the caller. |
 
@@ -438,6 +439,16 @@ Typical edits:
 - compare the helper output to the `comparison` block in `synthetic-review-output-evidence-diff.expected.json` or to `synthetic-review-output-evidence-diff.expected.md` when a wrapper needs a stable compact diff shape with checked fixture provenance
 - keep source-handle resolution, evidence ranking, approval thresholds, routing, and remediation policy in the embedding repo
 
+### `synthetic-compact-evidence-pack-diff-*`
+
+Use when you want a deterministic evidence-pack before/after fixture for consumers of `compareStructuredReviewResults(...)` or `review-compare`.
+
+Typical edits:
+
+- keep the before and after inputs synthetic, or replace them only with caller-sanitized structured review results that differ only in evidence labels
+- compare the helper output to the `comparison` block in `synthetic-compact-evidence-pack-diff.expected.json` or to `synthetic-compact-evidence-pack-diff.expected.md` when a wrapper needs a stable compact diff shape with checked fixture provenance
+- keep packet assembly, source-handle resolution, evidence ranking, approval thresholds, routing, and remediation policy in the embedding repo
+
 ### `synthetic-reviewer-disagreement-*.fixture.json`
 
 Use when you want a deterministic two-reviewer fixture pair for consumers of `adjudicateReviewerDisagreement(...)` and `formatReviewerDisagreementAdjudication(...)`.
@@ -483,6 +494,7 @@ Typical edits:
 - The synthetic context-pack quality manifest also leaves the research-source audit and any public-source list empty on purpose because the fixture uses opaque evidence labels only; callers must still own source freshness, retrieval coverage, public-source selection, and approval checks.
 - The synthetic structured-result golden diff is comparison-focused. It intentionally excludes real source labels, tracker identifiers, local paths, account names, private facts, policy thresholds, and routing instructions.
 - The synthetic review-output evidence diff is comparison-focused. It intentionally excludes real source handles, source contents, tracker identifiers, local paths, approval thresholds, and routing instructions.
+- The synthetic compact evidence-pack diff is comparison-focused. It intentionally excludes real source handles, source contents, tracker identifiers, local paths, approval thresholds, and routing instructions.
 - The synthetic reviewer-disagreement fixtures are adjudication-focused. They intentionally exclude real reviewer identities, project names, source contents, approval thresholds, routing, and remediation policy.
 - The synthetic multi-review disagreement fixtures are comparison-focused. They intentionally exclude real reviewer identities, project names, source contents, thresholds, approval, routing, and remediation policy.
 - The synthetic multi-model disagreement report is template-focused. It intentionally excludes real model-routing policy, approval thresholds, tracker writes, reviewer identities, project names, and same-run arbitration logic.

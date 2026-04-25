@@ -77,6 +77,7 @@ Use `docs/reviewer-disagreement-explainer.md` when you need the open-source-safe
 Use `docs/downstream-agent-read-efficiency-pilot.md` when you need a public-safe pilot shape for measuring downstream-agent reads avoided by narrow packets, registry evidence, and bounded repo-local checks.
 Use `docs/local-ollama-reviewer-capability-map.md` when you need a public-safe map of which local Ollama capability classes currently satisfy the package's published reviewer-contract seams.
 Use `docs/local-review-model-economics-benchmark-proposal.md` when you need a public-safe proposal for comparing fixed local review packs with existing batch-summary telemetry before adding benchmark automation.
+Use `docs/synthetic-venture-buyer-claim-bridge-proposal.md` when you need a public-safe proposal for translating one synthetic venture concept brief into a caller-owned buyer-claim review input without moving acceptance policy into AIQL.
 Use `examples/synthetic-source-handle-review-bundle-digest.md` when you need a public-safe example of the compact source-handle bundle digest shape over a published batch summary.
 Use `docs/recurring-review-failure-eval-harness.md` when you need the public-safe boundary for rehearsing recurring review-packet failures before another live run.
 Use `docs/manual-vs-aiql-delegation-trial-recurring-review-tasks.md` when you need the public-safe trial readout for whether recurring review cleanup should stay manual, move to delegated draft triage, or remain human-accepted on the harnessed cases.

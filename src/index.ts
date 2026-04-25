@@ -55,6 +55,9 @@ export {
 export {
   parseBatchReviewSummaryComparisonReport,
   validateBatchReviewSummaryComparisonReport,
+  type BatchReviewReviewerConfidenceCalibrationDelta,
+  type BatchReviewReviewerConfidenceCalibrationSnapshot,
+  type BatchReviewReviewerConfidenceCounts,
   type BatchReviewSummaryComparison,
   type BatchReviewSummaryComparisonReport,
   type BatchReviewSummaryEntryComparison,

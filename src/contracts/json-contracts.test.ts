@@ -10,106 +10,16 @@ import {
   validateStructuredReviewResult,
 } from "./json-contracts.js";
 import { validateBatchReviewSummaryComparisonReport } from "./batch-review-summary-comparison-contract.js";
-import { loadBatchReviewExecutionPlan } from "../review/batch-review.js";
 import {
-  defineReviewSurfaceRedactions,
-  sanitizeReviewSurfaceValue,
-} from "../shared/review-surface.js";
-
-const PUBLIC_SAFE_EXAMPLE_BLOCKLIST = [
-  "stefan",
-  "linear",
-  "smartseer",
-  "format the sky",
-  "ops-",
-  "d:\\",
-  "/users/",
-  "https://",
-  ".png",
-  ".jpg",
-  ".jpeg",
-];
-
-type PublicSafeTextManifestExample = {
-  manifestPath: string;
-  contextPath: string;
-  expert?: string;
-  reviewName: string;
-  reviewSurface: string;
-  targetPath: string;
-  targetSummary: string;
-};
-
-async function expectPublicSafeTextManifestExample(
-  example: PublicSafeTextManifestExample,
-) {
-  const manifestPath = path.join(process.cwd(), example.manifestPath);
-  const manifest = JSON.parse(await fs.readFile(manifestPath, "utf-8")) as unknown;
-  const parsed = parseBatchReviewManifest(manifest);
-  const expert = example.expert ?? "UI/UX";
-
-  expect(parsed.defaults).toEqual(
-    expect.objectContaining({
-      mode: "expert",
-      expert,
-      contextPath: example.contextPath,
-    }),
-  );
-  expect(parsed.reviews).toEqual([
-    expect.objectContaining({
-      name: example.reviewName,
-      target: example.targetPath,
-    }),
-  ]);
-
-  const plan = await loadBatchReviewExecutionPlan({
-    manifestPath,
-    cwd: process.cwd(),
-  });
-  expect(plan.entries).toEqual([
-    expect.objectContaining({
-      mode: "expert",
-      target: example.targetPath,
-      targetSummary: example.targetSummary,
-      contextPath: example.contextPath,
-    }),
-  ]);
-  expect(plan.preflight.personaRequirements).toEqual([
-    {
-      expert,
-      promptLibraryPath: undefined,
-    },
-  ]);
-  expect(plan.preflight.contextPaths).toEqual([example.contextPath]);
-
-  const contextPath = path.join(process.cwd(), example.contextPath);
-  const targetPath = path.join(process.cwd(), example.targetPath);
-  await expect(fs.access(contextPath)).resolves.toBeUndefined();
-  await expect(fs.access(targetPath)).resolves.toBeUndefined();
-
-  const context = JSON.parse(await fs.readFile(contextPath, "utf-8")) as {
-    reviewFocus?: unknown;
-    outOfScope?: unknown;
-  };
-  expect(context).toEqual(
-    expect.objectContaining({
-      reviewSurface: example.reviewSurface,
-      reviewFocus: expect.any(Array),
-      outOfScope: expect.any(Array),
-    }),
-  );
-
-  const serialized = [
-    JSON.stringify(manifest),
-    JSON.stringify(context),
-    await fs.readFile(targetPath, "utf-8"),
-  ]
-    .join("\n")
-    .toLowerCase();
-  for (const privateBoundaryTerm of PUBLIC_SAFE_EXAMPLE_BLOCKLIST) {
-    expect(serialized).not.toContain(privateBoundaryTerm);
-  }
-}
+  createBatchReviewSummaryComparisonFixture,
+  createDecisionSummary,
+  createStructuredResultSummary,
+  expectApartmentAgnosticVisionProbeManifest,
+  expectPublicSafePolicyRedactionsFixture,
+  expectPublicSafeRunnableManifestFixture,
+  expectPublicSafeStructuredReviewFixture,
+  expectPublicSafeTextManifestExample,
+} from "./json-contracts-test-helpers.js";
 
 describe("public JSON contracts", () => {
   it("parses the published batch review manifest shape", () => {
@@ -194,7 +104,7 @@ describe("public JSON contracts", () => {
             mode: "expert",
             targetSummary: "Local file path (.md file)",
             structuredOutputPath: "Local file path (.json file)",
-            structuredResult: {
+            structuredResult: createStructuredResultSummary({
               overallSeverity: "medium",
               totalFindings: 2,
               findingCounts: {
@@ -204,7 +114,13 @@ describe("public JSON contracts", () => {
                 low: 1,
                 unknown: 0,
               },
-            },
+              decision: createDecisionSummary({
+                verdict: "accept_with_follow_up",
+                confidence: "medium",
+                acceptedFindings: 2,
+                rejectedFindings: 0,
+              }),
+            }),
             status: "success",
           },
         ],
@@ -223,7 +139,7 @@ describe("public JSON contracts", () => {
           targetSummary: "Local file path (.md file)",
           outputPath: undefined,
           structuredOutputPath: "Local file path (.json file)",
-          structuredResult: {
+          structuredResult: createStructuredResultSummary({
             overallSeverity: "medium",
             totalFindings: 2,
             findingCounts: {
@@ -233,7 +149,13 @@ describe("public JSON contracts", () => {
               low: 1,
               unknown: 0,
             },
-          },
+            decision: createDecisionSummary({
+              verdict: "accept_with_follow_up",
+              confidence: "medium",
+              acceptedFindings: 2,
+              rejectedFindings: 0,
+            }),
+          }),
           status: "success",
           errorSummary: undefined,
         },
@@ -267,101 +189,9 @@ describe("public JSON contracts", () => {
   });
 
   it("validates the published batch review summary comparison shape", () => {
-    const validation = validateBatchReviewSummaryComparisonReport({
-      inputs: {
-        before: { pathLabel: "Local file path (.json file)" },
-        after: { pathLabel: "Local file path (.json file)" },
-      },
-      comparison: {
-        counts: {
-          beforeEntries: 1,
-          afterEntries: 1,
-          added: 0,
-          removed: 0,
-          matched: 1,
-          statusChanged: 0,
-          severityMovement: {
-            improved: 0,
-            regressed: 1,
-            unchanged: 0,
-            unavailable: 0,
-          },
-          totalFindingsDelta: 1,
-          findingCountDelta: {
-            critical: 0,
-            high: 1,
-            medium: 0,
-            low: 0,
-            unknown: 0,
-          },
-          promptEvalCountDelta: 20,
-          addedPromptEvalCount: 20,
-          promptEvalCountUnavailable: 0,
-        },
-        added: [],
-        removed: [],
-        changed: [
-          {
-            resultKey: "homepage-vision",
-            before: {
-              resultKey: "homepage-vision",
-              index: 0,
-              mode: "vision",
-              targetSummary: "Remote URL (example.com)",
-              status: "success",
-              structuredResult: {
-                overallSeverity: "medium",
-                totalFindings: 1,
-                findingCounts: {
-                  critical: 0,
-                  high: 0,
-                  medium: 1,
-                  low: 0,
-                  unknown: 0,
-                },
-              },
-            },
-            after: {
-              resultKey: "homepage-vision",
-              index: 0,
-              mode: "vision",
-              targetSummary: "Remote URL (example.com)",
-              status: "success",
-              structuredResult: {
-                overallSeverity: "high",
-                totalFindings: 2,
-                findingCounts: {
-                  critical: 0,
-                  high: 1,
-                  medium: 1,
-                  low: 0,
-                  unknown: 0,
-                },
-              },
-            },
-            statusChange: {
-              before: "success",
-              after: "success",
-              changed: false,
-            },
-            severityChange: {
-              before: "medium",
-              after: "high",
-              direction: "regressed",
-            },
-            totalFindingsDelta: 1,
-            findingCountDelta: {
-              critical: 0,
-              high: 1,
-              medium: 0,
-              low: 0,
-              unknown: 0,
-            },
-          },
-        ],
-        unchanged: [],
-      },
-    });
+    const validation = validateBatchReviewSummaryComparisonReport(
+      createBatchReviewSummaryComparisonFixture(),
+    );
 
     expect(validation).toEqual({
       ok: true,
@@ -551,294 +381,62 @@ describe("public JSON contracts", () => {
   });
 
   it("ships a synthetic apartment review-result fixture without private home data", async () => {
-    const fixture = JSON.parse(
-      await fs.readFile(
-        path.join(
-          process.cwd(),
-          "examples/synthetic-apartment-review-result.fixture.json",
-        ),
-        "utf-8",
-      ),
-    ) as unknown;
-
-    const validation = validateStructuredReviewResult(fixture);
-    expect(validation).toEqual({
-      ok: true,
-      value: expect.objectContaining({
-        workflow: "vision",
-        provenance: expect.arrayContaining([
-          expect.objectContaining({
-            label: "Privacy boundary",
-          }),
-        ]),
-      }),
+    await expectPublicSafeStructuredReviewFixture({
+      fixturePath: "examples/synthetic-apartment-review-result.fixture.json",
+      workflow: "vision",
     });
-
-    const serialized = JSON.stringify(fixture).toLowerCase();
-    for (const privateHomeDataTerm of [
-      "stefan",
-      "bedroom",
-      "kitchen",
-      "bathroom",
-      "living room",
-      "latitude",
-      "longitude",
-      ".png",
-      ".jpg",
-      ".jpeg",
-      "d:\\",
-      "/users/",
-    ]) {
-      expect(serialized).not.toContain(privateHomeDataTerm);
-    }
   });
 
   it("ships a public-safe synthetic reviewer-contract fixture", async () => {
-    const fixture = JSON.parse(
-      await fs.readFile(
-        path.join(
-          process.cwd(),
-          "examples/synthetic-reviewer-contract-result.fixture.json",
-        ),
-        "utf-8",
-      ),
-    ) as unknown;
-
-    const validation = validateStructuredReviewResult(fixture);
-    expect(validation).toEqual({
-      ok: true,
-      value: expect.objectContaining({
-        workflow: "expert",
-        provenance: expect.arrayContaining([
-          expect.objectContaining({
-            label: "Privacy boundary",
-          }),
-        ]),
-      }),
+    await expectPublicSafeStructuredReviewFixture({
+      fixturePath: "examples/synthetic-reviewer-contract-result.fixture.json",
+      workflow: "expert",
     });
-
-    const serialized = JSON.stringify(fixture).toLowerCase();
-    for (const privateBoundaryTerm of [
-      "stefan",
-      "linear",
-      "smartseer",
-      "ops-",
-      "customer",
-      "tenant",
-      "employee",
-      "company",
-      "https://",
-      "d:\\",
-      "/users/",
-      ".png",
-      ".jpg",
-      ".jpeg",
-    ]) {
-      expect(serialized).not.toContain(privateBoundaryTerm);
-    }
   });
 
   it("ships a public-safe synthetic PR review adapter pilot fixture", async () => {
-    const fixture = JSON.parse(
-      await fs.readFile(
-        path.join(
-          process.cwd(),
-          "examples/synthetic-pr-review-result.fixture.json",
-        ),
-        "utf-8",
-      ),
-    ) as unknown;
-
-    const validation = validateStructuredReviewResult(fixture);
-    expect(validation).toEqual({
-      ok: true,
-      value: expect.objectContaining({
-        workflow: "expert",
-        provenance: expect.arrayContaining([
-          expect.objectContaining({
-            label: "Privacy boundary",
-          }),
-        ]),
-      }),
+    await expectPublicSafeStructuredReviewFixture({
+      fixturePath: "examples/synthetic-pr-review-result.fixture.json",
+      workflow: "expert",
+      blockedTerms: [
+        "stefan",
+        "linear",
+        "smartseer",
+        "ops-",
+        "customer",
+        "tenant",
+        "employee",
+        "company",
+        "https://",
+        "d:\\",
+        "/users/",
+        ".png",
+        ".jpg",
+        ".jpeg",
+        "github.com",
+      ],
     });
-
-    const serialized = JSON.stringify(fixture).toLowerCase();
-    for (const privateBoundaryTerm of [
-      "stefan",
-      "linear",
-      "smartseer",
-      "ops-",
-      "customer",
-      "tenant",
-      "employee",
-      "company",
-      "https://",
-      "d:\\",
-      "/users/",
-      ".png",
-      ".jpg",
-      ".jpeg",
-      "github.com",
-    ]) {
-      expect(serialized).not.toContain(privateBoundaryTerm);
-    }
   });
 
   it("ships a runnable public-safe synthetic reviewer-contract manifest", async () => {
-    const manifestPath = path.join(
-      process.cwd(),
-      "examples/synthetic-reviewer-contract-review.manifest.json",
-    );
-    const manifest = JSON.parse(await fs.readFile(manifestPath, "utf-8")) as unknown;
-    const parsed = parseBatchReviewManifest(manifest);
-
-    expect(parsed.defaults?.mode).toBe("expert");
-    expect(parsed.defaults?.expert).toBe("Evidence Reviewer");
-    expect(parsed.defaults?.contextPath).toBe(
-      "./examples/synthetic-reviewer-contract-review-context.json",
-    );
-    expect(parsed.reviews[0]).toEqual(
-      expect.objectContaining({
-        name: "Synthetic reviewer contract packet",
-        target: "./examples/synthetic-reviewer-contract-review-context.md",
-      }),
-    );
-
-    const contextJsonPath = path.join(
-      process.cwd(),
-      "examples/synthetic-reviewer-contract-review-context.json",
-    );
-    const targetPath = path.join(
-      process.cwd(),
-      parsed.reviews[0]!.target,
-    );
-    await expect(fs.access(contextJsonPath)).resolves.toBeUndefined();
-    await expect(fs.access(targetPath)).resolves.toBeUndefined();
-
-    const contextJson = await fs.readFile(contextJsonPath, "utf-8");
-    const targetMarkdown = await fs.readFile(targetPath, "utf-8");
-    const serialized = `${JSON.stringify(manifest)}\n${contextJson}\n${targetMarkdown}`.toLowerCase();
-    for (const privateBoundaryTerm of [
-      "stefan",
-      "linear",
-      "smartseer",
-      "ops-",
-      "customer",
-      "tenant",
-      "employee",
-      "company",
-      "https://",
-      "d:\\",
-      "/users/",
-      ".png",
-      ".jpg",
-      ".jpeg",
-    ]) {
-      expect(serialized).not.toContain(privateBoundaryTerm);
-    }
+    await expectPublicSafeRunnableManifestFixture({
+      manifestPath: "examples/synthetic-reviewer-contract-review.manifest.json",
+      expectedMode: "expert",
+      expectedExpert: "Evidence Reviewer",
+      expectedContextPath: "./examples/synthetic-reviewer-contract-review-context.json",
+      expectedReviewName: "Synthetic reviewer contract packet",
+      expectedTargetPath: "./examples/synthetic-reviewer-contract-review-context.md",
+    });
   });
 
   it("ships a public-safe synthetic policy redactions fixture", async () => {
-    const fixture = JSON.parse(
-      await fs.readFile(
-        path.join(
-          process.cwd(),
-          "examples/synthetic-policy-redactions.fixture.json",
-        ),
-        "utf-8",
-      ),
-    ) as {
-      redactions?: Array<{
-        pattern?: string;
-        replacement?: string;
-        sample?: string;
-        expected?: string;
-      }>;
-    };
-
-    expect(fixture.redactions).toEqual(expect.any(Array));
-
-    for (const redaction of fixture.redactions || []) {
-      expect(typeof redaction.pattern).toBe("string");
-      expect(typeof redaction.replacement).toBe("string");
-      expect(typeof redaction.sample).toBe("string");
-      expect(typeof redaction.expected).toBe("string");
-
-      const redactions = defineReviewSurfaceRedactions([
-        {
-          pattern: new RegExp(redaction.pattern!, "g"),
-          replacement: redaction.replacement!,
-        },
-      ]);
-
-      expect(
-        sanitizeReviewSurfaceValue(redaction.sample!, {
-          extraRedactions: redactions,
-        }),
-      ).toBe(redaction.expected);
-    }
-
-    const serialized = JSON.stringify(fixture).toLowerCase();
-    for (const privateBoundaryTerm of [
-      "stefan",
-      "linear",
-      "smartseer",
-      "ops-",
-      "customer",
-      "tenant",
-      "employee",
-      "company",
-      "https://",
-      "d:\\",
-      "/users/",
-      ".png",
-      ".jpg",
-      ".jpeg",
-    ]) {
-      expect(serialized).not.toContain(privateBoundaryTerm);
-    }
+    await expectPublicSafePolicyRedactionsFixture(
+      "examples/synthetic-policy-redactions.fixture.json",
+    );
   });
 
   it("ships an apartment-agnostic synthetic vision probe without private home semantics", async () => {
-    const manifestPath = path.join(
-      process.cwd(),
-      "examples/synthetic-zone-vision-probe.manifest.json",
-    );
-    const manifest = JSON.parse(await fs.readFile(manifestPath, "utf-8")) as unknown;
-    const parsed = parseBatchReviewManifest(manifest);
-
-    expect(parsed.defaults?.mode).toBe("vision");
-    expect(parsed.reviews[0]).toEqual(
-      expect.objectContaining({
-        name: "Synthetic zone overview",
-        target: "./examples/synthetic-zone-layout.html",
-        sections: ["overview", "zone-a", "zone-b", "boundary-note"],
-      }),
-    );
-
-    const htmlPath = path.join(process.cwd(), parsed.reviews[0]!.target);
-    await expect(fs.access(htmlPath)).resolves.toBeUndefined();
-
-    const html = await fs.readFile(htmlPath, "utf-8");
-    const serialized = `${JSON.stringify(manifest)}\n${html}`.toLowerCase();
-    for (const privateHomeDataTerm of [
-      "stefan",
-      "apartment",
-      "bedroom",
-      "kitchen",
-      "bathroom",
-      "living room",
-      "resident",
-      "latitude",
-      "longitude",
-      ".png",
-      ".jpg",
-      ".jpeg",
-      "d:\\",
-      "/users/",
-    ]) {
-      expect(serialized).not.toContain(privateHomeDataTerm);
-    }
+    await expectApartmentAgnosticVisionProbeManifest();
   });
 
   it("publishes starter examples in the package file list", async () => {

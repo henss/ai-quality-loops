@@ -9,6 +9,9 @@ import {
   type BatchReviewSummaryComparisonReport,
   type BatchReviewSummaryEntryComparison,
   type BatchReviewSummaryEntrySnapshot,
+  type BatchReviewReviewerConfidenceCalibrationDelta,
+  type BatchReviewReviewerConfidenceCalibrationSnapshot,
+  type BatchReviewReviewerConfidenceCounts,
   type BatchReviewSummarySeverityDirection,
 } from "../contracts/batch-review-summary-comparison-contract.js";
 import { resolveFromCwd } from "../shared/io.js";
@@ -28,6 +31,9 @@ export type {
   BatchReviewSummaryComparisonReport,
   BatchReviewSummaryEntryComparison,
   BatchReviewSummaryEntrySnapshot,
+  BatchReviewReviewerConfidenceCalibrationDelta,
+  BatchReviewReviewerConfidenceCalibrationSnapshot,
+  BatchReviewReviewerConfidenceCounts,
   BatchReviewSummarySeverityDirection,
 };
 
@@ -39,6 +45,82 @@ function createEmptySeverityCounts(): Record<StructuredReviewSeverity, number> {
     low: 0,
     unknown: 0,
   };
+}
+
+function createEmptyConfidenceCounts(): BatchReviewReviewerConfidenceCounts {
+  return {
+    low: 0,
+    medium: 0,
+    high: 0,
+  };
+}
+
+function createEmptyCalibrationSnapshot(): BatchReviewReviewerConfidenceCalibrationSnapshot {
+  return {
+    decisionsWithConfidence: 0,
+    acceptedDecisions: 0,
+    rejectedDecisions: 0,
+    acceptedFindings: 0,
+    rejectedFindings: 0,
+    acceptedConfidence: createEmptyConfidenceCounts(),
+    rejectedConfidence: createEmptyConfidenceCounts(),
+  };
+}
+
+function createCalibrationDelta(
+  before: BatchReviewReviewerConfidenceCalibrationSnapshot,
+  after: BatchReviewReviewerConfidenceCalibrationSnapshot,
+): BatchReviewReviewerConfidenceCalibrationDelta {
+  return {
+    decisionsWithConfidence:
+      after.decisionsWithConfidence - before.decisionsWithConfidence,
+    acceptedDecisions: after.acceptedDecisions - before.acceptedDecisions,
+    rejectedDecisions: after.rejectedDecisions - before.rejectedDecisions,
+    acceptedFindings: after.acceptedFindings - before.acceptedFindings,
+    rejectedFindings: after.rejectedFindings - before.rejectedFindings,
+    acceptedConfidence: {
+      low: after.acceptedConfidence.low - before.acceptedConfidence.low,
+      medium:
+        after.acceptedConfidence.medium - before.acceptedConfidence.medium,
+      high: after.acceptedConfidence.high - before.acceptedConfidence.high,
+    },
+    rejectedConfidence: {
+      low: after.rejectedConfidence.low - before.rejectedConfidence.low,
+      medium:
+        after.rejectedConfidence.medium - before.rejectedConfidence.medium,
+      high: after.rejectedConfidence.high - before.rejectedConfidence.high,
+    },
+  };
+}
+
+function summarizeReviewerConfidenceCalibration(
+  summary: BatchReviewArtifactSummary,
+): BatchReviewReviewerConfidenceCalibrationSnapshot {
+  const snapshot = createEmptyCalibrationSnapshot();
+
+  for (const result of summary.results) {
+    const decision = result.structuredResult?.decision;
+    if (!decision) {
+      continue;
+    }
+
+    snapshot.decisionsWithConfidence += 1;
+    const accepted = decision.acceptedFindings > 0 || decision.verdict === "accept" || decision.verdict === "accept_with_follow_up";
+    const target = accepted
+      ? snapshot.acceptedConfidence
+      : snapshot.rejectedConfidence;
+    target[decision.confidence] += 1;
+
+    if (accepted) {
+      snapshot.acceptedDecisions += 1;
+      snapshot.acceptedFindings += decision.acceptedFindings;
+    } else {
+      snapshot.rejectedDecisions += 1;
+      snapshot.rejectedFindings += decision.rejectedFindings;
+    }
+  }
+
+  return snapshot;
 }
 
 function compareSeverityDirection(
@@ -199,6 +281,9 @@ export function compareBatchReviewArtifactSummaries(input: {
   let addedPromptEvalCount = 0;
   let promptEvalCountUnavailable = 0;
 
+  const beforeCalibration = summarizeReviewerConfidenceCalibration(input.before);
+  const afterCalibration = summarizeReviewerConfidenceCalibration(input.after);
+
   for (const resultKey of [...resultKeys].sort()) {
     const before = beforeResults.get(resultKey);
     const after = afterResults.get(resultKey);
@@ -278,6 +363,11 @@ export function compareBatchReviewArtifactSummaries(input: {
       addedPromptEvalCount,
       promptEvalCountUnavailable,
     },
+    calibration: {
+      before: beforeCalibration,
+      after: afterCalibration,
+      delta: createCalibrationDelta(beforeCalibration, afterCalibration),
+    },
     added: sortSnapshots(added),
     removed: sortSnapshots(removed),
     changed: sortComparisons(changed),
@@ -323,6 +413,33 @@ function formatSeverityCountDelta(
   ).join(", ");
 }
 
+function formatConfidenceCounts(
+  counts: BatchReviewReviewerConfidenceCounts,
+): string {
+  return `low=${counts.low}, medium=${counts.medium}, high=${counts.high}`;
+}
+
+function formatCalibrationSnapshot(
+  label: string,
+  snapshot: BatchReviewReviewerConfidenceCalibrationSnapshot,
+): string {
+  return [
+    `${label}: decisionsWithConfidence=${snapshot.decisionsWithConfidence};`,
+    `accepted decisions=${snapshot.acceptedDecisions} (${formatConfidenceCounts(snapshot.acceptedConfidence)}), findings=${snapshot.acceptedFindings};`,
+    `rejected decisions=${snapshot.rejectedDecisions} (${formatConfidenceCounts(snapshot.rejectedConfidence)}), findings=${snapshot.rejectedFindings}.`,
+  ].join(" ");
+}
+
+function formatCalibrationDelta(
+  delta: BatchReviewReviewerConfidenceCalibrationDelta,
+): string {
+  return [
+    `decisionsWithConfidence=${delta.decisionsWithConfidence};`,
+    `accepted decisions=${delta.acceptedDecisions} (${formatConfidenceCounts(delta.acceptedConfidence)}), findings=${delta.acceptedFindings};`,
+    `rejected decisions=${delta.rejectedDecisions} (${formatConfidenceCounts(delta.rejectedConfidence)}), findings=${delta.rejectedFindings}.`,
+  ].join(" ");
+}
+
 export function formatBatchReviewSummaryComparisonReport(
   report: BatchReviewSummaryComparisonReport,
 ): string {
@@ -348,6 +465,15 @@ export function formatBatchReviewSummaryComparisonReport(
       `unavailable=${comparison.counts.severityMovement.unavailable}.`,
     ].join(" "),
     `Finding count delta: total=${comparison.counts.totalFindingsDelta}; ${formatSeverityCountDelta(comparison.counts.findingCountDelta)}.`,
+    formatCalibrationSnapshot(
+      "Reviewer confidence calibration before",
+      comparison.calibration.before,
+    ),
+    formatCalibrationSnapshot(
+      "Reviewer confidence calibration after",
+      comparison.calibration.after,
+    ),
+    `Reviewer confidence calibration delta: ${formatCalibrationDelta(comparison.calibration.delta)}`,
     `Prompt eval count delta: total=${comparison.counts.promptEvalCountDelta ?? 0}; added=${comparison.counts.addedPromptEvalCount ?? 0}; unavailable=${comparison.counts.promptEvalCountUnavailable ?? 0}.`,
     ...formatEntrySection("Added entries:", comparison.added.map(formatSnapshot)),
     ...formatEntrySection("Removed entries:", comparison.removed.map(formatSnapshot)),

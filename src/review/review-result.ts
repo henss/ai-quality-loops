@@ -40,6 +40,14 @@ export interface StructuredReviewResultRollup {
   overallSeverity: StructuredReviewSeverity;
   totalFindings: number;
   findingCounts: StructuredReviewSeverityCounts;
+  decision?: StructuredReviewDecisionRollup;
+}
+
+export interface StructuredReviewDecisionRollup {
+  verdict: StructuredReviewDecisionVerdict;
+  confidence: StructuredReviewDecisionConfidence;
+  acceptedFindings: number;
+  rejectedFindings: number;
 }
 
 export type {
@@ -380,13 +388,34 @@ export function summarizeStructuredReviewFindingCounts(
   return counts;
 }
 
+export function summarizeStructuredReviewDecisionRollup(
+  decision: StructuredReviewDecision,
+): StructuredReviewDecisionRollup {
+  const totalFindings =
+    decision.blocking_findings.length + decision.non_blocking_findings.length;
+  const accepted =
+    decision.verdict === "accept" || decision.verdict === "accept_with_follow_up";
+
+  return {
+    verdict: decision.verdict,
+    confidence: decision.confidence,
+    acceptedFindings: accepted ? totalFindings : 0,
+    rejectedFindings: accepted ? 0 : totalFindings,
+  };
+}
+
 export function summarizeStructuredReviewResultRollup(
-  result: Pick<StructuredReviewResult, "overallSeverity" | "findings">,
+  result: Pick<StructuredReviewResult, "overallSeverity" | "findings" | "decision">,
 ): StructuredReviewResultRollup {
+  const decision = result.decision
+    ? summarizeStructuredReviewDecisionRollup(result.decision)
+    : undefined;
+
   return {
     overallSeverity: result.overallSeverity,
     totalFindings: result.findings.length,
     findingCounts: summarizeStructuredReviewFindingCounts(result.findings),
+    ...(decision ? { decision } : {}),
   };
 }
 

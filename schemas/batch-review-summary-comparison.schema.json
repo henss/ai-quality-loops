@@ -18,7 +18,7 @@
     "comparison": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["counts", "added", "removed", "changed", "unchanged"],
+      "required": ["counts", "calibration", "added", "removed", "changed", "unchanged"],
       "properties": {
         "counts": {
           "type": "object",
@@ -47,6 +47,16 @@
             "promptEvalCountDelta": { "type": "integer" },
             "addedPromptEvalCount": { "type": "integer", "minimum": 0 },
             "promptEvalCountUnavailable": { "type": "integer", "minimum": 0 }
+          }
+        },
+        "calibration": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["before", "after", "delta"],
+          "properties": {
+            "before": { "$ref": "#/$defs/calibrationSnapshot" },
+            "after": { "$ref": "#/$defs/calibrationSnapshot" },
+            "delta": { "$ref": "#/$defs/calibrationDelta" }
           }
         },
         "added": {
@@ -151,6 +161,26 @@
         "unavailable": { "type": "integer", "minimum": 0 }
       }
     },
+    "confidenceCounts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["low", "medium", "high"],
+      "properties": {
+        "low": { "type": "integer", "minimum": 0 },
+        "medium": { "type": "integer", "minimum": 0 },
+        "high": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "signedConfidenceCounts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["low", "medium", "high"],
+      "properties": {
+        "low": { "type": "integer" },
+        "medium": { "type": "integer" },
+        "high": { "type": "integer" }
+      }
+    },
     "signedSeverityCounts": {
       "type": "object",
       "additionalProperties": false,
@@ -185,7 +215,80 @@
             "low": { "type": "integer", "minimum": 0 },
             "unknown": { "type": "integer", "minimum": 0 }
           }
-        }
+        },
+        "decision": { "$ref": "#/$defs/structuredDecisionSummary" }
+      }
+    },
+    "structuredDecisionSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "verdict",
+        "confidence",
+        "acceptedFindings",
+        "rejectedFindings"
+      ],
+      "properties": {
+        "verdict": {
+          "type": "string",
+          "enum": [
+            "accept",
+            "accept_with_follow_up",
+            "changes_requested",
+            "blocked",
+            "process_failed"
+          ]
+        },
+        "confidence": {
+          "type": "string",
+          "enum": ["low", "medium", "high"]
+        },
+        "acceptedFindings": { "type": "integer", "minimum": 0 },
+        "rejectedFindings": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "calibrationSnapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "decisionsWithConfidence",
+        "acceptedDecisions",
+        "rejectedDecisions",
+        "acceptedFindings",
+        "rejectedFindings",
+        "acceptedConfidence",
+        "rejectedConfidence"
+      ],
+      "properties": {
+        "decisionsWithConfidence": { "type": "integer", "minimum": 0 },
+        "acceptedDecisions": { "type": "integer", "minimum": 0 },
+        "rejectedDecisions": { "type": "integer", "minimum": 0 },
+        "acceptedFindings": { "type": "integer", "minimum": 0 },
+        "rejectedFindings": { "type": "integer", "minimum": 0 },
+        "acceptedConfidence": { "$ref": "#/$defs/confidenceCounts" },
+        "rejectedConfidence": { "$ref": "#/$defs/confidenceCounts" }
+      }
+    },
+    "calibrationDelta": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "decisionsWithConfidence",
+        "acceptedDecisions",
+        "rejectedDecisions",
+        "acceptedFindings",
+        "rejectedFindings",
+        "acceptedConfidence",
+        "rejectedConfidence"
+      ],
+      "properties": {
+        "decisionsWithConfidence": { "type": "integer" },
+        "acceptedDecisions": { "type": "integer" },
+        "rejectedDecisions": { "type": "integer" },
+        "acceptedFindings": { "type": "integer" },
+        "rejectedFindings": { "type": "integer" },
+        "acceptedConfidence": { "$ref": "#/$defs/signedConfidenceCounts" },
+        "rejectedConfidence": { "$ref": "#/$defs/signedConfidenceCounts" }
       }
     }
   }

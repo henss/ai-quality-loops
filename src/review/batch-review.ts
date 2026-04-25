@@ -40,6 +40,9 @@ import {
   type BatchReviewSummaryComparisonReport,
   type BatchReviewSummaryEntryComparison,
   type BatchReviewSummaryEntrySnapshot,
+  type BatchReviewReviewerConfidenceCalibrationDelta,
+  type BatchReviewReviewerConfidenceCalibrationSnapshot,
+  type BatchReviewReviewerConfidenceCounts,
   type BatchReviewSummarySeverityDirection,
 } from "./batch-review-summary-compare.js";
 import {
@@ -77,6 +80,9 @@ export type {
   BatchReviewSummaryComparisonReport,
   BatchReviewSummaryEntryComparison,
   BatchReviewSummaryEntrySnapshot,
+  BatchReviewReviewerConfidenceCalibrationDelta,
+  BatchReviewReviewerConfidenceCalibrationSnapshot,
+  BatchReviewReviewerConfidenceCounts,
   BatchReviewSummarySeverityDirection,
   BatchReviewStructuredResultSummary,
   BatchReviewMode,

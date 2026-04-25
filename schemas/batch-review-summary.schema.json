@@ -81,6 +81,40 @@
                   "low": { "type": "integer", "minimum": 0 },
                   "unknown": { "type": "integer", "minimum": 0 }
                 }
+              },
+              "decision": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "verdict",
+                  "confidence",
+                  "acceptedFindings",
+                  "rejectedFindings"
+                ],
+                "properties": {
+                  "verdict": {
+                    "type": "string",
+                    "enum": [
+                      "accept",
+                      "accept_with_follow_up",
+                      "changes_requested",
+                      "blocked",
+                      "process_failed"
+                    ]
+                  },
+                  "confidence": {
+                    "type": "string",
+                    "enum": ["low", "medium", "high"]
+                  },
+                  "acceptedFindings": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "rejectedFindings": {
+                    "type": "integer",
+                    "minimum": 0
+                  }
+                }
               }
             }
           },

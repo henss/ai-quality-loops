@@ -11,6 +11,7 @@ export type {
   BatchReviewArtifactResult,
   BatchReviewArtifactSummary,
   BatchReviewOllamaTelemetry,
+  BatchReviewStructuredDecisionSummary,
   BatchReviewStructuredResultSummary,
 } from "./batch-review-summary-contract.js";
 

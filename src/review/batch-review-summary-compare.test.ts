@@ -86,6 +86,12 @@ describe("batch review summary compare", () => {
             low: 1,
             unknown: 0,
           },
+          decision: {
+            verdict: "changes_requested",
+            confidence: "high",
+            acceptedFindings: 0,
+            rejectedFindings: 2,
+          },
         },
       },
       {
@@ -134,6 +140,12 @@ describe("batch review summary compare", () => {
             medium: 1,
             low: 0,
             unknown: 0,
+          },
+          decision: {
+            verdict: "accept",
+            confidence: "medium",
+            acceptedFindings: 1,
+            rejectedFindings: 0,
           },
         },
       },
@@ -193,6 +205,35 @@ describe("batch review summary compare", () => {
       addedPromptEvalCount: 0,
       promptEvalCountUnavailable: 4,
     });
+    expect(comparison.calibration).toEqual({
+      before: {
+        decisionsWithConfidence: 1,
+        acceptedDecisions: 0,
+        rejectedDecisions: 1,
+        acceptedFindings: 0,
+        rejectedFindings: 2,
+        acceptedConfidence: { low: 0, medium: 0, high: 0 },
+        rejectedConfidence: { low: 0, medium: 0, high: 1 },
+      },
+      after: {
+        decisionsWithConfidence: 1,
+        acceptedDecisions: 1,
+        rejectedDecisions: 0,
+        acceptedFindings: 1,
+        rejectedFindings: 0,
+        acceptedConfidence: { low: 0, medium: 1, high: 0 },
+        rejectedConfidence: { low: 0, medium: 0, high: 0 },
+      },
+      delta: {
+        decisionsWithConfidence: 0,
+        acceptedDecisions: 1,
+        rejectedDecisions: -1,
+        acceptedFindings: 1,
+        rejectedFindings: -2,
+        acceptedConfidence: { low: 0, medium: 1, high: 0 },
+        rejectedConfidence: { low: 0, medium: 0, high: -1 },
+      },
+    });
     expect(comparison.added.map((entry) => entry.resultKey)).toEqual([
       "pricing-vision",
     ]);
@@ -229,6 +270,12 @@ describe("batch review summary compare", () => {
                 low: 1,
                 unknown: 0,
               },
+              decision: {
+                verdict: "changes_requested",
+                confidence: "high",
+                acceptedFindings: 0,
+                rejectedFindings: 2,
+              },
             },
           },
         ]),
@@ -256,6 +303,12 @@ describe("batch review summary compare", () => {
                 low: 0,
                 unknown: 0,
               },
+              decision: {
+                verdict: "accept",
+                confidence: "medium",
+                acceptedFindings: 1,
+                rejectedFindings: 0,
+              },
             },
           },
         ]),
@@ -277,6 +330,9 @@ describe("batch review summary compare", () => {
       "Entries: before=1, after=1, matched=1, added=0, removed=0, statusChanged=0.",
       "Severity movement among matched entries: improved=1, regressed=0, unchanged=0, unavailable=0.",
       "Finding count delta: total=-1; critical=0, high=-1, medium=1, low=-1, unknown=0.",
+      "Reviewer confidence calibration before: decisionsWithConfidence=1; accepted decisions=0 (low=0, medium=0, high=0), findings=0; rejected decisions=1 (low=0, medium=0, high=1), findings=2.",
+      "Reviewer confidence calibration after: decisionsWithConfidence=1; accepted decisions=1 (low=0, medium=1, high=0), findings=1; rejected decisions=0 (low=0, medium=0, high=0), findings=0.",
+      "Reviewer confidence calibration delta: decisionsWithConfidence=0; accepted decisions=1 (low=0, medium=1, high=0), findings=1; rejected decisions=-1 (low=0, medium=0, high=-1), findings=-2.",
       "Prompt eval count delta: total=0; added=0; unavailable=1.",
       "Changed matched entries:",
       "- homepage-vision: status unchanged; severity high->medium (improved); findings delta=-1",
@@ -371,6 +427,12 @@ describe("batch review summary compare", () => {
             low: 1,
             unknown: 0,
           },
+          decision: {
+            verdict: "changes_requested",
+            confidence: "high",
+            acceptedFindings: 0,
+            rejectedFindings: 2,
+          },
         },
       },
       {
@@ -418,6 +480,12 @@ describe("batch review summary compare", () => {
             medium: 1,
             low: 0,
             unknown: 0,
+          },
+          decision: {
+            verdict: "accept",
+            confidence: "medium",
+            acceptedFindings: 1,
+            rejectedFindings: 0,
           },
         },
       },

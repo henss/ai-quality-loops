@@ -20,6 +20,12 @@
           "medium": 1,
           "low": 1,
           "unknown": 0
+        },
+        "decision": {
+          "verdict": "accept_with_follow_up",
+          "confidence": "medium",
+          "acceptedFindings": 2,
+          "rejectedFindings": 0
         }
       },
       "ollamaTelemetry": {
@@ -42,6 +48,12 @@
           "medium": 1,
           "low": 1,
           "unknown": 0
+        },
+        "decision": {
+          "verdict": "changes_requested",
+          "confidence": "high",
+          "acceptedFindings": 0,
+          "rejectedFindings": 3
         }
       },
       "ollamaTelemetry": {
@@ -64,6 +76,12 @@
           "medium": 0,
           "low": 1,
           "unknown": 0
+        },
+        "decision": {
+          "verdict": "accept",
+          "confidence": "low",
+          "acceptedFindings": 1,
+          "rejectedFindings": 0
         }
       },
       "ollamaTelemetry": {
@@ -86,6 +104,12 @@
           "medium": 0,
           "low": 1,
           "unknown": 0
+        },
+        "decision": {
+          "verdict": "accept",
+          "confidence": "medium",
+          "acceptedFindings": 1,
+          "rejectedFindings": 0
         }
       },
       "ollamaTelemetry": {
@@ -108,6 +132,12 @@
           "medium": 0,
           "low": 1,
           "unknown": 0
+        },
+        "decision": {
+          "verdict": "blocked",
+          "confidence": "high",
+          "acceptedFindings": 0,
+          "rejectedFindings": 1
         }
       },
       "ollamaTelemetry": {

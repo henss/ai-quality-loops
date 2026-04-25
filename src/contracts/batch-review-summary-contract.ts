@@ -1,3 +1,7 @@
+import type {
+  StructuredReviewDecisionConfidence,
+  StructuredReviewDecisionVerdict,
+} from "./structured-review-decision-contract.js";
 import type { StructuredReviewSeverity } from "./json-contracts.js";
 
 export interface BatchReviewOllamaTelemetry {
@@ -13,6 +17,14 @@ export interface BatchReviewStructuredResultSummary {
   overallSeverity: StructuredReviewSeverity;
   totalFindings: number;
   findingCounts: Record<StructuredReviewSeverity, number>;
+  decision?: BatchReviewStructuredDecisionSummary;
+}
+
+export interface BatchReviewStructuredDecisionSummary {
+  verdict: StructuredReviewDecisionVerdict;
+  confidence: StructuredReviewDecisionConfidence;
+  acceptedFindings: number;
+  rejectedFindings: number;
 }
 
 export interface BatchReviewArtifactResult {
@@ -122,6 +134,36 @@ function readOptionalBoolean(value: unknown, fieldName: string): boolean | undef
   return value;
 }
 
+function readDecisionVerdict(
+  value: unknown,
+  fieldName: string,
+): StructuredReviewDecisionVerdict {
+  switch (value) {
+    case "accept":
+    case "accept_with_follow_up":
+    case "changes_requested":
+    case "blocked":
+    case "process_failed":
+      return value;
+    default:
+      throw new Error(`Manifest field "${fieldName}" must be a decision verdict.`);
+  }
+}
+
+function readDecisionConfidence(
+  value: unknown,
+  fieldName: string,
+): StructuredReviewDecisionConfidence {
+  switch (value) {
+    case "low":
+    case "medium":
+    case "high":
+      return value;
+    default:
+      throw new Error(`Manifest field "${fieldName}" must be a decision confidence.`);
+  }
+}
+
 function readRequiredMode(value: unknown, fieldName: string): "expert" | "vision" {
   if (value === "expert" || value === "vision") {
     return value;
@@ -159,10 +201,44 @@ function parseBatchReviewStructuredResultSummary(
     );
   }
 
+  const decision =
+    value.decision === undefined
+      ? undefined
+      : parseBatchReviewStructuredDecisionSummary(
+          value.decision,
+          `${fieldName}.decision`,
+        );
+
   return {
     overallSeverity: readSeverity(value.overallSeverity, `${fieldName}.overallSeverity`),
     totalFindings: readRequiredInteger(value.totalFindings, `${fieldName}.totalFindings`),
     findingCounts,
+    ...(decision ? { decision } : {}),
+  };
+}
+
+function parseBatchReviewStructuredDecisionSummary(
+  value: unknown,
+  fieldName: string,
+): BatchReviewStructuredDecisionSummary {
+  if (!isRecord(value)) {
+    throw new Error(`Manifest field "${fieldName}" must be an object.`);
+  }
+
+  return {
+    verdict: readDecisionVerdict(value.verdict, `${fieldName}.verdict`),
+    confidence: readDecisionConfidence(
+      value.confidence,
+      `${fieldName}.confidence`,
+    ),
+    acceptedFindings: readRequiredInteger(
+      value.acceptedFindings,
+      `${fieldName}.acceptedFindings`,
+    ),
+    rejectedFindings: readRequiredInteger(
+      value.rejectedFindings,
+      `${fieldName}.rejectedFindings`,
+    ),
   };
 }
 

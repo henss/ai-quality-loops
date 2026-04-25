@@ -34,6 +34,7 @@ Use the package when you need repeatable LLM-assisted review workflows that stay
 - **Gate CI or local checks** with explicit severity and finding-count budgets using `review-gate`.
 - **Compare two batch summaries** to see added, removed, status-changed, and severity-moved review entries.
 - **Format a multi-model disagreement report** from two comparable batch-summary artifacts when model-cohort differences need a public-safe triage note.
+- **Format a source-handle review-bundle digest** from one published batch-summary artifact when a caller needs a compact reread budget for a source-handle pack.
 - **Check local prerequisites** before a costly run, including personas, Ollama models, browser availability, and optional context files.
 - **Call the underlying Ollama helpers** when you need lower-level text or vision generation instead of the review workflow.
 
@@ -76,6 +77,7 @@ Use `docs/reviewer-disagreement-explainer.md` when you need the open-source-safe
 Use `docs/downstream-agent-read-efficiency-pilot.md` when you need a public-safe pilot shape for measuring downstream-agent reads avoided by narrow packets, registry evidence, and bounded repo-local checks.
 Use `docs/local-ollama-reviewer-capability-map.md` when you need a public-safe map of which local Ollama capability classes currently satisfy the package's published reviewer-contract seams.
 Use `docs/local-review-model-economics-benchmark-proposal.md` when you need a public-safe proposal for comparing fixed local review packs with existing batch-summary telemetry before adding benchmark automation.
+Use `examples/synthetic-source-handle-review-bundle-digest.md` when you need a public-safe example of the compact source-handle bundle digest shape over a published batch summary.
 Use `docs/recurring-review-failure-eval-harness.md` when you need the public-safe boundary for rehearsing recurring review-packet failures before another live run.
 Use `docs/manual-vs-aiql-delegation-trial-recurring-review-tasks.md` when you need the public-safe trial readout for whether recurring review cleanup should stay manual, move to delegated draft triage, or remain human-accepted on the harnessed cases.
 Use `docs/sanitized-creative-review-rubric-pass-pilot.md` when you need a public-safe pilot shape for a caller-sanitized creative-review rubric pass that keeps concept choice, approval, release timing, and brand authority caller-owned.
@@ -239,6 +241,28 @@ The disagreement template stays intentionally narrow:
 - it assumes disagreement is already expressed by two comparable published batch summaries
 - it highlights changed, added, removed, and stable entries without inferring approval or routing policy
 - it does not add same-run arbitration, reviewer clustering, or project-specific acceptance heuristics
+
+When one published batch-review summary already represents a source-handle pack and a caller needs a smaller reread surface instead of the raw summary JSON, format the digest directly:
+
+```typescript
+import {
+  formatSourceHandleReviewBundleDigest,
+  parseBatchReviewArtifactSummary
+} from 'ai-quality-loops';
+
+const summary = parseBatchReviewArtifactSummary(batchSummaryJson);
+const digest = formatSourceHandleReviewBundleDigest(summary, {
+  maxEntryNotes: 4
+});
+
+console.log(digest);
+```
+
+The source-handle digest stays intentionally narrow:
+
+- it consumes one published batch-review summary artifact and emits a compact Markdown digest
+- it prioritizes failures, blocked or process-failed outcomes, and higher-severity entries without re-reading raw packet contents
+- it does not resolve source handles, verify source truth, set acceptance thresholds, or route follow-up work
 
 When one structured review result needs a compact sponsor-facing readout instead of raw JSON, format the review result directly:
 

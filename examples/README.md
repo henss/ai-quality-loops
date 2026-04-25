@@ -22,6 +22,7 @@ The example files cover the repeatable workflow surfaces. The package also suppo
 | Compare two batch summary artifacts | `batch-review-compare ./reviews/previous-summary.json ./reviews/current-summary.json --json` | Feed the JSON report into `review-gate --batch-comparison` when CI should fail on caller-owned regression budgets. |
 | Summarize launch outcome evidence | `formatLaunchOutcomeEvidenceSummary(comparisonReport, { gate })` | Produces a compact, public-safe Markdown evidence note from sanitized comparison and optional gate results without deciding launch readiness. |
 | Format a multi-model disagreement note | `formatMultiModelDisagreementReport(comparisonReport, { baselineLabel, candidateLabel })` | Produces a compact, public-safe Markdown triage template from two comparable batch-summary artifacts without deciding acceptance or routing. |
+| Format a source-handle review-bundle digest | `formatSourceHandleReviewBundleDigest(summary, { maxEntryNotes })` with `./examples/synthetic-source-handle-review-bundle-summary.fixture.json` | Produces a compact, public-safe Markdown digest from one published batch-summary artifact without resolving source handles or deciding routing. |
 | Probe image-review quality with a synthetic visual target | `vision-preview --manifest ./examples/synthetic-zone-vision-probe.manifest.json --entry-name "Synthetic zone overview"` | Uses generic zones only; keep real capture handling, thresholds, and routing caller-owned. |
 | Review a sanitized social evidence packet | `batch-review ./examples/sanitized-social-evidence-review.manifest.json` | Use this as a text-review seam for redacted evidence packets; keep real sources, proof thresholds, and publication routing caller-owned. |
 | Review a synthetic creative packet | `batch-review ./examples/synthetic-creative-review-packet.manifest.json` | Use this as a public-safe seam for caller-sanitized creative-review packets; keep asset selection, release approval, and brand authority caller-owned. |
@@ -398,6 +399,16 @@ Typical edits:
 - keep real policy names, thresholds, approval, routing, and domain interpretation outside `ai-quality-loops`
 - use the fixture to validate that caller-provided redaction rules are threaded through prompts, logs, provenance, and structured results
 
+### `synthetic-source-handle-review-bundle-summary.fixture.json`
+
+Use when you want a public-safe summary artifact for consumers of `formatSourceHandleReviewBundleDigest(...)`.
+
+Typical edits:
+
+- keep the summary synthetic, or replace it only with a caller-sanitized published batch-review summary in an embedding repo
+- compare the helper output to `synthetic-source-handle-review-bundle-digest.md` when a wrapper needs a stable compact digest shape
+- keep packet assembly, source-handle resolution, source verification, thresholds, tracker context, and routing outside `ai-quality-loops`
+
 ### `synthetic-apartment-review-result.fixture.json`
 
 Use when you want a structured review-result fixture for contract tests without checking in real household data.
@@ -513,6 +524,7 @@ Typical edits:
 - The synthetic source-handle evidence fixture is seam-focused. It intentionally excludes real source names, source contents, tracker keys, private paths, domain facts, retention policy, approval status, implementation priority, and routing instructions.
 - The synthetic source-handle redaction corpus is regression-focused. It intentionally excludes real source names, source contents, tracker keys, private paths, domain facts, retention policy, approval status, implementation priority, and routing instructions.
 - The synthetic source-handle redaction mutation fixture is mutation-focused. It intentionally excludes real source names, source contents, tracker keys, private paths, domain facts, retention policy, approval status, implementation priority, and routing instructions.
+- The synthetic source-handle review-bundle summary and digest are digest-focused. They intentionally exclude real source handles, source contents, tracker identifiers, local paths, thresholds, and routing instructions.
 - The synthetic recurring review-failure eval pack is rehearsal-focused. It intentionally excludes real repo names, tracker identifiers, private verification policy, launch approval semantics, command authority, and live operator context.
 - The synthetic buyer-claim caveat fixture is seam-focused. It intentionally excludes real buyer identities, company names, source notes, outreach plans, spend decisions, account creation, proof thresholds, and venture-specific routing.
 - The synthetic finance cadence fixture is seam-focused. It intentionally excludes real financial records, entity names, threshold values, approval ownership, schedule state, alerting policy, spend decisions, and routing instructions.

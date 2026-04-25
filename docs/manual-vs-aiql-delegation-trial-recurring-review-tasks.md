@@ -1,6 +1,6 @@
 # Manual vs AIQL Delegation Trial For Recurring Review Tasks
 
-This note records a first-hand local-Ollama trial for OPS-2051 over AIQL's public-safe recurring review-failure rehearsal pack. The goal was not to add another framework. The goal was to see whether recurring review cleanup work can be delegated to the existing AIQL surface, or whether the sanitized cases still need a manual reviewer as the reliable baseline.
+This note records a first-hand local-Ollama trial over AIQL's public-safe recurring review-failure rehearsal pack. The goal was not to add another framework. The goal was to see whether recurring review cleanup work can be delegated to the existing AIQL surface, or whether the sanitized cases still need a manual reviewer as the reliable baseline.
 
 ## Classification
 
@@ -78,7 +78,7 @@ The practical conclusion is narrow:
 
 ## Why This Matters
 
-OPS-2051 asked whether recurring review work should shift from manual synthesis to AIQL delegation. This trial says the answer is mixed in a useful way. AIQL can cheaply surface the major issue classes on all six sanitized cases with one local model and no remote-provider dependency, but it still drops some reusable next-step discipline and one omission-oriented wording pattern that the manual corpus expects. That makes it good at reducing reviewer setup work, not yet good enough to replace the deterministic acceptance bar.
+The local trial asked whether recurring review work should shift from manual synthesis to AIQL delegation. This trial says the answer is mixed in a useful way. AIQL can cheaply surface the major issue classes on all six sanitized cases with one local model and no remote-provider dependency, but it still drops some reusable next-step discipline and one omission-oriented wording pattern that the manual corpus expects. That makes it good at reducing reviewer setup work, not yet good enough to replace the deterministic acceptance bar.
 
 The other meaningful result is operational: before this session, the advertised recurring-review pack was not actually runnable with the shipped prompt library because the `Evidence Reviewer` persona was missing. That repo-local mismatch is now repaired, so future trials can measure reviewer behavior instead of failing at setup.
 

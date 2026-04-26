@@ -27,6 +27,9 @@ Validate payloads with `validateStructuredReviewResult(...)` or the published `s
 - `examples/synthetic-context-pack-quality-review.manifest.json` is a synthetic context-pack quality review that keeps source retrieval, source interpretation, approval, routing, and retention caller-owned.
 - Its paired synthetic context packet intentionally leaves both the research-source audit and any public-source list empty because the shared fixture uses opaque evidence labels only; source freshness, retrieval coverage, public-source selection, and approval checks remain caller-owned.
 - `reviews/context-pack-quality/synthetic-context-pack-quality-packet-expert-review.md` and `reviews/context-pack-quality/json/synthetic-context-pack-quality-packet-expert-review.json` are checked-in synthetic review artifacts showing the expected public-safe verdict shape for that seam without turning the empty audit into proof that any real source check already passed.
+- `examples/synthetic-temporal-anomaly-review.manifest.json` is a runnable synthetic text-review manifest for apartment-agnostic temporal anomaly packets.
+- Its paired context packet keeps frame labels, zone labels, and follow-up language generic so occupancy, identity, household action, retention, and downstream routing remain caller-owned.
+- `reviews/temporal-anomaly/synthetic-temporal-anomaly-packet-expert-review.md` and `reviews/temporal-anomaly/json/synthetic-temporal-anomaly-packet-expert-review.json` are checked-in synthetic review artifacts showing one promising-but-caveated anomaly lane without promoting household semantics into AIQL.
 - `examples/synthetic-reviewer-contract-result.fixture.json` is a checked structured-result fixture for consumer tests.
 
 These examples demonstrate the contract only. They do not decide target selection, severity budgets, approval, remediation ownership, tracker routing, publication, deployment, retention, or real-world action.

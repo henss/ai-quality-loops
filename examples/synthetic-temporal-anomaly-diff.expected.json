@@ -1,0 +1,118 @@
+{
+  "fixtureProvenance": {
+    "beforeFixture": "synthetic-temporal-anomaly-diff-before.fixture.json",
+    "afterFixture": "synthetic-temporal-anomaly-diff-after.fixture.json"
+  },
+  "comparison": {
+    "overallSeverityChange": {
+      "before": "high",
+      "after": "medium",
+      "direction": "improved"
+    },
+    "counts": {
+      "beforeFindings": 2,
+      "afterFindings": 3,
+      "added": 1,
+      "removed": 0,
+      "changed": 2,
+      "unchanged": 0,
+      "severityMovement": {
+        "improved": 2,
+        "regressed": 0,
+        "unchanged": 0
+      }
+    },
+    "added": [
+      {
+        "key": "temporal evidence traceability",
+        "title": "Temporal evidence labels stay reusable",
+        "summary": "Frame labels and zone references stay generic enough for repeat comparison coverage.",
+        "severity": "low",
+        "recommendation": "Keep public-safe labels stable across fixture updates.",
+        "evidence": [
+          "Frame A",
+          "Frame B",
+          "Zone alpha"
+        ]
+      }
+    ],
+    "removed": [],
+    "changed": [
+      {
+        "key": "automated action boundary",
+        "title": "Automated action readiness is unsupported",
+        "before": {
+          "key": "automated action boundary",
+          "title": "Automated action readiness is unsupported",
+          "summary": "The packet implies automated household action without a caller-owned gate.",
+          "severity": "medium",
+          "recommendation": "Keep household action outside the shared fixture.",
+          "evidence": [
+            "Evidence note C"
+          ]
+        },
+        "after": {
+          "key": "automated action boundary",
+          "title": "Automated action readiness is unsupported",
+          "summary": "The packet now says any household action remains caller-owned and unsupported in the shared fixture.",
+          "severity": "low",
+          "recommendation": "Retain the explicit caller-owned boundary.",
+          "evidence": [
+            "Evidence note C",
+            "Boundary note: analysis only"
+          ]
+        },
+        "changedFields": [
+          "summary",
+          "severity",
+          "recommendation",
+          "evidence"
+        ],
+        "severityChange": {
+          "before": "medium",
+          "after": "low",
+          "direction": "improved"
+        }
+      },
+      {
+        "key": "occupancy inference boundary",
+        "title": "Occupancy inference exceeds temporal evidence",
+        "before": {
+          "key": "occupancy inference boundary",
+          "title": "Occupancy inference exceeds temporal evidence",
+          "summary": "The packet treats one synthetic shape change as proof that a person entered the space.",
+          "severity": "high",
+          "recommendation": "Reduce the claim to a generic temporal anomaly until caller-owned evidence says more.",
+          "evidence": [
+            "Frame A",
+            "Frame B"
+          ]
+        },
+        "after": {
+          "key": "occupancy inference boundary",
+          "title": "Occupancy inference exceeds temporal evidence",
+          "summary": "The packet now limits the claim to a generic temporal anomaly, but one sentence still hints at occupancy without support.",
+          "severity": "medium",
+          "recommendation": "Keep the finding framed as anomaly follow-up only.",
+          "evidence": [
+            "Frame A",
+            "Frame B",
+            "Evidence note C"
+          ]
+        },
+        "changedFields": [
+          "summary",
+          "severity",
+          "recommendation",
+          "evidence"
+        ],
+        "severityChange": {
+          "before": "high",
+          "after": "medium",
+          "direction": "improved"
+        }
+      }
+    ],
+    "unchanged": []
+  }
+}

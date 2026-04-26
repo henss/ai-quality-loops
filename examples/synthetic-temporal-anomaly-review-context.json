@@ -1,0 +1,14 @@
+{
+  "reviewSurface": "Synthetic temporal anomaly packet",
+  "reviewFocus": [
+    "Check whether the packet distinguishes a generic temporal anomaly from higher-confidence interpretations such as occupancy, identity, or intent.",
+    "Check that temporal claims rely only on synthetic frame labels, generic zone references, and caller-sanitized evidence notes instead of private room names, raw captures, or household context.",
+    "Check that any suggested next step remains analysis-only and caller-owned rather than implying household action, alerting, or retention policy.",
+    "Prefer stable generic finding keys when the same temporal evidence or boundary gap could recur across runs."
+  ],
+  "outOfScope": [
+    "Do not infer resident identity, occupancy truth, household routines, addresses, or private implementation details from placeholder wording.",
+    "Do not approve notifications, home-control actions, storage decisions, retention policy, or downstream routing.",
+    "Do not treat the synthetic frame notes as proof outside this public-safe fixture."
+  ]
+}

@@ -56,6 +56,7 @@ The package publishes copy-ready starter manifests under `examples/` so embeddin
 - `examples/synthetic-buyer-claim-caveat-review.manifest.json` for one synthetic buyer-claim caveat review with caller-owned sourcing and routing
 - `examples/synthetic-finance-cadence-review.manifest.json` for one synthetic recovery-safe finance cadence review with caller-owned thresholds, scheduling, and action policy
 - `examples/synthetic-private-domain-bridge-review.manifest.json` for one synthetic bridge-lab review with opaque source handles, redacted evidence, and caller-owned downstream authority
+- `examples/synthetic-temporal-anomaly-review.manifest.json` for one apartment-agnostic temporal anomaly review packet with generic frames, generic zones, and caller-owned household interpretation
 - `examples/synthetic-grocy-public-safety-review.manifest.json` for one synthetic household-inventory public-safety review with caller-owned action boundaries
 - `examples/synthetic-scheduling-fallback-review.manifest.json` for one synthetic scheduling-fallback review with caller-owned source checks and no-write recovery boundaries
 - `examples/synthetic-recurring-review-failure-eval.manifest.json` for one synthetic recurring-failure rehearsal pack that checks missing evidence handles, stale deterministic inputs, command noise, verification-wrapper mismatches, and launch-evidence regressions
@@ -63,6 +64,7 @@ The package publishes copy-ready starter manifests under `examples/` so embeddin
 - `examples/synthetic-policy-redactions.fixture.json` for public-safe caller-provided redaction-rule checks
 - `examples/synthetic-reviewer-contract-result.fixture.json` for a public-safe reviewer-contract fixture with generic evidence labels
 - `examples/synthetic-apartment-review-result.fixture.json` for a sanitized structured-result contract fixture with no private home data
+- `examples/synthetic-temporal-anomaly-diff-*.json` for a public-safe temporal anomaly before/after comparison fixture and expected diff
 - `examples/synthetic-review-sponsor-memo.md` for a public-safe sponsor-facing memo rendered from one structured review result
 - `examples/synthetic-reviewer-disagreement-left.fixture.json` and `examples/synthetic-reviewer-disagreement-right.fixture.json` for a public-safe two-reviewer disagreement pair over one synthetic target
 - `examples/synthetic-reviewer-disagreement-adjudication.md` for a public-safe sponsor-facing tie-break note rendered from two structured review results

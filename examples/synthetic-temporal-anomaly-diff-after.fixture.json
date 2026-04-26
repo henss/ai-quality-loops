@@ -1,0 +1,56 @@
+{
+  "schemaVersion": "1",
+  "workflow": "expert",
+  "expert": "Evidence Reviewer",
+  "model": "synthetic-temporal-anomaly-fixture",
+  "summary": "Synthetic candidate review result for temporal anomaly comparison checks.",
+  "overallSeverity": "medium",
+  "findings": [
+    {
+      "key": "occupancy-inference-boundary",
+      "title": "Occupancy inference exceeds temporal evidence",
+      "summary": "The packet now limits the claim to a generic temporal anomaly, but one sentence still hints at occupancy without support.",
+      "severity": "medium",
+      "recommendation": "Keep the finding framed as anomaly follow-up only.",
+      "evidence": [
+        "Frame A",
+        "Frame B",
+        "Evidence note C"
+      ]
+    },
+    {
+      "key": "automated-action-boundary",
+      "title": "Automated action readiness is unsupported",
+      "summary": "The packet now says any household action remains caller-owned and unsupported in the shared fixture.",
+      "severity": "low",
+      "recommendation": "Retain the explicit caller-owned boundary.",
+      "evidence": [
+        "Evidence note C",
+        "Boundary note: analysis only"
+      ]
+    },
+    {
+      "key": "temporal-evidence-traceability",
+      "title": "Temporal evidence labels stay reusable",
+      "summary": "Frame labels and zone references stay generic enough for repeat comparison coverage.",
+      "severity": "low",
+      "recommendation": "Keep public-safe labels stable across fixture updates.",
+      "evidence": [
+        "Frame A",
+        "Frame B",
+        "Zone alpha"
+      ]
+    }
+  ],
+  "provenance": [
+    {
+      "label": "Comparison scope",
+      "value": "Temporal anomaly comparison fixture"
+    },
+    {
+      "label": "Privacy boundary",
+      "value": "Synthetic frames and generic zones only"
+    }
+  ],
+  "markdown": "# Summary\nSynthetic candidate review result for temporal anomaly comparison checks.\n\n## Findings\n- Medium: Occupancy inference exceeds temporal evidence.\n- Low: Automated action readiness is unsupported.\n- Low: Temporal evidence labels stay reusable.\n\n## Boundary\nThis fixture uses only synthetic frames and generic zone labels."
+}

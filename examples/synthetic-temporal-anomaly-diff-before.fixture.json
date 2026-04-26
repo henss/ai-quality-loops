@@ -1,0 +1,42 @@
+{
+  "schemaVersion": "1",
+  "workflow": "expert",
+  "expert": "Evidence Reviewer",
+  "model": "synthetic-temporal-anomaly-fixture",
+  "summary": "Synthetic baseline review result for temporal anomaly comparison checks.",
+  "overallSeverity": "high",
+  "findings": [
+    {
+      "key": "occupancy-inference-boundary",
+      "title": "Occupancy inference exceeds temporal evidence",
+      "summary": "The packet treats one synthetic shape change as proof that a person entered the space.",
+      "severity": "high",
+      "recommendation": "Reduce the claim to a generic temporal anomaly until caller-owned evidence says more.",
+      "evidence": [
+        "Frame A",
+        "Frame B"
+      ]
+    },
+    {
+      "key": "automated-action-boundary",
+      "title": "Automated action readiness is unsupported",
+      "summary": "The packet implies automated household action without a caller-owned gate.",
+      "severity": "medium",
+      "recommendation": "Keep household action outside the shared fixture.",
+      "evidence": [
+        "Evidence note C"
+      ]
+    }
+  ],
+  "provenance": [
+    {
+      "label": "Comparison scope",
+      "value": "Temporal anomaly comparison fixture"
+    },
+    {
+      "label": "Privacy boundary",
+      "value": "Synthetic frames and generic zones only"
+    }
+  ],
+  "markdown": "# Summary\nSynthetic baseline review result for temporal anomaly comparison checks.\n\n## Findings\n- High: Occupancy inference exceeds temporal evidence.\n- Medium: Automated action readiness is unsupported.\n\n## Boundary\nThis fixture uses only synthetic frames and generic zone labels."
+}

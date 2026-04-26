@@ -110,4 +110,14 @@ describe("public comparison fixtures", () => {
         "Synthetic compact evidence-pack diff fixtures must validate",
     });
   });
+
+  it("keeps the temporal anomaly diff fixture provenance in sync", async () => {
+    await expectComparisonFixtureMatches({
+      beforeFixture: "synthetic-temporal-anomaly-diff-before.fixture.json",
+      afterFixture: "synthetic-temporal-anomaly-diff-after.fixture.json",
+      expectedArtifact: "synthetic-temporal-anomaly-diff.expected.json",
+      validationErrorMessage:
+        "Synthetic temporal anomaly diff fixtures must validate",
+    });
+  });
 });

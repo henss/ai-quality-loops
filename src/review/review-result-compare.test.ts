@@ -429,4 +429,53 @@ describe("review result compare", () => {
 
     expect(formatReviewResultComparisonReport(report)).toBe(expectedReport.trimEnd());
   });
+
+  it("formats the temporal anomaly diff fixture as an improved comparison", async () => {
+    const beforeFixture = JSON.parse(
+      await fs.readFile(
+        path.join(
+          process.cwd(),
+          "examples/synthetic-temporal-anomaly-diff-before.fixture.json",
+        ),
+        "utf-8",
+      ),
+    ) as unknown;
+    const afterFixture = JSON.parse(
+      await fs.readFile(
+        path.join(
+          process.cwd(),
+          "examples/synthetic-temporal-anomaly-diff-after.fixture.json",
+        ),
+        "utf-8",
+      ),
+    ) as unknown;
+    const expectedReport = await fs.readFile(
+      path.join(
+        process.cwd(),
+        "examples/synthetic-temporal-anomaly-diff.expected.md",
+      ),
+      "utf-8",
+    );
+
+    const beforeValidation = validateStructuredReviewResult(beforeFixture);
+    const afterValidation = validateStructuredReviewResult(afterFixture);
+    expect(beforeValidation.ok).toBe(true);
+    expect(afterValidation.ok).toBe(true);
+    if (!beforeValidation.ok || !afterValidation.ok) {
+      throw new Error("Synthetic temporal anomaly diff fixtures must validate");
+    }
+
+    const report = {
+      inputs: {
+        before: { pathLabel: "Local file path (.json file)" },
+        after: { pathLabel: "Local file path (.json file)" },
+      },
+      comparison: compareStructuredReviewResults({
+        before: beforeValidation.value,
+        after: afterValidation.value,
+      }),
+    } satisfies Awaited<ReturnType<typeof runReviewResultComparison>>;
+
+    expect(formatReviewResultComparisonReport(report)).toBe(expectedReport.trimEnd());
+  });
 });

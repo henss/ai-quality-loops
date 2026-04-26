@@ -35,6 +35,7 @@ The example files cover the repeatable workflow surfaces. The package also suppo
 | Review a synthetic finance-signal routing packet | `batch-review ./examples/synthetic-finance-signal-routing-review.manifest.json` | Use this as a text-review seam for finance-sensitive source-backed requests that must preserve source handles and coarse signals only; keep raw records, thresholds, sponsor interpretation, approval, and routing caller-owned. |
 | Review a synthetic blocker clarification packet | `batch-review ./examples/synthetic-blocker-clarification-review.manifest.json` | Use this as a text-review seam for caller-sanitized blocker disputes that need clarification questions and caveat discipline without deciding which side is correct or leaking product internals. |
 | Review a synthetic private-domain bridge packet | `batch-review ./examples/synthetic-private-domain-bridge-review.manifest.json` | Use this as a text-review seam for one caller-owned bridge packet that exposes only opaque source handles, redacted evidence, and reusable findings; keep source resolution, priority, routing, and private semantics caller-owned. |
+| Review a synthetic temporal anomaly packet | `batch-review ./examples/synthetic-temporal-anomaly-review.manifest.json` | Use this as a text-review seam for apartment-agnostic temporal anomaly claims over synthetic frames and generic zones only; keep occupancy inference, household action, and retention caller-owned. |
 | Review synthetic buyer-claim caveats | `batch-review ./examples/synthetic-buyer-claim-caveat-review.manifest.json` | Use this as a text-review seam for buyer-interest claims; keep real sources, outreach, spend, account creation, proof thresholds, and routing caller-owned. |
 | Review a synthetic recovery-safe finance cadence packet | `batch-review ./examples/synthetic-finance-cadence-review.manifest.json` | Use this as a text-review seam for analysis-only cadence reasoning; keep real records, thresholds, scheduling, approval, and action routing caller-owned. |
 | Review synthetic household-inventory safety caveats | `batch-review ./examples/synthetic-grocy-public-safety-review.manifest.json` | Use this as a text-review seam for Grocy-style stock, consume-by, recipe, chore, and reorder artifacts; keep real exports, health interpretation, purchasing, disposal, alerting, and routing caller-owned. |
@@ -48,6 +49,7 @@ The example files cover the repeatable workflow surfaces. The package also suppo
 | Pilot a sanitized PR review candidate handoff | `renderLinearCandidateHandoffYaml(...)` and `validateLinearCandidateHandoffYaml(...)` with `./examples/synthetic-pr-review-result.fixture.json` | Use when checking a no-write candidate packet before a caller-owned workflow handles pull-request selection, merge policy, and tracker writes. |
 | Gate a sponsor packet before backlog-candidate routing | `validateReviewResultSponsorPacketHandoff(...)` with `./examples/synthetic-pr-review-result.fixture.json` | Use when a wrapper needs an explicit decision, actionable candidate recommendations, and evidence labels before handing sponsor-facing review output to downstream triage. |
 | Validate a sanitized structured-result fixture | `validateStructuredReviewResult(...)` with `./examples/synthetic-apartment-review-result.fixture.json` | Use when checking contract consumers against a fixture that contains no private home data. |
+| Compare a synthetic temporal anomaly diff | `compareStructuredReviewResults(...)` with `./examples/synthetic-temporal-anomaly-diff-before.fixture.json` and `./examples/synthetic-temporal-anomaly-diff-after.fixture.json` | Use when checking comparison consumers against a public-safe temporal anomaly improvement fixture with locked JSON and Markdown outputs. |
 | Compare a synthetic structured-result golden diff | `compareStructuredReviewResults(...)` with `./examples/synthetic-structured-result-golden-diff-before.fixture.json` and `./examples/synthetic-structured-result-golden-diff-after.fixture.json` | Use when checking comparison consumers against a public-safe improved diff fixture with locked JSON and Markdown outputs. |
 | Compare a synthetic structured-result regression diff | `compareStructuredReviewResults(...)` with `./examples/synthetic-structured-result-golden-regression-before.fixture.json` and `./examples/synthetic-structured-result-golden-regression-after.fixture.json` | Use when checking comparison consumers against a public-safe failing/regressed diff fixture with locked JSON and Markdown outputs. |
 | Compare a compact review-output evidence diff | `compareStructuredReviewResults(...)` with `./examples/synthetic-review-output-evidence-diff-before.fixture.json` and `./examples/synthetic-review-output-evidence-diff-after.fixture.json` | Use when checking consumers against an evidence-only delta with locked compact JSON and text outputs. |
@@ -351,6 +353,21 @@ Typical edits:
 - switch `expert` or `promptLibraryPath` only if the embedding repo owns a more specific bridge-review persona
 - keep real source resolution, private labels, priority, routing, approval, and adapter orchestration outside `ai-quality-loops`
 
+### `synthetic-temporal-anomaly-review.manifest.json`
+
+Use when you want a public-safe text review over a synthetic temporal anomaly packet before a caller-owned workflow decides whether a before/after anomaly lane deserves more evidence or a deeper local-Ollama pass.
+
+```bash
+batch-review ./examples/synthetic-temporal-anomaly-review.manifest.json
+```
+
+Typical edits:
+
+- replace the synthetic target only inside an embedding repo with a caller-sanitized packet that uses generic frame labels, generic zone labels, and bounded follow-up language
+- keep or adapt the context file so review stays focused on anomaly wording, evidence proportionality, occupancy-boundary discipline, and caller-owned action boundaries
+- switch `expert` or `promptLibraryPath` only if the embedding repo owns a more specific anomaly reviewer persona
+- keep raw images, room identities, resident inference, alerting, retention, and household action outside `ai-quality-loops`
+
 ### `synthetic-grocy-public-safety-review.manifest.json`
 
 Use when you want a generic text review over synthetic household stock, consume-by, recipe, chore, and shopping-list artifacts before a caller-owned workflow uses similar records for public-safety-sensitive summaries.
@@ -436,6 +453,16 @@ Typical edits:
 - do not replace the synthetic zone labels with real room names, resident details, coordinates, or capture paths
 - keep any real screenshots, retention policy, and action routing in the embedding repo
 - use it as a consumer fixture for `validateStructuredReviewResult(...)`, not as a runnable `batch-review` target
+
+### `synthetic-temporal-anomaly-diff-*`
+
+Use when you want a deterministic before/after fixture for consumers of `compareStructuredReviewResults(...)` or `review-compare` over an apartment-agnostic temporal anomaly lane.
+
+Typical edits:
+
+- keep the before and after inputs synthetic, or replace them only with caller-sanitized structured review results that refer to generic frames and generic zones
+- compare the helper output to the `comparison` block in `synthetic-temporal-anomaly-diff.expected.json` or to `synthetic-temporal-anomaly-diff.expected.md` when a wrapper needs a stable anomaly-focused golden output shape with checked fixture provenance
+- keep raw imagery, room identity, occupancy inference, alerting, retention, thresholds, approval, routing, and remediation policy in the embedding repo
 
 ### `synthetic-reviewer-contract-result.fixture.json`
 

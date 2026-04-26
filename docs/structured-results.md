@@ -28,6 +28,8 @@ Structured results are the public contract for reusable AIQL review output. They
 - `examples/synthetic-review-output-evidence-diff.expected.json` stores the expected comparison plus the before/after fixture provenance, and `examples/synthetic-review-output-evidence-diff.expected.md` locks the compact text output for that evidence-only delta.
 - `examples/synthetic-compact-evidence-pack-diff-before.fixture.json` and `examples/synthetic-compact-evidence-pack-diff-after.fixture.json` isolate a compact evidence-pack comparison delta.
 - `examples/synthetic-compact-evidence-pack-diff.expected.json` stores the expected comparison plus the before/after fixture provenance, and `examples/synthetic-compact-evidence-pack-diff.expected.md` locks the compact text output for that evidence-pack delta.
+- `examples/synthetic-temporal-anomaly-diff-before.fixture.json` and `examples/synthetic-temporal-anomaly-diff-after.fixture.json` isolate an apartment-agnostic temporal anomaly comparison delta using synthetic frames and generic zones only.
+- `examples/synthetic-temporal-anomaly-diff.expected.json` stores the expected comparison plus the before/after fixture provenance, and `examples/synthetic-temporal-anomaly-diff.expected.md` locks the compact text output for that improved anomaly comparison.
 
 The fixtures use generic evidence labels and synthetic review packets only. Replace them in embedding repos only with caller-sanitized data.
 
@@ -98,6 +100,8 @@ Use the golden-diff fixtures when you need both sides of the comparison story wi
 The compact evidence-diff fixture stays generic only while the comparison consumes already-published structured review results with sanitized evidence labels. If a future workflow needs source-handle resolution, evidence ranking, or approval thresholds, keep that layer in the embedding repo instead of widening AIQL.
 
 The compact evidence-pack fixture follows the same boundary: it covers only before/after comparison over already-published structured review results with synthetic evidence labels. If a future workflow needs packet assembly, source resolution, or private evidence semantics, keep that layer in the embedding repo instead of widening AIQL.
+
+The temporal anomaly fixture follows the same boundary: it covers only public-safe before/after comparison over already-published structured review results with synthetic frames, generic zones, and no private household facts. If a future workflow needs raw imagery, room identity, resident inference, alert policy, or retention semantics, keep that layer in the embedding repo instead of widening AIQL.
 
 The remaining extraction question is whether any future single-target pass/fail gate over these comparison artifacts would stay generic enough for open-source maintenance. AIQL currently stops at deterministic comparison output and leaves budgets, policy thresholds, and accept/reject decisions caller-owned.
 

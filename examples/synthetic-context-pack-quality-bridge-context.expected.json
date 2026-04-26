@@ -1,0 +1,15 @@
+{
+  "reviewSurface": "Synthetic ContextWeave pack-quality bridge packet",
+  "reviewFocus": [
+    "Check whether the context pack gives a downstream reviewer enough bounded evidence to run one review without broad rediscovery.",
+    "Flag missing or ambiguous source handles, unsupported completeness claims, weak retrieval usefulness, and over-broad readiness language.",
+    "Treat source handles as opaque caller-owned retrieval hints, not copied truth, portable resolution schemas, or proof that freshness and approval checks already happened.",
+    "Check that evidence quality remains explicit even though the bridge omits copied source contents and keeps source interpretation caller-owned.",
+    "Keep source resolution, freshness checks, public-source selection, approval, routing, and retention caller-owned."
+  ],
+  "outOfScope": [
+    "Resolving the underlying sources, reconstructing private source contents, or inferring hidden tracker state from opaque handles.",
+    "Approving publication, deployment, remediation ownership, priority, scheduling, routing, or other real-world action.",
+    "Treating handle presence, omitted public-source surfaces, or caller-written summaries as proof that source freshness, retrieval coverage, or approval already passed."
+  ]
+}

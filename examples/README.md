@@ -32,6 +32,7 @@ The example files cover the repeatable workflow surfaces. The package also suppo
 | Review a synthetic venture-to-buyer bridge packet | `batch-review ./examples/synthetic-venture-buyer-claim-review.manifest.json` | Use this as a document-first bridge seam for translating caveated venture-brief findings into one buyer-claim packet; keep sentence promotion rules, proof thresholds, outreach, and routing caller-owned. |
 | Copy a minimal reviewer-contract starter kit | `./examples/reviewer-contract-starter-kit/` | Use this when an external contributor needs the smallest copy-ready manifest, context, and packet shape for a local-Ollama-first reviewer-contract setup. |
 | Review a synthetic context pack quality packet | `batch-review ./examples/synthetic-context-pack-quality-review.manifest.json` | Use this as a public-safe seam for checking context-pack scope, evidence labels, caveats, and caller-owned boundaries. |
+| Build a source-handle-only context-pack bridge packet | `createContextPackQualityReviewerBridge(...)` with `./examples/synthetic-context-pack-quality-bridge-input.fixture.json` | Use when an embedding workflow wants a deterministic AIQL-facing packet surface from opaque source handles, bounded claims, and caller-owned boundary notes. |
 | Review a synthetic source-handle evidence pack | `batch-review ./examples/synthetic-source-handle-evidence-review.manifest.json` | Use this as a text-review seam for review-output packets that cite source handles without copying private truth; keep retrieval, storage, source interpretation, approval, and routing caller-owned. |
 | Review a synthetic finance-signal routing packet | `batch-review ./examples/synthetic-finance-signal-routing-review.manifest.json` | Use this as a text-review seam for finance-sensitive source-backed requests that must preserve source handles and coarse signals only; keep raw records, thresholds, sponsor interpretation, approval, and routing caller-owned. |
 | Review a synthetic blocker clarification packet | `batch-review ./examples/synthetic-blocker-clarification-review.manifest.json` | Use this as a text-review seam for caller-sanitized blocker disputes that need clarification questions and caveat discipline without deciding which side is correct or leaking product internals. |
@@ -241,6 +242,17 @@ Typical edits:
 - treat the omitted research-source audit and public-source list as fixture scope, not as proof that freshness, retrieval coverage, public-source selection, or approval already passed
 - switch `expert` or `promptLibraryPath` to a caller-owned reviewer when project policy needs one
 - keep real source retrieval, source contents, private facts, source freshness, approval, retention, prioritization, routing, and domain interpretation outside `ai-quality-loops`
+
+### `synthetic-context-pack-quality-bridge-input.fixture.json`
+
+Use when you want a deterministic source-handle-only packet shape before sending one caller-owned context pack through AIQL review.
+
+Typical edits:
+
+- replace the synthetic handle labels and claims with caller-sanitized pack metadata while keeping source contents out of the shared surface
+- generate the review packet with `createContextPackQualityReviewerBridge(...)` and feed the resulting Markdown plus JSON context into a caller-owned `batch-review` manifest
+- keep review focused on pack completeness, retrieval usefulness, evidence quality, unsupported readiness claims, and caller-owned boundaries
+- keep source resolution, freshness checks, public-source selection, approval, routing, retention, and any real-world action outside `ai-quality-loops`
 
 ### `synthetic-source-handle-evidence-review.manifest.json`
 

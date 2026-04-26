@@ -1,0 +1,79 @@
+{
+  "reviewSurface": "Synthetic ContextWeave pack-quality bridge packet",
+  "reviewGoal": "Check whether one caller-owned context pack can be reviewed through AIQL using only opaque source handles and bounded claims.",
+  "evidenceHandles": [
+    {
+      "label": "Evidence A",
+      "sourceHandle": "source:context-pack/redacted-registry-a",
+      "intendedUse": "Supports the objective and the claim that the pack stays scoped to one bounded review.",
+      "caveat": "Opaque handle only; the bridge does not prove source freshness, retrieval coverage, or approval."
+    },
+    {
+      "label": "Evidence B",
+      "sourceHandle": "source:context-pack/redacted-registry-b",
+      "intendedUse": "Supports the claim that the pack keeps copied source truth out of the shared review surface.",
+      "caveat": "The handle cannot prove that every caller redaction choice was sufficient."
+    },
+    {
+      "label": "Evidence C",
+      "sourceHandle": "source:context-pack/redacted-registry-c",
+      "intendedUse": "Supports the claim that the handle registry is still useful for downstream retrieval.",
+      "caveat": "Retrieval usefulness depends on a caller-owned resolver outside ai-quality-loops."
+    },
+    {
+      "label": "Evidence D",
+      "sourceHandle": "source:context-pack/redacted-registry-d",
+      "intendedUse": "Supports the weak readiness claim that the pack could drive automated downstream action.",
+      "caveat": "Handle presence alone does not prove approval, routing authority, or remediation readiness."
+    }
+  ],
+  "claims": [
+    {
+      "claim": "The pack is scoped to one bounded AIQL review.",
+      "evidenceLabels": [
+        "Evidence A"
+      ],
+      "caveat": "The handle confirms only the caller-written scope statement, not downstream quality."
+    },
+    {
+      "claim": "The pack avoids copying canonical source truth into the shared review surface.",
+      "evidenceLabels": [
+        "Evidence B"
+      ],
+      "caveat": "Callers still own their own redaction and source-handling checks."
+    },
+    {
+      "claim": "The handle registry is useful enough for downstream retrieval without broad rediscovery.",
+      "evidenceLabels": [
+        "Evidence A",
+        "Evidence C"
+      ],
+      "caveat": "Usefulness still depends on caller-owned handle resolution and freshness checks."
+    },
+    {
+      "claim": "The pack is ready for automated downstream action.",
+      "evidenceLabels": [
+        "Evidence D"
+      ],
+      "caveat": "This claim is intentionally weak because the bridge omits approval, priority, and routing policy."
+    }
+  ],
+  "constraints": [
+    "Keep source resolution, freshness checks, public-source selection, approval, routing, and retention caller-owned.",
+    "Do not treat handle presence as proof of downstream readiness or action authority."
+  ],
+  "knownGaps": [
+    "The bridge omits copied source excerpts, approval state, and action priority by design.",
+    "A caller-owned workflow must still verify whether each handle resolves to current source truth before any downstream action."
+  ],
+  "continuation": "Prepare a caller-owned follow-up only when the review finds missing handles, ambiguous evidence coverage, or unsupported readiness claims.",
+  "callerOwnedBoundaries": [
+    "AIQL can review pack quality only; it does not become the source of truth, memory layer, tracker mirror, or routing authority.",
+    "Any follow-up prioritization, tracker mutation, or execution decision remains caller-owned outside ai-quality-loops."
+  ],
+  "reviewerPosture": [
+    "Report missing evidence handles, ambiguous handle-to-claim coverage, copied-truth risk, and unsupported readiness claims as findings.",
+    "Treat the omitted research-source audit and public-source list as boundary reminders, not hidden proof that external checks already passed.",
+    "Keep recommendations limited to pack-quality fixes, caller-owned confirmation, and boundary clarification."
+  ]
+}

@@ -41,6 +41,14 @@ export {
   type CreateBatchReviewRunLedgerOptions,
 } from "./review/batch-review-run-ledger.js";
 export {
+  createContextPackQualityReviewerBridge,
+  type ContextPackQualityBridgeClaim,
+  type ContextPackQualityBridgeEvidenceHandle,
+  type ContextPackQualityReviewerBridge,
+  type ContextPackQualityReviewerBridgeContext,
+  type ContextPackQualityReviewerBridgeInput,
+} from "./review/context-pack-quality-reviewer-bridge.js";
+export {
   formatSourceHandleReviewBundleDigest,
   type FormatSourceHandleReviewBundleDigestOptions,
 } from "./review/source-handle-review-bundle-digest.js";

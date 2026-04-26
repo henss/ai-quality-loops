@@ -1,0 +1,60 @@
+{
+  "schema": "synthetic_reviewer_calibration_gold_v1",
+  "purpose": "Withheld gold judgments for scoring reviewer outputs after the reviewer has already handled the prompt-only cases.",
+  "goldJudgments": [
+    {
+      "caseId": "missing-evidence-handle",
+      "failureMode": "missed traceability gap",
+      "expectedVerdict": "accept_with_follow_up",
+      "expectedFindingKeys": ["missing-evidence-handle"],
+      "expectedSignalGroups": [["evidence handle", "source handle"], ["missing", "absent"]],
+      "expectedNextStepActions": ["collect_more_evidence"],
+      "minimumSeverity": "medium"
+    },
+    {
+      "caseId": "stale-input-snapshot",
+      "failureMode": "missed stale deterministic input",
+      "expectedVerdict": "accept_with_follow_up",
+      "expectedFindingKeys": ["stale-input-snapshot"],
+      "expectedSignalGroups": [["stale", "outdated"], ["snapshot", "baseline"]],
+      "expectedNextStepActions": ["collect_more_evidence", "track_follow_up"],
+      "minimumSeverity": "medium"
+    },
+    {
+      "caseId": "noisy-verification-log",
+      "failureMode": "missed verification signal obscured by command noise",
+      "expectedVerdict": "changes_requested",
+      "expectedFindingKeys": ["verification-log-noise"],
+      "expectedSignalGroups": [["command noise", "repeated command"], ["verification signal"]],
+      "expectedNextStepActions": ["revise_artifact"],
+      "minimumSeverity": "medium"
+    },
+    {
+      "caseId": "wrapper-command-mismatch",
+      "failureMode": "missed verification wrapper mismatch",
+      "expectedVerdict": "blocked",
+      "expectedFindingKeys": ["wrapper-command-mismatch"],
+      "expectedSignalGroups": [["wrapper", "verification wrapper"], ["mismatch", "different command"]],
+      "expectedNextStepActions": ["rerun_review", "request_caller_review"],
+      "minimumSeverity": "high"
+    },
+    {
+      "caseId": "summary-omits-regression",
+      "failureMode": "missed omitted regression signal",
+      "expectedVerdict": "changes_requested",
+      "expectedFindingKeys": ["summary-omits-regression"],
+      "expectedSignalGroups": [["regressed", "regression"], ["omits", "missing"]],
+      "expectedNextStepActions": ["revise_artifact", "collect_more_evidence"],
+      "minimumSeverity": "medium"
+    },
+    {
+      "caseId": "gate-evidence-overclaim",
+      "failureMode": "missed readiness overclaim without gate evidence",
+      "expectedVerdict": "blocked",
+      "expectedFindingKeys": ["gate-evidence-overclaim"],
+      "expectedSignalGroups": [["gate evidence", "gate result"], ["overclaim", "readiness"]],
+      "expectedNextStepActions": ["request_caller_review", "collect_more_evidence"],
+      "minimumSeverity": "high"
+    }
+  ]
+}

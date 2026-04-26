@@ -25,6 +25,19 @@ export * from "./review/cross-review-consensus-comparator.js";
 export * from "./review/vision-section-discovery.js";
 export * from "./review/capture-review-retry-evidence.js";
 export * from "./review/recurring-review-failure-eval.js";
+export {
+  REVIEWER_CALIBRATION_BENCHMARK_CASES,
+  REVIEWER_CALIBRATION_WITHHELD_GOLD_JUDGMENTS,
+  evaluateReviewerCalibrationBenchmark,
+  formatReviewerCalibrationBenchmarkReport,
+  type ReviewerCalibrationBenchmarkCase,
+  type ReviewerCalibrationBenchmarkReport,
+  type ReviewerCalibrationCaseScore,
+  type ReviewerCalibrationGoldJudgment,
+  type ReviewerCalibrationObservedResult,
+  type ReviewerCalibrationObservedRun,
+  type ReviewerCalibrationRunScore,
+} from "./review/reviewer-calibration-benchmark.js";
 export * from "./review/batch-review.js";
 export * from "./review/batch-review-summary-compare.js";
 export * from "./review/launch-outcome-evidence-summary.js";

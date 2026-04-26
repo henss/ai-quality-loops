@@ -1,0 +1,60 @@
+{
+  "schema": "synthetic_reviewer_calibration_cases_v1",
+  "purpose": "Public-safe reviewer calibration prompts. Gold judgments are intentionally stored separately from these reviewer inputs.",
+  "cases": [
+    {
+      "caseId": "missing-evidence-handle",
+      "title": "Missing evidence handle",
+      "packetSummary": "A review packet references an evidence label but does not include the source handle needed to verify it.",
+      "reviewerPrompt": [
+        "Judge whether the packet is traceable.",
+        "Flag any evidence boundary that prevents a caller from verifying the claim."
+      ]
+    },
+    {
+      "caseId": "stale-input-snapshot",
+      "title": "Stale input snapshot",
+      "packetSummary": "A packet relies on a deterministic input snapshot that is older than the latest generated status.",
+      "reviewerPrompt": [
+        "Judge whether the packet uses current deterministic evidence.",
+        "Call out stale baseline risk without inferring private workflow details."
+      ]
+    },
+    {
+      "caseId": "noisy-verification-log",
+      "title": "Noisy verification log",
+      "packetSummary": "A packet repeats failed command output until the actual verification result is hard to audit.",
+      "reviewerPrompt": [
+        "Judge whether the verification evidence is concise enough to support the conclusion.",
+        "Separate command noise from the real verification signal."
+      ]
+    },
+    {
+      "caseId": "wrapper-command-mismatch",
+      "title": "Wrapper command mismatch",
+      "packetSummary": "A verification wrapper claims one command was run, while the cited output shows a different command.",
+      "reviewerPrompt": [
+        "Judge whether the wrapper and cited evidence support the same verification path.",
+        "Escalate mismatches that make the result unauditable."
+      ]
+    },
+    {
+      "caseId": "summary-omits-regression",
+      "title": "Summary omits regression",
+      "packetSummary": "An outcome summary says the review surface is stable while omitting a regressed comparison signal.",
+      "reviewerPrompt": [
+        "Judge whether the summary accounts for added, removed, or regressed review signals.",
+        "Avoid accepting stability claims that omit material comparison evidence."
+      ]
+    },
+    {
+      "caseId": "gate-evidence-overclaim",
+      "title": "Gate evidence overclaim",
+      "packetSummary": "A packet claims readiness even though the gate result needed to defend that claim is absent.",
+      "reviewerPrompt": [
+        "Judge whether readiness claims are backed by explicit gate evidence.",
+        "Request caller review or more evidence when gate evidence is missing."
+      ]
+    }
+  ]
+}

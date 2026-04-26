@@ -32,14 +32,18 @@
       }
     ],
     "required_before_merge": [
-      "revise_artifact"
+      "revise_artifact",
+      "collect_more_evidence"
     ],
     "follow_up": [
-      "verify_comparison_signals_included"
+      "track_follow_up"
     ],
     "next_step_actions": [
-      "revise_artifact"
-    ]
+      "revise_artifact",
+      "collect_more_evidence",
+      "track_follow_up"
+    ],
+    "evidence_requests": []
   },
   "provenance": [
     {
@@ -47,18 +51,18 @@
       "value": "Local file path (.md file)"
     }
   ],
-  "markdown": "{\n  \"review_decision\": {\n    \"schema\": \"peer_review_decision_v1\",\n    \"verdict\": \"changes_requested\",\n    \"confidence\": \"high\",\n    \"blocking\": false,\n    \"max_severity\": \"high\",\n    \"summary\": \"Launch evidence note omits material comparison signals including added entries, severity regressions, and removed coverage.\",\n    \"blocking_findings\": [],\n    \"non_blocking_findings\": [\n      {\n        \"severity\": \"high\",\n        \"title\": \"Launch evidence regression omission\",\n        \"summary\": \"Evidence note claims stability while omitting added review entry, severity regression, and removed coverage row.\",\n        \"key\": \"launch-evidence-regression-omission\"\n      }\n    ],\n    \"required_before_merge\": [\n      \"revise_artifact\"\n    ],\n    \"follow_up\": [\n      \"verify_comparison_signals_included\"\n    ],\n    \"next_step_actions\": [\n      \"revise_artifact\"\n    ]\n  }\n}",
+  "markdown": "{\n  \"review_decision\": {\n    \"schema\": \"peer_review_decision_v1\",\n    \"verdict\": \"changes_requested\",\n    \"confidence\": \"high\",\n    \"blocking\": false,\n    \"max_severity\": \"high\",\n    \"summary\": \"Launch evidence note omits material comparison signals including added entries, severity regressions, and removed coverage.\",\n    \"blocking_findings\": [],\n    \"non_blocking_findings\": [\n      {\n        \"severity\": \"high\",\n        \"title\": \"Launch evidence regression omission\",\n        \"summary\": \"Evidence note claims stability while omitting added review entry, severity regression, and removed coverage row.\",\n        \"key\": \"launch-evidence-regression-omission\"\n      }\n    ],\n    \"required_before_merge\": [\n      \"revise_artifact\",\n      \"collect_more_evidence\"\n    ],\n    \"follow_up\": [\n      \"track_follow_up\"\n    ],\n    \"next_step_actions\": [\n      \"revise_artifact\",\n      \"collect_more_evidence\",\n      \"track_follow_up\"\n    ]\n  }\n}",
   "diagnostics": {
-    "elapsedMs": 4806,
-    "outputChars": 869,
+    "elapsedMs": 4858,
+    "outputChars": 937,
     "decisionParsed": true,
     "ollamaTelemetry": {
-      "totalDurationMs": 6273,
-      "loadDurationMs": 171,
-      "promptEvalCount": 1097,
-      "promptEvalDurationMs": 1129,
-      "evalCount": 230,
-      "evalDurationMs": 4422
+      "totalDurationMs": 5913,
+      "loadDurationMs": 163,
+      "promptEvalCount": 1207,
+      "promptEvalDurationMs": 725,
+      "evalCount": 251,
+      "evalDurationMs": 4513
     }
   }
 }

@@ -230,6 +230,7 @@ export async function runExpertReview(
           "When reporting a finding, include a stable, generic `key` when you can name the same issue across repeated runs. Keep it lowercase, concise, and free of private names, paths, URLs, account identifiers, or tracker IDs.",
           "Use `accept` only when no before-merge work is required. Use `accept_with_follow_up` when the work passes but follow-up hardening or cleanup remains. Use `changes_requested` or `blocked` for findings that should fail the gate.",
           "Populate `next_step_actions` with only safe generic action labels: `revise_artifact`, `collect_more_evidence`, `rerun_review`, `request_caller_review`, or `track_follow_up`.",
+          "Use `request_caller_review` when the finding depends on caller-owned approval, threshold, routing, source interpretation, or action authority.",
         ].join("\n")
       : [
           "Provide your review in Markdown.",
@@ -241,6 +242,7 @@ export async function runExpertReview(
           "When reporting a finding, include a stable, generic `key` when you can name the same issue across repeated runs. Keep it lowercase, concise, and free of private names, paths, URLs, account identifiers, or tracker IDs.",
           "Use `accept` only when no before-merge work is required. Use `accept_with_follow_up` when the work passes but follow-up hardening or cleanup remains. Use `changes_requested` or `blocked` for findings that should fail the gate.",
           "Populate `next_step_actions` with only safe generic action labels: `revise_artifact`, `collect_more_evidence`, `rerun_review`, `request_caller_review`, or `track_follow_up`.",
+          "Use `request_caller_review` when the finding depends on caller-owned approval, threshold, routing, source interpretation, or action authority.",
         ].join("\n");
 
   const finalPrompt = buildReviewEnvelope({

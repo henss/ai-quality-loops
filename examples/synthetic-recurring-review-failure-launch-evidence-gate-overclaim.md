@@ -15,5 +15,5 @@ The packet includes comparison evidence only. It does not include a caller-owned
 ## Expected Reviewer Posture
 
 - Flag the missing gate evidence and the defended-readiness overclaim instead of accepting the sentence at face value.
-- Prefer a caller review or evidence-collection boundary rather than inferring that thresholds already passed.
+- Prefer both caller review and evidence collection rather than inferring that thresholds already passed.
 - Prefer a stable generic finding key such as `launch-evidence-gate-overclaim` if the issue is surfaced.

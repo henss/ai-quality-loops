@@ -13,4 +13,5 @@ This synthetic packet is analysis-only. It checks whether a reviewer notices whe
 
 - Flag stale, drift-prone deterministic inputs before treating the packet as current.
 - Ask for refreshed evidence instead of filling in certainty from the older snapshot.
+- Track follow-up so the caller verifies the refreshed input stays current after repair.
 - Prefer a stable generic finding key such as `stale-deterministic-input` if the issue is surfaced.

@@ -128,7 +128,8 @@
       "expectedSignalGroups": [
         [
           "launch outcome evidence",
-          "evidence summary"
+          "evidence summary",
+          "launch evidence note"
         ],
         [
           "added",
@@ -138,7 +139,10 @@
         ],
         [
           "omitted",
+          "omits",
+          "omitting",
           "missing",
+          "claims stability",
           "stability claim"
         ]
       ],
@@ -167,7 +171,9 @@
         [
           "not provided",
           "missing",
-          "absent"
+          "absent",
+          "lacks",
+          "without"
         ],
         [
           "launch readiness",

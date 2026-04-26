@@ -13,13 +13,13 @@
       "outputPath": "Local file path (.md file)",
       "structuredOutputPath": "Local file path (.json file)",
       "structuredResult": {
-        "overallSeverity": "high",
+        "overallSeverity": "medium",
         "totalFindings": 2,
         "findingCounts": {
           "critical": 0,
-          "high": 1,
+          "high": 0,
           "medium": 1,
-          "low": 0,
+          "low": 1,
           "unknown": 0
         },
         "decision": {
@@ -30,16 +30,16 @@
         }
       },
       "status": "success",
-      "durationMs": 7840,
-      "outputChars": 1143,
+      "durationMs": 7083,
+      "outputChars": 1202,
       "decisionParsed": true,
       "ollamaTelemetry": {
-        "totalDurationMs": 7828,
-        "loadDurationMs": 188,
-        "promptEvalCount": 1038,
-        "promptEvalDurationMs": 1427,
-        "evalCount": 292,
-        "evalDurationMs": 5679
+        "totalDurationMs": 7072,
+        "loadDurationMs": 169,
+        "promptEvalCount": 1148,
+        "promptEvalDurationMs": 807,
+        "evalCount": 307,
+        "evalDurationMs": 5526
       }
     },
     {
@@ -68,16 +68,16 @@
         }
       },
       "status": "success",
-      "durationMs": 6335,
-      "outputChars": 926,
+      "durationMs": 5822,
+      "outputChars": 946,
       "decisionParsed": true,
       "ollamaTelemetry": {
-        "totalDurationMs": 6326,
-        "loadDurationMs": 174,
-        "promptEvalCount": 1029,
-        "promptEvalDurationMs": 1123,
-        "evalCount": 235,
-        "evalDurationMs": 4437
+        "totalDurationMs": 5814,
+        "loadDurationMs": 167,
+        "promptEvalCount": 1156,
+        "promptEvalDurationMs": 665,
+        "evalCount": 247,
+        "evalDurationMs": 4460
       }
     },
     {
@@ -106,16 +106,16 @@
         }
       },
       "status": "success",
-      "durationMs": 6952,
-      "outputChars": 916,
+      "durationMs": 5467,
+      "outputChars": 880,
       "decisionParsed": true,
       "ollamaTelemetry": {
-        "totalDurationMs": 6943,
-        "loadDurationMs": 219,
-        "promptEvalCount": 990,
-        "promptEvalDurationMs": 1254,
-        "evalCount": 235,
-        "evalDurationMs": 4788
+        "totalDurationMs": 5459,
+        "loadDurationMs": 168,
+        "promptEvalCount": 1100,
+        "promptEvalDurationMs": 618,
+        "evalCount": 234,
+        "evalDurationMs": 4200
       }
     },
     {
@@ -144,16 +144,16 @@
         }
       },
       "status": "success",
-      "durationMs": 7173,
-      "outputChars": 936,
+      "durationMs": 6126,
+      "outputChars": 967,
       "decisionParsed": true,
       "ollamaTelemetry": {
-        "totalDurationMs": 7165,
-        "loadDurationMs": 186,
-        "promptEvalCount": 1015,
-        "promptEvalDurationMs": 1355,
-        "evalCount": 249,
-        "evalDurationMs": 4842
+        "totalDurationMs": 6115,
+        "loadDurationMs": 168,
+        "promptEvalCount": 1128,
+        "promptEvalDurationMs": 722,
+        "evalCount": 259,
+        "evalDurationMs": 4699
       }
     },
     {
@@ -182,16 +182,16 @@
         }
       },
       "status": "success",
-      "durationMs": 6281,
-      "outputChars": 869,
+      "durationMs": 5921,
+      "outputChars": 937,
       "decisionParsed": true,
       "ollamaTelemetry": {
-        "totalDurationMs": 6273,
-        "loadDurationMs": 171,
-        "promptEvalCount": 1097,
-        "promptEvalDurationMs": 1129,
-        "evalCount": 230,
-        "evalDurationMs": 4422
+        "totalDurationMs": 5913,
+        "loadDurationMs": 163,
+        "promptEvalCount": 1207,
+        "promptEvalDurationMs": 725,
+        "evalCount": 251,
+        "evalDurationMs": 4513
       }
     },
     {
@@ -220,16 +220,16 @@
         }
       },
       "status": "success",
-      "durationMs": 6767,
-      "outputChars": 956,
+      "durationMs": 6021,
+      "outputChars": 959,
       "decisionParsed": true,
       "ollamaTelemetry": {
-        "totalDurationMs": 6760,
-        "loadDurationMs": 190,
-        "promptEvalCount": 1030,
-        "promptEvalDurationMs": 1205,
+        "totalDurationMs": 6013,
+        "loadDurationMs": 173,
+        "promptEvalCount": 1139,
+        "promptEvalDurationMs": 726,
         "evalCount": 254,
-        "evalDurationMs": 4820
+        "evalDurationMs": 4626
       }
     }
   ]

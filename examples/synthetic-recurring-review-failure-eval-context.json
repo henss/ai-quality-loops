@@ -4,7 +4,10 @@
     "Check whether the reviewer catches recurring failure modes before the packet is treated as ready for another live run.",
     "Flag missing evidence handles, stale deterministic inputs, repeated command noise, verification-wrapper mismatches, and launch-evidence regressions with generic reusable findings only.",
     "Keep source retrieval, command execution, tracker routing, approval, and domain interpretation caller-owned.",
-    "Prefer stable generic finding keys when one recurring failure mode stays reusable across repeated review packets."
+    "Prefer stable generic finding keys when one recurring failure mode stays reusable across repeated review packets.",
+    "When a stale input needs both refreshed evidence and later freshness tracking, include `collect_more_evidence` and `track_follow_up`.",
+    "When a verification wrapper and cited command disagree, include `rerun_review` and `request_caller_review`.",
+    "When launch evidence omits comparison signals, include `revise_artifact` and `collect_more_evidence`."
   ],
   "outOfScope": [
     "Do not infer private repositories, tracker state, private policy, user data, or live operator intent from the synthetic packet.",

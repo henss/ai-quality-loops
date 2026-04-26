@@ -16,13 +16,16 @@
       }
     ],
     "required_before_merge": [
-      "revise_artifact"
+      "revise_artifact",
+      "collect_more_evidence"
     ],
     "follow_up": [
-      "verify_comparison_signals_included"
+      "track_follow_up"
     ],
     "next_step_actions": [
-      "revise_artifact"
+      "revise_artifact",
+      "collect_more_evidence",
+      "track_follow_up"
     ]
   }
 }

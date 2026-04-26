@@ -5,26 +5,26 @@
     "confidence": "high",
     "blocking": false,
     "max_severity": "high",
-    "summary": "The artifact overclaims launch readiness without providing the required gate report or threshold evidence.",
+    "summary": "Launch evidence overclaims defended readiness without a gate report or threshold budget, requiring artifact revision and evidence collection.",
     "blocking_findings": [],
     "non_blocking_findings": [
       {
         "severity": "high",
         "title": "Launch evidence gate overclaim",
-        "summary": "The artifact claims the launch is fully defended despite missing the caller-owned gate report and threshold budget required to justify that claim.",
+        "summary": "The artifact claims defended readiness without including a caller-owned gate report, threshold budget, or approval note.",
         "key": "launch-evidence-gate-overclaim"
       }
     ],
     "required_before_merge": [
-      "collect_more_evidence",
-      "revise_artifact"
+      "revise_artifact",
+      "collect_more_evidence"
     ],
     "follow_up": [
-      "request_caller_review"
+      "track_follow_up"
     ],
     "next_step_actions": [
-      "collect_more_evidence",
       "revise_artifact",
+      "collect_more_evidence",
       "request_caller_review"
     ]
   }

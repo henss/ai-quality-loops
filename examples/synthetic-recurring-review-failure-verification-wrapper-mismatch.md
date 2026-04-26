@@ -15,5 +15,5 @@ The cited command does not match the wrapper claim. A caller-owned workflow must
 ## Expected Reviewer Posture
 
 - Flag the wrapper mismatch instead of repeating the claimed verification at face value.
-- Prefer a rerun or caller review boundary rather than inferring that the check already passed.
+- Prefer both a review rerun and a caller review boundary rather than inferring that the check already passed.
 - Prefer a stable generic finding key such as `verification-wrapper-mismatch` if the issue is surfaced.

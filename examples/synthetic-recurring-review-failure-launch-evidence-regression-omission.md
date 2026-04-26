@@ -18,5 +18,5 @@ This synthetic packet is analysis-only. It checks whether a reviewer notices whe
 ## Expected Reviewer Posture
 
 - Flag omitted added, removed, or regressed review signals before treating the launch evidence note as stable.
-- Prefer a repair that revises the evidence note and restores the missing comparison details.
+- Prefer a repair that revises the evidence note and collects the missing comparison details.
 - Prefer a stable generic finding key such as `launch-evidence-regression-omission` if the issue is surfaced.

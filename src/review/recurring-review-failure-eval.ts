@@ -268,9 +268,9 @@ export const RECURRING_REVIEW_FAILURE_EVAL_CASES = Object.freeze([
       "Reviewer should catch when a launch-outcome evidence note omits added, removed, or regressed review signals and still claims stability.",
     requiredFindingKeys: ["launch-evidence-regression-omission"],
     requiredSignalGroups: [
-      ["launch outcome evidence", "evidence summary"],
+      ["launch outcome evidence", "evidence summary", "launch evidence note"],
       ["added", "removed", "regressed", "severity movement"],
-      ["omitted", "missing", "stability claim"],
+      ["omitted", "omits", "omitting", "missing", "claims stability", "stability claim"],
     ],
     requiredNextStepActions: ["revise_artifact", "collect_more_evidence"],
     minimumSeverity: "medium",
@@ -284,7 +284,7 @@ export const RECURRING_REVIEW_FAILURE_EVAL_CASES = Object.freeze([
     requiredFindingKeys: ["launch-evidence-gate-overclaim"],
     requiredSignalGroups: [
       ["gate result", "gate evidence", "threshold"],
-      ["not provided", "missing", "absent"],
+      ["not provided", "missing", "absent", "lacks", "without"],
       ["launch readiness", "defended", "overclaim"],
     ],
     requiredNextStepActions: ["request_caller_review", "collect_more_evidence"],

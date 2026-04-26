@@ -3,21 +3,21 @@
   "workflow": "expert",
   "expert": "Evidence Reviewer",
   "model": "qwen3.5:27b",
-  "summary": "Packet cites evidence labels without usable handles, breaking traceability and requiring artifact revision before live use.",
-  "overallSeverity": "high",
+  "summary": "Packet cites evidence labels without usable handles, breaking traceability and requiring artifact revision before reuse.",
+  "overallSeverity": "medium",
   "findings": [
     {
       "key": "missing-evidence-handle",
       "title": "Missing evidence handle for traceability",
-      "summary": "Evidence label A lacks a usable handle, preventing auditability and violating traceability requirements.",
-      "severity": "high",
+      "summary": "Claimed evidence label A lacks a usable evidence handle, preventing auditability without exposing private details.",
+      "severity": "medium",
       "evidence": []
     },
     {
       "key": "opaque-evidence-handle",
       "title": "Opaque evidence handle requires caller retrieval",
-      "summary": "Evidence label B uses an opaque handle that still requires caller-owned retrieval to verify.",
-      "severity": "medium",
+      "summary": "Evidence label B cites an opaque handle that still requires caller-owned retrieval to verify.",
+      "severity": "low",
       "evidence": []
     }
   ],
@@ -26,35 +26,38 @@
     "verdict": "changes_requested",
     "confidence": "high",
     "blocking": false,
-    "max_severity": "high",
-    "summary": "Packet cites evidence labels without usable handles, breaking traceability and requiring artifact revision before live use.",
+    "max_severity": "medium",
+    "summary": "Packet cites evidence labels without usable handles, breaking traceability and requiring artifact revision before reuse.",
     "blocking_findings": [],
     "non_blocking_findings": [
       {
         "key": "missing-evidence-handle",
         "title": "Missing evidence handle for traceability",
-        "summary": "Evidence label A lacks a usable handle, preventing auditability and violating traceability requirements.",
-        "severity": "high",
+        "summary": "Claimed evidence label A lacks a usable evidence handle, preventing auditability without exposing private details.",
+        "severity": "medium",
         "evidence": []
       },
       {
         "key": "opaque-evidence-handle",
         "title": "Opaque evidence handle requires caller retrieval",
-        "summary": "Evidence label B uses an opaque handle that still requires caller-owned retrieval to verify.",
-        "severity": "medium",
+        "summary": "Evidence label B cites an opaque handle that still requires caller-owned retrieval to verify.",
+        "severity": "low",
         "evidence": []
       }
     ],
     "required_before_merge": [
-      "revise_artifact"
+      "revise_artifact",
+      "collect_more_evidence"
     ],
     "follow_up": [
-      "collect_more_evidence"
+      "track_follow_up"
     ],
     "next_step_actions": [
       "revise_artifact",
-      "collect_more_evidence"
-    ]
+      "collect_more_evidence",
+      "track_follow_up"
+    ],
+    "evidence_requests": []
   },
   "provenance": [
     {
@@ -62,18 +65,18 @@
       "value": "Local file path (.md file)"
     }
   ],
-  "markdown": "{\n  \"review_decision\": {\n    \"schema\": \"peer_review_decision_v1\",\n    \"verdict\": \"changes_requested\",\n    \"confidence\": \"high\",\n    \"blocking\": false,\n    \"max_severity\": \"high\",\n    \"summary\": \"Packet cites evidence labels without usable handles, breaking traceability and requiring artifact revision before live use.\",\n    \"blocking_findings\": [],\n    \"non_blocking_findings\": [\n      {\n        \"severity\": \"high\",\n        \"title\": \"Missing evidence handle for traceability\",\n        \"summary\": \"Evidence label A lacks a usable handle, preventing auditability and violating traceability requirements.\",\n        \"key\": \"missing-evidence-handle\"\n      },\n      {\n        \"severity\": \"medium\",\n        \"title\": \"Opaque evidence handle requires caller retrieval\",\n        \"summary\": \"Evidence label B uses an opaque handle that still requires caller-owned retrieval to verify.\",\n        \"key\": \"opaque-evidence-handle\"\n      }\n    ],\n    \"required_before_merge\": [\n      \"revise_artifact\"\n    ],\n    \"follow_up\": [\n      \"collect_more_evidence\"\n    ],\n    \"next_step_actions\": [\n      \"revise_artifact\",\n      \"collect_more_evidence\"\n    ]\n  }\n}",
+  "markdown": "{\n  \"review_decision\": {\n    \"schema\": \"peer_review_decision_v1\",\n    \"verdict\": \"changes_requested\",\n    \"confidence\": \"high\",\n    \"blocking\": false,\n    \"max_severity\": \"medium\",\n    \"summary\": \"Packet cites evidence labels without usable handles, breaking traceability and requiring artifact revision before reuse.\",\n    \"blocking_findings\": [],\n    \"non_blocking_findings\": [\n      {\n        \"severity\": \"medium\",\n        \"title\": \"Missing evidence handle for traceability\",\n        \"summary\": \"Claimed evidence label A lacks a usable evidence handle, preventing auditability without exposing private details.\",\n        \"key\": \"missing-evidence-handle\"\n      },\n      {\n        \"severity\": \"low\",\n        \"title\": \"Opaque evidence handle requires caller retrieval\",\n        \"summary\": \"Evidence label B cites an opaque handle that still requires caller-owned retrieval to verify.\",\n        \"key\": \"opaque-evidence-handle\"\n      }\n    ],\n    \"required_before_merge\": [\n      \"revise_artifact\",\n      \"collect_more_evidence\"\n    ],\n    \"follow_up\": [\n      \"track_follow_up\"\n    ],\n    \"next_step_actions\": [\n      \"revise_artifact\",\n      \"collect_more_evidence\",\n      \"track_follow_up\"\n    ]\n  }\n}",
   "diagnostics": {
-    "elapsedMs": 6033,
-    "outputChars": 1143,
+    "elapsedMs": 5926,
+    "outputChars": 1202,
     "decisionParsed": true,
     "ollamaTelemetry": {
-      "totalDurationMs": 7828,
-      "loadDurationMs": 188,
-      "promptEvalCount": 1038,
-      "promptEvalDurationMs": 1427,
-      "evalCount": 292,
-      "evalDurationMs": 5679
+      "totalDurationMs": 7072,
+      "loadDurationMs": 169,
+      "promptEvalCount": 1148,
+      "promptEvalDurationMs": 807,
+      "evalCount": 307,
+      "evalDurationMs": 5526
     }
   }
 }

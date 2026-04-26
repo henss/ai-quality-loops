@@ -5,26 +5,28 @@
     "confidence": "high",
     "blocking": false,
     "max_severity": "high",
-    "summary": "Verification wrapper mismatch detected between claimed command and cited evidence requires caller restatement before artifact is defended.",
+    "summary": "Verification wrapper mismatch detected between claimed command and cited command requires artifact revision and caller review.",
     "blocking_findings": [],
     "non_blocking_findings": [
       {
         "severity": "high",
         "title": "Verification wrapper mismatch",
-        "summary": "Wrapper claim cites pnpm verify:session but evidence shows pnpm test -- review-gate.test.ts, creating an audit gap.",
+        "summary": "Wrapper claim cites pnpm verify:session but cited command is pnpm test -- review-gate.test.ts, creating a verification gap.",
         "key": "verification-wrapper-mismatch"
       }
     ],
     "required_before_merge": [
-      "rerun_verification_step",
-      "restate_wrapper_claim"
+      "revise_artifact",
+      "collect_more_evidence"
     ],
     "follow_up": [
-      "confirm_command_alignment"
+      "track_follow_up"
     ],
     "next_step_actions": [
-      "request_caller_review",
-      "revise_artifact"
+      "revise_artifact",
+      "collect_more_evidence",
+      "rerun_review",
+      "request_caller_review"
     ]
   }
 }

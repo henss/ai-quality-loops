@@ -3,13 +3,13 @@
   "workflow": "expert",
   "expert": "Evidence Reviewer",
   "model": "qwen3.5:27b",
-  "summary": "Verification wrapper mismatch detected between claimed command and cited evidence requires caller restatement before artifact is defended.",
+  "summary": "Verification wrapper mismatch detected between claimed command and cited command requires artifact revision and caller review.",
   "overallSeverity": "high",
   "findings": [
     {
       "key": "verification-wrapper-mismatch",
       "title": "Verification wrapper mismatch",
-      "summary": "Wrapper claim cites pnpm verify:session but evidence shows pnpm test -- review-gate.test.ts, creating an audit gap.",
+      "summary": "Wrapper claim cites pnpm verify:session but cited command is pnpm test -- review-gate.test.ts, creating a verification gap.",
       "severity": "high",
       "evidence": []
     }
@@ -20,28 +20,31 @@
     "confidence": "high",
     "blocking": false,
     "max_severity": "high",
-    "summary": "Verification wrapper mismatch detected between claimed command and cited evidence requires caller restatement before artifact is defended.",
+    "summary": "Verification wrapper mismatch detected between claimed command and cited command requires artifact revision and caller review.",
     "blocking_findings": [],
     "non_blocking_findings": [
       {
         "key": "verification-wrapper-mismatch",
         "title": "Verification wrapper mismatch",
-        "summary": "Wrapper claim cites pnpm verify:session but evidence shows pnpm test -- review-gate.test.ts, creating an audit gap.",
+        "summary": "Wrapper claim cites pnpm verify:session but cited command is pnpm test -- review-gate.test.ts, creating a verification gap.",
         "severity": "high",
         "evidence": []
       }
     ],
     "required_before_merge": [
-      "rerun_verification_step",
-      "restate_wrapper_claim"
+      "revise_artifact",
+      "collect_more_evidence"
     ],
     "follow_up": [
-      "confirm_command_alignment"
+      "track_follow_up"
     ],
     "next_step_actions": [
-      "request_caller_review",
-      "revise_artifact"
-    ]
+      "revise_artifact",
+      "collect_more_evidence",
+      "rerun_review",
+      "request_caller_review"
+    ],
+    "evidence_requests": []
   },
   "provenance": [
     {
@@ -49,18 +52,18 @@
       "value": "Local file path (.md file)"
     }
   ],
-  "markdown": "{\n  \"review_decision\": {\n    \"schema\": \"peer_review_decision_v1\",\n    \"verdict\": \"changes_requested\",\n    \"confidence\": \"high\",\n    \"blocking\": false,\n    \"max_severity\": \"high\",\n    \"summary\": \"Verification wrapper mismatch detected between claimed command and cited evidence requires caller restatement before artifact is defended.\",\n    \"blocking_findings\": [],\n    \"non_blocking_findings\": [\n      {\n        \"severity\": \"high\",\n        \"title\": \"Verification wrapper mismatch\",\n        \"summary\": \"Wrapper claim cites pnpm verify:session but evidence shows pnpm test -- review-gate.test.ts, creating an audit gap.\",\n        \"key\": \"verification-wrapper-mismatch\"\n      }\n    ],\n    \"required_before_merge\": [\n      \"rerun_verification_step\",\n      \"restate_wrapper_claim\"\n    ],\n    \"follow_up\": [\n      \"confirm_command_alignment\"\n    ],\n    \"next_step_actions\": [\n      \"request_caller_review\",\n      \"revise_artifact\"\n    ]\n  }\n}",
+  "markdown": "{\n  \"review_decision\": {\n    \"schema\": \"peer_review_decision_v1\",\n    \"verdict\": \"changes_requested\",\n    \"confidence\": \"high\",\n    \"blocking\": false,\n    \"max_severity\": \"high\",\n    \"summary\": \"Verification wrapper mismatch detected between claimed command and cited command requires artifact revision and caller review.\",\n    \"blocking_findings\": [],\n    \"non_blocking_findings\": [\n      {\n        \"severity\": \"high\",\n        \"title\": \"Verification wrapper mismatch\",\n        \"summary\": \"Wrapper claim cites pnpm verify:session but cited command is pnpm test -- review-gate.test.ts, creating a verification gap.\",\n        \"key\": \"verification-wrapper-mismatch\"\n      }\n    ],\n    \"required_before_merge\": [\n      \"revise_artifact\",\n      \"collect_more_evidence\"\n    ],\n    \"follow_up\": [\n      \"track_follow_up\"\n    ],\n    \"next_step_actions\": [\n      \"revise_artifact\",\n      \"collect_more_evidence\",\n      \"rerun_review\",\n      \"request_caller_review\"\n    ]\n  }\n}",
   "diagnostics": {
-    "elapsedMs": 5410,
-    "outputChars": 936,
+    "elapsedMs": 5056,
+    "outputChars": 967,
     "decisionParsed": true,
     "ollamaTelemetry": {
-      "totalDurationMs": 7165,
-      "loadDurationMs": 186,
-      "promptEvalCount": 1015,
-      "promptEvalDurationMs": 1355,
-      "evalCount": 249,
-      "evalDurationMs": 4842
+      "totalDurationMs": 6115,
+      "loadDurationMs": 168,
+      "promptEvalCount": 1128,
+      "promptEvalDurationMs": 722,
+      "evalCount": 259,
+      "evalDurationMs": 4699
     }
   }
 }

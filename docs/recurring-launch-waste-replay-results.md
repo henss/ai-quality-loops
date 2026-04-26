@@ -18,22 +18,22 @@ The solution scout recommended a bounded search rather than adoption. No depende
 
 The local replay executed six sanitized cases successfully, then the deterministic harness judged whether the structured outputs included the expected finding keys, signal groups, next-step actions, and minimum severity.
 
-Summary: 3 passed, 3 failed, 6 total.
+Summary: 6 passed, 0 failed, 6 total.
 
 | Case | Result | Replay readout |
 | --- | --- | --- |
 | Missing evidence handles | Caught | Found the expected missing-handle finding, traceability language, evidence-collection next step, and sufficient severity. |
-| Stale deterministic inputs | Missed part | Found the stale-input finding and signal language, but missed the expected `track_follow_up` next-step action. |
+| Stale deterministic inputs | Caught | Found the stale-input finding, drift language, evidence-collection and follow-up-tracking actions, and sufficient severity. |
 | Repeated command noise | Caught | Found the command-noise finding, signal-preservation language, artifact-revision next step, and sufficient severity. |
-| Verification wrapper mismatch | Missed part | Found the wrapper-mismatch finding and caller-review boundary, but missed the expected `rerun_review` next-step action. |
-| Launch evidence regression omission | Missed part | Found the expected finding key and high severity, but missed the launch-evidence/stability-omission signal language and `collect_more_evidence` next-step action. |
+| Verification wrapper mismatch | Caught | Found the wrapper-mismatch finding, command-mismatch language, rerun and caller-review actions, and sufficient severity. |
+| Launch evidence regression omission | Caught | Found the regression-omission finding, omitted comparison-signal language, artifact-revision and evidence-collection actions, and sufficient severity. |
 | Launch evidence gate overclaim | Caught | Found the gate-overclaim finding, missing-threshold evidence language, caller-review and evidence-collection actions, and sufficient severity. |
 
 No overflag-only case was observed in this run. The reviewer sometimes assigned higher severity than the minimum bar, but those cases also contained the expected reusable failure finding and are treated as caught rather than overflagged.
 
 ## Why It Matters
 
-The pack is useful as a local-first draft-review rehearsal for recurring launch-waste failures. It reliably surfaced several high-value issue classes without remote-provider dependence, but it did not satisfy the deterministic acceptance bar on three cases. That makes the current surface appropriate for reducing reviewer setup work, not for replacing human acceptance on recurring failure coverage.
+The pack is useful as a local-first draft-review rehearsal for recurring launch-waste failures. After narrow prompt/rubric calibration, the local reviewer outputs satisfy the deterministic acceptance bar on all six sanitized cases without remote-provider dependence. This defends the replay pack as reusable AIQL support infrastructure, while leaving real packet selection, authority, and acceptance policy caller-owned.
 
 ## Generic-vs-Domain-Specific Extraction Question
 

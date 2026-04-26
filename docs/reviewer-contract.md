@@ -9,6 +9,7 @@ The structured review-result contract includes:
 - `schemaVersion`, `workflow`, `expert`, `model`, and `summary` for the review run.
 - `overallSeverity` and `findings` for deterministic checks.
 - `decision.next_step_actions` as a small safe next-step taxonomy for caller-owned routing, evidence collection, reruns, or follow-up tracking without embedding domain policy.
+- `decision.verdict: "abstain_request_evidence"` plus `decision.evidence_requests[]` for cases where the reviewer cannot judge a claim until the caller supplies specific missing evidence.
 - `findings[].key` as an optional stable generic label for matching repeated findings across runs.
 - `provenance` as sanitized descriptors, not raw URLs, local paths, account names, tracker IDs, or private source names.
 - `provenance[].freshness` as an optional per-source signal for whether a note reflects a live refresh, a mirrored current-state digest, or historical context.
@@ -21,7 +22,7 @@ Validate payloads with `validateStructuredReviewResult(...)` or the published `s
 
 - `examples/reviewer-contract-starter-kit/` is the minimal copy-ready starter kit for external contributors or embedding repos that want one reviewer-contract seam without adopting extra package-owned tooling.
 - Its templates show the smallest manifest, context file, and review packet shape that still preserves caller-owned authority boundaries.
-- `examples/reviewer-contract-sample-packs/` publishes two copy-ready conformance packs for reviewer implementations: one evidence-support gap and one caller-owned action-boundary gap.
+- `examples/reviewer-contract-sample-packs/` publishes three copy-ready conformance packs for reviewer implementations: one evidence-support gap, one evidence-request abstention, and one caller-owned action-boundary gap.
 - Each sample pack includes a runnable manifest plus an expected structured-result fixture so contributors can tell whether mismatches are about contract shape, missing stable finding keys, missing decision actions, or lost boundary language.
 - `examples/synthetic-reviewer-contract-review.manifest.json` is a runnable synthetic text-review manifest.
 - `examples/synthetic-reviewer-contract-review-context.json` defines the review focus for that manifest.
@@ -60,7 +61,8 @@ Use `examples/reviewer-contract-sample-packs/` when a reviewer implementation ne
 - Synthetic target labels such as `Synthetic review packet`.
 - Generic evidence labels such as `Evidence label A`.
 - Stable generic finding keys such as `evidence-support-gap`.
-- Safe next-step action labels such as `collect_more_evidence` or `track_follow_up`.
+- Safe next-step action labels such as `request_evidence`, `collect_more_evidence`, or `track_follow_up`.
+- Stable generic evidence request keys such as `missing-evidence-label-c-summary`.
 - Boundary statements saying policy, routing, and domain interpretation stay caller-owned.
 - Sanitized provenance descriptors that are already safe for a public artifact.
 - Optional provenance freshness and authority notes that use the published generic enums rather than domain-specific workflow labels.

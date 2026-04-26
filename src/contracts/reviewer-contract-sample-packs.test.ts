@@ -42,6 +42,7 @@ interface ReviewerContractSamplePack {
   expectedFindingKeys: string[];
   expectedNextStepActions: string[];
   expectedVerdict: string;
+  expectedEvidenceRequestKeys?: string[];
 }
 
 async function readExampleFile(relativePath: string): Promise<string> {
@@ -142,6 +143,20 @@ function expectReviewerContractSamplePackConformance(
     }),
   });
 
+  if (samplePack.expectedEvidenceRequestKeys) {
+    expect(validation.ok).toBe(true);
+    if (!validation.ok) {
+      throw validation.error;
+    }
+    expect(validation.value.decision?.evidence_requests).toEqual(
+      expect.arrayContaining(
+        samplePack.expectedEvidenceRequestKeys.map((key) =>
+          expect.objectContaining({ key }),
+        ),
+      ),
+    );
+  }
+
   expectPublicSafeSerializedContent(
     [
       fixture.manifestText,
@@ -172,6 +187,23 @@ describe("reviewer-contract sample packs", () => {
       ],
       expectedNextStepActions: ["collect_more_evidence", "track_follow_up"],
       expectedVerdict: "accept_with_follow_up",
+    },
+    {
+      packId: "evidence-request",
+      manifestPath:
+        "examples/reviewer-contract-sample-packs/evidence-request.manifest.json",
+      contextPath:
+        "./examples/reviewer-contract-sample-packs/evidence-request.context.json",
+      targetPath:
+        "./examples/reviewer-contract-sample-packs/evidence-request.packet.md",
+      expectedPath:
+        "examples/reviewer-contract-sample-packs/evidence-request.expected.json",
+      expectedReviewName: "Reviewer contract evidence-request abstention",
+      expectedReviewSurface: "Reviewer contract evidence-request sample pack",
+      expectedFindingKeys: [],
+      expectedNextStepActions: ["request_evidence"],
+      expectedVerdict: "abstain_request_evidence",
+      expectedEvidenceRequestKeys: ["missing-evidence-label-c-summary"],
     },
     {
       packId: "action-boundary",

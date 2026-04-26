@@ -261,6 +261,102 @@ describe("public JSON contracts", () => {
     });
   });
 
+  it("validates abstain-and-request-evidence decisions with requested evidence", () => {
+    const validation = validateStructuredReviewResult({
+      schemaVersion: "1",
+      workflow: "expert",
+      expert: "Evidence Reviewer",
+      model: "qwen3.5:27b",
+      summary: "The reviewer needs more evidence before judging the claim.",
+      overallSeverity: "unknown",
+      findings: [],
+      decision: {
+        schema: "peer_review_decision_v1",
+        verdict: "abstain_request_evidence",
+        confidence: "low",
+        blocking: true,
+        max_severity: "unknown",
+        summary: "The reviewer cannot judge the claim from the supplied labels.",
+        blocking_findings: [],
+        non_blocking_findings: [],
+        required_before_merge: [],
+        follow_up: [],
+        next_step_actions: ["request_evidence"],
+        evidence_requests: [
+          {
+            key: "missing-evidence-label-c",
+            summary: "Provide sanitized support for Evidence label C.",
+            needed_evidence: [
+              "Sanitized source summary",
+              "Caller-owned freshness note",
+            ],
+            reason: "The current label is too opaque to accept or reject.",
+          },
+        ],
+      },
+      provenance: [
+        {
+          label: "Content source",
+          value: "Synthetic review packet",
+        },
+      ],
+      markdown:
+        "# Summary\nThe reviewer needs more evidence before judging the claim.",
+    });
+
+    expect(validation).toEqual({
+      ok: true,
+      value: expect.objectContaining({
+        decision: expect.objectContaining({
+          verdict: "abstain_request_evidence",
+          evidence_requests: [
+            expect.objectContaining({
+              key: "missing-evidence-label-c",
+            }),
+          ],
+        }),
+      }),
+    });
+  });
+
+  it("rejects abstain-and-request-evidence decisions without evidence requests", () => {
+    const validation = validateStructuredReviewResult({
+      schemaVersion: "1",
+      workflow: "expert",
+      expert: "Evidence Reviewer",
+      model: "qwen3.5:27b",
+      summary: "The reviewer needs more evidence before judging the claim.",
+      overallSeverity: "unknown",
+      findings: [],
+      decision: {
+        schema: "peer_review_decision_v1",
+        verdict: "abstain_request_evidence",
+        confidence: "low",
+        blocking: true,
+        max_severity: "unknown",
+        summary: "The reviewer cannot judge the claim from the supplied labels.",
+        blocking_findings: [],
+        non_blocking_findings: [],
+        required_before_merge: [],
+        follow_up: [],
+        next_step_actions: ["request_evidence"],
+      },
+      provenance: [
+        {
+          label: "Content source",
+          value: "Synthetic review packet",
+        },
+      ],
+      markdown:
+        "# Summary\nThe reviewer needs more evidence before judging the claim.",
+    });
+
+    expect(validation.ok).toBe(false);
+    if (!validation.ok) {
+      expect(validation.error.message).toContain("decision.evidence_requests");
+    }
+  });
+
   it("parses optional freshness and authority provenance signals", () => {
     const validation = validateStructuredReviewResult({
       schemaVersion: "1",

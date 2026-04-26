@@ -74,6 +74,8 @@ export {
   type StructuredReviewDecision,
   type StructuredReviewDecisionConfidence,
   type StructuredReviewDecisionVerdict,
+  type StructuredReviewEvidenceRequest,
+  type StructuredReviewNextStepAction,
 } from "./contracts/structured-review-decision-contract.js";
 export {
   parseBatchReviewRunLedger,

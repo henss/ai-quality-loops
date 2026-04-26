@@ -141,6 +141,7 @@ function readDecisionVerdict(
   switch (value) {
     case "accept":
     case "accept_with_follow_up":
+    case "abstain_request_evidence":
     case "changes_requested":
     case "blocked":
     case "process_failed":

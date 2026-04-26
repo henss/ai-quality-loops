@@ -7,6 +7,7 @@ import {
   type ReviewSurfaceRedactions,
 } from "../shared/review-surface.js";
 import type { StructuredReviewDecision } from "./review-result.js";
+import type { StructuredReviewEvidenceRequest } from "../contracts/structured-review-decision-contract.js";
 
 const STRUCTURED_RESULT_TEXT_MAX_LENGTH = Number.MAX_SAFE_INTEGER;
 
@@ -61,6 +62,27 @@ export function sanitizeStructuredReviewFindings(
   return findings.map((finding) => sanitizeStructuredReviewFinding(finding, options));
 }
 
+function sanitizeStructuredReviewEvidenceRequest(
+  request: StructuredReviewEvidenceRequest,
+  options: StructuredReviewResultSanitizationOptions,
+): StructuredReviewEvidenceRequest {
+  return {
+    key:
+      request.key === undefined
+        ? undefined
+        : sanitizeStructuredReviewText(request.key, options),
+    summary: sanitizeStructuredReviewText(request.summary, options),
+    needed_evidence: sanitizeStructuredReviewStringArray(
+      request.needed_evidence,
+      options,
+    ),
+    reason:
+      request.reason === undefined
+        ? undefined
+        : sanitizeStructuredReviewText(request.reason, options),
+  };
+}
+
 export function sanitizeStructuredReviewDecision(
   decision: StructuredReviewDecision,
   options: StructuredReviewResultSanitizationOptions,
@@ -86,6 +108,9 @@ export function sanitizeStructuredReviewDecision(
     ),
     follow_up: sanitizeStructuredReviewStringArray(decision.follow_up, options),
     next_step_actions: [...decision.next_step_actions],
+    evidence_requests: (decision.evidence_requests ?? []).map((request) =>
+      sanitizeStructuredReviewEvidenceRequest(request, options),
+    ),
   };
 }
 

@@ -170,4 +170,64 @@ describe("structured review decision extraction", () => {
 
     expect(result.decision?.next_step_actions).toEqual(["rerun_review"]);
   });
+
+  it("parses abstain-and-request-evidence decisions with concrete evidence requests", () => {
+    const result = buildStructuredReviewResult({
+      workflow: "expert",
+      expert: "Evidence Reviewer",
+      model: "qwen3.5:27b",
+      provenance: [{ label: "Content source", value: "Synthetic packet" }],
+      markdown: [
+        "```json",
+        JSON.stringify(
+          {
+            review_decision: {
+              schema: "peer_review_decision_v1",
+              verdict: "abstain_request_evidence",
+              confidence: "low",
+              blocking: true,
+              max_severity: "unknown",
+              summary:
+                "The reviewer cannot judge the claim until the caller supplies missing evidence.",
+              blocking_findings: [],
+              non_blocking_findings: [],
+              required_before_merge: [],
+              follow_up: [],
+              evidence_requests: [
+                {
+                  key: "missing-source-summary",
+                  summary: "Provide a sanitized source summary for Evidence label C.",
+                  needed_evidence: [
+                    "Sanitized source summary",
+                    "Caller-owned freshness note",
+                  ],
+                  reason:
+                    "The supplied label is too opaque to support acceptance or rejection.",
+                },
+              ],
+            },
+          },
+          null,
+          2,
+        ),
+        "```",
+      ].join("\n"),
+    });
+
+    expect(result.overallSeverity).toBe("unknown");
+    expect(result.decision).toMatchObject({
+      verdict: "abstain_request_evidence",
+      blocking: true,
+      next_step_actions: ["request_evidence"],
+      evidence_requests: [
+        expect.objectContaining({
+          key: "missing-source-summary",
+          needed_evidence: [
+            "Sanitized source summary",
+            "Caller-owned freshness note",
+          ],
+        }),
+      ],
+    });
+  });
 });

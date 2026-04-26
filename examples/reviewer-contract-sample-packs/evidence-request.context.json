@@ -1,0 +1,14 @@
+{
+  "reviewSurface": "Reviewer contract evidence-request sample pack",
+  "reviewFocus": [
+    "Abstain when the supplied synthetic labels are too opaque to accept or reject the main claim.",
+    "Emit stable generic finding keys only when a support gap can be judged from the packet.",
+    "Use stable generic evidence-request keys when the caller must supply specific missing evidence.",
+    "Keep evidence retrieval, freshness checks, approval, routing, and domain interpretation caller-owned."
+  ],
+  "outOfScope": [
+    "Do not infer private sources, hidden approvals, real source freshness, or domain-specific policy from synthetic labels.",
+    "Do not approve publication, deployment, remediation, routing, retention, purchasing, or other external action.",
+    "Do not treat generic evidence labels as proof outside this caller-sanitized packet."
+  ]
+}

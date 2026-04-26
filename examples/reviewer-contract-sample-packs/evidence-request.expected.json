@@ -1,0 +1,50 @@
+{
+  "schemaVersion": "1",
+  "workflow": "expert",
+  "expert": "Evidence Reviewer",
+  "model": "sample-pack-reference",
+  "summary": "The packet does not include enough evidence to judge the main claim, so the reviewer abstains and requests specific caller-supplied evidence.",
+  "overallSeverity": "unknown",
+  "findings": [],
+  "decision": {
+    "schema": "peer_review_decision_v1",
+    "verdict": "abstain_request_evidence",
+    "confidence": "low",
+    "blocking": true,
+    "max_severity": "unknown",
+    "summary": "Evidence label C is too opaque to support acceptance or rejection of the main claim.",
+    "blocking_findings": [],
+    "non_blocking_findings": [],
+    "required_before_merge": [],
+    "follow_up": [],
+    "next_step_actions": [
+      "request_evidence"
+    ],
+    "evidence_requests": [
+      {
+        "key": "missing-evidence-label-c-summary",
+        "summary": "Provide sanitized support for Evidence label C before judging the main claim.",
+        "needed_evidence": [
+          "Sanitized source summary for Evidence label C",
+          "Caller-owned freshness note"
+        ],
+        "reason": "The current packet names the decisive evidence label but omits the support needed to accept or reject the claim."
+      }
+    ]
+  },
+  "provenance": [
+    {
+      "label": "Content source",
+      "value": "Synthetic sample-pack packet"
+    },
+    {
+      "label": "Evidence basis",
+      "value": "Generic evidence labels only"
+    },
+    {
+      "label": "Privacy boundary",
+      "value": "No private source names, local paths, tracker keys, or account details"
+    }
+  ],
+  "markdown": "Output classification: review\n\nThe reviewer should abstain because Evidence label C is intentionally omitted. Request a sanitized source summary and caller-owned freshness note before judging the main claim."
+}

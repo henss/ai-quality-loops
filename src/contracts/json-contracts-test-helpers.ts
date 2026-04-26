@@ -82,7 +82,13 @@ type PublicSafeRunnableManifestFixture = {
 };
 
 type DecisionSummaryInput = {
-  verdict: "accept" | "accept_with_follow_up" | "changes_requested" | "blocked" | "process_failed";
+  verdict:
+    | "accept"
+    | "accept_with_follow_up"
+    | "abstain_request_evidence"
+    | "changes_requested"
+    | "blocked"
+    | "process_failed";
   confidence: "low" | "medium" | "high";
   acceptedFindings: number;
   rejectedFindings: number;

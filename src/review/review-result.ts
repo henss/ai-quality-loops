@@ -9,6 +9,7 @@ import {
   type StructuredReviewDecision,
   type StructuredReviewDecisionConfidence,
   type StructuredReviewDecisionVerdict,
+  type StructuredReviewEvidenceRequest,
 } from "../contracts/structured-review-decision-contract.js";
 import {
   type ReviewSurfaceRedactions,
@@ -54,6 +55,7 @@ export type {
   StructuredReviewDecision,
   StructuredReviewDecisionConfidence,
   StructuredReviewDecisionVerdict,
+  StructuredReviewEvidenceRequest,
 };
 
 interface MarkdownSection {

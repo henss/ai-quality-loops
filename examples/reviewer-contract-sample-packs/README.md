@@ -14,6 +14,7 @@ Each pack contains:
 | Pack | Purpose | Expected reviewer signal |
 | --- | --- | --- |
 | `evidence-support-gap` | Checks whether a reviewer catches a broad claim that has only generic evidence labels. | `evidence-support-gap`, `caveat-preservation-gap` |
+| `evidence-request` | Checks whether a reviewer abstains when the decisive evidence label is intentionally omitted. | `abstain_request_evidence`, `missing-evidence-label-c-summary` |
 | `action-boundary` | Checks whether a reviewer rejects external-action readiness when approval, routing, and ownership evidence are missing. | `external-action-readiness-unsupported`, `caller-owned-authority-gap` |
 
 ## Running A Pack
@@ -30,6 +31,6 @@ node ./examples/reviewer-contract-starter-kit/validate-review-result.template.mj
 
 ## Conformance Boundary
 
-The expected fixtures are not model goldens. They are public-safe contract examples that define the minimum shape and reviewer signals a compatible implementation should preserve. A different reviewer may use different prose, severity, or additional findings, but mismatches should be actionable when stable finding keys, evidence labels, decision fields, provenance, or caller-owned boundary language disappear.
+The expected fixtures are not model goldens. They are public-safe contract examples that define the minimum shape and reviewer signals a compatible implementation should preserve. A different reviewer may use different prose, severity, additional findings, or evidence-request wording, but mismatches should be actionable when stable finding keys, evidence request keys, evidence labels, decision fields, provenance, or caller-owned boundary language disappear.
 
 Keep real source names, raw records, issue keys, local paths, approval policy, severity budgets, routing, publication, and remediation decisions in the embedding repo.

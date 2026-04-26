@@ -68,6 +68,7 @@ The package publishes copy-ready starter manifests under `examples/` so embeddin
 - `examples/synthetic-reviewer-contract-result.fixture.json` for a public-safe reviewer-contract fixture with generic evidence labels
 - `examples/synthetic-apartment-review-result.fixture.json` for a sanitized structured-result contract fixture with no private home data
 - `examples/synthetic-temporal-anomaly-diff-*.json` for a public-safe temporal anomaly before/after comparison fixture and expected diff
+- `examples/synthetic-compact-evidence-pack-diff-*.json` for a public-safe compact review-output evidence pack comparison fixture and expected diff
 - `examples/synthetic-review-sponsor-memo.md` for a public-safe sponsor-facing memo rendered from one structured review result
 - `examples/synthetic-reviewer-disagreement-left.fixture.json` and `examples/synthetic-reviewer-disagreement-right.fixture.json` for a public-safe two-reviewer disagreement pair over one synthetic target
 - `examples/synthetic-reviewer-disagreement-adjudication.md` for a public-safe sponsor-facing tie-break note rendered from two structured review results

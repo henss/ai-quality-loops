@@ -61,12 +61,43 @@
   },
   "provenance": [
     {
-      "label": "Content source",
-      "value": "Synthetic review packet"
+      "label": "Live source check",
+      "value": "Synthetic review packet",
+      "freshness": {
+        "signal": "live_refresh",
+        "asOf": "2026-04-26T17:54:10.790Z",
+        "note": "Validated during the same synthetic review run."
+      },
+      "authority": {
+        "signal": "source_of_truth",
+        "note": "Primary packet under review."
+      }
     },
     {
-      "label": "Review surface",
-      "value": "Structured review-result contract"
+      "label": "Current-state mirror",
+      "value": "Caller-maintained mirror digest",
+      "freshness": {
+        "signal": "mirrored_current_state",
+        "asOf": "2026-04-26T17:30:00.000Z",
+        "note": "Mirror timestamp comes from the caller-owned digest."
+      },
+      "authority": {
+        "signal": "derived_summary",
+        "note": "Useful context, but not the source of truth."
+      }
+    },
+    {
+      "label": "Historical boundary note",
+      "value": "Earlier comparison snapshot",
+      "freshness": {
+        "signal": "historical_context",
+        "asOf": "2026-04-20T12:00:00.000Z",
+        "note": "Retained only for change-over-time context."
+      },
+      "authority": {
+        "signal": "advisory_boundary",
+        "note": "Do not treat this note as approval or routing authority."
+      }
     },
     {
       "label": "Evidence basis",

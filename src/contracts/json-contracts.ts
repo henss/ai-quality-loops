@@ -51,9 +51,33 @@ export type StructuredReviewSeverity =
   | "medium"
   | "low"
   | "unknown";
+
+export type StructuredReviewProvenanceFreshnessSignal =
+  | "live_refresh"
+  | "mirrored_current_state"
+  | "historical_context";
+
+export interface StructuredReviewProvenanceFreshness {
+  signal: StructuredReviewProvenanceFreshnessSignal;
+  asOf?: string;
+  note?: string;
+}
+
+export type StructuredReviewProvenanceAuthoritySignal =
+  | "source_of_truth"
+  | "derived_summary"
+  | "advisory_boundary";
+
+export interface StructuredReviewProvenanceAuthority {
+  signal: StructuredReviewProvenanceAuthoritySignal;
+  note?: string;
+}
+
 export interface StructuredReviewProvenanceItem {
   label: string;
   value: string;
+  freshness?: StructuredReviewProvenanceFreshness;
+  authority?: StructuredReviewProvenanceAuthority;
 }
 
 export interface StructuredReviewFinding {
@@ -337,6 +361,89 @@ function parseStructuredReviewProvenanceItem(
   return {
     label: readRequiredString(value.label, `${fieldPath}.label`),
     value: readRequiredString(value.value, `${fieldPath}.value`),
+    freshness: parseStructuredReviewProvenanceFreshness(
+      value.freshness,
+      `${fieldPath}.freshness`,
+    ),
+    authority: parseStructuredReviewProvenanceAuthority(
+      value.authority,
+      `${fieldPath}.authority`,
+    ),
+  };
+}
+
+function readStructuredReviewProvenanceFreshnessSignal(
+  value: unknown,
+  fieldName: string,
+): StructuredReviewProvenanceFreshnessSignal {
+  switch (value) {
+    case "live_refresh":
+    case "mirrored_current_state":
+    case "historical_context":
+      return value;
+    default:
+      throw new Error(
+        `Manifest field "${fieldName}" must be one of live_refresh, mirrored_current_state, or historical_context.`,
+      );
+  }
+}
+
+function parseStructuredReviewProvenanceFreshness(
+  value: unknown,
+  fieldName: string,
+): StructuredReviewProvenanceFreshness | undefined {
+  if (value === undefined) {
+    return undefined;
+  }
+
+  if (!isRecord(value)) {
+    throw new Error(`Manifest field "${fieldName}" must be an object.`);
+  }
+
+  return {
+    signal: readStructuredReviewProvenanceFreshnessSignal(
+      value.signal,
+      `${fieldName}.signal`,
+    ),
+    asOf: readOptionalString(value.asOf, `${fieldName}.asOf`),
+    note: readOptionalString(value.note, `${fieldName}.note`),
+  };
+}
+
+function readStructuredReviewProvenanceAuthoritySignal(
+  value: unknown,
+  fieldName: string,
+): StructuredReviewProvenanceAuthoritySignal {
+  switch (value) {
+    case "source_of_truth":
+    case "derived_summary":
+    case "advisory_boundary":
+      return value;
+    default:
+      throw new Error(
+        `Manifest field "${fieldName}" must be one of source_of_truth, derived_summary, or advisory_boundary.`,
+      );
+  }
+}
+
+function parseStructuredReviewProvenanceAuthority(
+  value: unknown,
+  fieldName: string,
+): StructuredReviewProvenanceAuthority | undefined {
+  if (value === undefined) {
+    return undefined;
+  }
+
+  if (!isRecord(value)) {
+    throw new Error(`Manifest field "${fieldName}" must be an object.`);
+  }
+
+  return {
+    signal: readStructuredReviewProvenanceAuthoritySignal(
+      value.signal,
+      `${fieldName}.signal`,
+    ),
+    note: readOptionalString(value.note, `${fieldName}.note`),
   };
 }
 function validateContract<T>(

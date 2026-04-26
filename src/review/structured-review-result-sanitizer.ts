@@ -96,5 +96,29 @@ export function sanitizeStructuredReviewProvenance(
   return provenance.map((item) => ({
     label: sanitizeStructuredReviewText(item.label, options),
     value: sanitizeStructuredReviewText(item.value, options),
+    freshness:
+      item.freshness === undefined
+        ? undefined
+        : {
+            signal: item.freshness.signal,
+            asOf:
+              item.freshness.asOf === undefined
+                ? undefined
+                : sanitizeStructuredReviewText(item.freshness.asOf, options),
+            note:
+              item.freshness.note === undefined
+                ? undefined
+                : sanitizeStructuredReviewText(item.freshness.note, options),
+          },
+    authority:
+      item.authority === undefined
+        ? undefined
+        : {
+            signal: item.authority.signal,
+            note:
+              item.authority.note === undefined
+                ? undefined
+                : sanitizeStructuredReviewText(item.authority.note, options),
+          },
   }));
 }

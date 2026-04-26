@@ -233,6 +233,15 @@ describe("public JSON contracts", () => {
         {
           label: "Content source",
           value: "Remote URL (example.com)",
+          freshness: {
+            signal: "live_refresh",
+            asOf: "2026-04-26T17:54:10.790Z",
+            note: "Checked during the current review run.",
+          },
+          authority: {
+            signal: "source_of_truth",
+            note: "Primary caller-supplied source handle.",
+          },
         },
       ],
       markdown: "# Summary\nOne high-severity issue remains.",
@@ -246,6 +255,70 @@ describe("public JSON contracts", () => {
         findings: [
           expect.objectContaining({
             key: "cta-contrast",
+          }),
+        ],
+      }),
+    });
+  });
+
+  it("parses optional freshness and authority provenance signals", () => {
+    const validation = validateStructuredReviewResult({
+      schemaVersion: "1",
+      workflow: "expert",
+      expert: "Evidence Reviewer",
+      model: "qwen3.5:27b",
+      summary: "Synthetic provenance metadata stays parseable.",
+      overallSeverity: "low",
+      findings: [],
+      provenance: [
+        {
+          label: "Current-state mirror",
+          value: "Caller-maintained mirror digest",
+          freshness: {
+            signal: "mirrored_current_state",
+            asOf: "2026-04-26T17:54:10.790Z",
+            note: "Mirror timestamp supplied by the caller.",
+          },
+          authority: {
+            signal: "derived_summary",
+            note: "Mirror is useful but not the source of truth.",
+          },
+        },
+        {
+          label: "Historical note",
+          value: "Earlier comparison snapshot",
+          freshness: {
+            signal: "historical_context",
+            note: "Kept only for drift context.",
+          },
+          authority: {
+            signal: "advisory_boundary",
+            note: "Do not treat this note as routing or approval authority.",
+          },
+        },
+      ],
+      markdown: "# Summary\nSynthetic provenance metadata stays parseable.",
+    });
+
+    expect(validation).toEqual({
+      ok: true,
+      value: expect.objectContaining({
+        provenance: [
+          expect.objectContaining({
+            freshness: expect.objectContaining({
+              signal: "mirrored_current_state",
+            }),
+            authority: expect.objectContaining({
+              signal: "derived_summary",
+            }),
+          }),
+          expect.objectContaining({
+            freshness: expect.objectContaining({
+              signal: "historical_context",
+            }),
+            authority: expect.objectContaining({
+              signal: "advisory_boundary",
+            }),
           }),
         ],
       }),

@@ -51,6 +51,101 @@ interface StarterKitFixture {
   validationScriptText: string;
 }
 
+function expectSyntheticReviewerContractFixtureMetadata(
+  fixture: unknown,
+): void {
+  const validation = validateStructuredReviewResult(fixture);
+  expect(validation).toEqual({
+    ok: true,
+    value: expect.objectContaining({
+      workflow: "expert",
+      summary: expect.stringContaining("stable finding keys"),
+      findings: [
+        expect.objectContaining({
+          key: "evidence-support-gap",
+          evidence: ["Evidence label A", "Synthetic claim note"],
+        }),
+        expect.objectContaining({
+          key: "external-action-readiness-unsupported",
+          evidence: ["Evidence label C", "Boundary note: caller-owned action gate"],
+        }),
+      ],
+      provenance: expect.arrayContaining([
+        expect.objectContaining({
+          label: "Live source check",
+          freshness: expect.objectContaining({
+            signal: "live_refresh",
+          }),
+          authority: expect.objectContaining({
+            signal: "source_of_truth",
+          }),
+        }),
+        expect.objectContaining({
+          label: "Current-state mirror",
+          freshness: expect.objectContaining({
+            signal: "mirrored_current_state",
+          }),
+          authority: expect.objectContaining({
+            signal: "derived_summary",
+          }),
+        }),
+        expect.objectContaining({
+          label: "Historical boundary note",
+          freshness: expect.objectContaining({
+            signal: "historical_context",
+          }),
+          authority: expect.objectContaining({
+            signal: "advisory_boundary",
+          }),
+        }),
+        expect.objectContaining({
+          label: "Evidence basis",
+          value: "Generic evidence labels only",
+        }),
+        expect.objectContaining({
+          label: "Privacy boundary",
+        }),
+      ]),
+      decision: expect.objectContaining({
+        verdict: "accept_with_follow_up",
+        next_step_actions: ["collect_more_evidence", "track_follow_up"],
+      }),
+    }),
+  });
+}
+
+function expectSyntheticReviewerContractFixtureScenarios(
+  fixture: {
+    provenance?: Array<{
+      freshness?: { signal?: string };
+      authority?: { signal?: string };
+    }>;
+  },
+): void {
+  expect(fixture.provenance).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        freshness: expect.objectContaining({ signal: "live_refresh" }),
+        authority: expect.objectContaining({ signal: "source_of_truth" }),
+      }),
+      expect.objectContaining({
+        freshness: expect.objectContaining({
+          signal: "mirrored_current_state",
+        }),
+        authority: expect.objectContaining({ signal: "derived_summary" }),
+      }),
+      expect.objectContaining({
+        freshness: expect.objectContaining({
+          signal: "historical_context",
+        }),
+        authority: expect.objectContaining({
+          signal: "advisory_boundary",
+        }),
+      }),
+    ]),
+  );
+}
+
 async function readManifestContextTarget(options: {
   manifestPath: string;
   contextPath: string;
@@ -352,39 +447,22 @@ describe("synthetic reviewer-contract public fixtures", () => {
     );
     const fixture = JSON.parse(fixtureText) as unknown;
 
-    const validation = validateStructuredReviewResult(fixture);
-    expect(validation).toEqual({
-      ok: true,
-      value: expect.objectContaining({
-        workflow: "expert",
-        summary: expect.stringContaining("stable finding keys"),
-        findings: [
-          expect.objectContaining({
-            key: "evidence-support-gap",
-            evidence: ["Evidence label A", "Synthetic claim note"],
-          }),
-          expect.objectContaining({
-            key: "external-action-readiness-unsupported",
-            evidence: ["Evidence label C", "Boundary note: caller-owned action gate"],
-          }),
-        ],
-        provenance: expect.arrayContaining([
-          expect.objectContaining({
-            label: "Evidence basis",
-            value: "Generic evidence labels only",
-          }),
-          expect.objectContaining({
-            label: "Privacy boundary",
-          }),
-        ]),
-        decision: expect.objectContaining({
-          verdict: "accept_with_follow_up",
-          next_step_actions: ["collect_more_evidence", "track_follow_up"],
-        }),
-      }),
-    });
-
+    expectSyntheticReviewerContractFixtureMetadata(fixture);
     expectPublicSafeSerializedContent(fixtureText);
+  });
+
+  it("documents three public-safe provenance scenarios without widening the shared boundary", async () => {
+    const fixtureText = await readExampleFile(
+      "examples/synthetic-reviewer-contract-result.fixture.json",
+    );
+    const fixture = JSON.parse(fixtureText) as {
+      provenance?: Array<{
+        freshness?: { signal?: string };
+        authority?: { signal?: string };
+      }>;
+    };
+
+    expectSyntheticReviewerContractFixtureScenarios(fixture);
   });
 
   it("ships a runnable manifest and context pair that keeps external action caller-gated", async () => {

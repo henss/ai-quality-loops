@@ -11,6 +11,8 @@ The structured review-result contract includes:
 - `decision.next_step_actions` as a small safe next-step taxonomy for caller-owned routing, evidence collection, reruns, or follow-up tracking without embedding domain policy.
 - `findings[].key` as an optional stable generic label for matching repeated findings across runs.
 - `provenance` as sanitized descriptors, not raw URLs, local paths, account names, tracker IDs, or private source names.
+- `provenance[].freshness` as an optional per-source signal for whether a note reflects a live refresh, a mirrored current-state digest, or historical context.
+- `provenance[].authority` as an optional per-source signal for whether a note is the source of truth, a derived summary, or an advisory boundary reminder.
 - `markdown` as sanitized human-readable review output.
 
 Validate payloads with `validateStructuredReviewResult(...)` or the published `schemas/structured-review-result.schema.json` file.
@@ -31,6 +33,7 @@ Validate payloads with `validateStructuredReviewResult(...)` or the published `s
 - Its paired context packet keeps frame labels, zone labels, and follow-up language generic so occupancy, identity, household action, retention, and downstream routing remain caller-owned.
 - `reviews/temporal-anomaly/synthetic-temporal-anomaly-packet-expert-review.md` and `reviews/temporal-anomaly/json/synthetic-temporal-anomaly-packet-expert-review.json` are checked-in synthetic review artifacts showing one promising-but-caveated anomaly lane without promoting household semantics into AIQL.
 - `examples/synthetic-reviewer-contract-result.fixture.json` is a checked structured-result fixture for consumer tests.
+- That fixture now demonstrates three public-safe provenance scenarios: live source-of-truth evidence, mirrored current-state evidence, and historical advisory context.
 
 These examples demonstrate the contract only. They do not decide target selection, severity budgets, approval, remediation ownership, tracker routing, publication, deployment, retention, or real-world action.
 
@@ -54,6 +57,7 @@ If you need repo-specific routing, CI budgets, or tracker writes, add them in th
 - Safe next-step action labels such as `collect_more_evidence` or `track_follow_up`.
 - Boundary statements saying policy, routing, and domain interpretation stay caller-owned.
 - Sanitized provenance descriptors that are already safe for a public artifact.
+- Optional provenance freshness and authority notes that use the published generic enums rather than domain-specific workflow labels.
 
 ## Rejected From Shared Examples
 

@@ -7,6 +7,26 @@ import {
   stripReviewReasoningBlocks,
 } from "./review-result.js";
 
+const LIVE_SOURCE_PROVENANCE = [
+  {
+    label: "Content source",
+    value: "Inline content",
+    freshness: {
+      signal: "live_refresh" as const,
+      asOf: "2026-04-26T17:54:10.790Z",
+    },
+    authority: {
+      signal: "source_of_truth" as const,
+    },
+  },
+];
+
+function expectLiveSourceProvenance(result: {
+  provenance: unknown;
+}): void {
+  expect(result.provenance).toEqual(LIVE_SOURCE_PROVENANCE);
+}
+
 describe("structured review result", () => {
   it("extracts a summary and findings from sectioned markdown", () => {
     const markdown = `
@@ -73,41 +93,33 @@ Spacing between cards feels uneven.
         "## Findings",
         "- Release checklist: Critical issue because the fallback path is undocumented.",
       ].join("\n"),
-      provenance: [
-        {
-          label: "Content source",
-          value: "Inline content",
-        },
-      ],
+      provenance: LIVE_SOURCE_PROVENANCE,
     });
 
-    expect(result).toEqual({
-      schemaVersion: "1",
-      workflow: "expert",
-      expert: "SKEPTICAL UI/UX CRITIC",
-      model: "qwen3.5:27b",
-      summary: "The draft is promising but one blocker remains.",
-      overallSeverity: "critical",
-      findings: [
-        expect.objectContaining({
-          title: "Release checklist",
-          severity: "critical",
-        }),
-      ],
-      provenance: [
-        {
-          label: "Content source",
-          value: "Inline content",
-        },
-      ],
-      markdown: [
-        "# Overview",
-        "The draft is promising but one blocker remains.",
-        "",
-        "## Findings",
-        "- Release checklist: Critical issue because the fallback path is undocumented.",
-      ].join("\n"),
-    });
+    expect(result).toEqual(
+      expect.objectContaining({
+        schemaVersion: "1",
+        workflow: "expert",
+        expert: "SKEPTICAL UI/UX CRITIC",
+        model: "qwen3.5:27b",
+        summary: "The draft is promising but one blocker remains.",
+        overallSeverity: "critical",
+        findings: [
+          expect.objectContaining({
+            title: "Release checklist",
+            severity: "critical",
+          }),
+        ],
+        markdown: [
+          "# Overview",
+          "The draft is promising but one blocker remains.",
+          "",
+          "## Findings",
+          "- Release checklist: Critical issue because the fallback path is undocumented.",
+        ].join("\n"),
+      }),
+    );
+    expectLiveSourceProvenance(result);
   });
 
   it("keeps severity unknown when the markdown does not signal priority", () => {

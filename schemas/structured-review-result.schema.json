@@ -140,6 +140,48 @@
           "value": {
             "type": "string",
             "minLength": 1
+          },
+          "freshness": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["signal"],
+            "properties": {
+              "signal": {
+                "type": "string",
+                "enum": [
+                  "live_refresh",
+                  "mirrored_current_state",
+                  "historical_context"
+                ]
+              },
+              "asOf": {
+                "type": "string",
+                "minLength": 1
+              },
+              "note": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "authority": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["signal"],
+            "properties": {
+              "signal": {
+                "type": "string",
+                "enum": [
+                  "source_of_truth",
+                  "derived_summary",
+                  "advisory_boundary"
+                ]
+              },
+              "note": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
           }
         }
       }

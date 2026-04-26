@@ -41,6 +41,16 @@ export {
 export * from "./review/batch-review.js";
 export * from "./review/batch-review-summary-compare.js";
 export * from "./review/launch-outcome-evidence-summary.js";
+export {
+  reviewLaunchPacketEvidenceSufficiency,
+  type LaunchPacketBoundaryEvidence,
+  type LaunchPacketEvidenceReference,
+  type LaunchPacketEvidenceStatus,
+  type LaunchPacketEvidenceSufficiencyInput,
+  type LaunchPacketEvidenceSufficiencyReview,
+  type LaunchPacketOutcomeEvidence,
+  type LaunchPacketVerificationEvidence,
+} from "./review/launch-packet-evidence-sufficiency-reviewer.js";
 export * from "./review/multi-model-disagreement-report.js";
 export {
   compareBatchReviewRunLedgers,

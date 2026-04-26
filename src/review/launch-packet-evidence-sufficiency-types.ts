@@ -1,0 +1,71 @@
+import type {
+  StructuredReviewFinding,
+  StructuredReviewSeverity,
+} from "../contracts/json-contracts.js";
+import type { StructuredReviewNextStepAction } from "../contracts/structured-review-decision-contract.js";
+
+export const LAUNCH_PACKET_EVIDENCE_SUFFICIENCY_REVIEW_SCHEMA =
+  "launch_packet_evidence_sufficiency_review_v1";
+
+export type LaunchPacketEvidenceStatus =
+  | "confirmed"
+  | "missing"
+  | "hint_only"
+  | "stale";
+
+export interface LaunchPacketEvidenceReference {
+  label: string;
+  status: LaunchPacketEvidenceStatus;
+  handle?: string;
+  required?: boolean;
+}
+
+export interface LaunchPacketAdoptionEvidence {
+  status?: "adopted" | "rejected" | "not_applicable" | "missing";
+  scoutCommand?: string;
+  rationale?: string;
+}
+
+export interface LaunchPacketVerificationEvidence {
+  claimedCommand?: string;
+  observedCommand?: string;
+  result?: "passed" | "failed" | "missing";
+  targetedRun?: boolean;
+  repeatedFailedCommandCount?: number;
+  surfaceBudgetChecked?: boolean;
+  surfaceBudgetCommand?: string;
+}
+
+export interface LaunchPacketOutcomeEvidence {
+  expectedPath?: string;
+  generatedPath?: boolean;
+  statusChecked?: boolean;
+}
+
+export interface LaunchPacketBoundaryEvidence {
+  outputClassification?: string;
+  privateDetailsIncluded?: boolean;
+  trackerFreshnessRequired?: boolean;
+  trackerFreshnessConfirmed?: boolean;
+}
+
+export interface LaunchPacketEvidenceSufficiencyInput {
+  packetId: string;
+  title: string;
+  evidence: ReadonlyArray<LaunchPacketEvidenceReference>;
+  adoption?: LaunchPacketAdoptionEvidence;
+  verification?: LaunchPacketVerificationEvidence;
+  outcome?: LaunchPacketOutcomeEvidence;
+  boundary?: LaunchPacketBoundaryEvidence;
+}
+
+export interface LaunchPacketEvidenceSufficiencyReview {
+  schema: typeof LAUNCH_PACKET_EVIDENCE_SUFFICIENCY_REVIEW_SCHEMA;
+  packetId: string;
+  verdict: "sufficient" | "insufficient" | "needs_caller_review";
+  confidence: "low" | "medium" | "high";
+  maxSeverity: StructuredReviewSeverity;
+  summary: string;
+  findings: StructuredReviewFinding[];
+  nextStepActions: StructuredReviewNextStepAction[];
+}

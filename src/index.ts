@@ -43,6 +43,7 @@ export * from "./review/batch-review-summary-compare.js";
 export * from "./review/launch-outcome-evidence-summary.js";
 export {
   reviewLaunchPacketEvidenceSufficiency,
+  type LaunchPacketAdoptionEvidence,
   type LaunchPacketBoundaryEvidence,
   type LaunchPacketEvidenceReference,
   type LaunchPacketEvidenceStatus,

@@ -20,10 +20,23 @@ const cleanPacket = {
     },
   ],
   verification: {
-    claimedCommand: "pnpm test -- launch-packet-evidence-sufficiency-reviewer.test.ts",
-    observedCommand: "pnpm test -- launch-packet-evidence-sufficiency-reviewer.test.ts",
+    claimedCommand:
+      "pnpm exec vitest run src/review/launch-packet-evidence-sufficiency-reviewer.test.ts",
+    observedCommand:
+      "pnpm exec vitest run src/review/launch-packet-evidence-sufficiency-reviewer.test.ts",
     result: "passed",
+    targetedRun: true,
     repeatedFailedCommandCount: 0,
+    surfaceBudgetChecked: true,
+    surfaceBudgetCommand:
+      "pnpm check:agent-surface:preedit -- src/review/launch-packet-evidence-sufficiency-reviewer.ts src/review/launch-packet-evidence-sufficiency-types.ts src/review/launch-packet-evidence-sufficiency-reviewer.test.ts src/index.ts",
+  },
+  adoption: {
+    status: "rejected",
+    scoutCommand:
+      'pnpm solution:scout -- --category eval --capability "launch-packet evidence sufficiency reviewer fixtures and rubric" --boundary public --project ai-quality-loops',
+    rationale:
+      "Scout candidates were broad code-intelligence tools, not a narrow packet-rubric utility.",
   },
   outcome: {
     expectedPath: ".runtime/orchestrator-outcomes/synthetic.md",
@@ -84,7 +97,9 @@ describe("reviewLaunchPacketEvidenceSufficiency", () => {
         claimedCommand: "pnpm verify:session",
         observedCommand: "pnpm test -- review-gate.test.ts",
         result: "passed",
+        targetedRun: true,
         repeatedFailedCommandCount: 4,
+        surfaceBudgetChecked: true,
       },
     });
 
@@ -97,6 +112,34 @@ describe("reviewLaunchPacketEvidenceSufficiency", () => {
       "rerun_review",
       "request_caller_review",
       "revise_artifact",
+    ]);
+  });
+
+  it("flags missing build-vs-buy evidence, targeted test run, and surface budget check", () => {
+    const review = reviewLaunchPacketEvidenceSufficiency({
+      ...cleanPacket,
+      packetId: "synthetic-follow-up-evidence-gaps",
+      adoption: {
+        status: "missing",
+      },
+      verification: {
+        claimedCommand: "pnpm verify:session",
+        observedCommand: "pnpm verify:session",
+        result: "passed",
+        targetedRun: false,
+        surfaceBudgetChecked: false,
+      },
+    });
+
+    expect(review.verdict).toBe("needs_caller_review");
+    expect(review.findings.map((finding) => finding.key)).toEqual([
+      "missing-build-vs-buy-evidence",
+      "missing-targeted-test-run",
+      "missing-surface-budget-check",
+    ]);
+    expect(review.nextStepActions).toEqual([
+      "collect_more_evidence",
+      "rerun_review",
     ]);
   });
 

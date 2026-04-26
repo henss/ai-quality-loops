@@ -3,59 +3,26 @@ import type {
   StructuredReviewSeverity,
 } from "../contracts/json-contracts.js";
 import type { StructuredReviewNextStepAction } from "../contracts/structured-review-decision-contract.js";
+import { LAUNCH_PACKET_EVIDENCE_SUFFICIENCY_REVIEW_SCHEMA } from "./launch-packet-evidence-sufficiency-types.js";
+import type {
+  LaunchPacketAdoptionEvidence,
+  LaunchPacketBoundaryEvidence,
+  LaunchPacketEvidenceSufficiencyInput,
+  LaunchPacketEvidenceSufficiencyReview,
+  LaunchPacketOutcomeEvidence,
+  LaunchPacketVerificationEvidence,
+} from "./launch-packet-evidence-sufficiency-types.js";
 
-export type LaunchPacketEvidenceStatus =
-  | "confirmed"
-  | "missing"
-  | "hint_only"
-  | "stale";
-
-export interface LaunchPacketEvidenceReference {
-  label: string;
-  status: LaunchPacketEvidenceStatus;
-  handle?: string;
-  required?: boolean;
-}
-
-export interface LaunchPacketVerificationEvidence {
-  claimedCommand?: string;
-  observedCommand?: string;
-  result?: "passed" | "failed" | "missing";
-  repeatedFailedCommandCount?: number;
-}
-
-export interface LaunchPacketOutcomeEvidence {
-  expectedPath?: string;
-  generatedPath?: boolean;
-  statusChecked?: boolean;
-}
-
-export interface LaunchPacketBoundaryEvidence {
-  outputClassification?: string;
-  privateDetailsIncluded?: boolean;
-  trackerFreshnessRequired?: boolean;
-  trackerFreshnessConfirmed?: boolean;
-}
-
-export interface LaunchPacketEvidenceSufficiencyInput {
-  packetId: string;
-  title: string;
-  evidence: ReadonlyArray<LaunchPacketEvidenceReference>;
-  verification?: LaunchPacketVerificationEvidence;
-  outcome?: LaunchPacketOutcomeEvidence;
-  boundary?: LaunchPacketBoundaryEvidence;
-}
-
-export interface LaunchPacketEvidenceSufficiencyReview {
-  schema: "launch_packet_evidence_sufficiency_review_v1";
-  packetId: string;
-  verdict: "sufficient" | "insufficient" | "needs_caller_review";
-  confidence: "low" | "medium" | "high";
-  maxSeverity: StructuredReviewSeverity;
-  summary: string;
-  findings: StructuredReviewFinding[];
-  nextStepActions: StructuredReviewNextStepAction[];
-}
+export type {
+  LaunchPacketAdoptionEvidence,
+  LaunchPacketBoundaryEvidence,
+  LaunchPacketEvidenceReference,
+  LaunchPacketEvidenceStatus,
+  LaunchPacketEvidenceSufficiencyInput,
+  LaunchPacketEvidenceSufficiencyReview,
+  LaunchPacketOutcomeEvidence,
+  LaunchPacketVerificationEvidence,
+} from "./launch-packet-evidence-sufficiency-types.js";
 
 const SEVERITY_RANK: Record<StructuredReviewSeverity, number> = {
   critical: 0,
@@ -199,6 +166,21 @@ function reviewVerificationEvidence(
     return;
   }
 
+  if (verification.targetedRun === false) {
+    findings.push(
+      createFinding({
+        key: "missing-targeted-test-run",
+        title: "Targeted verification run is missing",
+        summary:
+          "The packet records verification, but not the narrow test run that directly exercises the changed review surface.",
+        severity: "medium",
+        recommendation:
+          "Run the targeted test or record why only a broader validation command can defend this packet.",
+      }),
+    );
+    addUniqueAction(actions, "rerun_review");
+  }
+
   const claimedCommand = normalizeCommand(verification.claimedCommand);
   const observedCommand = normalizeCommand(verification.observedCommand);
 
@@ -243,6 +225,61 @@ function reviewVerificationEvidence(
         severity: "medium",
         recommendation:
           "Replace repeated command logs with the final materially changed command, result, and blocker.",
+      }),
+    );
+    addUniqueAction(actions, "revise_artifact");
+  }
+
+  if (verification.surfaceBudgetChecked === false) {
+    findings.push(
+      createFinding({
+        key: "missing-surface-budget-check",
+        title: "Agent-surface budget check is missing",
+        summary:
+          "The packet changed a review surface without recording the pre-edit or changed-file surface-budget check.",
+        severity: "medium",
+        recommendation:
+          "Run the repo-local agent-surface guard for the touched files, or record why the change is not code-surface work.",
+      }),
+    );
+    addUniqueAction(actions, "collect_more_evidence");
+  }
+}
+
+function reviewAdoptionEvidence(
+  adoption: LaunchPacketAdoptionEvidence | undefined,
+  findings: StructuredReviewFinding[],
+  actions: StructuredReviewNextStepAction[],
+): void {
+  if (!adoption || adoption.status === "missing") {
+    findings.push(
+      createFinding({
+        key: "missing-build-vs-buy-evidence",
+        title: "Build-vs-buy evidence is missing",
+        summary:
+          "The packet does not record whether a reusable external option was checked or why the work is one-off.",
+        severity: "medium",
+        recommendation:
+          "Record the solution-scout command, an adoption/rejection decision, or a concrete not-applicable rationale.",
+      }),
+    );
+    addUniqueAction(actions, "collect_more_evidence");
+    return;
+  }
+
+  if (
+    (adoption.status === "rejected" || adoption.status === "not_applicable") &&
+    isBlank(adoption.rationale)
+  ) {
+    findings.push(
+      createFinding({
+        key: "missing-build-vs-buy-rationale",
+        title: "Build-vs-buy rationale is missing",
+        summary:
+          "The packet rejects adoption or marks the check not applicable without recording the reason.",
+        severity: "medium",
+        recommendation:
+          "Add a concise public-safe rationale so future agents do not repeat the same scout decision.",
       }),
     );
     addUniqueAction(actions, "revise_artifact");
@@ -344,6 +381,7 @@ export function reviewLaunchPacketEvidenceSufficiency(
   const nextStepActions: StructuredReviewNextStepAction[] = [];
 
   reviewEvidenceReferences(input, findings, nextStepActions);
+  reviewAdoptionEvidence(input.adoption, findings, nextStepActions);
   reviewVerificationEvidence(input.verification, findings, nextStepActions);
   reviewOutcomeEvidence(input.outcome, findings, nextStepActions);
   reviewBoundaryEvidence(input.boundary, findings, nextStepActions);
@@ -360,7 +398,7 @@ export function reviewLaunchPacketEvidenceSufficiency(
         : "needs_caller_review";
 
   return {
-    schema: "launch_packet_evidence_sufficiency_review_v1",
+    schema: LAUNCH_PACKET_EVIDENCE_SUFFICIENCY_REVIEW_SCHEMA,
     packetId: input.packetId,
     verdict,
     confidence: findings.length === 0 ? "high" : "medium",

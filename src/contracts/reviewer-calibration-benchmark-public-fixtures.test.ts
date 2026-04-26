@@ -6,7 +6,9 @@ import { describe, expect, it } from "vitest";
 import {
   REVIEWER_CALIBRATION_BENCHMARK_CASES,
   REVIEWER_CALIBRATION_WITHHELD_GOLD_JUDGMENTS,
+  formatReviewerCalibrationBenchmarkReport,
 } from "../review/reviewer-calibration-benchmark.js";
+import { runReviewerCalibrationBenchmark } from "../review/reviewer-calibration-benchmark-runner.js";
 
 const PUBLIC_SAFE_BLOCKLIST = [
   "stefan",
@@ -57,7 +59,7 @@ describe("synthetic reviewer calibration benchmark public fixtures", () => {
     }
   });
 
-  it("ships concise baseline scoring output shape", async () => {
+  it("ships baseline scoring output generated from separate cases, gold, and observed-run fixtures", async () => {
     const expectedText = await fs.readFile(
       path.join(
         process.cwd(),
@@ -65,14 +67,22 @@ describe("synthetic reviewer calibration benchmark public fixtures", () => {
       ),
       "utf-8",
     );
-    expect(expectedText).toContain(
-      "Reviewer calibration benchmark: 2 configuration(s), 6 withheld-gold case(s).",
+    const report = await runReviewerCalibrationBenchmark({
+      casesPath: "examples/synthetic-reviewer-calibration-benchmark.cases.json",
+      goldJudgmentsPath: "examples/synthetic-reviewer-calibration-benchmark.gold.json",
+      observedRunsPath:
+        "examples/synthetic-reviewer-calibration-benchmark.observed-runs.json",
+    });
+
+    expect(formatReviewerCalibrationBenchmarkReport(report)).toBe(
+      expectedText.trimEnd(),
     );
-    expect(expectedText).toContain(
-      "- [passed] synthetic-local-reviewer: 30/30 (100%), 6 passed, 0 failed.",
-    );
-    expect(expectedText).toContain(
-      "Highlight: missed verification signal obscured by command noise.",
-    );
+    expect(report.runScores[1]?.caseScores[2]?.issues).toEqual([
+      "expected verdict changes_requested, observed accept",
+      "expected severity at least medium, observed low",
+      "missing finding keys: verification-log-noise",
+      "missing signal groups: command noise | repeated command; verification signal",
+      "missing next-step actions: revise_artifact",
+    ]);
   });
 });

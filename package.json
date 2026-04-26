@@ -35,6 +35,7 @@
     "batch-review": "dist/cli/batch-review.js",
     "expert-review": "dist/cli/expert-review.js",
     "review-compare": "dist/cli/review-compare.js",
+    "reviewer-calibration-benchmark": "dist/cli/reviewer-calibration-benchmark.js",
     "review-focus-lint": "dist/cli/review-focus-lint.js",
     "review-gate": "dist/cli/review-gate.js",
     "review-preflight": "dist/cli/review-preflight.js",

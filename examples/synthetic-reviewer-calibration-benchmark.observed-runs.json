@@ -1,0 +1,215 @@
+{
+  "schema": "synthetic_reviewer_calibration_observed_runs_v1",
+  "purpose": "Public-safe synthetic reviewer outputs for end-to-end calibration scoring.",
+  "observedRuns": [
+    {
+      "configurationId": "synthetic-local-reviewer",
+      "results": [
+        {
+          "caseId": "missing-evidence-handle",
+          "result": {
+            "schemaVersion": "1",
+            "workflow": "expert",
+            "expert": "Calibration Reviewer",
+            "model": "synthetic-calibration-reviewer",
+            "summary": "The packet has a missing evidence handle and source handle, so traceability needs more evidence.",
+            "overallSeverity": "medium",
+            "findings": [
+              {
+                "key": "missing-evidence-handle",
+                "title": "Missing Evidence Handle",
+                "summary": "A missing source handle prevents verification of the evidence handle.",
+                "severity": "medium"
+              }
+            ],
+            "decision": {
+              "schema": "peer_review_decision_v1",
+              "verdict": "accept_with_follow_up",
+              "confidence": "medium",
+              "blocking": false,
+              "max_severity": "medium",
+              "summary": "The packet has a missing evidence handle and source handle, so traceability needs more evidence.",
+              "blocking_findings": [],
+              "non_blocking_findings": [],
+              "required_before_merge": [],
+              "follow_up": ["Track the caller-owned evidence repair."],
+              "next_step_actions": ["collect_more_evidence"]
+            },
+            "provenance": [{ "label": "Content source", "value": "Synthetic reviewer calibration case missing-evidence-handle" }],
+            "markdown": "# Summary\nThe packet has a missing evidence handle and source handle.\n\nA missing source handle prevents verification of the evidence handle."
+          }
+        },
+        {
+          "caseId": "stale-input-snapshot",
+          "result": {
+            "schemaVersion": "1",
+            "workflow": "expert",
+            "expert": "Calibration Reviewer",
+            "model": "synthetic-calibration-reviewer",
+            "summary": "The baseline snapshot is stale and outdated, so the deterministic input needs refresh.",
+            "overallSeverity": "medium",
+            "findings": [{ "key": "stale-input-snapshot", "title": "Stale Input Snapshot", "summary": "The stale input snapshot can drift from the current baseline.", "severity": "medium" }],
+            "decision": { "schema": "peer_review_decision_v1", "verdict": "accept_with_follow_up", "confidence": "medium", "blocking": false, "max_severity": "medium", "summary": "The baseline snapshot is stale and outdated, so the deterministic input needs refresh.", "blocking_findings": [], "non_blocking_findings": [], "required_before_merge": [], "follow_up": ["Track the caller-owned evidence repair."], "next_step_actions": ["collect_more_evidence", "track_follow_up"] },
+            "provenance": [{ "label": "Content source", "value": "Synthetic reviewer calibration case stale-input-snapshot" }],
+            "markdown": "# Summary\nThe baseline snapshot is stale and outdated.\n\nThe stale input snapshot can drift from the current baseline."
+          }
+        },
+        {
+          "caseId": "noisy-verification-log",
+          "result": {
+            "schemaVersion": "1",
+            "workflow": "expert",
+            "expert": "Calibration Reviewer",
+            "model": "synthetic-calibration-reviewer",
+            "summary": "Repeated command noise hides the verification signal and requires artifact revision.",
+            "overallSeverity": "medium",
+            "findings": [{ "key": "verification-log-noise", "title": "Verification Log Noise", "summary": "Command noise from repeated command output obscures the verification signal.", "severity": "medium" }],
+            "decision": { "schema": "peer_review_decision_v1", "verdict": "changes_requested", "confidence": "medium", "blocking": false, "max_severity": "medium", "summary": "Repeated command noise hides the verification signal and requires artifact revision.", "blocking_findings": [], "non_blocking_findings": [], "required_before_merge": ["Revise the artifact before relying on the result."], "follow_up": [], "next_step_actions": ["revise_artifact"] },
+            "provenance": [{ "label": "Content source", "value": "Synthetic reviewer calibration case noisy-verification-log" }],
+            "markdown": "# Summary\nRepeated command noise hides the verification signal.\n\nCommand noise from repeated command output obscures the verification signal."
+          }
+        },
+        {
+          "caseId": "wrapper-command-mismatch",
+          "result": {
+            "schemaVersion": "1",
+            "workflow": "expert",
+            "expert": "Calibration Reviewer",
+            "model": "synthetic-calibration-reviewer",
+            "summary": "The verification wrapper has a mismatch with a different command, so the review should be rerun.",
+            "overallSeverity": "high",
+            "findings": [{ "key": "wrapper-command-mismatch", "title": "Wrapper Command Mismatch", "summary": "The wrapper and command evidence disagree, creating a verification wrapper mismatch.", "severity": "high" }],
+            "decision": { "schema": "peer_review_decision_v1", "verdict": "blocked", "confidence": "medium", "blocking": true, "max_severity": "high", "summary": "The verification wrapper has a mismatch with a different command, so the review should be rerun.", "blocking_findings": [], "non_blocking_findings": [], "required_before_merge": [], "follow_up": [], "next_step_actions": ["rerun_review", "request_caller_review"] },
+            "provenance": [{ "label": "Content source", "value": "Synthetic reviewer calibration case wrapper-command-mismatch" }],
+            "markdown": "# Summary\nThe verification wrapper has a mismatch with a different command.\n\nThe wrapper and command evidence disagree."
+          }
+        },
+        {
+          "caseId": "summary-omits-regression",
+          "result": {
+            "schemaVersion": "1",
+            "workflow": "expert",
+            "expert": "Calibration Reviewer",
+            "model": "synthetic-calibration-reviewer",
+            "summary": "The summary omits a regressed comparison signal and needs the missing evidence restored.",
+            "overallSeverity": "medium",
+            "findings": [{ "key": "summary-omits-regression", "title": "Summary Omits Regression", "summary": "The outcome summary is missing the regression detail and omits material review movement.", "severity": "medium" }],
+            "decision": { "schema": "peer_review_decision_v1", "verdict": "changes_requested", "confidence": "medium", "blocking": false, "max_severity": "medium", "summary": "The summary omits a regressed comparison signal and needs the missing evidence restored.", "blocking_findings": [], "non_blocking_findings": [], "required_before_merge": ["Revise the artifact before relying on the result."], "follow_up": [], "next_step_actions": ["revise_artifact", "collect_more_evidence"] },
+            "provenance": [{ "label": "Content source", "value": "Synthetic reviewer calibration case summary-omits-regression" }],
+            "markdown": "# Summary\nThe summary omits a regressed comparison signal.\n\nThe outcome summary is missing the regression detail."
+          }
+        },
+        {
+          "caseId": "gate-evidence-overclaim",
+          "result": {
+            "schemaVersion": "1",
+            "workflow": "expert",
+            "expert": "Calibration Reviewer",
+            "model": "synthetic-calibration-reviewer",
+            "summary": "The gate evidence is absent, so the readiness overclaim needs caller review.",
+            "overallSeverity": "high",
+            "findings": [{ "key": "gate-evidence-overclaim", "title": "Gate Evidence Overclaim", "summary": "The gate result is missing while the packet makes a readiness overclaim.", "severity": "high" }],
+            "decision": { "schema": "peer_review_decision_v1", "verdict": "blocked", "confidence": "medium", "blocking": true, "max_severity": "high", "summary": "The gate evidence is absent, so the readiness overclaim needs caller review.", "blocking_findings": [], "non_blocking_findings": [], "required_before_merge": [], "follow_up": [], "next_step_actions": ["request_caller_review", "collect_more_evidence"] },
+            "provenance": [{ "label": "Content source", "value": "Synthetic reviewer calibration case gate-evidence-overclaim" }],
+            "markdown": "# Summary\nThe gate evidence is absent.\n\nThe gate result is missing while the packet makes a readiness overclaim."
+          }
+        }
+      ]
+    },
+    {
+      "configurationId": "under-sensitive-reviewer",
+      "results": [
+        {
+          "caseId": "missing-evidence-handle",
+          "result": {
+            "schemaVersion": "1",
+            "workflow": "expert",
+            "expert": "Calibration Reviewer",
+            "model": "synthetic-calibration-reviewer",
+            "summary": "The packet has a missing evidence handle and source handle, so traceability needs more evidence.",
+            "overallSeverity": "medium",
+            "findings": [{ "key": "missing-evidence-handle", "title": "Missing Evidence Handle", "summary": "A missing source handle prevents verification of the evidence handle.", "severity": "medium" }],
+            "decision": { "schema": "peer_review_decision_v1", "verdict": "accept_with_follow_up", "confidence": "medium", "blocking": false, "max_severity": "medium", "summary": "The packet has a missing evidence handle and source handle, so traceability needs more evidence.", "blocking_findings": [], "non_blocking_findings": [], "required_before_merge": [], "follow_up": ["Track the caller-owned evidence repair."], "next_step_actions": ["collect_more_evidence"] },
+            "provenance": [{ "label": "Content source", "value": "Synthetic reviewer calibration case missing-evidence-handle" }],
+            "markdown": "# Summary\nThe packet has a missing evidence handle and source handle.\n\nA missing source handle prevents verification of the evidence handle."
+          }
+        },
+        {
+          "caseId": "stale-input-snapshot",
+          "result": {
+            "schemaVersion": "1",
+            "workflow": "expert",
+            "expert": "Calibration Reviewer",
+            "model": "synthetic-calibration-reviewer",
+            "summary": "The baseline snapshot is stale and outdated, so the deterministic input needs refresh.",
+            "overallSeverity": "medium",
+            "findings": [{ "key": "stale-input-snapshot", "title": "Stale Input Snapshot", "summary": "The stale input snapshot can drift from the current baseline.", "severity": "medium" }],
+            "decision": { "schema": "peer_review_decision_v1", "verdict": "accept_with_follow_up", "confidence": "medium", "blocking": false, "max_severity": "medium", "summary": "The baseline snapshot is stale and outdated, so the deterministic input needs refresh.", "blocking_findings": [], "non_blocking_findings": [], "required_before_merge": [], "follow_up": ["Track the caller-owned evidence repair."], "next_step_actions": ["collect_more_evidence", "track_follow_up"] },
+            "provenance": [{ "label": "Content source", "value": "Synthetic reviewer calibration case stale-input-snapshot" }],
+            "markdown": "# Summary\nThe baseline snapshot is stale and outdated.\n\nThe stale input snapshot can drift from the current baseline."
+          }
+        },
+        {
+          "caseId": "noisy-verification-log",
+          "result": {
+            "schemaVersion": "1",
+            "workflow": "expert",
+            "expert": "Calibration Reviewer",
+            "model": "synthetic-calibration-reviewer",
+            "summary": "The command transcript is long but probably fine.",
+            "overallSeverity": "low",
+            "findings": [{ "key": "long-transcript", "title": "Long Transcript", "summary": "The packet includes a lengthy command transcript.", "severity": "low" }],
+            "decision": { "schema": "peer_review_decision_v1", "verdict": "accept", "confidence": "medium", "blocking": false, "max_severity": "low", "summary": "The command transcript is long but probably fine.", "blocking_findings": [], "non_blocking_findings": [], "required_before_merge": [], "follow_up": [], "next_step_actions": ["track_follow_up"] },
+            "provenance": [{ "label": "Content source", "value": "Synthetic reviewer calibration case noisy-verification-log" }],
+            "markdown": "# Summary\nThe command transcript is long but probably fine.\n\nThe packet includes a lengthy command transcript."
+          }
+        },
+        {
+          "caseId": "wrapper-command-mismatch",
+          "result": {
+            "schemaVersion": "1",
+            "workflow": "expert",
+            "expert": "Calibration Reviewer",
+            "model": "synthetic-calibration-reviewer",
+            "summary": "The verification wrapper has a mismatch with a different command, so the review should be rerun.",
+            "overallSeverity": "high",
+            "findings": [{ "key": "wrapper-command-mismatch", "title": "Wrapper Command Mismatch", "summary": "The wrapper and command evidence disagree, creating a verification wrapper mismatch.", "severity": "high" }],
+            "decision": { "schema": "peer_review_decision_v1", "verdict": "blocked", "confidence": "medium", "blocking": true, "max_severity": "high", "summary": "The verification wrapper has a mismatch with a different command, so the review should be rerun.", "blocking_findings": [], "non_blocking_findings": [], "required_before_merge": [], "follow_up": [], "next_step_actions": ["rerun_review", "request_caller_review"] },
+            "provenance": [{ "label": "Content source", "value": "Synthetic reviewer calibration case wrapper-command-mismatch" }],
+            "markdown": "# Summary\nThe verification wrapper has a mismatch with a different command.\n\nThe wrapper and command evidence disagree."
+          }
+        },
+        {
+          "caseId": "summary-omits-regression",
+          "result": {
+            "schemaVersion": "1",
+            "workflow": "expert",
+            "expert": "Calibration Reviewer",
+            "model": "synthetic-calibration-reviewer",
+            "summary": "The summary omits a regressed comparison signal and needs the missing evidence restored.",
+            "overallSeverity": "medium",
+            "findings": [{ "key": "summary-omits-regression", "title": "Summary Omits Regression", "summary": "The outcome summary is missing the regression detail and omits material review movement.", "severity": "medium" }],
+            "decision": { "schema": "peer_review_decision_v1", "verdict": "changes_requested", "confidence": "medium", "blocking": false, "max_severity": "medium", "summary": "The summary omits a regressed comparison signal and needs the missing evidence restored.", "blocking_findings": [], "non_blocking_findings": [], "required_before_merge": ["Revise the artifact before relying on the result."], "follow_up": [], "next_step_actions": ["revise_artifact", "collect_more_evidence"] },
+            "provenance": [{ "label": "Content source", "value": "Synthetic reviewer calibration case summary-omits-regression" }],
+            "markdown": "# Summary\nThe summary omits a regressed comparison signal.\n\nThe outcome summary is missing the regression detail."
+          }
+        },
+        {
+          "caseId": "gate-evidence-overclaim",
+          "result": {
+            "schemaVersion": "1",
+            "workflow": "expert",
+            "expert": "Calibration Reviewer",
+            "model": "synthetic-calibration-reviewer",
+            "summary": "The gate evidence is absent, so the readiness overclaim needs caller review.",
+            "overallSeverity": "high",
+            "findings": [{ "key": "gate-evidence-overclaim", "title": "Gate Evidence Overclaim", "summary": "The gate result is missing while the packet makes a readiness overclaim.", "severity": "high" }],
+            "decision": { "schema": "peer_review_decision_v1", "verdict": "blocked", "confidence": "medium", "blocking": true, "max_severity": "high", "summary": "The gate evidence is absent, so the readiness overclaim needs caller review.", "blocking_findings": [], "non_blocking_findings": [], "required_before_merge": [], "follow_up": [], "next_step_actions": ["request_caller_review", "collect_more_evidence"] },
+            "provenance": [{ "label": "Content source", "value": "Synthetic reviewer calibration case gate-evidence-overclaim" }],
+            "markdown": "# Summary\nThe gate evidence is absent.\n\nThe gate result is missing while the packet makes a readiness overclaim."
+          }
+        }
+      ]
+    }
+  ]
+}

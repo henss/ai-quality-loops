@@ -245,6 +245,15 @@ export function formatReviewerCalibrationBenchmarkReport(
     lines.push(
       `- [${run.status}] ${run.configurationId}: ${run.score}/${run.maxScore} (${run.scorePercent}%), ${run.passedCases} passed, ${run.failedCases} failed.${highlight}`,
     );
+
+    for (const caseScore of run.caseScores.filter(
+      (entry) => entry.status === "failed",
+    )) {
+      lines.push(
+        `  - ${caseScore.caseId}: ${caseScore.score}/${caseScore.maxScore} ${caseScore.failureMode}`,
+      );
+      lines.push(...caseScore.issues.map((issue) => `    - ${issue}`));
+    }
   }
 
   return lines.join("\n");

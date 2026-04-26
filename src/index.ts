@@ -38,6 +38,10 @@ export {
   type ReviewerCalibrationObservedRun,
   type ReviewerCalibrationRunScore,
 } from "./review/reviewer-calibration-benchmark.js";
+export {
+  runReviewerCalibrationBenchmark,
+  type ReviewerCalibrationBenchmarkRunInput,
+} from "./review/reviewer-calibration-benchmark-runner.js";
 export * from "./review/batch-review.js";
 export * from "./review/batch-review-summary-compare.js";
 export * from "./review/launch-outcome-evidence-summary.js";

@@ -6,6 +6,7 @@ import {
   evaluateReviewerCalibrationBenchmark,
   formatReviewerCalibrationBenchmarkReport,
 } from "./reviewer-calibration-benchmark.js";
+import { runReviewerCalibrationBenchmark } from "./reviewer-calibration-benchmark-runner.js";
 
 function createStructuredResult(input: {
   caseId: string;
@@ -201,5 +202,38 @@ describe("evaluateReviewerCalibrationBenchmark", () => {
       "missing signal groups: command noise | repeated command; verification signal",
       "missing next-step actions: revise_artifact",
     ]);
+    expect(formatReviewerCalibrationBenchmarkReport(report)).toContain(
+      "  - noisy-verification-log: 0/5 missed verification signal obscured by command noise",
+    );
+  });
+
+  it("runs the public synthetic fixtures end to end", async () => {
+    const report = await runReviewerCalibrationBenchmark({
+      casesPath: "examples/synthetic-reviewer-calibration-benchmark.cases.json",
+      goldJudgmentsPath: "examples/synthetic-reviewer-calibration-benchmark.gold.json",
+      observedRunsPath:
+        "examples/synthetic-reviewer-calibration-benchmark.observed-runs.json",
+    });
+
+    expect(report).toMatchObject({
+      status: "failed",
+      caseCount: 6,
+      runScores: [
+        {
+          configurationId: "synthetic-local-reviewer",
+          status: "passed",
+          score: 30,
+          maxScore: 30,
+        },
+        {
+          configurationId: "under-sensitive-reviewer",
+          status: "failed",
+          score: 25,
+          maxScore: 30,
+          highlightedFailureMode:
+            "missed verification signal obscured by command noise",
+        },
+      ],
+    });
   });
 });

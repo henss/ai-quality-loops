@@ -33,6 +33,8 @@ Use the package when you need repeatable LLM-assisted review workflows that stay
 - **Rerun selected batch entries** from a prior summary when only failed or named reviews need another pass.
 - **Gate CI or local checks** with explicit severity and finding-count budgets using `review-gate`.
 - **Compare two batch summaries** to see added, removed, status-changed, and severity-moved review entries.
+- **Write a same-fixture run ledger** from one batch-review run when repeated experiments need a stable machine-readable artifact with explicit fixed-pack identity.
+- **Diff two same-fixture run ledgers** to compare repeated experiments without accidentally mixing unrelated fixtures.
 - **Format a multi-model disagreement report** from two comparable batch-summary artifacts when model-cohort differences need a public-safe triage note.
 - **Format a source-handle review-bundle digest** from one published batch-summary artifact when a caller needs a compact reread budget for a source-handle pack.
 - **Check local prerequisites** before a costly run, including personas, Ollama models, browser availability, and optional context files.
@@ -109,7 +111,7 @@ The library works out-of-the-box with default example personas in `personas/univ
 - Sponsor memo helpers can turn one sanitized structured review result into a compact approver-facing memo with sponsor posture, confidence, evidence pointers, open questions, and an explicit caller-owned boundary.
 - Sponsor-packet handoff helpers can validate whether one structured review result is fit to become a sponsor memo plus no-write backlog-candidate packet, keeping decision completeness, actionability, and evidence checks explicit before downstream routing.
 - Candidate handoff helpers can render and validate a strict no-write YAML packet from sanitized structured review results. The validation helper checks the public candidate packet shape and policy guardrails, while downstream writes and prioritization remain caller-owned.
-- The package also publishes JSON Schema artifacts for the batch-review manifest, batch-review summary, batch-review summary comparison, structured review-result, and generic high-stakes analysis review rubric contracts under `schemas/`, alongside thin `parse...` and `validate...` helpers exported from the package root for callers that want contract checks without adding a schema runtime first.
+- The package also publishes JSON Schema artifacts for the batch-review manifest, batch-review summary, same-fixture batch-review run ledger, same-fixture batch-review run-ledger diff, batch-review summary comparison, structured review-result, and generic high-stakes analysis review rubric contracts under `schemas/`, alongside thin `parse...` and `validate...` helpers exported from the package root for callers that want contract checks without adding a schema runtime first.
 - `CHROME_PATH`: (Optional) Path to your browser executable (defaults to Edge on Windows).
 - `OLLAMA_URL`: (Optional) URL to your Ollama instance (defaults to http://127.0.0.1:11434).
 
@@ -208,6 +210,8 @@ if (!rubricValidation.ok) {
 }
 
 console.log(JSON_CONTRACT_SCHEMA_FILES.batchReviewManifest);
+console.log(JSON_CONTRACT_SCHEMA_FILES.batchReviewRunLedger);
+console.log(JSON_CONTRACT_SCHEMA_FILES.batchReviewRunLedgerDiff);
 console.log(JSON_CONTRACT_SCHEMA_FILES.batchReviewSummaryComparison);
 console.log(JSON_CONTRACT_SCHEMA_FILES.highStakesAnalysisReviewRubric);
 console.log(JSON_CONTRACT_SCHEMA_FILES.structuredReviewResult);
@@ -557,6 +561,7 @@ vision-review https://example.com --list-personas
 
 batch-review ./review-manifest.json
 batch-review ./review-manifest.json --summary-output ./reviews/batch-summary.json
+batch-review ./review-manifest.json --run-ledger-output ./reviews/qwen-run-ledger.json --fixture-label "Synthetic reviewer contract pack" --run-label "qwen3.5:27b"
 batch-review ./review-manifest.json --rerun-summary ./reviews/batch-summary.json --rerun-failed
 batch-review ./review-manifest.json --rerun-summary ./reviews/batch-summary.json --entry-name "Homepage hero,Readme audit"
 
@@ -567,6 +572,7 @@ review-gate --batch-summary ./reviews/batch-summary.json --max-prompt-eval-count
 batch-review-compare ./reviews/previous-batch-summary.json ./reviews/current-batch-summary.json
 batch-review-compare ./reviews/previous-batch-summary.json ./reviews/current-batch-summary.json --json
 batch-review-compare ./reviews/previous-batch-summary.json ./reviews/current-batch-summary.json --json > ./reviews/batch-comparison.json
+batch-review-compare ./reviews/qwen-run-ledger.json ./reviews/phi4-run-ledger.json --run-ledger --json > ./reviews/same-fixture-ledger-diff.json
 review-gate --batch-comparison ./reviews/batch-comparison.json --max-added-critical 0 --max-added-high 0 --max-severity-regressions 0
 review-gate --batch-comparison ./reviews/batch-comparison.json --max-added-prompt-eval-count 50000
 review-focus-lint --path ./reviews --require-user-benefit --forbid "Layout & Usability,Navigation"
@@ -603,6 +609,8 @@ The manifest is intentionally narrow:
 - `reviews[]` defines sequential review targets using `target`, `mode`, and optional overrides like `expert`, `model`, `outputPath`, `structuredOutputPath`, `sections`, `css`, `width`, and `height`.
 - `outputDir` and `structuredOutputDir` are optional shared conveniences. When a review omits `outputPath` or `structuredOutputPath`, the runner derives stable Markdown and structured-result filenames inside those directories.
 - `--summary-output` writes one sanitized JSON artifact with batch totals, stable per-entry `resultKey` values, per-target status, sanitized target descriptors, sanitized Markdown and structured-result output locations, additive structured-result severity/count rollups when JSON companions exist, and failure summaries so downstream automation can ingest the run without parsing the human console summary.
+- `--run-ledger-output` writes one sanitized JSON ledger for the same batch-review command family, carrying a stable fixture fingerprint plus the published batch summary so repeated fixed-pack experiments can be diffed safely later.
+- `--fixture-label` and `--run-label` are optional caller-owned annotations for that ledger. They help experiment readouts stay concise without turning model routing or pack selection into package policy.
 - `--rerun-summary` reuses one prior summary artifact to select a bounded rerun set from the current manifest without widening into resumable orchestration state.
 - `--rerun-failed` reruns only entries that failed in that prior summary, while `--entry-name` reruns one or more named entries recorded in the summary artifact. Matching stays on summary result indexes and manifest review names, so duplicate names should be avoided when rerunning by name.
 - The first slice is sequential only. Concurrency, scheduling, and repo-specific policy routing stay outside the shared open-source boundary.
@@ -647,6 +655,15 @@ Use `batch-review-compare` when a repeated manifest run needs a deterministic tw
 - It reports aggregate prompt-eval count deltas only from per-entry `ollamaTelemetry.promptEvalCount` values already present in the summaries.
 - Its `--json` output is covered by the published `batchReviewSummaryComparison` schema path and `validateBatchReviewSummaryComparisonReport(...)` helper so wrappers can validate the contract without scraping CLI implementation details.
 - It does not infer baselines, read structured output paths, or add approval policy; use `review-gate --batch-comparison` when CI needs explicit delta budgets for the JSON report.
+
+### Same-Fixture Batch Review Ledger Diff
+
+Use `batch-review-compare --run-ledger` when two repeated runs are supposed to represent the same fixed pack and the wrapper wants the diff to fail fast if the fixture identity drifted.
+
+- It compares exactly two published batch-review run-ledger JSON artifacts.
+- It recomputes and validates the stored fixture fingerprint before diffing.
+- It reuses the existing batch-summary comparison math after proving that both ledgers describe the same fixture.
+- It stays approval-neutral: fixed-pack choice, cohort labels, experiment scheduling, usefulness scoring, and routing remain caller-owned.
 
 ### Review Preflight CLI
 

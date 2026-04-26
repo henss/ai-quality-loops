@@ -16,8 +16,10 @@ AIQL already emits most of the public-safe fields needed for a bounded local-mod
 
 - batch-review summary entries include per-review `durationMs`
 - batch-review summary entries can include `ollamaTelemetry.totalDurationMs`, `loadDurationMs`, `promptEvalCount`, `promptEvalDurationMs`, `evalCount`, and `evalDurationMs`
+- `batch-review --run-ledger-output` can bind one published summary to a stable same-fixture fingerprint plus caller-owned pack and run labels
 - `review-gate` can enforce explicit prompt-eval budgets from published batch summaries
 - `batch-review-compare` and `formatMultiModelDisagreementReport(...)` can compare two published summary artifacts for changed findings, severity movement, and prompt-eval deltas
+- `batch-review-ledger-diff` can compare two published ledgers while rejecting fixture drift before the diff is interpreted
 
 Those seams are useful, but they are still narrower than a full fixed-pack economics benchmark. They compare two published runs and highlight disagreement, yet they do not produce a multi-cohort benchmark readout that combines repeated-run latency, prompt-volume proxy, consistency, and caller-owned usefulness judgment across several local model configurations.
 

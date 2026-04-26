@@ -55,6 +55,8 @@ The stored comparison artifacts keep the public-safe contract shape:
 - `reviews/local-reviewer-capability-economics-pilot/qwen-vs-phi4-comparison.json`
 - `reviews/local-reviewer-capability-economics-pilot/qwen-vs-gpt-oss-comparison.json`
 
+If the same pilot is rerun later, prefer storing each cohort execution as a same-fixture run ledger first and diffing those ledgers with `batch-review-ledger-diff` so pack identity remains explicit before interpreting the comparison.
+
 Those reports show:
 
 - `phi4:latest` improved severity from `medium` to `low` and reduced the total finding count by one versus the `qwen3.5:27b` baseline

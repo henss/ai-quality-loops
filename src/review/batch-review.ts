@@ -52,21 +52,34 @@ import {
   selectBatchReviewEntriesFromSummary,
   writeBatchReviewArtifactSummary,
 } from "./batch-review-artifacts.js";
+import {
+  createBatchReviewRunLedger,
+  formatBatchReviewRunLedgerDiffReport,
+  loadBatchReviewRunLedger,
+  runBatchReviewRunLedgerDiff,
+  writeBatchReviewRunLedger,
+  type CreateBatchReviewRunLedgerOptions,
+} from "./batch-review-run-ledger.js";
 import { sanitizeReviewSurfaceValue } from "../shared/review-surface.js";
 
 export {
   createBatchReviewArtifactSummary,
+  createBatchReviewRunLedger,
   compareBatchReviewArtifactSummaries,
   deriveBatchReviewExecutionPlan,
   deriveBatchReviewPreflightOptions,
   formatBatchReviewSummaryComparisonReport,
   formatBatchReviewArtifactSummary,
+  formatBatchReviewRunLedgerDiffReport,
   loadBatchReviewArtifactSummary,
+  loadBatchReviewRunLedger,
   runBatchReviewSummaryComparison,
+  runBatchReviewRunLedgerDiff,
   runBatchReviewEntries,
   runBatchReviewEntriesPreflight,
   selectBatchReviewEntriesFromSummary,
   writeBatchReviewArtifactSummary,
+  writeBatchReviewRunLedger,
 };
 
 export type {
@@ -86,6 +99,7 @@ export type {
   BatchReviewSummarySeverityDirection,
   BatchReviewStructuredResultSummary,
   BatchReviewMode,
+  CreateBatchReviewRunLedgerOptions,
 };
 
 export interface NormalizedBatchReviewEntry {

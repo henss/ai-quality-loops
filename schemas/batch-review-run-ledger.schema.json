@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/henss/ai-quality-loops/schemas/batch-review-run-ledger.schema.json",
+  "title": "Batch Review Run Ledger",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "commandFamily", "fixture", "run"],
+  "properties": {
+    "schemaVersion": { "const": "1" },
+    "commandFamily": { "const": "batch-review" },
+    "fixture": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["fingerprint", "totalEntries", "entries"],
+      "properties": {
+        "label": { "type": "string", "minLength": 1 },
+        "fingerprint": { "type": "string", "minLength": 1 },
+        "totalEntries": { "type": "integer", "minimum": 0 },
+        "entries": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["index", "resultKey", "mode", "targetSummary"],
+            "properties": {
+              "index": { "type": "integer", "minimum": 0 },
+              "name": { "type": "string", "minLength": 1 },
+              "resultKey": { "type": "string", "minLength": 1 },
+              "mode": { "enum": ["expert", "vision"] },
+              "targetSummary": { "type": "string", "minLength": 1 }
+            }
+          }
+        }
+      }
+    },
+    "run": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["summary"],
+      "properties": {
+        "label": { "type": "string", "minLength": 1 },
+        "summary": {
+          "$ref": "https://github.com/henss/ai-quality-loops/schemas/batch-review-summary.schema.json"
+        }
+      }
+    }
+  }
+}

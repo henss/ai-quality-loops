@@ -30,6 +30,17 @@ export * from "./review/batch-review-summary-compare.js";
 export * from "./review/launch-outcome-evidence-summary.js";
 export * from "./review/multi-model-disagreement-report.js";
 export {
+  compareBatchReviewRunLedgers,
+  computeBatchReviewRunLedgerFingerprint,
+  createBatchReviewRunLedger,
+  deriveBatchReviewRunLedgerFixtureEntries,
+  formatBatchReviewRunLedgerDiffReport,
+  loadBatchReviewRunLedger,
+  runBatchReviewRunLedgerDiff,
+  writeBatchReviewRunLedger,
+  type CreateBatchReviewRunLedgerOptions,
+} from "./review/batch-review-run-ledger.js";
+export {
   formatSourceHandleReviewBundleDigest,
   type FormatSourceHandleReviewBundleDigestOptions,
 } from "./review/source-handle-review-bundle-digest.js";
@@ -56,6 +67,15 @@ export {
   type StructuredReviewDecisionConfidence,
   type StructuredReviewDecisionVerdict,
 } from "./contracts/structured-review-decision-contract.js";
+export {
+  parseBatchReviewRunLedger,
+  parseBatchReviewRunLedgerDiffReport,
+  validateBatchReviewRunLedger,
+  validateBatchReviewRunLedgerDiffReport,
+  type BatchReviewRunLedger,
+  type BatchReviewRunLedgerDiffReport,
+  type BatchReviewRunLedgerFixtureEntry,
+} from "./contracts/batch-review-run-ledger-contract.js";
 export {
   parseBatchReviewSummaryComparisonReport,
   validateBatchReviewSummaryComparisonReport,

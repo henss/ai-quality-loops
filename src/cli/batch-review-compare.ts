@@ -1,6 +1,10 @@
 import { cac } from "cac";
 import * as dotenv from "dotenv";
 import {
+  formatBatchReviewRunLedgerDiffReport,
+  runBatchReviewRunLedgerDiff,
+} from "../review/batch-review.js";
+import {
   formatBatchReviewSummaryComparisonReport,
   runBatchReviewSummaryComparison,
 } from "../review/batch-review-summary-compare.js";
@@ -17,8 +21,27 @@ async function main() {
       "<beforePath> <afterPath>",
       "Compare two batch-review summary JSON artifacts",
     )
+    .option(
+      "--run-ledger",
+      "Compare two same-fixture batch-review run ledger JSON artifacts instead of raw batch summaries",
+    )
     .option("--json", "Emit structured JSON output")
     .action(async (beforePath, afterPath, options) => {
+      if (options.runLedger) {
+        const report = await runBatchReviewRunLedgerDiff({
+          beforePath,
+          afterPath,
+        });
+
+        if (options.json) {
+          console.info(JSON.stringify(report, null, 2));
+          return;
+        }
+
+        console.info(formatBatchReviewRunLedgerDiffReport(report));
+        return;
+      }
+
       const report = await runBatchReviewSummaryComparison({
         beforePath,
         afterPath,

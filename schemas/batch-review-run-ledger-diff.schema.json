@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/henss/ai-quality-loops/schemas/batch-review-run-ledger-diff.schema.json",
+  "title": "Batch Review Run Ledger Diff Report",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "commandFamily",
+    "fixture",
+    "inputs",
+    "comparison"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "1" },
+    "commandFamily": { "const": "batch-review" },
+    "fixture": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["fingerprint", "totalEntries"],
+      "properties": {
+        "label": { "type": "string", "minLength": 1 },
+        "fingerprint": { "type": "string", "minLength": 1 },
+        "totalEntries": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "inputs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["before", "after"],
+      "properties": {
+        "before": { "$ref": "#/$defs/diffInput" },
+        "after": { "$ref": "#/$defs/diffInput" }
+      }
+    },
+    "comparison": {
+      "$ref": "https://github.com/henss/ai-quality-loops/schemas/batch-review-summary-comparison.schema.json#/properties/comparison"
+    }
+  },
+  "$defs": {
+    "diffInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["pathLabel"],
+      "properties": {
+        "pathLabel": { "type": "string", "minLength": 1 },
+        "runLabel": { "type": "string", "minLength": 1 },
+        "fixtureLabel": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}

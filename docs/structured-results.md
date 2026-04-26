@@ -21,7 +21,9 @@ Structured results are the public contract for reusable AIQL review output. They
 
 - `examples/synthetic-reviewer-contract-result.fixture.json` validates the base structured review-result shape.
 - `examples/synthetic-structured-result-golden-diff-before.fixture.json` and `examples/synthetic-structured-result-golden-diff-after.fixture.json` validate deterministic before/after comparison.
-- `examples/synthetic-structured-result-golden-diff.expected.json` stores the expected comparison plus the before/after fixture provenance for `compareStructuredReviewResults(...)`.
+- `examples/synthetic-structured-result-golden-diff.expected.json` stores the expected comparison plus the before/after fixture provenance for `compareStructuredReviewResults(...)`, and `examples/synthetic-structured-result-golden-diff.expected.md` locks the compact text output for the improved comparison.
+- `examples/synthetic-structured-result-golden-regression-before.fixture.json` and `examples/synthetic-structured-result-golden-regression-after.fixture.json` document a deterministic failing/regressed comparison.
+- `examples/synthetic-structured-result-golden-regression.expected.json` stores the expected regression comparison plus the before/after fixture provenance, and `examples/synthetic-structured-result-golden-regression.expected.md` locks the compact text output for that failing comparison.
 - `examples/synthetic-review-output-evidence-diff-before.fixture.json` and `examples/synthetic-review-output-evidence-diff-after.fixture.json` isolate an evidence-only comparison delta.
 - `examples/synthetic-review-output-evidence-diff.expected.json` stores the expected comparison plus the before/after fixture provenance, and `examples/synthetic-review-output-evidence-diff.expected.md` locks the compact text output for that evidence-only delta.
 - `examples/synthetic-compact-evidence-pack-diff-before.fixture.json` and `examples/synthetic-compact-evidence-pack-diff-after.fixture.json` isolate a compact evidence-pack comparison delta.
@@ -91,9 +93,13 @@ const comparison = compareStructuredReviewResults({
 
 The comparison groups findings by `findings[].key` when present, then by normalized title or summary. Use stable generic keys when repeated runs may reword the same finding. Do not put private source names, issue IDs, URLs, paths, account identifiers, or policy labels in keys.
 
+Use the golden-diff fixtures when you need both sides of the comparison story without inventing private examples: the `golden-diff` pack shows one successful/improved comparison, and the `golden-regression` pack shows one failing/regressed comparison over the same public-safe contract.
+
 The compact evidence-diff fixture stays generic only while the comparison consumes already-published structured review results with sanitized evidence labels. If a future workflow needs source-handle resolution, evidence ranking, or approval thresholds, keep that layer in the embedding repo instead of widening AIQL.
 
 The compact evidence-pack fixture follows the same boundary: it covers only before/after comparison over already-published structured review results with synthetic evidence labels. If a future workflow needs packet assembly, source resolution, or private evidence semantics, keep that layer in the embedding repo instead of widening AIQL.
+
+The remaining extraction question is whether any future single-target pass/fail gate over these comparison artifacts would stay generic enough for open-source maintenance. AIQL currently stops at deterministic comparison output and leaves budgets, policy thresholds, and accept/reject decisions caller-owned.
 
 ## Reviewer Disagreement Adjudication
 

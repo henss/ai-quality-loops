@@ -1,0 +1,120 @@
+{
+  "fixtureProvenance": {
+    "beforeFixture": "synthetic-structured-result-golden-regression-before.fixture.json",
+    "afterFixture": "synthetic-structured-result-golden-regression-after.fixture.json"
+  },
+  "comparison": {
+    "overallSeverityChange": {
+      "before": "medium",
+      "after": "critical",
+      "direction": "regressed"
+    },
+    "counts": {
+      "beforeFindings": 3,
+      "afterFindings": 3,
+      "added": 1,
+      "removed": 1,
+      "changed": 1,
+      "unchanged": 1,
+      "severityMovement": {
+        "improved": 0,
+        "regressed": 1,
+        "unchanged": 1
+      }
+    },
+    "added": [
+      {
+        "key": "private source label leaked into summary",
+        "title": "Private source label leaked into summary",
+        "summary": "The synthetic summary names an internal-only source label instead of keeping the evidence reference generic.",
+        "severity": "high",
+        "recommendation": "Replace source-specific wording with a sanitized evidence label before publishing the structured result.",
+        "evidence": [
+          "Source label should stay generic"
+        ]
+      }
+    ],
+    "removed": [
+      {
+        "key": "reviewer scope is documented",
+        "title": "Reviewer scope is documented",
+        "summary": "The synthetic packet says the comparison is for review-output behavior only.",
+        "severity": "low",
+        "recommendation": "Keep routing, approvals, and remediation ownership in the embedding repo.",
+        "evidence": [
+          "Boundary note: comparison fixture only"
+        ]
+      }
+    ],
+    "changed": [
+      {
+        "key": "escalation wording overstates certainty",
+        "title": "Escalation wording overstates certainty",
+        "before": {
+          "key": "escalation wording overstates certainty",
+          "title": "Escalation wording overstates certainty",
+          "summary": "The synthetic summary implies a definitive blocker even though the evidence only supports a caution.",
+          "severity": "medium",
+          "recommendation": "Restore caveated wording before treating the issue as blocker-grade.",
+          "evidence": [
+            "Synthetic evidence packet",
+            "Escalation note"
+          ]
+        },
+        "after": {
+          "key": "escalation wording overstates certainty",
+          "title": "Escalation wording overstates certainty",
+          "summary": "The synthetic summary now states blocker certainty without evidence caveats and turns the caution into a must-stop instruction.",
+          "severity": "critical",
+          "recommendation": "Reintroduce caveated wording and require caller-owned confirmation before any stop decision.",
+          "evidence": [
+            "Synthetic evidence packet",
+            "Escalation note"
+          ]
+        },
+        "changedFields": [
+          "summary",
+          "severity",
+          "recommendation"
+        ],
+        "severityChange": {
+          "before": "medium",
+          "after": "critical",
+          "direction": "regressed"
+        }
+      }
+    ],
+    "unchanged": [
+      {
+        "key": "action boundary is explicit",
+        "title": "Action boundary is explicit",
+        "before": {
+          "key": "action boundary is explicit",
+          "title": "Action boundary is explicit",
+          "summary": "The review result reports concerns without deciding approval, publication, routing, or remediation ownership.",
+          "severity": "low",
+          "recommendation": "Keep downstream policy and action mapping in the embedding repo.",
+          "evidence": [
+            "Boundary note: synthetic fixture only"
+          ]
+        },
+        "after": {
+          "key": "action boundary is explicit",
+          "title": "Action boundary is explicit",
+          "summary": "The review result reports concerns without deciding approval, publication, routing, or remediation ownership.",
+          "severity": "low",
+          "recommendation": "Keep downstream policy and action mapping in the embedding repo.",
+          "evidence": [
+            "Boundary note: synthetic fixture only"
+          ]
+        },
+        "changedFields": [],
+        "severityChange": {
+          "before": "low",
+          "after": "low",
+          "direction": "unchanged"
+        }
+      }
+    ]
+  }
+}

@@ -48,7 +48,8 @@ The example files cover the repeatable workflow surfaces. The package also suppo
 | Pilot a sanitized PR review candidate handoff | `renderLinearCandidateHandoffYaml(...)` and `validateLinearCandidateHandoffYaml(...)` with `./examples/synthetic-pr-review-result.fixture.json` | Use when checking a no-write candidate packet before a caller-owned workflow handles pull-request selection, merge policy, and tracker writes. |
 | Gate a sponsor packet before backlog-candidate routing | `validateReviewResultSponsorPacketHandoff(...)` with `./examples/synthetic-pr-review-result.fixture.json` | Use when a wrapper needs an explicit decision, actionable candidate recommendations, and evidence labels before handing sponsor-facing review output to downstream triage. |
 | Validate a sanitized structured-result fixture | `validateStructuredReviewResult(...)` with `./examples/synthetic-apartment-review-result.fixture.json` | Use when checking contract consumers against a fixture that contains no private home data. |
-| Compare a synthetic structured-result golden diff | `compareStructuredReviewResults(...)` with `./examples/synthetic-structured-result-golden-diff-before.fixture.json` and `./examples/synthetic-structured-result-golden-diff-after.fixture.json` | Use when checking comparison consumers against a public-safe expected diff fixture. |
+| Compare a synthetic structured-result golden diff | `compareStructuredReviewResults(...)` with `./examples/synthetic-structured-result-golden-diff-before.fixture.json` and `./examples/synthetic-structured-result-golden-diff-after.fixture.json` | Use when checking comparison consumers against a public-safe improved diff fixture with locked JSON and Markdown outputs. |
+| Compare a synthetic structured-result regression diff | `compareStructuredReviewResults(...)` with `./examples/synthetic-structured-result-golden-regression-before.fixture.json` and `./examples/synthetic-structured-result-golden-regression-after.fixture.json` | Use when checking comparison consumers against a public-safe failing/regressed diff fixture with locked JSON and Markdown outputs. |
 | Compare a compact review-output evidence diff | `compareStructuredReviewResults(...)` with `./examples/synthetic-review-output-evidence-diff-before.fixture.json` and `./examples/synthetic-review-output-evidence-diff-after.fixture.json` | Use when checking consumers against an evidence-only delta with locked compact JSON and text outputs. |
 | Compare a compact evidence-pack diff | `compareStructuredReviewResults(...)` with `./examples/synthetic-compact-evidence-pack-diff-before.fixture.json` and `./examples/synthetic-compact-evidence-pack-diff-after.fixture.json` | Use when checking public-safe review-contract consumers against a compact evidence-pack delta with locked compact JSON and text outputs. |
 | Compare a synthetic multi-review disagreement pack | `batch-review-compare ./examples/synthetic-multi-review-disagreement-before-summary.fixture.json ./examples/synthetic-multi-review-disagreement-after-summary.fixture.json --json` | Use when checking consumers against improved, regressed, unchanged, recovered, added, and removed review entries in one public-safe calibration pack. |
@@ -465,7 +466,17 @@ Use when you want a deterministic before/after fixture for consumers of `compare
 Typical edits:
 
 - keep the before and after inputs synthetic, or replace them only with caller-sanitized structured review results
-- compare the helper output to the `comparison` block in `synthetic-structured-result-golden-diff.expected.json` when a wrapper needs a stable golden output shape with checked fixture provenance
+- compare the helper output to the `comparison` block in `synthetic-structured-result-golden-diff.expected.json` or to `synthetic-structured-result-golden-diff.expected.md` when a wrapper needs a stable golden output shape with checked fixture provenance
+- keep baseline selection, severity budgets, approval, routing, and remediation policy in the embedding repo
+
+### `synthetic-structured-result-golden-regression-*.json`
+
+Use when you want a deterministic failing/regressed before/after fixture for consumers of `compareStructuredReviewResults(...)` or `review-compare`.
+
+Typical edits:
+
+- keep the before and after inputs synthetic, or replace them only with caller-sanitized structured review results
+- compare the helper output to the `comparison` block in `synthetic-structured-result-golden-regression.expected.json` or to `synthetic-structured-result-golden-regression.expected.md` when a wrapper needs a stable failing comparison shape with checked fixture provenance
 - keep baseline selection, severity budgets, approval, routing, and remediation policy in the embedding repo
 
 ### `synthetic-review-output-evidence-diff-*`
@@ -533,6 +544,7 @@ Typical edits:
 - The synthetic context-pack quality manifest is seam-focused. It intentionally excludes real source names, source contents, tracker keys, private paths, source freshness, domain facts, approval state, retention policy, implementation priority, and routing instructions.
 - The synthetic context-pack quality manifest also leaves the research-source audit and any public-source list empty on purpose because the fixture uses opaque evidence labels only; callers must still own source freshness, retrieval coverage, public-source selection, and approval checks.
 - The synthetic structured-result golden diff is comparison-focused. It intentionally excludes real source labels, tracker identifiers, local paths, account names, private facts, policy thresholds, and routing instructions.
+- The synthetic structured-result golden regression diff is comparison-focused. It intentionally excludes real source labels, tracker identifiers, local paths, account names, private facts, policy thresholds, and routing instructions.
 - The synthetic review-output evidence diff is comparison-focused. It intentionally excludes real source handles, source contents, tracker identifiers, local paths, approval thresholds, and routing instructions.
 - The synthetic compact evidence-pack diff is comparison-focused. It intentionally excludes real source handles, source contents, tracker identifiers, local paths, approval thresholds, and routing instructions.
 - The synthetic reviewer-disagreement fixtures are adjudication-focused. They intentionally exclude real reviewer identities, project names, source contents, approval thresholds, routing, and remediation policy.

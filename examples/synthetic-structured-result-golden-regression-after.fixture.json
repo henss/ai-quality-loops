@@ -1,0 +1,53 @@
+{
+  "schemaVersion": "1",
+  "workflow": "expert",
+  "expert": "Evidence Reviewer",
+  "model": "synthetic-golden-regression-fixture",
+  "summary": "Synthetic candidate review result for deterministic structured-result regression checks.",
+  "overallSeverity": "critical",
+  "findings": [
+    {
+      "title": "Escalation wording overstates certainty",
+      "summary": "The synthetic summary now states blocker certainty without evidence caveats and turns the caution into a must-stop instruction.",
+      "severity": "critical",
+      "recommendation": "Reintroduce caveated wording and require caller-owned confirmation before any stop decision.",
+      "evidence": [
+        "Synthetic evidence packet",
+        "Escalation note"
+      ]
+    },
+    {
+      "title": "Action boundary is explicit",
+      "summary": "The review result reports concerns without deciding approval, publication, routing, or remediation ownership.",
+      "severity": "low",
+      "recommendation": "Keep downstream policy and action mapping in the embedding repo.",
+      "evidence": [
+        "Boundary note: synthetic fixture only"
+      ]
+    },
+    {
+      "title": "Private source label leaked into summary",
+      "summary": "The synthetic summary names an internal-only source label instead of keeping the evidence reference generic.",
+      "severity": "high",
+      "recommendation": "Replace source-specific wording with a sanitized evidence label before publishing the structured result.",
+      "evidence": [
+        "Source label should stay generic"
+      ]
+    }
+  ],
+  "provenance": [
+    {
+      "label": "Content source",
+      "value": "Synthetic structured-result golden-regression candidate"
+    },
+    {
+      "label": "Review surface",
+      "value": "Structured review-result comparison fixture"
+    },
+    {
+      "label": "Privacy boundary",
+      "value": "No real source paths, tracker identifiers, account data, private facts, or domain policy"
+    }
+  ],
+  "markdown": "# Summary\nSynthetic candidate review result for deterministic structured-result regression checks.\n\n## Findings\n- Critical: Escalation wording overstates certainty.\n- Low: Action boundary is explicit.\n- High: Private source label leaked into summary.\n\n## Boundary\nThis fixture uses only generic labels and leaves approval, routing, remediation, and publication policy caller-owned."
+}

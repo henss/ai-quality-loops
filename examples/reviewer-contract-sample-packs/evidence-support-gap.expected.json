@@ -1,0 +1,89 @@
+{
+  "schemaVersion": "1",
+  "workflow": "expert",
+  "expert": "Evidence Reviewer",
+  "model": "sample-pack-reference",
+  "summary": "The packet preserves generic evidence labels but overstates acceptance readiness from partial support.",
+  "overallSeverity": "medium",
+  "findings": [
+    {
+      "key": "evidence-support-gap",
+      "title": "Acceptance claim exceeds synthetic evidence",
+      "summary": "The packet says it can be accepted without follow-up even though Evidence label C is partial and caller-owned.",
+      "severity": "medium",
+      "recommendation": "Revise the claim or add direct supporting evidence before treating it as accepted.",
+      "evidence": [
+        "Evidence label C",
+        "The evidence is partial and should stay caveated."
+      ]
+    },
+    {
+      "key": "caveat-preservation-gap",
+      "title": "Caveat does not preserve caller-owned thresholds",
+      "summary": "The downstream-action caveat names caller ownership, but the claim still implies sufficient caveats without proof-threshold evidence.",
+      "severity": "low",
+      "recommendation": "Keep the caveat explicit and route threshold decisions to the embedding workflow.",
+      "evidence": [
+        "Evidence label B",
+        "The caller still owns proof thresholds and routing."
+      ]
+    }
+  ],
+  "decision": {
+    "schema": "peer_review_decision_v1",
+    "verdict": "accept_with_follow_up",
+    "confidence": "medium",
+    "blocking": false,
+    "max_severity": "medium",
+    "summary": "The packet is usable as a contract exercise after preserving follow-up language for the support gap.",
+    "blocking_findings": [],
+    "non_blocking_findings": [
+      {
+        "key": "evidence-support-gap",
+        "title": "Acceptance claim exceeds synthetic evidence",
+        "summary": "The packet says it can be accepted without follow-up even though Evidence label C is partial and caller-owned.",
+        "severity": "medium",
+        "recommendation": "Revise the claim or add direct supporting evidence before treating it as accepted.",
+        "evidence": [
+          "Evidence label C",
+          "The evidence is partial and should stay caveated."
+        ]
+      },
+      {
+        "key": "caveat-preservation-gap",
+        "title": "Caveat does not preserve caller-owned thresholds",
+        "summary": "The downstream-action caveat names caller ownership, but the claim still implies sufficient caveats without proof-threshold evidence.",
+        "severity": "low",
+        "recommendation": "Keep the caveat explicit and route threshold decisions to the embedding workflow.",
+        "evidence": [
+          "Evidence label B",
+          "The caller still owns proof thresholds and routing."
+        ]
+      }
+    ],
+    "required_before_merge": [],
+    "follow_up": [
+      "Collect direct support or revise the acceptance claim.",
+      "Track whether caller-owned thresholds remain explicit in downstream use."
+    ],
+    "next_step_actions": [
+      "collect_more_evidence",
+      "track_follow_up"
+    ]
+  },
+  "provenance": [
+    {
+      "label": "Content source",
+      "value": "Synthetic sample-pack packet"
+    },
+    {
+      "label": "Evidence basis",
+      "value": "Generic evidence labels only"
+    },
+    {
+      "label": "Privacy boundary",
+      "value": "No private source names, local paths, tracker keys, or account details"
+    }
+  ],
+  "markdown": "Output classification: review\n\nThe packet is acceptable as a contract exercise only with follow-up. Evidence label C is partial, so the acceptance claim should stay caveated and caller-owned."
+}

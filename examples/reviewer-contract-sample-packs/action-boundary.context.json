@@ -1,0 +1,14 @@
+{
+  "reviewSurface": "Reviewer contract action-boundary sample pack",
+  "reviewFocus": [
+    "Check whether the packet separates analysis from approval, routing, and external-action readiness.",
+    "Flag any claim that implies action readiness without explicit approval, ownership, and routing evidence.",
+    "Use stable generic finding keys for caller-owned authority gaps.",
+    "Keep severity budgets, approval, publication, remediation, retention, and downstream routing outside the shared package."
+  ],
+  "outOfScope": [
+    "Do not infer hidden approval, source freshness, account state, or production readiness.",
+    "Do not decide publication, deployment, outreach, purchasing, remediation ownership, tracker routing, or other real-world action.",
+    "Do not promote sample-pack findings into domain policy."
+  ]
+}

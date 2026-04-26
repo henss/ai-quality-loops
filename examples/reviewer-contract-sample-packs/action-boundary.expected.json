@@ -1,0 +1,91 @@
+{
+  "schemaVersion": "1",
+  "workflow": "expert",
+  "expert": "Evidence Reviewer",
+  "model": "sample-pack-reference",
+  "summary": "The packet is analysis-only and should not be treated as ready for external action.",
+  "overallSeverity": "high",
+  "findings": [
+    {
+      "key": "external-action-readiness-unsupported",
+      "title": "External-action readiness is unsupported",
+      "summary": "The packet claims readiness for external action while admitting that no approval, owner, or routing record is included.",
+      "severity": "high",
+      "recommendation": "Replace the readiness claim with a caller-owned approval or routing follow-up.",
+      "evidence": [
+        "Evidence label C",
+        "No approval, owner, or routing record is included."
+      ]
+    },
+    {
+      "key": "caller-owned-authority-gap",
+      "title": "Routing authority remains caller-owned",
+      "summary": "The packet says follow-up work has enough support, but the caveat keeps routing outside the shared contract.",
+      "severity": "medium",
+      "recommendation": "Keep routing decisions in the embedding workflow and require explicit ownership evidence before action.",
+      "evidence": [
+        "Evidence label B",
+        "Routing remains caller-owned."
+      ]
+    }
+  ],
+  "decision": {
+    "schema": "peer_review_decision_v1",
+    "verdict": "changes_requested",
+    "confidence": "high",
+    "blocking": true,
+    "max_severity": "high",
+    "summary": "The external-action claim must be revised before the packet can serve as a safe conformance example.",
+    "blocking_findings": [
+      {
+        "key": "external-action-readiness-unsupported",
+        "title": "External-action readiness is unsupported",
+        "summary": "The packet claims readiness for external action while admitting that no approval, owner, or routing record is included.",
+        "severity": "high",
+        "recommendation": "Replace the readiness claim with a caller-owned approval or routing follow-up.",
+        "evidence": [
+          "Evidence label C",
+          "No approval, owner, or routing record is included."
+        ]
+      }
+    ],
+    "non_blocking_findings": [
+      {
+        "key": "caller-owned-authority-gap",
+        "title": "Routing authority remains caller-owned",
+        "summary": "The packet says follow-up work has enough support, but the caveat keeps routing outside the shared contract.",
+        "severity": "medium",
+        "recommendation": "Keep routing decisions in the embedding workflow and require explicit ownership evidence before action.",
+        "evidence": [
+          "Evidence label B",
+          "Routing remains caller-owned."
+        ]
+      }
+    ],
+    "required_before_merge": [
+      "Revise the external-action readiness claim."
+    ],
+    "follow_up": [
+      "Collect explicit approval, ownership, or routing evidence in the embedding workflow."
+    ],
+    "next_step_actions": [
+      "revise_artifact",
+      "collect_more_evidence"
+    ]
+  },
+  "provenance": [
+    {
+      "label": "Content source",
+      "value": "Synthetic sample-pack packet"
+    },
+    {
+      "label": "Evidence basis",
+      "value": "Generic evidence labels only"
+    },
+    {
+      "label": "Privacy boundary",
+      "value": "No private source names, local paths, tracker keys, or account details"
+    }
+  ],
+  "markdown": "Output classification: review\n\nThe packet should request changes because Evidence label C does not include approval, ownership, or routing evidence for external action."
+}

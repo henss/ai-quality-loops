@@ -1,0 +1,15 @@
+{
+  "defaults": {
+    "mode": "expert",
+    "expert": "Evidence Reviewer",
+    "contextPath": "./examples/reviewer-contract-sample-packs/action-boundary.context.json"
+  },
+  "reviews": [
+    {
+      "name": "Reviewer contract action-boundary gap",
+      "target": "./examples/reviewer-contract-sample-packs/action-boundary.packet.md",
+      "outputPath": "./reviews/reviewer-contract-sample-packs/action-boundary.md",
+      "structuredOutputPath": "./reviews/reviewer-contract-sample-packs/json/action-boundary.json"
+    }
+  ]
+}

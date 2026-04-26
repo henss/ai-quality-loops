@@ -21,6 +21,8 @@ Validate payloads with `validateStructuredReviewResult(...)` or the published `s
 
 - `examples/reviewer-contract-starter-kit/` is the minimal copy-ready starter kit for external contributors or embedding repos that want one reviewer-contract seam without adopting extra package-owned tooling.
 - Its templates show the smallest manifest, context file, and review packet shape that still preserves caller-owned authority boundaries.
+- `examples/reviewer-contract-sample-packs/` publishes two copy-ready conformance packs for reviewer implementations: one evidence-support gap and one caller-owned action-boundary gap.
+- Each sample pack includes a runnable manifest plus an expected structured-result fixture so contributors can tell whether mismatches are about contract shape, missing stable finding keys, missing decision actions, or lost boundary language.
 - `examples/synthetic-reviewer-contract-review.manifest.json` is a runnable synthetic text-review manifest.
 - `examples/synthetic-reviewer-contract-review-context.json` defines the review focus for that manifest.
 - `examples/synthetic-reviewer-contract-review-context.md` is the synthetic target packet.
@@ -47,6 +49,10 @@ For the narrowest onboarding path, start with `examples/reviewer-contract-starte
 4. Optionally run the copied validation script against the emitted structured JSON before adding your own schema tooling.
 
 If you need repo-specific routing, CI budgets, or tracker writes, add them in the embedding repo instead of widening the shared reviewer-contract surface here.
+
+## Sample Pack Conformance
+
+Use `examples/reviewer-contract-sample-packs/` when a reviewer implementation needs a small public-safe target before it runs on caller-owned packets. The expected fixtures are not model goldens; they define the minimum structured-result shape and reviewer signals that should survive across implementations. Different prose or additional findings are fine when the stable generic finding keys, evidence labels, decision actions, provenance, and caller-owned boundary language remain clear.
 
 ## Allowed In Shared Examples
 

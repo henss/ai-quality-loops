@@ -1,0 +1,15 @@
+{
+  "defaults": {
+    "mode": "expert",
+    "expert": "Evidence Reviewer",
+    "contextPath": "./examples/reviewer-contract-sample-packs/evidence-support-gap.context.json"
+  },
+  "reviews": [
+    {
+      "name": "Reviewer contract evidence-support gap",
+      "target": "./examples/reviewer-contract-sample-packs/evidence-support-gap.packet.md",
+      "outputPath": "./reviews/reviewer-contract-sample-packs/evidence-support-gap.md",
+      "structuredOutputPath": "./reviews/reviewer-contract-sample-packs/json/evidence-support-gap.json"
+    }
+  ]
+}

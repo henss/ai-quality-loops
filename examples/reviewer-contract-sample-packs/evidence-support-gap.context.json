@@ -1,0 +1,14 @@
+{
+  "reviewSurface": "Reviewer contract evidence-support sample pack",
+  "reviewFocus": [
+    "Check whether each claim is proportional to the supplied synthetic evidence labels.",
+    "Flag broad claims that lack direct evidence, quoted support, or explicit caller-owned caveats.",
+    "Use stable generic finding keys when a support or caveat gap could recur across implementations.",
+    "Keep approval, routing, remediation ownership, publication, and domain interpretation caller-owned."
+  ],
+  "outOfScope": [
+    "Do not infer private sources, hidden approvals, real source freshness, or domain-specific policy from synthetic labels.",
+    "Do not approve publication, deployment, remediation, routing, retention, purchasing, or other external action.",
+    "Do not treat generic evidence labels as proof outside this caller-sanitized packet."
+  ]
+}

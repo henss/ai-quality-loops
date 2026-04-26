@@ -52,6 +52,7 @@ The package publishes copy-ready starter manifests under `examples/` so embeddin
 - `examples/synthetic-zone-vision-probe.manifest.json` for one public-safe synthetic visual probe with generic zones and no real capture data
 - `examples/sanitized-social-evidence-review.manifest.json` for one synthetic text review over redacted social-evidence claims
 - `examples/synthetic-reviewer-contract-review.manifest.json` for one runnable synthetic reviewer-contract check
+- `examples/reviewer-contract-sample-packs/` for copy-ready reviewer-contract conformance packs with expected structured-result fixtures
 - `examples/synthetic-venture-concept-brief-review.manifest.json` for one synthetic venture concept brief review with caller-owned proof thresholds and follow-up decisions
 - `examples/synthetic-venture-buyer-claim-review.manifest.json` for one synthetic bridge packet that carries caveated venture-brief findings into buyer-claim review without moving acceptance policy into AIQL
 - `examples/synthetic-context-pack-quality-review.manifest.json` for one synthetic context-pack quality review with caller-owned source handling

@@ -23,6 +23,7 @@ export interface LaunchPacketEvidenceReference {
 export interface LaunchPacketAdoptionEvidence {
   status?: "adopted" | "rejected" | "not_applicable" | "missing";
   scoutCommand?: string;
+  evidenceHandle?: string;
   rationale?: string;
 }
 
@@ -45,6 +46,7 @@ export interface LaunchPacketOutcomeEvidence {
 
 export interface LaunchPacketSourceAuditEvidence {
   status?: "complete" | "missing_paths" | "unresolved_paths" | "not_applicable";
+  inspectedSourceHandles?: ReadonlyArray<string>;
   missingPathCount?: number;
   unresolvedPathCount?: number;
   retrievalNoteProvided?: boolean;

@@ -43,6 +43,10 @@ function normalizeCommand(value?: string): string | undefined {
   return value?.replace(/\s+/g, " ").trim().toLowerCase();
 }
 
+function hasBuildVsBuyEvidence(adoption: LaunchPacketAdoptionEvidence): boolean {
+  return !isBlank(adoption.scoutCommand) || !isBlank(adoption.evidenceHandle);
+}
+
 function createFinding(input: StructuredReviewFinding): StructuredReviewFinding {
   return input;
 }
@@ -284,6 +288,21 @@ function reviewAdoptionEvidence(
     );
     addUniqueAction(actions, "collect_more_evidence");
     return;
+  }
+
+  if (adoption.status !== "not_applicable" && !hasBuildVsBuyEvidence(adoption)) {
+    findings.push(
+      createFinding({
+        key: "missing-build-vs-buy-source-evidence",
+        title: "Build-vs-buy source evidence is missing",
+        summary:
+          "The packet records an adoption decision without the raw scout command or sanitized evidence handle that supports it.",
+        severity: "medium",
+        recommendation:
+          "Attach the solution-scout command, a sanitized scout artifact handle, or mark the check not applicable with a rationale.",
+      }),
+    );
+    addUniqueAction(actions, "collect_more_evidence");
   }
 
   if (

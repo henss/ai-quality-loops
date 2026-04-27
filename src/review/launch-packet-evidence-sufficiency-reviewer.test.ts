@@ -46,6 +46,7 @@ const cleanPacket = {
   },
   sourceAudit: {
     status: "complete",
+    inspectedSourceHandles: ["src/review/launch-packet-evidence-sufficiency-reviewer.ts"],
   },
   evidenceBudget: {
     status: "satisfied",
@@ -176,6 +177,32 @@ describe("reviewLaunchPacketEvidenceSufficiency follow-up gates", () => {
     expect(review.nextStepActions).toEqual([
       "collect_more_evidence",
       "rerun_review",
+    ]);
+  });
+
+  it("flags summarized build-vs-buy and source-inspection claims without raw evidence", () => {
+    const review = reviewLaunchPacketEvidenceSufficiency({
+      ...cleanPacket,
+      packetId: "synthetic-summary-only-source-evidence",
+      adoption: {
+        status: "rejected",
+        rationale:
+          "Summary says no reusable dependency was adopted, but it does not name the raw scout evidence.",
+      },
+      sourceAudit: {
+        status: "complete",
+        inspectedSourceHandles: [],
+      },
+    });
+
+    expect(review.verdict).toBe("needs_caller_review");
+    expect(review.findings.map((finding) => finding.key)).toEqual([
+      "missing-build-vs-buy-source-evidence",
+      "missing-source-inspection-evidence",
+    ]);
+    expect(review.nextStepActions).toEqual([
+      "collect_more_evidence",
+      "request_caller_review",
     ]);
   });
 

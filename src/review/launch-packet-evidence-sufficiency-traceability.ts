@@ -9,6 +9,10 @@ function isBlank(value?: string): boolean {
   return value === undefined || value.trim().length === 0;
 }
 
+function hasNonBlankEntry(values?: ReadonlyArray<string>): boolean {
+  return values?.some((value) => !isBlank(value)) === true;
+}
+
 function addUniqueAction(
   actions: StructuredReviewNextStepAction[],
   action: StructuredReviewNextStepAction,
@@ -54,6 +58,23 @@ function reviewSourceAuditEvidence(
       addUniqueAction(actions, "revise_artifact");
     }
     return;
+  }
+
+  if (
+    sourceAudit.status === "complete" &&
+    !hasNonBlankEntry(sourceAudit.inspectedSourceHandles)
+  ) {
+    findings.push({
+      key: "missing-source-inspection-evidence",
+      title: "Source-inspection evidence handle is missing",
+      summary:
+        "The packet marks source inspection complete without listing the raw source handle or sanitized artifact that was inspected.",
+      severity: "medium",
+      recommendation:
+        "Record the inspected source handle or caller-owned retrieval note before reusing the packet evidence.",
+    });
+    addUniqueAction(actions, "collect_more_evidence");
+    addUniqueAction(actions, "request_caller_review");
   }
 
   const missingPathCount = sourceAudit.missingPathCount ?? 0;

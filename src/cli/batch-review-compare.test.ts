@@ -4,6 +4,7 @@ import os from "node:os";
 import { describe, expect, it } from "vitest";
 import { execa } from "execa";
 import { validateMultiReviewContradictionCoverageMatrix } from "../contracts/multi-review-contradiction-coverage-matrix-contract.js";
+import type { MultiReviewContradictionCoverageMatrix } from "../contracts/multi-review-contradiction-coverage-matrix-contract.js";
 
 const repoRoot = path.resolve(import.meta.dirname, "../..");
 const batchReviewCompareCli = path.join(
@@ -18,6 +19,13 @@ const expectedMatrixMarkdownPath =
   "examples/synthetic-multi-review-contradiction-coverage-matrix.expected.md";
 const expectedMatrixJsonPath =
   "examples/synthetic-multi-review-contradiction-coverage-matrix.expected.json";
+
+interface MatrixArtifactOutputs {
+  markdown: string;
+  rawJson: string;
+  expectedMarkdown: string;
+  expectedJson: string;
+}
 
 function expectedCliMatrixJson(expectedJson: string): string {
   const matrix = JSON.parse(expectedJson) as {
@@ -68,19 +76,51 @@ function readExpectedMatrixMarkdown(): Promise<string> {
   return fs.readFile(path.join(repoRoot, expectedMatrixMarkdownPath), "utf-8");
 }
 
+function parseValidMatrixJson(value: string): MultiReviewContradictionCoverageMatrix {
+  const validation = validateMultiReviewContradictionCoverageMatrix(
+    JSON.parse(value) as unknown,
+  );
+
+  expect(validation.ok).toBe(true);
+  if (!validation.ok) {
+    throw validation.error;
+  }
+
+  return validation.value;
+}
+
 function expectValidMatrixJson(value: string): void {
-  expect(
-    validateMultiReviewContradictionCoverageMatrix(JSON.parse(value) as unknown),
-  ).toEqual({
-    ok: true,
-    value: expect.objectContaining({
-      totals: expect.objectContaining({
-        rows: 6,
-        rowsWithContradictions: 5,
-        uncoveredChecks: 3,
-      }),
+  expect(parseValidMatrixJson(value).totals).toEqual(
+    expect.objectContaining({
+      rows: 6,
+      rowsWithContradictions: 5,
+      uncoveredChecks: 3,
     }),
-  });
+  );
+}
+
+async function readMatrixArtifactOutputs(input: {
+  markdownPath: string;
+  jsonPath: string;
+}): Promise<MatrixArtifactOutputs> {
+  const [markdown, rawJson, expectedMarkdown, expectedJson] = await Promise.all([
+    fs.readFile(input.markdownPath, "utf-8"),
+    fs.readFile(input.jsonPath, "utf-8"),
+    readExpectedMatrixMarkdown(),
+    readExpectedMatrixJson(),
+  ]);
+
+  return { markdown, rawJson, expectedMarkdown, expectedJson };
+}
+
+function expectMatrixArtifactOutputs(outputs: MatrixArtifactOutputs): void {
+  expect(outputs.markdown).toBe(
+    expectedCliMatrixMarkdown(outputs.expectedMarkdown),
+  );
+  expect(outputs.rawJson).toBe(
+    `${expectedCliMatrixJson(outputs.expectedJson)}\n`,
+  );
+  expectValidMatrixJson(outputs.rawJson);
 }
 
 describe("batch-review-compare CLI", () => {
@@ -119,17 +159,9 @@ describe("batch-review-compare CLI", () => {
       jsonPath,
     ]);
 
-    const [markdown, rawJson, expectedMarkdown, expectedJson] =
-      await Promise.all([
-        fs.readFile(markdownPath, "utf-8"),
-        fs.readFile(jsonPath, "utf-8"),
-        readExpectedMatrixMarkdown(),
-        readExpectedMatrixJson(),
-      ]);
+    const outputs = await readMatrixArtifactOutputs({ markdownPath, jsonPath });
 
     expect(result.stdout).toContain("Batch review summary comparison completed.");
-    expect(markdown).toBe(expectedCliMatrixMarkdown(expectedMarkdown));
-    expect(rawJson).toBe(`${expectedCliMatrixJson(expectedJson)}\n`);
-    expectValidMatrixJson(rawJson);
+    expectMatrixArtifactOutputs(outputs);
   });
 });

@@ -230,6 +230,22 @@ function reviewVerificationEvidence(
     addUniqueAction(actions, "revise_artifact");
   }
 
+  if (verification.runtimeStderr === "unresolved") {
+    findings.push(
+      createFinding({
+        key: "unresolved-runtime-stderr",
+        title: "Runtime stderr is unresolved",
+        summary:
+          "The packet records stderr from the reviewer runtime without explaining whether it is expected, harmless, or blocking.",
+        severity: "medium",
+        recommendation:
+          "Record the stderr interpretation and rerun evidence, or classify the packet as blocked if the warning may affect review output.",
+      }),
+    );
+    addUniqueAction(actions, "rerun_review");
+    addUniqueAction(actions, "request_caller_review");
+  }
+
   if (verification.surfaceBudgetChecked === false) {
     findings.push(
       createFinding({

@@ -32,6 +32,7 @@ export interface LaunchPacketVerificationEvidence {
   result?: "passed" | "failed" | "missing";
   targetedRun?: boolean;
   repeatedFailedCommandCount?: number;
+  runtimeStderr?: "none" | "acknowledged" | "unresolved";
   surfaceBudgetChecked?: boolean;
   surfaceBudgetCommand?: string;
 }

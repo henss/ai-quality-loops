@@ -4,6 +4,9 @@ import {
   type LaunchPacketEvidenceSufficiencyInput,
 } from "./launch-packet-evidence-sufficiency-reviewer.js";
 
+const targetedReviewCommand =
+  "pnpm exec vitest run src/review/launch-packet-evidence-sufficiency-reviewer.test.ts";
+
 const cleanPacket = {
   packetId: "synthetic-clean-launch-packet",
   title: "Clean synthetic launch packet",
@@ -20,10 +23,8 @@ const cleanPacket = {
     },
   ],
   verification: {
-    claimedCommand:
-      "pnpm exec vitest run src/review/launch-packet-evidence-sufficiency-reviewer.test.ts",
-    observedCommand:
-      "pnpm exec vitest run src/review/launch-packet-evidence-sufficiency-reviewer.test.ts",
+    claimedCommand: targetedReviewCommand,
+    observedCommand: targetedReviewCommand,
     result: "passed",
     targetedRun: true,
     repeatedFailedCommandCount: 0,
@@ -46,6 +47,19 @@ const cleanPacket = {
   boundary: {
     outputClassification: "review",
     privateDetailsIncluded: false,
+  },
+} satisfies LaunchPacketEvidenceSufficiencyInput;
+
+const runtimeStderrPacket = {
+  ...cleanPacket,
+  packetId: "synthetic-runtime-stderr",
+  verification: {
+    claimedCommand: targetedReviewCommand,
+    observedCommand: targetedReviewCommand,
+    result: "passed",
+    targetedRun: true,
+    runtimeStderr: "unresolved",
+    surfaceBudgetChecked: true,
   },
 } satisfies LaunchPacketEvidenceSufficiencyInput;
 
@@ -115,6 +129,21 @@ describe("reviewLaunchPacketEvidenceSufficiency", () => {
     ]);
   });
 
+  it("flags unresolved runtime stderr even when verification passed", () => {
+    const review = reviewLaunchPacketEvidenceSufficiency(runtimeStderrPacket);
+
+    expect(review.verdict).toBe("needs_caller_review");
+    expect(review.findings.map((finding) => finding.key)).toEqual([
+      "unresolved-runtime-stderr",
+    ]);
+    expect(review.nextStepActions).toEqual([
+      "rerun_review",
+      "request_caller_review",
+    ]);
+  });
+});
+
+describe("reviewLaunchPacketEvidenceSufficiency follow-up gates", () => {
   it("flags missing build-vs-buy evidence, targeted test run, and surface budget check", () => {
     const review = reviewLaunchPacketEvidenceSufficiency({
       ...cleanPacket,

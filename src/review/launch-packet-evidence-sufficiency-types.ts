@@ -43,6 +43,20 @@ export interface LaunchPacketOutcomeEvidence {
   statusChecked?: boolean;
 }
 
+export interface LaunchPacketSourceAuditEvidence {
+  status?: "complete" | "missing_paths" | "unresolved_paths" | "not_applicable";
+  missingPathCount?: number;
+  unresolvedPathCount?: number;
+  retrievalNoteProvided?: boolean;
+  rationale?: string;
+}
+
+export interface LaunchPacketEvidenceBudgetEvidence {
+  status?: "satisfied" | "missing" | "exceeded" | "not_applicable";
+  budgetName?: string;
+  rationale?: string;
+}
+
 export interface LaunchPacketBoundaryEvidence {
   outputClassification?: string;
   privateDetailsIncluded?: boolean;
@@ -57,6 +71,8 @@ export interface LaunchPacketEvidenceSufficiencyInput {
   adoption?: LaunchPacketAdoptionEvidence;
   verification?: LaunchPacketVerificationEvidence;
   outcome?: LaunchPacketOutcomeEvidence;
+  sourceAudit?: LaunchPacketSourceAuditEvidence;
+  evidenceBudget?: LaunchPacketEvidenceBudgetEvidence;
   boundary?: LaunchPacketBoundaryEvidence;
 }
 

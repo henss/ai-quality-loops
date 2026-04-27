@@ -12,15 +12,18 @@ import type {
   LaunchPacketOutcomeEvidence,
   LaunchPacketVerificationEvidence,
 } from "./launch-packet-evidence-sufficiency-types.js";
+import { reviewTraceabilityEvidence } from "./launch-packet-evidence-sufficiency-traceability.js";
 
 export type {
   LaunchPacketAdoptionEvidence,
   LaunchPacketBoundaryEvidence,
+  LaunchPacketEvidenceBudgetEvidence,
   LaunchPacketEvidenceReference,
   LaunchPacketEvidenceStatus,
   LaunchPacketEvidenceSufficiencyInput,
   LaunchPacketEvidenceSufficiencyReview,
   LaunchPacketOutcomeEvidence,
+  LaunchPacketSourceAuditEvidence,
   LaunchPacketVerificationEvidence,
 } from "./launch-packet-evidence-sufficiency-types.js";
 
@@ -233,8 +236,8 @@ function reviewVerificationEvidence(
   if (verification.runtimeStderr === "unresolved") {
     findings.push(
       createFinding({
-        key: "unresolved-runtime-stderr",
-        title: "Runtime stderr is unresolved",
+        key: "unclassified-runtime-stderr",
+        title: "Runtime stderr is unclassified",
         summary:
           "The packet records stderr from the reviewer runtime without explaining whether it is expected, harmless, or blocking.",
         severity: "medium",
@@ -400,6 +403,12 @@ export function reviewLaunchPacketEvidenceSufficiency(
   reviewAdoptionEvidence(input.adoption, findings, nextStepActions);
   reviewVerificationEvidence(input.verification, findings, nextStepActions);
   reviewOutcomeEvidence(input.outcome, findings, nextStepActions);
+  reviewTraceabilityEvidence({
+    sourceAudit: input.sourceAudit,
+    evidenceBudget: input.evidenceBudget,
+    findings,
+    actions: nextStepActions,
+  });
   reviewBoundaryEvidence(input.boundary, findings, nextStepActions);
 
   const maxSeverity = getMaxSeverity(findings);

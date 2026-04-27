@@ -44,6 +44,13 @@ const cleanPacket = {
     generatedPath: true,
     statusChecked: true,
   },
+  sourceAudit: {
+    status: "complete",
+  },
+  evidenceBudget: {
+    status: "satisfied",
+    budgetName: "synthetic packet evidence budget",
+  },
   boundary: {
     outputClassification: "review",
     privateDetailsIncluded: false,
@@ -134,7 +141,7 @@ describe("reviewLaunchPacketEvidenceSufficiency", () => {
 
     expect(review.verdict).toBe("needs_caller_review");
     expect(review.findings.map((finding) => finding.key)).toEqual([
-      "unresolved-runtime-stderr",
+      "unclassified-runtime-stderr",
     ]);
     expect(review.nextStepActions).toEqual([
       "rerun_review",
@@ -169,6 +176,33 @@ describe("reviewLaunchPacketEvidenceSufficiency follow-up gates", () => {
     expect(review.nextStepActions).toEqual([
       "collect_more_evidence",
       "rerun_review",
+    ]);
+  });
+
+  it("flags source-audit path gaps and evidence-budget gaps", () => {
+    const review = reviewLaunchPacketEvidenceSufficiency({
+      ...cleanPacket,
+      packetId: "synthetic-source-audit-budget-gaps",
+      sourceAudit: {
+        status: "unresolved_paths",
+        missingPathCount: 1,
+        unresolvedPathCount: 1,
+        retrievalNoteProvided: false,
+      },
+      evidenceBudget: {
+        status: "missing",
+        budgetName: "launch packet evidence budget",
+      },
+    });
+
+    expect(review.verdict).toBe("needs_caller_review");
+    expect(review.findings.map((finding) => finding.key)).toEqual([
+      "source-audit-evidence-path-gap",
+      "evidence-budget-gap",
+    ]);
+    expect(review.nextStepActions).toEqual([
+      "collect_more_evidence",
+      "request_caller_review",
     ]);
   });
 

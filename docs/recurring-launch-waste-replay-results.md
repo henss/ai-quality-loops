@@ -1,11 +1,9 @@
 # Recurring Launch-Waste Replay Results
 
-This note records the OPS-1593 replay readout over AIQL's public-safe recurring review-failure eval pack. The incidents are synthetic and sanitized; they preserve reusable launch-waste and review-process failure shapes without copying private packet contents, tracker context, repository names, command authority, approval policy, or organization-specific implementation details.
+This note records the replay readout over AIQL's public-safe recurring review-failure eval pack. The incidents are synthetic and sanitized; they preserve reusable launch-waste and review-process failure shapes without copying private packet contents, tracker context, repository names, command authority, approval policy, or organization-specific implementation details.
 
 ## Scope
 
-- Originating tracker slice: `OPS-1593`
-- Output classification: artifact
 - Corpus: `examples/synthetic-process-failed-peer-review-regression-corpus.fixture.json`
 - Runnable manifest: `examples/synthetic-recurring-review-failure-eval.manifest.json`
 - Actual local reviewer outputs: `reviews/recurring-review-failure-eval/json/`
@@ -42,7 +40,16 @@ Checked-in replay outcome summary: 7 caught, 2 partial misses, 0 missed, 0 overf
 | Source-audit evidence-path gap | Caught | high | `source-audit-evidence-path-gap`; source-audit, evidence-path, and missing/unresolved signals; `collect_more_evidence`, `request_caller_review`; minimum medium severity. |
 | Unclassified runtime stderr | Caught | medium | `unclassified-runtime-stderr`; runtime stderr plus expected/harmless/blocking interpretation signals; `rerun_review`, `request_caller_review`; minimum medium severity. |
 
-No overflag-only case was observed in this run. The reviewer sometimes assigned higher severity than the minimum bar, but those cases also contained the expected reusable failure finding and are treated as caught or partial misses rather than overflagged. The harness now records that distinction explicitly: a partial miss means the core finding was present but a required supporting signal, action, or severity bar was still missing; a full miss means the core expected finding was absent or no structured result was available. Overflag detection remains reserved for future public-safe control cases where the expected result is no finding.
+No overflag-only case was observed in this run. The reviewer sometimes assigned higher severity than the minimum bar, but those cases also contained the expected reusable failure finding and are treated as caught or partial misses rather than overflagged.
+
+Replay outcome policy:
+
+| Outcome | Meaning in this harness |
+| --- | --- |
+| `caught` | The expected finding key, signal groups, next-step actions, and minimum severity were present. |
+| `partial_miss` | The core expected finding was present, but a required supporting signal, action, or severity bar was still missing. |
+| `missed` | The core expected finding was absent or no structured result was available. |
+| `overflagged` | Reserved for future public-safe control cases where the expected result is no finding. |
 
 ## Evidence Map
 

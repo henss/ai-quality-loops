@@ -27,6 +27,7 @@ const cleanPacket = {
     observedCommand: targetedReviewCommand,
     result: "passed",
     targetedRun: true,
+    fixturePassFailLog: "complete",
     repeatedFailedCommandCount: 0,
     surfaceBudgetChecked: true,
     surfaceBudgetCommand:
@@ -66,10 +67,32 @@ const runtimeStderrPacket = {
     observedCommand: targetedReviewCommand,
     result: "passed",
     targetedRun: true,
+    fixturePassFailLog: "complete",
     runtimeStderr: "unresolved",
     surfaceBudgetChecked: true,
   },
 } satisfies LaunchPacketEvidenceSufficiencyInput;
+
+function reviewPacket(overrides: Partial<LaunchPacketEvidenceSufficiencyInput>) {
+  return reviewLaunchPacketEvidenceSufficiency({
+    ...cleanPacket,
+    ...overrides,
+  });
+}
+
+function expectFindingKeys(
+  review: ReturnType<typeof reviewLaunchPacketEvidenceSufficiency>,
+  keys: string[],
+): void {
+  expect(review.findings.map((finding) => finding.key)).toEqual(keys);
+}
+
+function expectNextStepActions(
+  review: ReturnType<typeof reviewLaunchPacketEvidenceSufficiency>,
+  actions: string[],
+): void {
+  expect(review.nextStepActions).toEqual(actions);
+}
 
 describe("reviewLaunchPacketEvidenceSufficiency", () => {
   it("accepts a clean pre-launch packet fixture", () => {
@@ -87,8 +110,7 @@ describe("reviewLaunchPacketEvidenceSufficiency", () => {
   });
 
   it("flags missing handles and hint-only evidence before launch", () => {
-    const review = reviewLaunchPacketEvidenceSufficiency({
-      ...cleanPacket,
+    const review = reviewPacket({
       packetId: "synthetic-missing-evidence",
       evidence: [
         {
@@ -104,7 +126,7 @@ describe("reviewLaunchPacketEvidenceSufficiency", () => {
     });
 
     expect(review.verdict).toBe("insufficient");
-    expect(review.findings.map((finding) => finding.key)).toEqual([
+    expectFindingKeys(review, [
       "missing-evidence-handle",
       "hint-treated-as-evidence",
     ]);
@@ -112,25 +134,25 @@ describe("reviewLaunchPacketEvidenceSufficiency", () => {
   });
 
   it("flags verification mismatch and repeated command noise", () => {
-    const review = reviewLaunchPacketEvidenceSufficiency({
-      ...cleanPacket,
+    const review = reviewPacket({
       packetId: "synthetic-verification-mismatch",
       verification: {
         claimedCommand: "pnpm verify:session",
         observedCommand: "pnpm test -- review-gate.test.ts",
         result: "passed",
         targetedRun: true,
+        fixturePassFailLog: "complete",
         repeatedFailedCommandCount: 4,
         surfaceBudgetChecked: true,
       },
     });
 
     expect(review.verdict).toBe("insufficient");
-    expect(review.findings.map((finding) => finding.key)).toEqual([
+    expectFindingKeys(review, [
       "verification-wrapper-mismatch",
       "repeated-command-noise",
     ]);
-    expect(review.nextStepActions).toEqual([
+    expectNextStepActions(review, [
       "rerun_review",
       "request_caller_review",
       "revise_artifact",
@@ -141,20 +163,14 @@ describe("reviewLaunchPacketEvidenceSufficiency", () => {
     const review = reviewLaunchPacketEvidenceSufficiency(runtimeStderrPacket);
 
     expect(review.verdict).toBe("needs_caller_review");
-    expect(review.findings.map((finding) => finding.key)).toEqual([
-      "unclassified-runtime-stderr",
-    ]);
-    expect(review.nextStepActions).toEqual([
-      "rerun_review",
-      "request_caller_review",
-    ]);
+    expectFindingKeys(review, ["unclassified-runtime-stderr"]);
+    expectNextStepActions(review, ["rerun_review", "request_caller_review"]);
   });
 });
 
 describe("reviewLaunchPacketEvidenceSufficiency follow-up gates", () => {
   it("flags missing build-vs-buy evidence, targeted test run, and surface budget check", () => {
-    const review = reviewLaunchPacketEvidenceSufficiency({
-      ...cleanPacket,
+    const review = reviewPacket({
       packetId: "synthetic-follow-up-evidence-gaps",
       adoption: {
         status: "missing",
@@ -164,25 +180,22 @@ describe("reviewLaunchPacketEvidenceSufficiency follow-up gates", () => {
         observedCommand: "pnpm verify:session",
         result: "passed",
         targetedRun: false,
+        fixturePassFailLog: "missing",
         surfaceBudgetChecked: false,
       },
     });
 
     expect(review.verdict).toBe("needs_caller_review");
-    expect(review.findings.map((finding) => finding.key)).toEqual([
+    expectFindingKeys(review, [
       "missing-build-vs-buy-evidence",
       "missing-targeted-test-run",
       "missing-surface-budget-check",
     ]);
-    expect(review.nextStepActions).toEqual([
-      "collect_more_evidence",
-      "rerun_review",
-    ]);
+    expectNextStepActions(review, ["collect_more_evidence", "rerun_review"]);
   });
 
   it("flags summarized build-vs-buy and source-inspection claims without raw evidence", () => {
-    const review = reviewLaunchPacketEvidenceSufficiency({
-      ...cleanPacket,
+    const review = reviewPacket({
       packetId: "synthetic-summary-only-source-evidence",
       adoption: {
         status: "rejected",
@@ -196,19 +209,18 @@ describe("reviewLaunchPacketEvidenceSufficiency follow-up gates", () => {
     });
 
     expect(review.verdict).toBe("needs_caller_review");
-    expect(review.findings.map((finding) => finding.key)).toEqual([
+    expectFindingKeys(review, [
       "missing-build-vs-buy-source-evidence",
       "missing-source-inspection-evidence",
     ]);
-    expect(review.nextStepActions).toEqual([
+    expectNextStepActions(review, [
       "collect_more_evidence",
       "request_caller_review",
     ]);
   });
 
   it("flags source-audit path gaps and evidence-budget gaps", () => {
-    const review = reviewLaunchPacketEvidenceSufficiency({
-      ...cleanPacket,
+    const review = reviewPacket({
       packetId: "synthetic-source-audit-budget-gaps",
       sourceAudit: {
         status: "unresolved_paths",
@@ -223,19 +235,18 @@ describe("reviewLaunchPacketEvidenceSufficiency follow-up gates", () => {
     });
 
     expect(review.verdict).toBe("needs_caller_review");
-    expect(review.findings.map((finding) => finding.key)).toEqual([
+    expectFindingKeys(review, [
       "source-audit-evidence-path-gap",
       "evidence-budget-gap",
     ]);
-    expect(review.nextStepActions).toEqual([
+    expectNextStepActions(review, [
       "collect_more_evidence",
       "request_caller_review",
     ]);
   });
 
   it("flags outcome and shared-boundary gaps without taking launch authority", () => {
-    const review = reviewLaunchPacketEvidenceSufficiency({
-      ...cleanPacket,
+    const review = reviewPacket({
       packetId: "synthetic-boundary-gap",
       outcome: {
         expectedPath: ".runtime/orchestrator-outcomes/synthetic.md",
@@ -250,13 +261,13 @@ describe("reviewLaunchPacketEvidenceSufficiency follow-up gates", () => {
     });
 
     expect(review.verdict).toBe("insufficient");
-    expect(review.findings.map((finding) => finding.key)).toEqual([
+    expectFindingKeys(review, [
       "missing-outcome-status-check",
       "missing-output-classification",
       "private-detail-boundary-leak",
       "unconfirmed-tracker-freshness",
     ]);
-    expect(review.nextStepActions).toEqual([
+    expectNextStepActions(review, [
       "track_follow_up",
       "revise_artifact",
       "request_caller_review",

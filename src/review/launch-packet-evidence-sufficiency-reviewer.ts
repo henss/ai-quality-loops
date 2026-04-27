@@ -4,13 +4,13 @@ import type {
 } from "../contracts/json-contracts.js";
 import type { StructuredReviewNextStepAction } from "../contracts/structured-review-decision-contract.js";
 import { LAUNCH_PACKET_EVIDENCE_SUFFICIENCY_REVIEW_SCHEMA } from "./launch-packet-evidence-sufficiency-types.js";
+import { reviewVerificationEvidence } from "./launch-packet-evidence-sufficiency-verification.js";
 import type {
   LaunchPacketAdoptionEvidence,
   LaunchPacketBoundaryEvidence,
   LaunchPacketEvidenceSufficiencyInput,
   LaunchPacketEvidenceSufficiencyReview,
   LaunchPacketOutcomeEvidence,
-  LaunchPacketVerificationEvidence,
 } from "./launch-packet-evidence-sufficiency-types.js";
 import { reviewTraceabilityEvidence } from "./launch-packet-evidence-sufficiency-traceability.js";
 
@@ -37,10 +37,6 @@ const SEVERITY_RANK: Record<StructuredReviewSeverity, number> = {
 
 function isBlank(value?: string): boolean {
   return value === undefined || value.trim().length === 0;
-}
-
-function normalizeCommand(value?: string): string | undefined {
-  return value?.replace(/\s+/g, " ").trim().toLowerCase();
 }
 
 function hasBuildVsBuyEvidence(adoption: LaunchPacketAdoptionEvidence): boolean {
@@ -146,123 +142,6 @@ function reviewEvidenceReferences(
         recommendation:
           "Refresh the stale evidence or revise the packet so it does not overclaim current-state support.",
         evidence: staleEvidence.map((entry) => entry.label),
-      }),
-    );
-    addUniqueAction(actions, "collect_more_evidence");
-  }
-}
-
-function reviewVerificationEvidence(
-  verification: LaunchPacketVerificationEvidence | undefined,
-  findings: StructuredReviewFinding[],
-  actions: StructuredReviewNextStepAction[],
-): void {
-  if (!verification || verification.result === "missing") {
-    findings.push(
-      createFinding({
-        key: "missing-verification-evidence",
-        title: "Verification evidence is missing",
-        summary:
-          "The packet does not include a concrete verification result that defends the launch surface.",
-        severity: "high",
-        recommendation:
-          "Run the repo-local validation command or record the exact blocker before launch.",
-      }),
-    );
-    addUniqueAction(actions, "collect_more_evidence");
-    return;
-  }
-
-  if (verification.targetedRun === false) {
-    findings.push(
-      createFinding({
-        key: "missing-targeted-test-run",
-        title: "Targeted verification run is missing",
-        summary:
-          "The packet records verification, but not the narrow test run that directly exercises the changed review surface.",
-        severity: "medium",
-        recommendation:
-          "Run the targeted test or record why only a broader validation command can defend this packet.",
-      }),
-    );
-    addUniqueAction(actions, "rerun_review");
-  }
-
-  const claimedCommand = normalizeCommand(verification.claimedCommand);
-  const observedCommand = normalizeCommand(verification.observedCommand);
-
-  if (claimedCommand && observedCommand && claimedCommand !== observedCommand) {
-    findings.push(
-      createFinding({
-        key: "verification-wrapper-mismatch",
-        title: "Verification wrapper mismatches observed command",
-        summary:
-          "The packet claims one verification command while the observed evidence records a different command.",
-        severity: "high",
-        recommendation:
-          "Restate the verification evidence or rerun the intended command before treating the packet as defended.",
-      }),
-    );
-    addUniqueAction(actions, "rerun_review");
-    addUniqueAction(actions, "request_caller_review");
-  }
-
-  if (verification.result === "failed") {
-    findings.push(
-      createFinding({
-        key: "failed-verification-evidence",
-        title: "Verification evidence did not pass",
-        summary:
-          "The recorded verification result failed, so the packet needs repair or an explicit blocker.",
-        severity: "high",
-        recommendation:
-          "Repair only the blocking seam needed for verification, or classify the unresolved failure before launch.",
-      }),
-    );
-    addUniqueAction(actions, "revise_artifact");
-  }
-
-  if ((verification.repeatedFailedCommandCount ?? 0) >= 3) {
-    findings.push(
-      createFinding({
-        key: "repeated-command-noise",
-        title: "Repeated command noise obscures evidence",
-        summary:
-          "Multiple repeated failed-command attempts are present, which makes the actual verification signal harder to audit.",
-        severity: "medium",
-        recommendation:
-          "Replace repeated command logs with the final materially changed command, result, and blocker.",
-      }),
-    );
-    addUniqueAction(actions, "revise_artifact");
-  }
-
-  if (verification.runtimeStderr === "unresolved") {
-    findings.push(
-      createFinding({
-        key: "unclassified-runtime-stderr",
-        title: "Runtime stderr is unclassified",
-        summary:
-          "The packet records stderr from the reviewer runtime without explaining whether it is expected, harmless, or blocking.",
-        severity: "medium",
-        recommendation:
-          "Record the stderr interpretation and rerun evidence, or classify the packet as blocked if the warning may affect review output.",
-      }),
-    );
-    addUniqueAction(actions, "rerun_review");
-    addUniqueAction(actions, "request_caller_review");
-  }
-
-  if (verification.surfaceBudgetChecked === false) {
-    findings.push(
-      createFinding({
-        key: "missing-surface-budget-check",
-        title: "Agent-surface budget check is missing",
-        summary:
-          "The packet changed a review surface without recording the pre-edit or changed-file surface-budget check.",
-        severity: "medium",
-        recommendation:
-          "Run the repo-local agent-surface guard for the touched files, or record why the change is not code-surface work.",
       }),
     );
     addUniqueAction(actions, "collect_more_evidence");

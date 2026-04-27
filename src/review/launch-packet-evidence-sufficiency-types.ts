@@ -32,6 +32,7 @@ export interface LaunchPacketVerificationEvidence {
   observedCommand?: string;
   result?: "passed" | "failed" | "missing";
   targetedRun?: boolean;
+  fixturePassFailLog?: "complete" | "partial" | "missing";
   repeatedFailedCommandCount?: number;
   runtimeStderr?: "none" | "acknowledged" | "unresolved";
   surfaceBudgetChecked?: boolean;
@@ -50,6 +51,7 @@ export interface LaunchPacketSourceAuditEvidence {
   missingPathCount?: number;
   unresolvedPathCount?: number;
   retrievalNoteProvided?: boolean;
+  decisiveEvidenceTruncated?: boolean;
   rationale?: string;
 }
 

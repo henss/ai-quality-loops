@@ -43,6 +43,7 @@ interface ReviewerContractSamplePack {
   expectedNextStepActions: string[];
   expectedVerdict: string;
   expectedEvidenceRequestKeys?: string[];
+  expectedEvidenceRequestNeedles?: string[];
 }
 
 async function readExampleFile(relativePath: string): Promise<string> {
@@ -157,6 +158,21 @@ function expectReviewerContractSamplePackConformance(
     );
   }
 
+  if (samplePack.expectedEvidenceRequestNeedles) {
+    expect(validation.ok).toBe(true);
+    if (!validation.ok) {
+      throw validation.error;
+    }
+
+    const evidenceRequests = validation.value.decision?.evidence_requests ?? [];
+    expect(evidenceRequests).not.toHaveLength(0);
+
+    const serializedEvidenceRequests = JSON.stringify(evidenceRequests);
+    for (const evidenceRequestNeedle of samplePack.expectedEvidenceRequestNeedles) {
+      expect(serializedEvidenceRequests).toContain(evidenceRequestNeedle);
+    }
+  }
+
   expectPublicSafeSerializedContent(
     [
       fixture.manifestText,
@@ -204,6 +220,10 @@ describe("reviewer-contract sample packs", () => {
       expectedNextStepActions: ["request_evidence"],
       expectedVerdict: "abstain_request_evidence",
       expectedEvidenceRequestKeys: ["missing-evidence-label-c-summary"],
+      expectedEvidenceRequestNeedles: [
+        "Sanitized source summary for Evidence label C",
+        "Caller-owned freshness note",
+      ],
     },
     {
       packId: "action-boundary",

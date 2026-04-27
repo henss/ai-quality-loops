@@ -5,40 +5,104 @@ import { describe, expect, it } from "vitest";
 import { execa } from "execa";
 import { validateMultiReviewContradictionCoverageMatrix } from "../contracts/multi-review-contradiction-coverage-matrix-contract.js";
 
-describe("batch-review-compare CLI", () => {
-  const repoRoot = path.resolve(import.meta.dirname, "../..");
-  const batchReviewCompareCli = path.join(
-    repoRoot,
-    "src/cli/batch-review-compare.ts",
-  );
+const repoRoot = path.resolve(import.meta.dirname, "../..");
+const batchReviewCompareCli = path.join(
+  repoRoot,
+  "src/cli/batch-review-compare.ts",
+);
+const beforeSummaryFixture =
+  "examples/synthetic-multi-review-disagreement-before-summary.fixture.json";
+const afterSummaryFixture =
+  "examples/synthetic-multi-review-disagreement-after-summary.fixture.json";
+const expectedMatrixMarkdownPath =
+  "examples/synthetic-multi-review-contradiction-coverage-matrix.expected.md";
+const expectedMatrixJsonPath =
+  "examples/synthetic-multi-review-contradiction-coverage-matrix.expected.json";
 
-  it("emits a validated contradiction-and-coverage matrix from summary fixtures", async () => {
-    const result = await execa(
-      "pnpm",
-      [
-        "exec",
-        "tsx",
-        batchReviewCompareCli,
-        "examples/synthetic-multi-review-disagreement-before-summary.fixture.json",
-        "examples/synthetic-multi-review-disagreement-after-summary.fixture.json",
-        "--matrix",
-        "--json",
-      ],
-      { cwd: repoRoot },
+function expectedCliMatrixJson(expectedJson: string): string {
+  const matrix = JSON.parse(expectedJson) as {
+    inputs: {
+      before: { pathLabel: string };
+      after: { pathLabel: string };
+    };
+  };
+
+  matrix.inputs.before.pathLabel = "Local file path (.json file)";
+  matrix.inputs.after.pathLabel = "Local file path (.json file)";
+
+  return JSON.stringify(matrix, null, 2);
+}
+
+function expectedCliMatrixMarkdown(expectedMarkdown: string): string {
+  return expectedMarkdown
+    .replace(
+      "- Baseline: Synthetic disagreement baseline summary",
+      "- Baseline: Local file path (.json file)",
+    )
+    .replace(
+      "- Candidate: Synthetic disagreement candidate summary",
+      "- Candidate: Local file path (.json file)",
     );
+}
 
-    const matrix = JSON.parse(result.stdout) as unknown;
+function runMatrixCli(args: string[]) {
+  return execa(
+    "pnpm",
+    [
+      "exec",
+      "tsx",
+      batchReviewCompareCli,
+      beforeSummaryFixture,
+      afterSummaryFixture,
+      ...args,
+    ],
+    { cwd: repoRoot },
+  );
+}
 
-    expect(validateMultiReviewContradictionCoverageMatrix(matrix)).toEqual({
-      ok: true,
-      value: expect.objectContaining({
-        totals: expect.objectContaining({
-          rows: 6,
-          rowsWithContradictions: 5,
-          uncoveredChecks: 3,
-        }),
+function readExpectedMatrixJson(): Promise<string> {
+  return fs.readFile(path.join(repoRoot, expectedMatrixJsonPath), "utf-8");
+}
+
+function readExpectedMatrixMarkdown(): Promise<string> {
+  return fs.readFile(path.join(repoRoot, expectedMatrixMarkdownPath), "utf-8");
+}
+
+function expectValidMatrixJson(value: string): void {
+  expect(
+    validateMultiReviewContradictionCoverageMatrix(JSON.parse(value) as unknown),
+  ).toEqual({
+    ok: true,
+    value: expect.objectContaining({
+      totals: expect.objectContaining({
+        rows: 6,
+        rowsWithContradictions: 5,
+        uncoveredChecks: 3,
       }),
-    });
+    }),
+  });
+}
+
+describe("batch-review-compare CLI", () => {
+  it("emits the expected raw JSON contradiction-and-coverage matrix from summary fixtures", async () => {
+    const [result, expectedJson] = await Promise.all([
+      runMatrixCli(["--matrix", "--json"]),
+      readExpectedMatrixJson(),
+    ]);
+
+    expect(result.stdout).toBe(expectedCliMatrixJson(expectedJson));
+    expectValidMatrixJson(result.stdout);
+  });
+
+  it("emits the expected raw Markdown contradiction-and-coverage matrix from summary fixtures", async () => {
+    const [result, expectedMarkdown] = await Promise.all([
+      runMatrixCli(["--matrix"]),
+      readExpectedMatrixMarkdown(),
+    ]);
+
+    expect(result.stdout).toBe(
+      expectedCliMatrixMarkdown(expectedMarkdown).trimEnd(),
+    );
   });
 
   it("writes paired matrix markdown and raw JSON artifacts without requiring shell redirection", async () => {
@@ -48,48 +112,24 @@ describe("batch-review-compare CLI", () => {
     const markdownPath = path.join(tempDir, "matrix.md");
     const jsonPath = path.join(tempDir, "matrix.json");
 
-    const result = await execa(
-      "pnpm",
-      [
-        "exec",
-        "tsx",
-        batchReviewCompareCli,
-        "examples/synthetic-multi-review-disagreement-before-summary.fixture.json",
-        "examples/synthetic-multi-review-disagreement-after-summary.fixture.json",
-        "--matrix-output",
-        markdownPath,
-        "--matrix-json-output",
-        jsonPath,
-      ],
-      { cwd: repoRoot },
-    );
-
-    const [markdown, rawJson] = await Promise.all([
-      fs.readFile(markdownPath, "utf-8"),
-      fs.readFile(jsonPath, "utf-8"),
+    const result = await runMatrixCli([
+      "--matrix-output",
+      markdownPath,
+      "--matrix-json-output",
+      jsonPath,
     ]);
-    const matrix = JSON.parse(rawJson) as unknown;
+
+    const [markdown, rawJson, expectedMarkdown, expectedJson] =
+      await Promise.all([
+        fs.readFile(markdownPath, "utf-8"),
+        fs.readFile(jsonPath, "utf-8"),
+        readExpectedMatrixMarkdown(),
+        readExpectedMatrixJson(),
+      ]);
 
     expect(result.stdout).toContain("Batch review summary comparison completed.");
-    expect(markdown).toContain(
-      "# Multi-Review Contradiction and Coverage Matrix",
-    );
-    expect(markdown).toContain(
-      "| evidence-review | Evidence reviewer | covered | covered | both-covered | severity-regressed, finding-count-changed | medium -> high | 1 |",
-    );
-    expect(validateMultiReviewContradictionCoverageMatrix(matrix)).toEqual({
-      ok: true,
-      value: expect.objectContaining({
-        rows: expect.arrayContaining([
-          expect.objectContaining({
-            resultKey: "evidence-review",
-            contradictionSignals: [
-              "severity-regressed",
-              "finding-count-changed",
-            ],
-          }),
-        ]),
-      }),
-    });
+    expect(markdown).toBe(expectedCliMatrixMarkdown(expectedMarkdown));
+    expect(rawJson).toBe(`${expectedCliMatrixJson(expectedJson)}\n`);
+    expectValidMatrixJson(rawJson);
   });
 });

@@ -116,18 +116,22 @@ function expectActualReplayReportToMatchKnownMisses(
       total: 9,
       passed: 7,
       failed: 2,
+      caught: 7,
+      partialMisses: 2,
+      missed: 0,
+      overflagged: 0,
     }),
   );
-  expect(report.results.map((result) => result.status)).toEqual([
-    "passed",
-    "passed",
-    "passed",
-    "failed",
-    "passed",
-    "passed",
-    "failed",
-    "passed",
-    "passed",
+  expect(report.results.map((result) => [result.status, result.outcome])).toEqual([
+    ["passed", "caught"],
+    ["passed", "caught"],
+    ["passed", "caught"],
+    ["failed", "partial_miss"],
+    ["passed", "caught"],
+    ["passed", "caught"],
+    ["failed", "partial_miss"],
+    ["passed", "caught"],
+    ["passed", "caught"],
   ]);
   expect(
     report.results.find((result) => result.caseId === "verification-wrapper-mismatch"),
@@ -243,6 +247,9 @@ describe("synthetic recurring review-failure eval public fixtures", () => {
     expectActualReplayReportToMatchKnownMisses(report);
     expect(formatRecurringReviewFailureHarnessReport(report)).toContain(
       "Recurring review-failure eval: 7 passed, 2 failed, 9 total.",
+    );
+    expect(formatRecurringReviewFailureHarnessReport(report)).toContain(
+      "Replay outcomes: 7 caught, 2 partial misses, 0 missed, 0 overflagged.",
     );
   });
 

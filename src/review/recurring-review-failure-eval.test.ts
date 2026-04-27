@@ -233,9 +233,21 @@ describe("evaluateRecurringReviewFailureHarness", () => {
 
     expect(report.status).toBe("passed");
     expect(report.failed).toBe(0);
+    expect(report).toEqual(
+      expect.objectContaining({
+        caught: 9,
+        partialMisses: 0,
+        missed: 0,
+        overflagged: 0,
+      }),
+    );
     expect(report.results.every((result) => result.status === "passed")).toBe(true);
+    expect(report.results.every((result) => result.outcome === "caught")).toBe(true);
     expect(formatRecurringReviewFailureHarnessReport(report)).toContain(
       "Recurring review-failure eval: 9 passed, 0 failed, 9 total.",
+    );
+    expect(formatRecurringReviewFailureHarnessReport(report)).toContain(
+      "Replay outcomes: 9 caught, 0 partial misses, 0 missed, 0 overflagged.",
     );
   });
 
@@ -264,9 +276,18 @@ describe("evaluateRecurringReviewFailureHarness", () => {
 
     expect(report.status).toBe("failed");
     expect(report.failed).toBe(9);
+    expect(report).toEqual(
+      expect.objectContaining({
+        caught: 0,
+        partialMisses: 0,
+        missed: 9,
+        overflagged: 0,
+      }),
+    );
     expect(report.results[0]).toMatchObject({
       caseId: "missing-evidence-handles",
       status: "failed",
+      outcome: "missed",
       missingFindingKeys: ["missing-evidence-handle"],
       missingNextStepActions: ["collect_more_evidence"],
     });
@@ -275,6 +296,51 @@ describe("evaluateRecurringReviewFailureHarness", () => {
     );
     expect(report.results[1]?.issues).toContain(
       "no structured review result was provided for this eval case",
+    );
+    expect(report.results[1]?.outcome).toBe("missed");
+  });
+
+  it("classifies directionally caught cases with missing support as partial misses", () => {
+    const report = evaluateRecurringReviewFailureHarness({
+      cases: RECURRING_REVIEW_FAILURE_EVAL_CASES,
+      observedResults: [
+        {
+          caseId: "verification-wrapper-mismatch",
+          result: createStructuredResult({
+            summary:
+              "The verification wrapper has a mismatch with a different command and needs caller review.",
+            findings: [
+              {
+                key: "verification-wrapper-mismatch",
+                title: "Verification wrapper mismatch",
+                summary:
+                  "The wrapper and different command are misaligned, but the rerun action is missing.",
+                severity: "high",
+              },
+            ],
+            overallSeverity: "high",
+            nextStepActions: ["request_caller_review"],
+          }),
+        },
+      ],
+    });
+
+    expect(report).toEqual(
+      expect.objectContaining({
+        caught: 0,
+        partialMisses: 1,
+        missed: 8,
+        overflagged: 0,
+      }),
+    );
+    expect(
+      report.results.find((result) => result.caseId === "verification-wrapper-mismatch"),
+    ).toEqual(
+      expect.objectContaining({
+        status: "failed",
+        outcome: "partial_miss",
+        missingNextStepActions: ["rerun_review"],
+      }),
     );
   });
 });

@@ -28,6 +28,7 @@ The deterministic fixture replay covers nine sanitized cases, then the harness j
 
 Deterministic fixture summary: 9 passed, 0 failed, 9 total.
 Checked-in local reviewer-output summary: 7 passed, 2 failed, 9 total.
+Checked-in replay outcome summary: 7 caught, 2 partial misses, 0 missed, 0 overflagged.
 
 | Case | Result | Actual reviewer severity | Harness expectations satisfied |
 | --- | --- | --- | --- |
@@ -41,7 +42,7 @@ Checked-in local reviewer-output summary: 7 passed, 2 failed, 9 total.
 | Source-audit evidence-path gap | Caught | high | `source-audit-evidence-path-gap`; source-audit, evidence-path, and missing/unresolved signals; `collect_more_evidence`, `request_caller_review`; minimum medium severity. |
 | Unclassified runtime stderr | Caught | medium | `unclassified-runtime-stderr`; runtime stderr plus expected/harmless/blocking interpretation signals; `rerun_review`, `request_caller_review`; minimum medium severity. |
 
-No overflag-only case was observed in this run. The reviewer sometimes assigned higher severity than the minimum bar, but those cases also contained the expected reusable failure finding and are treated as caught or partial misses rather than overflagged.
+No overflag-only case was observed in this run. The reviewer sometimes assigned higher severity than the minimum bar, but those cases also contained the expected reusable failure finding and are treated as caught or partial misses rather than overflagged. The harness now records that distinction explicitly: a partial miss means the core finding was present but a required supporting signal, action, or severity bar was still missing; a full miss means the core expected finding was absent or no structured result was available. Overflag detection remains reserved for future public-safe control cases where the expected result is no finding.
 
 ## Evidence Map
 

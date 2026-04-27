@@ -63,7 +63,16 @@ The harness stays intentionally narrow:
 
 - it checks only the published structured review-result contract
 - it evaluates finding keys, reusable signal groups, next-step actions, and minimum severity
+- it reports pass/fail status separately from replay outcome: `caught`, `partial_miss`, `missed`, or `overflagged`
 - it does not add approval heuristics, scheduling policy, or tracker writes
+
+For this positive failure corpus, `caught` means all expected findings, signals,
+actions, and severity were present. `partial_miss` means the reviewer caught the
+core expected finding but omitted supporting wording, action, or severity.
+`missed` means the core expected finding was absent or no structured result was
+available. `overflagged` is reserved for future public-safe control cases where
+the expected outcome is no finding; the current nine incident fixtures therefore
+expect an overflag count of zero.
 
 Use the corpus fixture when a wrapper needs a human-readable list of the sanitized recurrent failure patterns, their packet targets, and the explicit extraction boundary without inferring that shape from the TypeScript cases alone.
 

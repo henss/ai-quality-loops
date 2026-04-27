@@ -28,11 +28,18 @@ export interface RecurringReviewFailureEvalObservedResult {
   result: StructuredReviewResult;
 }
 
+export type RecurringReviewFailureReplayOutcome =
+  | "caught"
+  | "partial_miss"
+  | "missed"
+  | "overflagged";
+
 export interface RecurringReviewFailureEvalReportEntry {
   caseId: string;
   reviewName: string;
   failureMode: string;
   status: "passed" | "failed";
+  outcome: RecurringReviewFailureReplayOutcome;
   observedSeverity?: StructuredReviewSeverity;
   missingFindingKeys: string[];
   missingSignalGroups: string[][];
@@ -45,6 +52,10 @@ export interface RecurringReviewFailureEvalReport {
   total: number;
   passed: number;
   failed: number;
+  caught: number;
+  partialMisses: number;
+  missed: number;
+  overflagged: number;
   results: RecurringReviewFailureEvalReportEntry[];
 }
 
@@ -87,6 +98,69 @@ function hasSignal(searchableText: string, signal: string): boolean {
   return normalizedSignal.length > 0 && searchableText.includes(normalizedSignal);
 }
 
+function buildEvaluationIssues(input: {
+  evalCase: RecurringReviewFailureEvalCase;
+  observedSeverity: StructuredReviewSeverity;
+  missingFindingKeys: string[];
+  missingSignalGroups: string[][];
+  missingNextStepActions: StructuredReviewNextStepAction[];
+}): string[] {
+  const {
+    evalCase,
+    observedSeverity,
+    missingFindingKeys,
+    missingSignalGroups,
+    missingNextStepActions,
+  } = input;
+  const issues: string[] = [];
+
+  if (
+    evalCase.minimumSeverity &&
+    severityRank(observedSeverity) > severityRank(evalCase.minimumSeverity)
+  ) {
+    issues.push(
+      `overall severity ${observedSeverity} is lower than required ${evalCase.minimumSeverity}`,
+    );
+  }
+
+  if (missingFindingKeys.length > 0) {
+    issues.push(`missing finding keys: ${missingFindingKeys.join(", ")}`);
+  }
+
+  if (missingSignalGroups.length > 0) {
+    issues.push(
+      `missing signal groups: ${missingSignalGroups.map((group) => group.join(" | ")).join("; ")}`,
+    );
+  }
+
+  if (missingNextStepActions.length > 0) {
+    issues.push(`missing next-step actions: ${missingNextStepActions.join(", ")}`);
+  }
+
+  return issues;
+}
+
+function classifyReplayOutcome(input: {
+  issues: string[];
+  requiredFindingKeys?: readonly string[];
+  missingFindingKeys: readonly string[];
+}): RecurringReviewFailureReplayOutcome {
+  const requiredFindingKeys = input.requiredFindingKeys ?? [];
+
+  if (input.issues.length === 0) {
+    return "caught";
+  }
+
+  if (
+    requiredFindingKeys.length > 0 &&
+    input.missingFindingKeys.length === requiredFindingKeys.length
+  ) {
+    return "missed";
+  }
+
+  return "partial_miss";
+}
+
 function evaluateCase(input: {
   evalCase: RecurringReviewFailureEvalCase;
   observed?: StructuredReviewResult;
@@ -99,6 +173,7 @@ function evaluateCase(input: {
       reviewName: evalCase.reviewName,
       failureMode: evalCase.failureMode,
       status: "failed",
+      outcome: "missed",
       missingFindingKeys: [...(evalCase.requiredFindingKeys ?? [])],
       missingSignalGroups: [...(evalCase.requiredSignalGroups ?? [])],
       missingNextStepActions: [...(evalCase.requiredNextStepActions ?? [])],
@@ -122,36 +197,25 @@ function evaluateCase(input: {
   const missingNextStepActions = (evalCase.requiredNextStepActions ?? []).filter(
     (action) => !nextStepActions.has(action),
   );
-  const issues: string[] = [];
-
-  if (
-    evalCase.minimumSeverity &&
-    severityRank(observed.overallSeverity) > severityRank(evalCase.minimumSeverity)
-  ) {
-    issues.push(
-      `overall severity ${observed.overallSeverity} is lower than required ${evalCase.minimumSeverity}`,
-    );
-  }
-
-  if (missingFindingKeys.length > 0) {
-    issues.push(`missing finding keys: ${missingFindingKeys.join(", ")}`);
-  }
-
-  if (missingSignalGroups.length > 0) {
-    issues.push(
-      `missing signal groups: ${missingSignalGroups.map((group) => group.join(" | ")).join("; ")}`,
-    );
-  }
-
-  if (missingNextStepActions.length > 0) {
-    issues.push(`missing next-step actions: ${missingNextStepActions.join(", ")}`);
-  }
+  const issues = buildEvaluationIssues({
+    evalCase,
+    observedSeverity: observed.overallSeverity,
+    missingFindingKeys,
+    missingSignalGroups,
+    missingNextStepActions,
+  });
+  const outcome = classifyReplayOutcome({
+    issues,
+    requiredFindingKeys: evalCase.requiredFindingKeys,
+    missingFindingKeys,
+  });
 
   return {
     caseId: evalCase.caseId,
     reviewName: evalCase.reviewName,
     failureMode: evalCase.failureMode,
     status: issues.length === 0 ? "passed" : "failed",
+    outcome,
     observedSeverity: observed.overallSeverity,
     missingFindingKeys,
     missingSignalGroups,
@@ -175,12 +239,24 @@ export function evaluateRecurringReviewFailureHarness(input: {
   );
   const passed = results.filter((result) => result.status === "passed").length;
   const failed = results.length - passed;
+  const caught = results.filter((result) => result.outcome === "caught").length;
+  const partialMisses = results.filter(
+    (result) => result.outcome === "partial_miss",
+  ).length;
+  const missed = results.filter((result) => result.outcome === "missed").length;
+  const overflagged = results.filter(
+    (result) => result.outcome === "overflagged",
+  ).length;
 
   return {
     status: failed > 0 ? "failed" : "passed",
     total: results.length,
     passed,
     failed,
+    caught,
+    partialMisses,
+    missed,
+    overflagged,
     results,
   };
 }
@@ -190,13 +266,14 @@ export function formatRecurringReviewFailureHarnessReport(
 ): string {
   const lines = [
     `Recurring review-failure eval: ${report.passed} passed, ${report.failed} failed, ${report.total} total.`,
+    `Replay outcomes: ${report.caught} caught, ${report.partialMisses} partial misses, ${report.missed} missed, ${report.overflagged} overflagged.`,
   ];
 
   for (const result of report.results) {
     const suffix =
       result.issues.length > 0 ? ` -> ${result.issues.join("; ")}` : "";
     lines.push(
-      `- [${result.status}] ${result.reviewName}: ${result.failureMode}${suffix}`,
+      `- [${result.status}/${result.outcome}] ${result.reviewName}: ${result.failureMode}${suffix}`,
     );
   }
 

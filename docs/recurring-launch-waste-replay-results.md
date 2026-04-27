@@ -10,9 +10,15 @@ This note records the OPS-1593 replay readout over AIQL's public-safe recurring 
 - Runnable manifest: `examples/synthetic-recurring-review-failure-eval.manifest.json`
 - Actual local reviewer outputs: `reviews/recurring-review-failure-eval/json/`
 - Harness: `evaluateRecurringReviewFailureHarness(...)`
-- Scout check: `pnpm solution:scout -- --category eval --capability "sanitized recurring launch-waste replay fixtures" --boundary public --project ai-quality-loops`
+- Validation scope: the shipped six-case synthetic pack, its manifest/context files, the checked-in local reviewer JSON outputs, and the deterministic harness report.
 
-The solution scout recommended a bounded search rather than adoption. No dependency or broader framework was added; the replay uses the existing AIQL manifest, structured-result artifacts, and narrow harness.
+This replay intentionally expands the packet's 3-5 incident target to the already-reviewed six-case pack because the extra case is another sanitized launch-evidence failure in the same public-safe family. It does not claim full historical coverage, and it does not validate private packet assembly, tracker routing, command rerun authority, approval thresholds, or any live launch workflow.
+
+## Build-vs-Buy Rationale
+
+No new dependency, adapter, or framework was adopted. The work needed a small deterministic check over AIQL's existing structured review-result contract, plus checked-in synthetic fixtures. Existing package capabilities already provide the durable pieces: batch-review manifests, structured JSON review outputs, schema validation, and the focused `evaluateRecurringReviewFailureHarness(...)` helper.
+
+A third-party eval framework would add dependency and integration cost without covering the key requirement: public-safe replay fixtures that preserve recurring failure shapes while avoiding private packet details. If this grows beyond fixture replay into scheduling, trace storage, model orchestration, or broader benchmark management, that should be scouted separately before adding package-like infrastructure.
 
 ## Replay Result
 

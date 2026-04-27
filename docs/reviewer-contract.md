@@ -55,6 +55,10 @@ If you need repo-specific routing, CI budgets, or tracker writes, add them in th
 
 Use `examples/reviewer-contract-sample-packs/` when a reviewer implementation needs a small public-safe target before it runs on caller-owned packets. The expected fixtures are not model goldens; they define the minimum structured-result shape and reviewer signals that should survive across implementations. Different prose or additional findings are fine when the stable generic finding keys, evidence labels, decision actions, provenance, and caller-owned boundary language remain clear.
 
+Run each pack with `batch-review`, validate the emitted structured JSON with the starter-kit validation script, then compare only the stable contract signals against the checked-in `*.expected.json` fixture. Do not treat wording, finding order, or additional caveats as failures when the schema, verdict, next-step actions, stable keys, provenance labels, and caller-owned boundary language still line up.
+
+The sample-pack surface is deliberately file-based. It does not adopt a hosted workflow runner, scheduler, dashboard, or extra validation dependency because conformance here is only a checked fixture contract; embedding repos should add their own CI or routing wrapper when they need one.
+
 ## Allowed In Shared Examples
 
 - Generic review modes such as text, vision, or batch review.

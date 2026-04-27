@@ -1,0 +1,110 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/henss/ai-quality-loops/schemas/multi-review-contradiction-coverage-matrix.schema.json",
+  "title": "Multi-Review Contradiction and Coverage Matrix",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "inputs", "totals", "rows"],
+  "properties": {
+    "schemaVersion": { "const": "1" },
+    "inputs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["before", "after"],
+      "properties": {
+        "before": { "$ref": "#/$defs/inputLabel" },
+        "after": { "$ref": "#/$defs/inputLabel" }
+      }
+    },
+    "totals": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rows",
+        "bothCovered",
+        "baselineOnly",
+        "candidateOnly",
+        "notCovered",
+        "rowsWithContradictions",
+        "uncoveredChecks"
+      ],
+      "properties": {
+        "rows": { "type": "integer", "minimum": 0 },
+        "bothCovered": { "type": "integer", "minimum": 0 },
+        "baselineOnly": { "type": "integer", "minimum": 0 },
+        "candidateOnly": { "type": "integer", "minimum": 0 },
+        "notCovered": { "type": "integer", "minimum": 0 },
+        "rowsWithContradictions": { "type": "integer", "minimum": 0 },
+        "uncoveredChecks": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "rows": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/matrixRow" }
+    }
+  },
+  "$defs": {
+    "inputLabel": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["pathLabel"],
+      "properties": {
+        "pathLabel": { "type": "string", "minLength": 1 }
+      }
+    },
+    "coverageState": {
+      "type": "string",
+      "enum": ["covered", "uncovered", "failed", "unavailable"]
+    },
+    "overlap": {
+      "type": "string",
+      "enum": ["both-covered", "baseline-only", "candidate-only", "not-covered"]
+    },
+    "contradictionSignal": {
+      "type": "string",
+      "enum": [
+        "none",
+        "missing-baseline",
+        "missing-candidate",
+        "status-changed",
+        "severity-improved",
+        "severity-regressed",
+        "severity-unavailable",
+        "finding-count-changed"
+      ]
+    },
+    "structuredReviewSeverity": {
+      "type": "string",
+      "enum": ["critical", "high", "medium", "low", "unknown"]
+    },
+    "matrixRow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "resultKey",
+        "label",
+        "baselineCoverage",
+        "candidateCoverage",
+        "overlap",
+        "contradictionSignals",
+        "note"
+      ],
+      "properties": {
+        "resultKey": { "type": "string", "minLength": 1 },
+        "label": { "type": "string", "minLength": 1 },
+        "baselineCoverage": { "$ref": "#/$defs/coverageState" },
+        "candidateCoverage": { "$ref": "#/$defs/coverageState" },
+        "overlap": { "$ref": "#/$defs/overlap" },
+        "contradictionSignals": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/contradictionSignal" }
+        },
+        "baselineSeverity": { "$ref": "#/$defs/structuredReviewSeverity" },
+        "candidateSeverity": { "$ref": "#/$defs/structuredReviewSeverity" },
+        "findingsDelta": { "type": "integer" },
+        "note": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}

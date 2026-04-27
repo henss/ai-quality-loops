@@ -575,6 +575,8 @@ review-gate --batch-summary ./reviews/batch-summary.json --max-prompt-eval-count
 batch-review-compare ./reviews/previous-batch-summary.json ./reviews/current-batch-summary.json
 batch-review-compare ./reviews/previous-batch-summary.json ./reviews/current-batch-summary.json --json
 batch-review-compare ./reviews/previous-batch-summary.json ./reviews/current-batch-summary.json --json > ./reviews/batch-comparison.json
+batch-review-compare ./reviews/previous-batch-summary.json ./reviews/current-batch-summary.json --matrix > ./reviews/contradiction-coverage-matrix.md
+batch-review-compare ./reviews/previous-batch-summary.json ./reviews/current-batch-summary.json --matrix --json > ./reviews/contradiction-coverage-matrix.json
 batch-review-compare ./reviews/qwen-run-ledger.json ./reviews/phi4-run-ledger.json --run-ledger --json > ./reviews/same-fixture-ledger-diff.json
 review-gate --batch-comparison ./reviews/batch-comparison.json --max-added-critical 0 --max-added-high 0 --max-severity-regressions 0
 review-gate --batch-comparison ./reviews/batch-comparison.json --max-added-prompt-eval-count 50000
@@ -657,7 +659,9 @@ Use `batch-review-compare` when a repeated manifest run needs a deterministic tw
 - It reports aggregate severity movement and finding-count deltas only from the per-entry `structuredResult` rollups already present in the summaries.
 - It reports aggregate prompt-eval count deltas only from per-entry `ollamaTelemetry.promptEvalCount` values already present in the summaries.
 - Its `--json` output is covered by the published `batchReviewSummaryComparison` schema path and `validateBatchReviewSummaryComparisonReport(...)` helper so wrappers can validate the contract without scraping CLI implementation details.
+- Its `--matrix` output emits a contradiction-and-coverage matrix over the same comparison, and `--matrix --json` is covered by the published `multiReviewContradictionCoverageMatrix` schema path plus `validateMultiReviewContradictionCoverageMatrix(...)`.
 - It does not infer baselines, read structured output paths, or add approval policy; use `review-gate --batch-comparison` when CI needs explicit delta budgets for the JSON report.
+- The matrix is intentionally generic: it records overlap, status/severity/finding-count contradiction signals, and uncovered checks, while reviewer weighting, escalation policy, and acceptance thresholds remain caller-owned.
 
 ### Same-Fixture Batch Review Ledger Diff
 

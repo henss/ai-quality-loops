@@ -3,55 +3,23 @@ import type {
   BatchReviewSummaryEntryComparison,
   BatchReviewSummaryEntrySnapshot,
 } from "../contracts/batch-review-summary-comparison-contract.js";
-import type { StructuredReviewSeverity } from "../contracts/json-contracts.js";
+import type {
+  MultiReviewContradictionCoverageMatrix,
+  MultiReviewContradictionCoverageMatrixRow,
+  MultiReviewContradictionSignal,
+  MultiReviewCoverageState,
+} from "../contracts/multi-review-contradiction-coverage-matrix-contract.js";
 import {
   sanitizeReviewSurfaceValue,
   type ReviewSurfaceRedactions,
 } from "../shared/review-surface.js";
 
-export type MultiReviewCoverageState =
-  | "covered"
-  | "uncovered"
-  | "failed"
-  | "unavailable";
-
-export type MultiReviewContradictionSignal =
-  | "none"
-  | "missing-baseline"
-  | "missing-candidate"
-  | "status-changed"
-  | "severity-improved"
-  | "severity-regressed"
-  | "severity-unavailable"
-  | "finding-count-changed";
-
-export interface MultiReviewContradictionCoverageMatrixRow {
-  resultKey: string;
-  label: string;
-  baselineCoverage: MultiReviewCoverageState;
-  candidateCoverage: MultiReviewCoverageState;
-  overlap: "both-covered" | "baseline-only" | "candidate-only" | "not-covered";
-  contradictionSignals: MultiReviewContradictionSignal[];
-  baselineSeverity?: StructuredReviewSeverity;
-  candidateSeverity?: StructuredReviewSeverity;
-  findingsDelta?: number;
-  note: string;
-}
-
-export interface MultiReviewContradictionCoverageMatrix {
-  schemaVersion: "1";
-  inputs: BatchReviewSummaryComparisonReport["inputs"];
-  totals: {
-    rows: number;
-    bothCovered: number;
-    baselineOnly: number;
-    candidateOnly: number;
-    notCovered: number;
-    rowsWithContradictions: number;
-    uncoveredChecks: number;
-  };
-  rows: MultiReviewContradictionCoverageMatrixRow[];
-}
+export type {
+  MultiReviewContradictionCoverageMatrix,
+  MultiReviewContradictionCoverageMatrixRow,
+  MultiReviewContradictionSignal,
+  MultiReviewCoverageState,
+};
 
 export interface CreateMultiReviewContradictionCoverageMatrixOptions {
   extraRedactions?: ReviewSurfaceRedactions;

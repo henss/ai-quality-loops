@@ -10,6 +10,7 @@ import {
   validateStructuredReviewResult,
 } from "./json-contracts.js";
 import { validateBatchReviewSummaryComparisonReport } from "./batch-review-summary-comparison-contract.js";
+import { validateMultiReviewContradictionCoverageMatrix } from "./multi-review-contradiction-coverage-matrix-contract.js";
 import {
   createBatchReviewSummaryComparisonFixture,
   createDecisionSummary,
@@ -207,6 +208,29 @@ describe("public JSON contracts", () => {
               }),
             }),
           ],
+        }),
+      }),
+    });
+  });
+
+  it("validates the published multi-review contradiction matrix shape", async () => {
+    const matrix = JSON.parse(
+      await fs.readFile(
+        path.join(
+          process.cwd(),
+          "examples/synthetic-multi-review-contradiction-coverage-matrix.expected.json",
+        ),
+        "utf-8",
+      ),
+    ) as unknown;
+
+    expect(validateMultiReviewContradictionCoverageMatrix(matrix)).toEqual({
+      ok: true,
+      value: expect.objectContaining({
+        schemaVersion: "1",
+        totals: expect.objectContaining({
+          rowsWithContradictions: 5,
+          uncoveredChecks: 3,
         }),
       }),
     });

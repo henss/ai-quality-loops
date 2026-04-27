@@ -126,6 +126,8 @@ export const JSON_CONTRACT_SCHEMA_FILES = Object.freeze({
   claimEvidenceScoring: "schemas/claim-evidence-scoring.schema.json",
   highStakesAnalysisReviewRubric:
     "schemas/high-stakes-analysis-review-rubric.schema.json",
+  multiReviewContradictionCoverageMatrix:
+    "schemas/multi-review-contradiction-coverage-matrix.schema.json",
   structuredReviewResult: "schemas/structured-review-result.schema.json",
 });
 

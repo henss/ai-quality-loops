@@ -136,6 +136,14 @@ export {
   type BatchReviewSummarySeverityDirection,
 } from "./contracts/batch-review-summary-comparison-contract.js";
 export {
+  parseMultiReviewContradictionCoverageMatrix,
+  validateMultiReviewContradictionCoverageMatrix,
+  type MultiReviewContradictionCoverageMatrix as ContractMultiReviewContradictionCoverageMatrix,
+  type MultiReviewContradictionCoverageMatrixRow as ContractMultiReviewContradictionCoverageMatrixRow,
+  type MultiReviewContradictionSignal as ContractMultiReviewContradictionSignal,
+  type MultiReviewCoverageState as ContractMultiReviewCoverageState,
+} from "./contracts/multi-review-contradiction-coverage-matrix-contract.js";
+export {
   CLAIM_EVIDENCE_SCORING_CONTRACT,
   parseClaimEvidenceScoringContract,
   validateClaimEvidenceScoringContract,

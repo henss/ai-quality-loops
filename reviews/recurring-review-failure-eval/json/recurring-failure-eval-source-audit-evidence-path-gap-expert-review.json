@@ -1,0 +1,59 @@
+{
+  "schemaVersion": "1",
+  "workflow": "expert",
+  "expert": "Evidence Reviewer",
+  "model": "local-reviewer",
+  "summary": "The source audit evidence path is missing or unresolved, so evidence collection and caller review are needed before reuse.",
+  "overallSeverity": "medium",
+  "findings": [
+    {
+      "key": "source-audit-evidence-path-gap",
+      "title": "Source audit evidence path is unresolved",
+      "summary": "The source audit says the evidence path is attached, but one source path is not provided and another remains unresolved.",
+      "severity": "medium",
+      "recommendation": "Collect the missing evidence path and request caller review before treating the audit as traceable.",
+      "evidence": [
+        "Source audit excerpt",
+        "Evidence path not provided"
+      ]
+    }
+  ],
+  "decision": {
+    "schema": "peer_review_decision_v1",
+    "verdict": "changes_requested",
+    "confidence": "high",
+    "blocking": false,
+    "max_severity": "medium",
+    "summary": "The source audit evidence path is missing or unresolved, so evidence collection and caller review are needed before reuse.",
+    "blocking_findings": [],
+    "non_blocking_findings": [
+      {
+        "key": "source-audit-evidence-path-gap",
+        "title": "Source audit evidence path is unresolved",
+        "summary": "The source audit says the evidence path is attached, but one source path is not provided and another remains unresolved.",
+        "severity": "medium",
+        "recommendation": "Collect the missing evidence path and request caller review before treating the audit as traceable.",
+        "evidence": [
+          "Source audit excerpt",
+          "Evidence path not provided"
+        ]
+      }
+    ],
+    "required_before_merge": [
+      "collect_more_evidence",
+      "request_caller_review"
+    ],
+    "follow_up": [],
+    "next_step_actions": [
+      "collect_more_evidence",
+      "request_caller_review"
+    ]
+  },
+  "provenance": [
+    {
+      "label": "Content source",
+      "value": "Synthetic recurring review-failure eval packet"
+    }
+  ],
+  "markdown": "{\n  \"review_decision\": {\n    \"schema\": \"peer_review_decision_v1\",\n    \"verdict\": \"changes_requested\",\n    \"confidence\": \"high\",\n    \"blocking\": false,\n    \"max_severity\": \"medium\",\n    \"summary\": \"The source audit evidence path is missing or unresolved, so evidence collection and caller review are needed before reuse.\",\n    \"blocking_findings\": [],\n    \"non_blocking_findings\": [\n      {\n        \"severity\": \"medium\",\n        \"title\": \"Source audit evidence path is unresolved\",\n        \"summary\": \"The source audit says the evidence path is attached, but one source path is not provided and another remains unresolved.\",\n        \"key\": \"source-audit-evidence-path-gap\"\n      }\n    ],\n    \"required_before_merge\": [\n      \"collect_more_evidence\",\n      \"request_caller_review\"\n    ],\n    \"follow_up\": [],\n    \"next_step_actions\": [\n      \"collect_more_evidence\",\n      \"request_caller_review\"\n    ]\n  }\n}"
+}

@@ -161,6 +161,44 @@ function createPassingObservedResults() {
         nextStepActions: ["request_caller_review", "collect_more_evidence"],
       }),
     },
+    {
+      caseId: "bundle-truncation-hides-signals",
+      result: createStructuredResult({
+        summary:
+          "Bundle truncation hides a material review signal, so the wrapper claim that all findings were included is missing evidence.",
+        findings: [
+          {
+            key: "bundle-truncation-hides-signals",
+            title: "Bundle truncation hides material signals",
+            summary:
+              "The truncated review bundle omitted a material finding while the wrapper treated the shortened packet as complete.",
+            severity: "medium",
+            recommendation:
+              "Collect the missing bundle segment and revise the artifact before relying on the review signal summary.",
+          },
+        ],
+        nextStepActions: ["collect_more_evidence", "revise_artifact"],
+      }),
+    },
+    {
+      caseId: "source-audit-evidence-path-gap",
+      result: createStructuredResult({
+        summary:
+          "The source audit references evidence paths that are missing or unresolved, so caller review is needed before reuse.",
+        findings: [
+          {
+            key: "source-audit-evidence-path-gap",
+            title: "Source audit evidence path is unresolved",
+            summary:
+              "The source audit says the evidence path is attached, but one source path is not provided and another remains unresolved.",
+            severity: "medium",
+            recommendation:
+              "Collect the missing evidence path and request caller review before treating the audit as traceable.",
+          },
+        ],
+        nextStepActions: ["collect_more_evidence", "request_caller_review"],
+      }),
+    },
   ] satisfies Array<{
     caseId: string;
     result: StructuredReviewResult;
@@ -178,7 +216,7 @@ describe("evaluateRecurringReviewFailureHarness", () => {
     expect(report.failed).toBe(0);
     expect(report.results.every((result) => result.status === "passed")).toBe(true);
     expect(formatRecurringReviewFailureHarnessReport(report)).toContain(
-      "Recurring review-failure eval: 6 passed, 0 failed, 6 total.",
+      "Recurring review-failure eval: 8 passed, 0 failed, 8 total.",
     );
   });
 
@@ -206,7 +244,7 @@ describe("evaluateRecurringReviewFailureHarness", () => {
     });
 
     expect(report.status).toBe("failed");
-    expect(report.failed).toBe(6);
+    expect(report.failed).toBe(8);
     expect(report.results[0]).toMatchObject({
       caseId: "missing-evidence-handles",
       status: "failed",

@@ -187,6 +187,72 @@
       ],
       "minimumSeverity": "high",
       "sanitizedExcerpt": "The packet claims the review surface is defended even though the gate result is absent, so the reviewer should block reuse until caller-owned evidence is attached."
+    },
+    {
+      "caseId": "bundle-truncation-hides-signals",
+      "failureMode": "bundle truncation hides signals",
+      "reviewName": "Recurring failure eval - bundle truncation hides signals",
+      "sanitizedPacketPath": "./examples/synthetic-recurring-review-failure-bundle-truncation.md",
+      "summary": "Reviewer should catch when a truncated review bundle hides material findings while the wrapper treats the shortened packet as complete.",
+      "expectedFindingKeys": [
+        "bundle-truncation-hides-signals"
+      ],
+      "expectedSignalGroups": [
+        [
+          "bundle truncation",
+          "truncated bundle",
+          "truncated review bundle"
+        ],
+        [
+          "hidden",
+          "omitted",
+          "missing"
+        ],
+        [
+          "review signal",
+          "evidence signal",
+          "material finding"
+        ]
+      ],
+      "expectedNextStepActions": [
+        "collect_more_evidence",
+        "revise_artifact"
+      ],
+      "minimumSeverity": "medium",
+      "sanitizedExcerpt": "A truncated review bundle hides a material signal while the wrapper claims the bundle is complete, so the missing segment must be collected."
+    },
+    {
+      "caseId": "source-audit-evidence-path-gap",
+      "failureMode": "source-audit evidence-path gap",
+      "reviewName": "Recurring failure eval - source audit evidence path gap",
+      "sanitizedPacketPath": "./examples/synthetic-recurring-review-failure-source-audit-evidence-path.md",
+      "summary": "Reviewer should flag when a source audit references evidence without a resolvable sanitized evidence path or caller-owned retrieval note.",
+      "expectedFindingKeys": [
+        "source-audit-evidence-path-gap"
+      ],
+      "expectedSignalGroups": [
+        [
+          "source audit",
+          "source-audit",
+          "audit"
+        ],
+        [
+          "evidence path",
+          "evidence-path",
+          "source path"
+        ],
+        [
+          "missing",
+          "unresolved",
+          "not provided"
+        ]
+      ],
+      "expectedNextStepActions": [
+        "collect_more_evidence",
+        "request_caller_review"
+      ],
+      "minimumSeverity": "medium",
+      "sanitizedExcerpt": "The source audit claims attached evidence while one evidence path is missing and another remains unresolved, so caller review is still required."
     }
   ],
   "openQuestion": "The current public-safe corpus captures the reusable process-failure patterns already normalized into the recurring eval pack. If another repeated failure depends on private packet assembly details or bundle-specific policy, keep it in the embedding repo until a generic sanitized shape repeats."

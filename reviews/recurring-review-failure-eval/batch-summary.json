@@ -1,7 +1,7 @@
 {
   "manifestPath": "Local file path (.json file)",
-  "total": 6,
-  "succeeded": 6,
+  "total": 8,
+  "succeeded": 8,
   "failed": 0,
   "results": [
     {
@@ -231,6 +231,66 @@
         "evalCount": 254,
         "evalDurationMs": 4626
       }
+    },
+    {
+      "index": 6,
+      "name": "Recurring failure eval - bundle truncation hides signals",
+      "resultKey": "recurring-failure-eval-bundle-truncation-hides-signals-expert",
+      "mode": "expert",
+      "targetSummary": "Local file path (.md file, file: synthetic-recurring-review-failure-bundle-truncation.md)",
+      "outputPath": "Local file path (.md file)",
+      "structuredOutputPath": "Local file path (.json file)",
+      "structuredResult": {
+        "overallSeverity": "medium",
+        "totalFindings": 1,
+        "findingCounts": {
+          "critical": 0,
+          "high": 0,
+          "medium": 1,
+          "low": 0,
+          "unknown": 0
+        },
+        "decision": {
+          "verdict": "changes_requested",
+          "confidence": "high",
+          "acceptedFindings": 0,
+          "rejectedFindings": 1
+        }
+      },
+      "status": "success",
+      "durationMs": 0,
+      "outputChars": 1115,
+      "decisionParsed": true
+    },
+    {
+      "index": 7,
+      "name": "Recurring failure eval - source audit evidence path gap",
+      "resultKey": "recurring-failure-eval-source-audit-evidence-path-gap-expert",
+      "mode": "expert",
+      "targetSummary": "Local file path (.md file, file: synthetic-recurring-review-failure-source-audit-evidence-path.md)",
+      "outputPath": "Local file path (.md file)",
+      "structuredOutputPath": "Local file path (.json file)",
+      "structuredResult": {
+        "overallSeverity": "medium",
+        "totalFindings": 1,
+        "findingCounts": {
+          "critical": 0,
+          "high": 0,
+          "medium": 1,
+          "low": 0,
+          "unknown": 0
+        },
+        "decision": {
+          "verdict": "changes_requested",
+          "confidence": "high",
+          "acceptedFindings": 0,
+          "rejectedFindings": 1
+        }
+      },
+      "status": "success",
+      "durationMs": 0,
+      "outputChars": 1135,
+      "decisionParsed": true
     }
   ]
 }

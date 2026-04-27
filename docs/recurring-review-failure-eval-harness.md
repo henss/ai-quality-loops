@@ -27,6 +27,8 @@ The checked-in sanitized regression corpus lives at `examples/synthetic-process-
 - verification-wrapper mismatches
 - launch-evidence notes that omit added, removed, or regressed comparison signals
 - launch-evidence notes that imply threshold pass or defended readiness without gate evidence
+- truncated review bundles that hide material review signals while the wrapper claims completeness
+- source-audit notes with missing or unresolved sanitized evidence paths
 
 These cases stay intentionally generic. They do not encode private repository names, tracker identifiers, company policy, or live operator context.
 
@@ -68,4 +70,4 @@ Use the corpus fixture when a wrapper needs a human-readable list of the sanitiz
 
 The harness remains generic only while the eval cases stay synthetic or caller-sanitized and the pass/fail check reads only structured review-result artifacts. If a future slice needs repo-specific command policy, packet assembly rules, private tracker context, or domain-specific approval thresholds, keep that logic in the embedding repo instead of widening AIQL.
 
-The current sanitized corpus intentionally stops at the six reusable patterns already normalized into the public eval pack. If another repeated process-failed review depends on bundle-specific packet assembly, private evidence routing, or domain policy that does not survive sanitization cleanly, leave that case outside AIQL until a generic public-safe shape repeats.
+The current sanitized corpus intentionally stops at the reusable patterns already normalized into the public eval pack. Bundle truncation and source-audit evidence-path gaps are included only as generic traceability failures; if a future case depends on bundle-specific packet assembly, private evidence routing, or domain policy that does not survive sanitization cleanly, leave it outside AIQL until a generic public-safe shape repeats.

@@ -42,6 +42,16 @@ const ACTUAL_REPLAY_OUTPUTS = [
     structuredOutputPath:
       "reviews/recurring-review-failure-eval/json/recurring-failure-eval-launch-evidence-gate-overclaim-expert-review.json",
   },
+  {
+    caseId: "bundle-truncation-hides-signals",
+    structuredOutputPath:
+      "reviews/recurring-review-failure-eval/json/recurring-failure-eval-bundle-truncation-hides-signals-expert-review.json",
+  },
+  {
+    caseId: "source-audit-evidence-path-gap",
+    structuredOutputPath:
+      "reviews/recurring-review-failure-eval/json/recurring-failure-eval-source-audit-evidence-path-gap-expert-review.json",
+  },
 ] as const;
 
 const PUBLIC_SAFE_BLOCKLIST = [
@@ -112,7 +122,7 @@ describe("synthetic recurring review-failure eval public fixtures", () => {
         contextPath: "./examples/synthetic-recurring-review-failure-eval-context.json",
       }),
     );
-    expect(manifest.reviews).toHaveLength(6);
+    expect(manifest.reviews).toHaveLength(8);
 
     const targetTexts = await Promise.all(
       manifest.reviews.map(async (review) =>
@@ -126,6 +136,8 @@ describe("synthetic recurring review-failure eval public fixtures", () => {
     expect(targetTexts[3]).toContain("verification-wrapper-mismatch");
     expect(targetTexts[4]).toContain("launch-evidence-regression-omission");
     expect(targetTexts[5]).toContain("launch-evidence-gate-overclaim");
+    expect(targetTexts[6]).toContain("bundle-truncation-hides-signals");
+    expect(targetTexts[7]).toContain("source-audit-evidence-path-gap");
 
     const serialized = [manifestText, contextText, ...targetTexts].join("\n").toLowerCase();
     for (const blockedTerm of PUBLIC_SAFE_BLOCKLIST) {
@@ -149,7 +161,7 @@ describe("synthetic recurring review-failure eval public fixtures", () => {
       }>;
     };
 
-    expect(fixture.results).toHaveLength(6);
+    expect(fixture.results).toHaveLength(8);
 
     const observedResults = (fixture.results ?? []).map((entry) => {
       const validation = validateStructuredReviewResult(entry.result);
@@ -184,8 +196,8 @@ describe("synthetic recurring review-failure eval public fixtures", () => {
     expect(report).toEqual(
       expect.objectContaining({
         status: "passed",
-        total: 6,
-        passed: 6,
+        total: 8,
+        passed: 8,
         failed: 0,
       }),
     );
@@ -196,9 +208,11 @@ describe("synthetic recurring review-failure eval public fixtures", () => {
       "passed",
       "passed",
       "passed",
+      "passed",
+      "passed",
     ]);
     expect(formatRecurringReviewFailureHarnessReport(report)).toContain(
-      "Recurring review-failure eval: 6 passed, 0 failed, 6 total.",
+      "Recurring review-failure eval: 8 passed, 0 failed, 8 total.",
     );
   });
 

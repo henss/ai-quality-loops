@@ -290,4 +290,34 @@ export const RECURRING_REVIEW_FAILURE_EVAL_CASES = Object.freeze([
     requiredNextStepActions: ["request_caller_review", "collect_more_evidence"],
     minimumSeverity: "high",
   },
+  {
+    caseId: "bundle-truncation-hides-signals",
+    reviewName: "Recurring failure eval - bundle truncation hides signals",
+    failureMode: "bundle truncation hides signals",
+    summary:
+      "Reviewer should catch when a truncated review bundle hides material findings while the wrapper treats the shortened packet as complete.",
+    requiredFindingKeys: ["bundle-truncation-hides-signals"],
+    requiredSignalGroups: [
+      ["bundle truncation", "truncated bundle", "truncated review bundle"],
+      ["hidden", "omitted", "missing"],
+      ["review signal", "evidence signal", "material finding"],
+    ],
+    requiredNextStepActions: ["collect_more_evidence", "revise_artifact"],
+    minimumSeverity: "medium",
+  },
+  {
+    caseId: "source-audit-evidence-path-gap",
+    reviewName: "Recurring failure eval - source audit evidence path gap",
+    failureMode: "source-audit evidence-path gap",
+    summary:
+      "Reviewer should flag when a source audit references evidence without a resolvable sanitized evidence path or caller-owned retrieval note.",
+    requiredFindingKeys: ["source-audit-evidence-path-gap"],
+    requiredSignalGroups: [
+      ["source audit", "source-audit", "audit"],
+      ["evidence path", "evidence-path", "source path"],
+      ["missing", "unresolved", "not provided"],
+    ],
+    requiredNextStepActions: ["collect_more_evidence", "request_caller_review"],
+    minimumSeverity: "medium",
+  },
 ] satisfies ReadonlyArray<RecurringReviewFailureEvalCase>);

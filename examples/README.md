@@ -20,7 +20,7 @@ The example files cover the repeatable workflow surfaces. The package also suppo
 | Rerun only failed or named batch entries | `batch-review ./manifest.json --rerun-summary ./reviews/batch-summary.json --rerun-failed` | Keeps retry selection tied to the prior summary artifact. |
 | Gate a local or CI check with explicit budgets | `review-gate --result ./reviews/result.json --max-high 0` | Use `--batch-summary` for a whole manifest run or `--batch-comparison` for explicit comparison-report delta budgets. |
 | Compare two batch summary artifacts | `batch-review-compare ./reviews/previous-summary.json ./reviews/current-summary.json --json` | Feed the JSON report into `review-gate --batch-comparison` when CI should fail on caller-owned regression budgets. |
-| Emit a contradiction and coverage matrix | `batch-review-compare ./reviews/previous-summary.json ./reviews/current-summary.json --matrix --json` | Use when a wrapper needs a stable artifact showing overlaps, contradictions, and uncovered checks without adding caller-specific routing policy. |
+| Emit a contradiction and coverage matrix | `batch-review-compare ./reviews/previous-summary.json ./reviews/current-summary.json --matrix-output ./reviews/matrix.md --matrix-json-output ./reviews/matrix.json` | Use when a wrapper needs stable Markdown and raw JSON artifacts showing overlaps, contradictions, and uncovered checks without adding caller-specific routing policy. |
 | Diff two same-fixture run ledgers | `batch-review-compare ./reviews/baseline-ledger.json ./reviews/candidate-ledger.json --run-ledger --json` | Use when repeated fixed-pack experiments need an explicit fixture-identity guard before comparing runs. |
 | Summarize launch outcome evidence | `formatLaunchOutcomeEvidenceSummary(comparisonReport, { gate })` | Produces a compact, public-safe Markdown evidence note from sanitized comparison and optional gate results without deciding launch readiness. |
 | Format a multi-model disagreement note | `formatMultiModelDisagreementReport(comparisonReport, { baselineLabel, candidateLabel })` | Produces a compact, public-safe Markdown triage template from two comparable batch-summary artifacts without deciding acceptance or routing. |
@@ -555,12 +555,13 @@ Use `docs/reviewer-disagreement-explainer.md` when a consumer needs the artifact
 
 ### `synthetic-multi-review-disagreement-*.json`
 
-Use when you want a deterministic batch-summary fixture pair for consumers of `compareBatchReviewArtifactSummaries(...)`, `batch-review-compare --json`, or `review-gate --batch-comparison`.
+Use when you want a deterministic batch-summary fixture pair for consumers of `compareBatchReviewArtifactSummaries(...)`, `batch-review-compare --json`, `batch-review-compare --matrix-output ... --matrix-json-output ...`, or `review-gate --batch-comparison`.
 
 Typical edits:
 
 - keep the reviewer names and targets synthetic, or replace them only with caller-sanitized labels in an embedding repo
 - compare the helper output to the `comparison` block in `synthetic-multi-review-disagreement-comparison.expected.json` when a wrapper needs stable calibration coverage for improved, regressed, unchanged, recovered, added, and removed review entries with checked fixture provenance
+- compare matrix artifacts to `synthetic-multi-review-contradiction-coverage-matrix.expected.md` and `synthetic-multi-review-contradiction-coverage-matrix.expected.json` when a wrapper needs stable rendered and raw contradiction-and-coverage evidence from the same public-safe fixture pair
 - keep real reviewer assignment, source contents, thresholds, approval, routing, and remediation policy outside `ai-quality-loops`
 
 ### `synthetic-multi-model-disagreement-report.md`

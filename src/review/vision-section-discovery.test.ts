@@ -1,4 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import * as fs from "node:fs";
+import * as path from "node:path";
 
 const execaMock = vi.hoisted(() => vi.fn());
 
@@ -110,6 +112,41 @@ describe("vision section discovery", () => {
         ],
       }),
     ).toContain('Suggested `sections` value:\n["hero","pricing"]');
+  });
+
+  it("keeps the synthetic section stability manifest aligned with discoverable targets", () => {
+    const repoRoot = process.cwd();
+    const fixturePath = path.join(
+      repoRoot,
+      "examples",
+      "synthetic-section-stability-layout.html",
+    );
+    const manifestPath = path.join(
+      repoRoot,
+      "examples",
+      "synthetic-section-stability-benchmark.manifest.json",
+    );
+    const html = fs.readFileSync(fixturePath, "utf-8");
+    const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf-8")) as {
+      reviews: Array<{ target: string; sections: string[] }>;
+    };
+    const review = manifest.reviews[0]!;
+    const candidates = extractVisionSectionCandidates(html);
+    const discoveredIds = new Set(candidates.map((candidate) => candidate.id));
+    const missingSections = review.sections.filter(
+      (section) => !discoveredIds.has(section),
+    );
+
+    expect(review.target).toBe("./examples/synthetic-section-stability-layout.html");
+    expect(new Set(review.sections).size).toBe(review.sections.length);
+    expect(missingSections).toEqual([]);
+    expect(selectSuggestedVisionSections(candidates)).toEqual([
+      "stability-page",
+      "stable-target-beta",
+      "stability-overview",
+      "stable-target-alpha",
+      "stability-summary",
+    ]);
   });
 
   it("uses the browser DOM dump flow and sanitizes error output", async () => {

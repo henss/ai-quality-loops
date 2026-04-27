@@ -99,4 +99,39 @@ describe("planVisionCaptures", () => {
       ]),
     ).toBe("section-1 (hero), section-2 (pricing)");
   });
+
+  it("plans ordered targeted captures for the synthetic section stability benchmark", async () => {
+    const fixturePath = path.join(
+      process.cwd(),
+      "examples",
+      "synthetic-section-stability-layout.html",
+    );
+    const sections = [
+      "stability-overview",
+      "stable-target-alpha",
+      "stable-target-beta",
+      "stability-summary",
+    ];
+    const plan = await planVisionCaptures({
+      urlOrPath: fixturePath,
+      sections,
+      width: 1280,
+      height: 720,
+    });
+
+    expect(plan.captureMode).toBe("targeted-sections");
+    expect(plan.usesPreparedTarget).toBe(false);
+    expect(plan.captures.map((capture) => capture.section)).toEqual(sections);
+    expect(plan.captures.map((capture) => capture.label)).toEqual([
+      "section-1",
+      "section-2",
+      "section-3",
+      "section-4",
+    ]);
+    expect(plan.captures.map((capture) => capture.target)).toEqual(
+      sections.map((section) => `${fixturePath}#${section}`),
+    );
+
+    await plan.cleanup();
+  });
 });

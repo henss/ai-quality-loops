@@ -1,0 +1,22 @@
+{
+  "defaults": {
+    "mode": "vision",
+    "expert": "UI/UX",
+    "outputDir": "./reviews/synthetic-section-stability-benchmark",
+    "structuredOutputDir": "./reviews/synthetic-section-stability-benchmark/json",
+    "width": 1280,
+    "height": 720
+  },
+  "reviews": [
+    {
+      "name": "Synthetic section stability benchmark",
+      "target": "./examples/synthetic-section-stability-layout.html",
+      "sections": [
+        "stability-overview",
+        "stable-target-alpha",
+        "stable-target-beta",
+        "stability-summary"
+      ]
+    }
+  ]
+}

@@ -20,22 +20,32 @@ No new dependency, adapter, or framework was adopted. The work needed a small de
 
 A third-party eval framework would add dependency and integration cost without covering the key requirement: public-safe replay fixtures that preserve recurring failure shapes while avoiding private packet details. If this grows beyond fixture replay into scheduling, trace storage, model orchestration, or broader benchmark management, that should be scouted separately before adding package-like infrastructure.
 
+The solution-scout check was not run for this slice because no reusable tooling, adapter, workflow automation, package dependency, or framework was added. The replay stays as one corpus, one manifest, checked-in local outputs, and a deterministic contract test over the existing harness.
+
 ## Replay Result
 
 The local replay executed six sanitized cases successfully, then the deterministic harness judged whether the structured outputs included the expected finding keys, signal groups, next-step actions, and minimum severity.
 
 Summary: 6 passed, 0 failed, 6 total.
 
-| Case | Result | Replay readout |
-| --- | --- | --- |
-| Missing evidence handles | Caught | Found the expected missing-handle finding, traceability language, evidence-collection next step, and sufficient severity. |
-| Stale deterministic inputs | Caught | Found the stale-input finding, drift language, evidence-collection and follow-up-tracking actions, and sufficient severity. |
-| Repeated command noise | Caught | Found the command-noise finding, signal-preservation language, artifact-revision next step, and sufficient severity. |
-| Verification wrapper mismatch | Caught | Found the wrapper-mismatch finding, command-mismatch language, rerun and caller-review actions, and sufficient severity. |
-| Launch evidence regression omission | Caught | Found the regression-omission finding, omitted comparison-signal language, artifact-revision and evidence-collection actions, and sufficient severity. |
-| Launch evidence gate overclaim | Caught | Found the gate-overclaim finding, missing-threshold evidence language, caller-review and evidence-collection actions, and sufficient severity. |
+| Case | Result | Actual reviewer severity | Harness expectations satisfied |
+| --- | --- | --- | --- |
+| Missing evidence handles | Caught | medium | `missing-evidence-handle`; evidence/source-handle and missing/opaque/unresolved signals; `collect_more_evidence`; minimum medium severity. |
+| Stale deterministic inputs | Caught | medium | `stale-deterministic-input`; stale/drift and deterministic-input/baseline signals; `collect_more_evidence`, `track_follow_up`; minimum medium severity. |
+| Repeated command noise | Caught | medium | `command-noise-obscures-signal`; command-noise and verification-signal signals; `revise_artifact`; minimum medium severity. |
+| Verification wrapper mismatch | Caught | high | `verification-wrapper-mismatch`; wrapper and mismatch/different-command signals; `rerun_review`, `request_caller_review`; minimum medium severity. |
+| Launch evidence regression omission | Caught | high | `launch-evidence-regression-omission`; launch-evidence, added/removed/regressed, and omitted/stability-claim signals; `revise_artifact`, `collect_more_evidence`; minimum medium severity. |
+| Launch evidence gate overclaim | Caught | high | `launch-evidence-gate-overclaim`; gate/threshold, missing/absent, and defended-readiness overclaim signals; `request_caller_review`, `collect_more_evidence`; minimum high severity. |
 
 No overflag-only case was observed in this run. The reviewer sometimes assigned higher severity than the minimum bar, but those cases also contained the expected reusable failure finding and are treated as caught rather than overflagged.
+
+## Evidence Map
+
+- Manifest execution evidence: `reviews/recurring-review-failure-eval/batch-summary.json` records 6 succeeded and 0 failed local reviewer runs with parsed decisions.
+- Actual structured outputs: `reviews/recurring-review-failure-eval/json/` contains one structured JSON result for each manifest review target.
+- Deterministic fixture evidence: `examples/synthetic-recurring-review-failure-eval-results.fixture.json` is a public-safe structured-results fixture that also passes the same harness.
+- Corpus alignment evidence: `examples/synthetic-process-failed-peer-review-regression-corpus.fixture.json` mirrors the TypeScript eval-case expectations and records the generic extraction boundary for each sanitized incident.
+- Contract coverage: `src/contracts/recurring-review-failure-eval-public-fixtures.test.ts` now validates the public-safe manifest/fixture set and replays the checked-in local reviewer JSON outputs through `evaluateRecurringReviewFailureHarness(...)`.
 
 ## Why It Matters
 

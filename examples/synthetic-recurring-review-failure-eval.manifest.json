@@ -38,6 +38,10 @@
     {
       "name": "Recurring failure eval - source audit evidence path gap",
       "target": "./examples/synthetic-recurring-review-failure-source-audit-evidence-path.md"
+    },
+    {
+      "name": "Recurring failure eval - unclassified runtime stderr",
+      "target": "./examples/synthetic-recurring-review-failure-runtime-stderr.md"
     }
   ]
 }

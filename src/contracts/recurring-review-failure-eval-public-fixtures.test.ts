@@ -92,9 +92,12 @@ async function evaluateActualReplayOutputs() {
   const observedResults = await Promise.all(
     ACTUAL_REPLAY_OUTPUTS.map(loadActualReplayObservedResult),
   );
+  const actualReplayCases = RECURRING_REVIEW_FAILURE_EVAL_CASES.filter((evalCase) =>
+    ACTUAL_REPLAY_OUTPUTS.some((entry) => entry.caseId === evalCase.caseId),
+  );
 
   return evaluateRecurringReviewFailureHarness({
-    cases: RECURRING_REVIEW_FAILURE_EVAL_CASES,
+    cases: actualReplayCases,
     observedResults,
   });
 }
@@ -122,7 +125,7 @@ describe("synthetic recurring review-failure eval public fixtures", () => {
         contextPath: "./examples/synthetic-recurring-review-failure-eval-context.json",
       }),
     );
-    expect(manifest.reviews).toHaveLength(8);
+    expect(manifest.reviews).toHaveLength(9);
 
     const targetTexts = await Promise.all(
       manifest.reviews.map(async (review) =>
@@ -138,6 +141,7 @@ describe("synthetic recurring review-failure eval public fixtures", () => {
     expect(targetTexts[5]).toContain("launch-evidence-gate-overclaim");
     expect(targetTexts[6]).toContain("bundle-truncation-hides-signals");
     expect(targetTexts[7]).toContain("source-audit-evidence-path-gap");
+    expect(targetTexts[8]).toContain("unclassified-runtime-stderr");
 
     const serialized = [manifestText, contextText, ...targetTexts].join("\n").toLowerCase();
     for (const blockedTerm of PUBLIC_SAFE_BLOCKLIST) {
@@ -161,7 +165,7 @@ describe("synthetic recurring review-failure eval public fixtures", () => {
       }>;
     };
 
-    expect(fixture.results).toHaveLength(8);
+    expect(fixture.results).toHaveLength(9);
 
     const observedResults = (fixture.results ?? []).map((entry) => {
       const validation = validateStructuredReviewResult(entry.result);

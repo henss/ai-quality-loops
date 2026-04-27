@@ -320,4 +320,19 @@ export const RECURRING_REVIEW_FAILURE_EVAL_CASES = Object.freeze([
     requiredNextStepActions: ["collect_more_evidence", "request_caller_review"],
     minimumSeverity: "medium",
   },
+  {
+    caseId: "unclassified-runtime-stderr",
+    reviewName: "Recurring failure eval - unclassified runtime stderr",
+    failureMode: "unclassified runtime stderr",
+    summary:
+      "Reviewer should flag runtime stderr that is recorded without an interpretation of whether it is expected, harmless, or blocking.",
+    requiredFindingKeys: ["unclassified-runtime-stderr"],
+    requiredSignalGroups: [
+      ["runtime stderr", "stderr"],
+      ["unclassified", "uninterpreted", "unresolved"],
+      ["expected", "harmless", "blocking"],
+    ],
+    requiredNextStepActions: ["rerun_review", "request_caller_review"],
+    minimumSeverity: "medium",
+  },
 ] satisfies ReadonlyArray<RecurringReviewFailureEvalCase>);

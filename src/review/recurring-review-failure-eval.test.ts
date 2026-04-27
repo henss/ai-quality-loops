@@ -199,6 +199,25 @@ function createPassingObservedResults() {
         nextStepActions: ["collect_more_evidence", "request_caller_review"],
       }),
     },
+    {
+      caseId: "unclassified-runtime-stderr",
+      result: createStructuredResult({
+        summary:
+          "The packet records runtime stderr but leaves it unclassified, so caller review and a rerun are needed.",
+        findings: [
+          {
+            key: "unclassified-runtime-stderr",
+            title: "Runtime stderr is unclassified",
+            summary:
+              "Runtime stderr is unresolved and not interpreted as expected, harmless, or blocking.",
+            severity: "medium",
+            recommendation:
+              "Rerun the review and request caller review before relying on the packet.",
+          },
+        ],
+        nextStepActions: ["rerun_review", "request_caller_review"],
+      }),
+    },
   ] satisfies Array<{
     caseId: string;
     result: StructuredReviewResult;
@@ -216,7 +235,7 @@ describe("evaluateRecurringReviewFailureHarness", () => {
     expect(report.failed).toBe(0);
     expect(report.results.every((result) => result.status === "passed")).toBe(true);
     expect(formatRecurringReviewFailureHarnessReport(report)).toContain(
-      "Recurring review-failure eval: 8 passed, 0 failed, 8 total.",
+      "Recurring review-failure eval: 9 passed, 0 failed, 9 total.",
     );
   });
 
@@ -244,7 +263,7 @@ describe("evaluateRecurringReviewFailureHarness", () => {
     });
 
     expect(report.status).toBe("failed");
-    expect(report.failed).toBe(8);
+    expect(report.failed).toBe(9);
     expect(report.results[0]).toMatchObject({
       caseId: "missing-evidence-handles",
       status: "failed",

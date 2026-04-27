@@ -29,6 +29,7 @@ The checked-in sanitized regression corpus lives at `examples/synthetic-process-
 - launch-evidence notes that imply threshold pass or defended readiness without gate evidence
 - truncated review bundles that hide material review signals while the wrapper claims completeness
 - source-audit notes with missing or unresolved sanitized evidence paths
+- runtime stderr that is recorded without classifying whether it is expected, harmless, or blocking
 
 These cases stay intentionally generic. They do not encode private repository names, tracker identifiers, company policy, or live operator context.
 

@@ -253,6 +253,38 @@
       ],
       "minimumSeverity": "medium",
       "sanitizedExcerpt": "The source audit claims attached evidence while one evidence path is missing and another remains unresolved, so caller review is still required."
+    },
+    {
+      "caseId": "unclassified-runtime-stderr",
+      "failureMode": "unclassified runtime stderr",
+      "reviewName": "Recurring failure eval - unclassified runtime stderr",
+      "sanitizedPacketPath": "./examples/synthetic-recurring-review-failure-runtime-stderr.md",
+      "summary": "Reviewer should flag runtime stderr that is recorded without an interpretation of whether it is expected, harmless, or blocking.",
+      "expectedFindingKeys": [
+        "unclassified-runtime-stderr"
+      ],
+      "expectedSignalGroups": [
+        [
+          "runtime stderr",
+          "stderr"
+        ],
+        [
+          "unclassified",
+          "uninterpreted",
+          "unresolved"
+        ],
+        [
+          "expected",
+          "harmless",
+          "blocking"
+        ]
+      ],
+      "expectedNextStepActions": [
+        "rerun_review",
+        "request_caller_review"
+      ],
+      "minimumSeverity": "medium",
+      "sanitizedExcerpt": "A review command exits successfully but records runtime stderr without classifying the warning, so the caller needs a rerun or explicit interpretation before reuse."
     }
   ],
   "openQuestion": "The current public-safe corpus captures the reusable process-failure patterns already normalized into the recurring eval pack. If another repeated failure depends on private packet assembly details or bundle-specific policy, keep it in the embedding repo until a generic sanitized shape repeats."

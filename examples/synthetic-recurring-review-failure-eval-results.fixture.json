@@ -521,6 +521,71 @@
         ],
         "markdown": "# Summary\nThe source audit references evidence paths that are missing or unresolved, so caller review is needed before reuse."
       }
+    },
+    {
+      "caseId": "unclassified-runtime-stderr",
+      "result": {
+        "schemaVersion": "1",
+        "workflow": "expert",
+        "expert": "Evidence Reviewer",
+        "model": "synthetic-recurring-review-failure-eval",
+        "summary": "The packet records runtime stderr but leaves it unclassified, so caller review and a rerun are needed.",
+        "overallSeverity": "medium",
+        "findings": [
+          {
+            "key": "unclassified-runtime-stderr",
+            "title": "Runtime stderr is unclassified",
+            "summary": "Runtime stderr is unresolved and not interpreted as expected, harmless, or blocking.",
+            "severity": "medium",
+            "recommendation": "Rerun the review and request caller review before relying on the packet.",
+            "evidence": [
+              "Runtime stderr warning",
+              "Interpretation not recorded"
+            ]
+          }
+        ],
+        "decision": {
+          "schema": "peer_review_decision_v1",
+          "verdict": "changes_requested",
+          "confidence": "medium",
+          "blocking": false,
+          "max_severity": "medium",
+          "summary": "The review output should not be reused until the stderr warning is classified.",
+          "blocking_findings": [],
+          "non_blocking_findings": [
+            {
+              "key": "unclassified-runtime-stderr",
+              "title": "Runtime stderr is unclassified",
+              "summary": "Runtime stderr is unresolved and not interpreted as expected, harmless, or blocking.",
+              "severity": "medium",
+              "recommendation": "Rerun the review and request caller review before relying on the packet.",
+              "evidence": [
+                "Runtime stderr warning",
+                "Interpretation not recorded"
+              ]
+            }
+          ],
+          "required_before_merge": [
+            "Classify the runtime stderr as expected, harmless, or blocking before reuse."
+          ],
+          "follow_up": [],
+          "next_step_actions": [
+            "rerun_review",
+            "request_caller_review"
+          ]
+        },
+        "provenance": [
+          {
+            "label": "Content source",
+            "value": "Synthetic recurring review-failure eval packet"
+          },
+          {
+            "label": "Privacy boundary",
+            "value": "No real source names, tracker identifiers, or private repository details"
+          }
+        ],
+        "markdown": "# Summary\nThe packet records runtime stderr but leaves it unclassified, so caller review and a rerun are needed."
+      }
     }
   ]
 }

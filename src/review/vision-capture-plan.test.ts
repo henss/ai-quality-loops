@@ -101,27 +101,27 @@ describe("planVisionCaptures", () => {
   });
 
   it("plans ordered targeted captures for the synthetic section stability benchmark", async () => {
-    const fixturePath = path.join(
+    const manifestPath = path.join(
       process.cwd(),
       "examples",
-      "synthetic-section-stability-layout.html",
+      "synthetic-section-stability-benchmark.manifest.json",
     );
-    const sections = [
-      "stability-overview",
-      "stable-target-alpha",
-      "stable-target-beta",
-      "stability-summary",
-    ];
+    const manifest = JSON.parse(await fs.readFile(manifestPath, "utf-8")) as {
+      defaults: { width: number; height: number };
+      reviews: Array<{ target: string; sections: string[] }>;
+    };
+    const review = manifest.reviews[0]!;
+    const fixturePath = path.join(process.cwd(), review.target);
     const plan = await planVisionCaptures({
       urlOrPath: fixturePath,
-      sections,
-      width: 1280,
-      height: 720,
+      sections: review.sections,
+      width: manifest.defaults.width,
+      height: manifest.defaults.height,
     });
 
     expect(plan.captureMode).toBe("targeted-sections");
     expect(plan.usesPreparedTarget).toBe(false);
-    expect(plan.captures.map((capture) => capture.section)).toEqual(sections);
+    expect(plan.captures.map((capture) => capture.section)).toEqual(review.sections);
     expect(plan.captures.map((capture) => capture.label)).toEqual([
       "section-1",
       "section-2",
@@ -129,7 +129,7 @@ describe("planVisionCaptures", () => {
       "section-4",
     ]);
     expect(plan.captures.map((capture) => capture.target)).toEqual(
-      sections.map((section) => `${fixturePath}#${section}`),
+      review.sections.map((section) => `${fixturePath}#${section}`),
     );
 
     await plan.cleanup();

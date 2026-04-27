@@ -63,18 +63,18 @@ describe("runVisionPreview", () => {
   });
 
   it("previews the synthetic section stability benchmark with stable section artifact names", async () => {
-    const fixturePath = path.join(
+    const manifestPath = path.join(
       process.cwd(),
       "examples",
-      "synthetic-section-stability-layout.html",
+      "synthetic-section-stability-benchmark.manifest.json",
     );
+    const manifest = JSON.parse(await fs.readFile(manifestPath, "utf-8")) as {
+      defaults: { width: number; height: number };
+      reviews: Array<{ target: string; sections: string[] }>;
+    };
+    const review = manifest.reviews[0]!;
+    const fixturePath = path.join(process.cwd(), review.target);
     const outputDir = path.join(tempDir, "section-stability");
-    const sections = [
-      "stability-overview",
-      "stable-target-alpha",
-      "stable-target-beta",
-      "stability-summary",
-    ];
 
     takeScreenshot.mockImplementation(async (_target: string, outputPath: string) => {
       await fs.mkdir(path.dirname(outputPath), { recursive: true });
@@ -83,9 +83,9 @@ describe("runVisionPreview", () => {
 
     const result = await runVisionPreview({
       urlOrPath: fixturePath,
-      sections,
-      width: 1280,
-      height: 720,
+      sections: review.sections,
+      width: manifest.defaults.width,
+      height: manifest.defaults.height,
       outputDir,
       outputFileStem: "synthetic-section-stability",
     });
@@ -98,7 +98,7 @@ describe("runVisionPreview", () => {
       "synthetic-section-stability-section-4-stability-summary.png",
     ]);
     expect(takeScreenshot.mock.calls.map(([target]) => target)).toEqual(
-      sections.map((section) => `${fixturePath}#${section}`),
+      review.sections.map((section) => `${fixturePath}#${section}`),
     );
   });
 });

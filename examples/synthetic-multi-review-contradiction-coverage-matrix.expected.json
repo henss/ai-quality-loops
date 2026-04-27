@@ -1,0 +1,103 @@
+{
+  "schemaVersion": "1",
+  "inputs": {
+    "before": {
+      "pathLabel": "Synthetic disagreement baseline summary"
+    },
+    "after": {
+      "pathLabel": "Synthetic disagreement candidate summary"
+    }
+  },
+  "totals": {
+    "rows": 6,
+    "bothCovered": 3,
+    "baselineOnly": 1,
+    "candidateOnly": 2,
+    "notCovered": 0,
+    "rowsWithContradictions": 5,
+    "uncoveredChecks": 3
+  },
+  "rows": [
+    {
+      "resultKey": "accessibility-review",
+      "label": "Accessibility reviewer",
+      "baselineCoverage": "covered",
+      "candidateCoverage": "covered",
+      "overlap": "both-covered",
+      "contradictionSignals": [
+        "severity-improved",
+        "finding-count-changed"
+      ],
+      "baselineSeverity": "high",
+      "candidateSeverity": "medium",
+      "findingsDelta": -1,
+      "note": "Matrix signals: severity improved, finding count changed, findings delta -1."
+    },
+    {
+      "resultKey": "consistency-review",
+      "label": "Consistency reviewer",
+      "baselineCoverage": "uncovered",
+      "candidateCoverage": "covered",
+      "overlap": "candidate-only",
+      "contradictionSignals": [
+        "missing-baseline"
+      ],
+      "candidateSeverity": "low",
+      "note": "Candidate produced a covered check that is absent from the baseline summary."
+    },
+    {
+      "resultKey": "deprecated-review",
+      "label": "Deprecated reviewer",
+      "baselineCoverage": "covered",
+      "candidateCoverage": "uncovered",
+      "overlap": "baseline-only",
+      "contradictionSignals": [
+        "missing-candidate"
+      ],
+      "baselineSeverity": "medium",
+      "note": "Baseline produced a covered check that is absent from the candidate summary."
+    },
+    {
+      "resultKey": "evidence-review",
+      "label": "Evidence reviewer",
+      "baselineCoverage": "covered",
+      "candidateCoverage": "covered",
+      "overlap": "both-covered",
+      "contradictionSignals": [
+        "severity-regressed",
+        "finding-count-changed"
+      ],
+      "baselineSeverity": "medium",
+      "candidateSeverity": "high",
+      "findingsDelta": 1,
+      "note": "Matrix signals: severity regressed, finding count changed, findings delta 1."
+    },
+    {
+      "resultKey": "format-review",
+      "label": "Format reviewer",
+      "baselineCoverage": "failed",
+      "candidateCoverage": "covered",
+      "overlap": "candidate-only",
+      "contradictionSignals": [
+        "status-changed",
+        "severity-unavailable"
+      ],
+      "candidateSeverity": "low",
+      "note": "Matrix signals: status changed, severity unavailable, coverage failed->covered."
+    },
+    {
+      "resultKey": "risk-review",
+      "label": "Risk reviewer",
+      "baselineCoverage": "covered",
+      "candidateCoverage": "covered",
+      "overlap": "both-covered",
+      "contradictionSignals": [
+        "none"
+      ],
+      "baselineSeverity": "low",
+      "candidateSeverity": "low",
+      "findingsDelta": 0,
+      "note": "Covered by both summaries with no matrix-level contradiction signal."
+    }
+  ]
+}

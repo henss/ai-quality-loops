@@ -58,6 +58,15 @@ export {
 } from "./review/launch-packet-evidence-sufficiency-reviewer.js";
 export * from "./review/multi-model-disagreement-report.js";
 export {
+  createMultiReviewContradictionCoverageMatrix,
+  formatMultiReviewContradictionCoverageMatrix,
+  type CreateMultiReviewContradictionCoverageMatrixOptions,
+  type MultiReviewContradictionCoverageMatrix,
+  type MultiReviewContradictionCoverageMatrixRow,
+  type MultiReviewContradictionSignal,
+  type MultiReviewCoverageState,
+} from "./review/multi-review-contradiction-coverage-matrix.js";
+export {
   compareBatchReviewRunLedgers,
   computeBatchReviewRunLedgerFingerprint,
   createBatchReviewRunLedger,

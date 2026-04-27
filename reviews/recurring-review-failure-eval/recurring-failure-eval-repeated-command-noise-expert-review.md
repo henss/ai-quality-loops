@@ -5,13 +5,13 @@
     "confidence": "high",
     "blocking": false,
     "max_severity": "medium",
-    "summary": "Repeated command noise obscures verification signal and requires artifact revision before treating as defended.",
+    "summary": "Repeated command noise obscures verification signals and requires artifact revision before the packet can be treated as defended.",
     "blocking_findings": [],
     "non_blocking_findings": [
       {
         "severity": "medium",
         "title": "Repeated command noise obscures verification signal",
-        "summary": "Packet contains repeated command noise that drowns out the actual verification signal, requiring artifact revision.",
+        "summary": "The packet contains excessive repeated command noise that drowns out the actual verification evidence, requiring artifact revision to restore signal clarity.",
         "key": "command-noise-obscures-signal"
       }
     ],

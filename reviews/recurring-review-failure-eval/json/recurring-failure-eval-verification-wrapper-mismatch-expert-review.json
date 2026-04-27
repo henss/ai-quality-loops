@@ -3,13 +3,13 @@
   "workflow": "expert",
   "expert": "Evidence Reviewer",
   "model": "qwen3.5:27b",
-  "summary": "Verification wrapper mismatch detected between claimed command and cited command requires artifact revision and caller review.",
+  "summary": "Verification wrapper mismatch detected between claimed session check and cited test command requires artifact revision and caller review.",
   "overallSeverity": "high",
   "findings": [
     {
       "key": "verification-wrapper-mismatch",
       "title": "Verification wrapper mismatch",
-      "summary": "Wrapper claim cites pnpm verify:session but cited command is pnpm test -- review-gate.test.ts, creating a verification gap.",
+      "summary": "Wrapper claim cites pnpm verify:session while cited command runs pnpm test -- review-gate.test.ts, creating an audit gap.",
       "severity": "high",
       "evidence": []
     }
@@ -20,29 +20,28 @@
     "confidence": "high",
     "blocking": false,
     "max_severity": "high",
-    "summary": "Verification wrapper mismatch detected between claimed command and cited command requires artifact revision and caller review.",
+    "summary": "Verification wrapper mismatch detected between claimed session check and cited test command requires artifact revision and caller review.",
     "blocking_findings": [],
     "non_blocking_findings": [
       {
         "key": "verification-wrapper-mismatch",
         "title": "Verification wrapper mismatch",
-        "summary": "Wrapper claim cites pnpm verify:session but cited command is pnpm test -- review-gate.test.ts, creating a verification gap.",
+        "summary": "Wrapper claim cites pnpm verify:session while cited command runs pnpm test -- review-gate.test.ts, creating an audit gap.",
         "severity": "high",
         "evidence": []
       }
     ],
     "required_before_merge": [
       "revise_artifact",
-      "collect_more_evidence"
+      "request_caller_review"
     ],
     "follow_up": [
       "track_follow_up"
     ],
     "next_step_actions": [
       "revise_artifact",
-      "collect_more_evidence",
-      "rerun_review",
-      "request_caller_review"
+      "request_caller_review",
+      "track_follow_up"
     ],
     "evidence_requests": []
   },
@@ -52,18 +51,18 @@
       "value": "Local file path (.md file)"
     }
   ],
-  "markdown": "{\n  \"review_decision\": {\n    \"schema\": \"peer_review_decision_v1\",\n    \"verdict\": \"changes_requested\",\n    \"confidence\": \"high\",\n    \"blocking\": false,\n    \"max_severity\": \"high\",\n    \"summary\": \"Verification wrapper mismatch detected between claimed command and cited command requires artifact revision and caller review.\",\n    \"blocking_findings\": [],\n    \"non_blocking_findings\": [\n      {\n        \"severity\": \"high\",\n        \"title\": \"Verification wrapper mismatch\",\n        \"summary\": \"Wrapper claim cites pnpm verify:session but cited command is pnpm test -- review-gate.test.ts, creating a verification gap.\",\n        \"key\": \"verification-wrapper-mismatch\"\n      }\n    ],\n    \"required_before_merge\": [\n      \"revise_artifact\",\n      \"collect_more_evidence\"\n    ],\n    \"follow_up\": [\n      \"track_follow_up\"\n    ],\n    \"next_step_actions\": [\n      \"revise_artifact\",\n      \"collect_more_evidence\",\n      \"rerun_review\",\n      \"request_caller_review\"\n    ]\n  }\n}",
+  "markdown": "{\n  \"review_decision\": {\n    \"schema\": \"peer_review_decision_v1\",\n    \"verdict\": \"changes_requested\",\n    \"confidence\": \"high\",\n    \"blocking\": false,\n    \"max_severity\": \"high\",\n    \"summary\": \"Verification wrapper mismatch detected between claimed session check and cited test command requires artifact revision and caller review.\",\n    \"blocking_findings\": [],\n    \"non_blocking_findings\": [\n      {\n        \"severity\": \"high\",\n        \"title\": \"Verification wrapper mismatch\",\n        \"summary\": \"Wrapper claim cites pnpm verify:session while cited command runs pnpm test -- review-gate.test.ts, creating an audit gap.\",\n        \"key\": \"verification-wrapper-mismatch\"\n      }\n    ],\n    \"required_before_merge\": [\n      \"revise_artifact\",\n      \"request_caller_review\"\n    ],\n    \"follow_up\": [\n      \"track_follow_up\"\n    ],\n    \"next_step_actions\": [\n      \"revise_artifact\",\n      \"request_caller_review\",\n      \"track_follow_up\"\n    ]\n  }\n}",
   "diagnostics": {
-    "elapsedMs": 5056,
-    "outputChars": 967,
+    "elapsedMs": 5053,
+    "outputChars": 948,
     "decisionParsed": true,
     "ollamaTelemetry": {
-      "totalDurationMs": 6115,
-      "loadDurationMs": 168,
-      "promptEvalCount": 1128,
-      "promptEvalDurationMs": 722,
-      "evalCount": 259,
-      "evalDurationMs": 4699
+      "totalDurationMs": 6127,
+      "loadDurationMs": 175,
+      "promptEvalCount": 1195,
+      "promptEvalDurationMs": 715,
+      "evalCount": 255,
+      "evalDurationMs": 4646
     }
   }
 }

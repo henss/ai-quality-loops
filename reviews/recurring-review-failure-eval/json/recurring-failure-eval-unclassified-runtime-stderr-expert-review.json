@@ -1,0 +1,67 @@
+{
+  "schemaVersion": "1",
+  "workflow": "expert",
+  "expert": "Evidence Reviewer",
+  "model": "qwen3.5:27b",
+  "summary": "Review cannot proceed as the runtime stderr is unclassified and lacks interpretation, violating evidence completeness requirements.",
+  "overallSeverity": "medium",
+  "findings": [
+    {
+      "key": "unclassified-runtime-stderr",
+      "title": "Unclassified runtime stderr",
+      "summary": "Runtime stderr was emitted but lacks interpretation of whether it is expected, harmless, or blocking.",
+      "severity": "medium",
+      "evidence": []
+    }
+  ],
+  "decision": {
+    "schema": "peer_review_decision_v1",
+    "verdict": "changes_requested",
+    "confidence": "high",
+    "blocking": false,
+    "max_severity": "medium",
+    "summary": "Review cannot proceed as the runtime stderr is unclassified and lacks interpretation, violating evidence completeness requirements.",
+    "blocking_findings": [],
+    "non_blocking_findings": [
+      {
+        "key": "unclassified-runtime-stderr",
+        "title": "Unclassified runtime stderr",
+        "summary": "Runtime stderr was emitted but lacks interpretation of whether it is expected, harmless, or blocking.",
+        "severity": "medium",
+        "evidence": []
+      }
+    ],
+    "required_before_merge": [
+      "interpret_stderr_classification",
+      "update_verification_note"
+    ],
+    "follow_up": [
+      "track_stderr_classification_policy"
+    ],
+    "next_step_actions": [
+      "rerun_review",
+      "request_caller_review"
+    ],
+    "evidence_requests": []
+  },
+  "provenance": [
+    {
+      "label": "Content source",
+      "value": "Local file path (.md file)"
+    }
+  ],
+  "markdown": "{\n  \"review_decision\": {\n    \"schema\": \"peer_review_decision_v1\",\n    \"verdict\": \"changes_requested\",\n    \"confidence\": \"high\",\n    \"blocking\": false,\n    \"max_severity\": \"medium\",\n    \"summary\": \"Review cannot proceed as the runtime stderr is unclassified and lacks interpretation, violating evidence completeness requirements.\",\n    \"blocking_findings\": [],\n    \"non_blocking_findings\": [\n      {\n        \"severity\": \"medium\",\n        \"title\": \"Unclassified runtime stderr\",\n        \"summary\": \"Runtime stderr was emitted but lacks interpretation of whether it is expected, harmless, or blocking.\",\n        \"key\": \"unclassified-runtime-stderr\"\n      }\n    ],\n    \"required_before_merge\": [\n      \"interpret_stderr_classification\",\n      \"update_verification_note\"\n    ],\n    \"follow_up\": [\n      \"track_stderr_classification_policy\"\n    ],\n    \"next_step_actions\": [\n      \"rerun_review\",\n      \"request_caller_review\"\n    ]\n  }\n}",
+  "diagnostics": {
+    "elapsedMs": 4594,
+    "outputChars": 932,
+    "decisionParsed": true,
+    "ollamaTelemetry": {
+      "totalDurationMs": 5586,
+      "loadDurationMs": 169,
+      "promptEvalCount": 1210,
+      "promptEvalDurationMs": 658,
+      "evalCount": 238,
+      "evalDurationMs": 4262
+    }
+  }
+}

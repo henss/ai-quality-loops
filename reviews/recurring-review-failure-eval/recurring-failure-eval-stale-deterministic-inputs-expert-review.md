@@ -5,26 +5,25 @@
     "confidence": "high",
     "blocking": false,
     "max_severity": "medium",
-    "summary": "Packet contains stale deterministic inputs that invalidate current confidence claims and require refreshed evidence before merge.",
+    "summary": "Stale deterministic inputs and missing freshness tracking prevent treating the packet as current.",
     "blocking_findings": [],
     "non_blocking_findings": [
       {
         "severity": "medium",
-        "title": "Stale deterministic inputs invalidate confidence claims",
-        "summary": "Comparison baseline and command summary are older than the current review cycle, creating drift risk.",
+        "title": "Stale deterministic inputs",
+        "summary": "Comparison baseline and command summary are older than the current packet, risking drift and invalid confidence claims.",
         "key": "stale-deterministic-input"
       }
     ],
     "required_before_merge": [
       "collect_more_evidence",
-      "revise_artifact"
+      "track_follow_up"
     ],
     "follow_up": [
-      "track_follow_up"
+      "Verify refreshed inputs match current packet state before next review cycle."
     ],
     "next_step_actions": [
       "collect_more_evidence",
-      "revise_artifact",
       "track_follow_up"
     ]
   }

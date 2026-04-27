@@ -3,13 +3,13 @@
   "workflow": "expert",
   "expert": "Evidence Reviewer",
   "model": "qwen3.5:27b",
-  "summary": "Repeated command noise obscures verification signal and requires artifact revision before treating as defended.",
+  "summary": "Repeated command noise obscures verification signals and requires artifact revision before the packet can be treated as defended.",
   "overallSeverity": "medium",
   "findings": [
     {
       "key": "command-noise-obscures-signal",
       "title": "Repeated command noise obscures verification signal",
-      "summary": "Packet contains repeated command noise that drowns out the actual verification signal, requiring artifact revision.",
+      "summary": "The packet contains excessive repeated command noise that drowns out the actual verification evidence, requiring artifact revision to restore signal clarity.",
       "severity": "medium",
       "evidence": []
     }
@@ -20,13 +20,13 @@
     "confidence": "high",
     "blocking": false,
     "max_severity": "medium",
-    "summary": "Repeated command noise obscures verification signal and requires artifact revision before treating as defended.",
+    "summary": "Repeated command noise obscures verification signals and requires artifact revision before the packet can be treated as defended.",
     "blocking_findings": [],
     "non_blocking_findings": [
       {
         "key": "command-noise-obscures-signal",
         "title": "Repeated command noise obscures verification signal",
-        "summary": "Packet contains repeated command noise that drowns out the actual verification signal, requiring artifact revision.",
+        "summary": "The packet contains excessive repeated command noise that drowns out the actual verification evidence, requiring artifact revision to restore signal clarity.",
         "severity": "medium",
         "evidence": []
       }
@@ -49,18 +49,18 @@
       "value": "Local file path (.md file)"
     }
   ],
-  "markdown": "{\n  \"review_decision\": {\n    \"schema\": \"peer_review_decision_v1\",\n    \"verdict\": \"changes_requested\",\n    \"confidence\": \"high\",\n    \"blocking\": false,\n    \"max_severity\": \"medium\",\n    \"summary\": \"Repeated command noise obscures verification signal and requires artifact revision before treating as defended.\",\n    \"blocking_findings\": [],\n    \"non_blocking_findings\": [\n      {\n        \"severity\": \"medium\",\n        \"title\": \"Repeated command noise obscures verification signal\",\n        \"summary\": \"Packet contains repeated command noise that drowns out the actual verification signal, requiring artifact revision.\",\n        \"key\": \"command-noise-obscures-signal\"\n      }\n    ],\n    \"required_before_merge\": [\n      \"revise_artifact\"\n    ],\n    \"follow_up\": [\n      \"track_follow_up\"\n    ],\n    \"next_step_actions\": [\n      \"revise_artifact\",\n      \"track_follow_up\"\n    ]\n  }\n}",
+  "markdown": "{\n  \"review_decision\": {\n    \"schema\": \"peer_review_decision_v1\",\n    \"verdict\": \"changes_requested\",\n    \"confidence\": \"high\",\n    \"blocking\": false,\n    \"max_severity\": \"medium\",\n    \"summary\": \"Repeated command noise obscures verification signals and requires artifact revision before the packet can be treated as defended.\",\n    \"blocking_findings\": [],\n    \"non_blocking_findings\": [\n      {\n        \"severity\": \"medium\",\n        \"title\": \"Repeated command noise obscures verification signal\",\n        \"summary\": \"The packet contains excessive repeated command noise that drowns out the actual verification evidence, requiring artifact revision to restore signal clarity.\",\n        \"key\": \"command-noise-obscures-signal\"\n      }\n    ],\n    \"required_before_merge\": [\n      \"revise_artifact\"\n    ],\n    \"follow_up\": [\n      \"track_follow_up\"\n    ],\n    \"next_step_actions\": [\n      \"revise_artifact\",\n      \"track_follow_up\"\n    ]\n  }\n}",
   "diagnostics": {
-    "elapsedMs": 4494,
-    "outputChars": 880,
+    "elapsedMs": 5039,
+    "outputChars": 940,
     "decisionParsed": true,
     "ollamaTelemetry": {
-      "totalDurationMs": 5459,
-      "loadDurationMs": 168,
-      "promptEvalCount": 1100,
-      "promptEvalDurationMs": 618,
-      "evalCount": 234,
-      "evalDurationMs": 4200
+      "totalDurationMs": 6091,
+      "loadDurationMs": 175,
+      "promptEvalCount": 1167,
+      "promptEvalDurationMs": 693,
+      "evalCount": 248,
+      "evalDurationMs": 4519
     }
   }
 }

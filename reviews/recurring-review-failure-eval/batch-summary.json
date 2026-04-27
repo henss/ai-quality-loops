@@ -1,7 +1,7 @@
 {
   "manifestPath": "Local file path (.json file)",
-  "total": 8,
-  "succeeded": 8,
+  "total": 9,
+  "succeeded": 9,
   "failed": 0,
   "results": [
     {
@@ -30,16 +30,16 @@
         }
       },
       "status": "success",
-      "durationMs": 7083,
-      "outputChars": 1202,
+      "durationMs": 7460,
+      "outputChars": 1137,
       "decisionParsed": true,
       "ollamaTelemetry": {
-        "totalDurationMs": 7072,
-        "loadDurationMs": 169,
-        "promptEvalCount": 1148,
-        "promptEvalDurationMs": 807,
-        "evalCount": 307,
-        "evalDurationMs": 5526
+        "totalDurationMs": 7448,
+        "loadDurationMs": 176,
+        "promptEvalCount": 1215,
+        "promptEvalDurationMs": 1278,
+        "evalCount": 298,
+        "evalDurationMs": 5416
       }
     },
     {
@@ -68,16 +68,16 @@
         }
       },
       "status": "success",
-      "durationMs": 5822,
-      "outputChars": 946,
+      "durationMs": 5985,
+      "outputChars": 939,
       "decisionParsed": true,
       "ollamaTelemetry": {
-        "totalDurationMs": 5814,
-        "loadDurationMs": 167,
-        "promptEvalCount": 1156,
-        "promptEvalDurationMs": 665,
-        "evalCount": 247,
-        "evalDurationMs": 4460
+        "totalDurationMs": 5977,
+        "loadDurationMs": 189,
+        "promptEvalCount": 1223,
+        "promptEvalDurationMs": 770,
+        "evalCount": 243,
+        "evalDurationMs": 4467
       }
     },
     {
@@ -106,16 +106,16 @@
         }
       },
       "status": "success",
-      "durationMs": 5467,
-      "outputChars": 880,
+      "durationMs": 6098,
+      "outputChars": 940,
       "decisionParsed": true,
       "ollamaTelemetry": {
-        "totalDurationMs": 5459,
-        "loadDurationMs": 168,
-        "promptEvalCount": 1100,
-        "promptEvalDurationMs": 618,
-        "evalCount": 234,
-        "evalDurationMs": 4200
+        "totalDurationMs": 6091,
+        "loadDurationMs": 175,
+        "promptEvalCount": 1167,
+        "promptEvalDurationMs": 693,
+        "evalCount": 248,
+        "evalDurationMs": 4519
       }
     },
     {
@@ -144,16 +144,16 @@
         }
       },
       "status": "success",
-      "durationMs": 6126,
-      "outputChars": 967,
+      "durationMs": 6134,
+      "outputChars": 948,
       "decisionParsed": true,
       "ollamaTelemetry": {
-        "totalDurationMs": 6115,
-        "loadDurationMs": 168,
-        "promptEvalCount": 1128,
-        "promptEvalDurationMs": 722,
-        "evalCount": 259,
-        "evalDurationMs": 4699
+        "totalDurationMs": 6127,
+        "loadDurationMs": 175,
+        "promptEvalCount": 1195,
+        "promptEvalDurationMs": 715,
+        "evalCount": 255,
+        "evalDurationMs": 4646
       }
     },
     {
@@ -182,16 +182,16 @@
         }
       },
       "status": "success",
-      "durationMs": 5921,
-      "outputChars": 937,
+      "durationMs": 5951,
+      "outputChars": 928,
       "decisionParsed": true,
       "ollamaTelemetry": {
-        "totalDurationMs": 5913,
-        "loadDurationMs": 163,
-        "promptEvalCount": 1207,
-        "promptEvalDurationMs": 725,
-        "evalCount": 251,
-        "evalDurationMs": 4513
+        "totalDurationMs": 5945,
+        "loadDurationMs": 178,
+        "promptEvalCount": 1274,
+        "promptEvalDurationMs": 736,
+        "evalCount": 247,
+        "evalDurationMs": 4504
       }
     },
     {
@@ -220,16 +220,16 @@
         }
       },
       "status": "success",
-      "durationMs": 6021,
+      "durationMs": 5962,
       "outputChars": 959,
       "decisionParsed": true,
       "ollamaTelemetry": {
-        "totalDurationMs": 6013,
-        "loadDurationMs": 173,
-        "promptEvalCount": 1139,
-        "promptEvalDurationMs": 726,
+        "totalDurationMs": 5956,
+        "loadDurationMs": 169,
+        "promptEvalCount": 1206,
+        "promptEvalDurationMs": 690,
         "evalCount": 254,
-        "evalDurationMs": 4626
+        "evalDurationMs": 4605
       }
     },
     {
@@ -241,12 +241,12 @@
       "outputPath": "Local file path (.md file)",
       "structuredOutputPath": "Local file path (.json file)",
       "structuredResult": {
-        "overallSeverity": "medium",
+        "overallSeverity": "high",
         "totalFindings": 1,
         "findingCounts": {
           "critical": 0,
-          "high": 0,
-          "medium": 1,
+          "high": 1,
+          "medium": 0,
           "low": 0,
           "unknown": 0
         },
@@ -258,9 +258,17 @@
         }
       },
       "status": "success",
-      "durationMs": 0,
-      "outputChars": 1115,
-      "decisionParsed": true
+      "durationMs": 6085,
+      "outputChars": 928,
+      "decisionParsed": true,
+      "ollamaTelemetry": {
+        "totalDurationMs": 6074,
+        "loadDurationMs": 192,
+        "promptEvalCount": 1231,
+        "promptEvalDurationMs": 754,
+        "evalCount": 252,
+        "evalDurationMs": 4593
+      }
     },
     {
       "index": 7,
@@ -268,6 +276,44 @@
       "resultKey": "recurring-failure-eval-source-audit-evidence-path-gap-expert",
       "mode": "expert",
       "targetSummary": "Local file path (.md file, file: synthetic-recurring-review-failure-source-audit-evidence-path.md)",
+      "outputPath": "Local file path (.md file)",
+      "structuredOutputPath": "Local file path (.json file)",
+      "structuredResult": {
+        "overallSeverity": "high",
+        "totalFindings": 1,
+        "findingCounts": {
+          "critical": 0,
+          "high": 1,
+          "medium": 0,
+          "low": 0,
+          "unknown": 0
+        },
+        "decision": {
+          "verdict": "changes_requested",
+          "confidence": "high",
+          "acceptedFindings": 0,
+          "rejectedFindings": 1
+        }
+      },
+      "status": "success",
+      "durationMs": 5827,
+      "outputChars": 917,
+      "decisionParsed": true,
+      "ollamaTelemetry": {
+        "totalDurationMs": 5820,
+        "loadDurationMs": 188,
+        "promptEvalCount": 1231,
+        "promptEvalDurationMs": 732,
+        "evalCount": 246,
+        "evalDurationMs": 4401
+      }
+    },
+    {
+      "index": 8,
+      "name": "Recurring failure eval - unclassified runtime stderr",
+      "resultKey": "recurring-failure-eval-unclassified-runtime-stderr-expert",
+      "mode": "expert",
+      "targetSummary": "Local file path (.md file, file: synthetic-recurring-review-failure-runtime-stderr.md)",
       "outputPath": "Local file path (.md file)",
       "structuredOutputPath": "Local file path (.json file)",
       "structuredResult": {
@@ -288,9 +334,17 @@
         }
       },
       "status": "success",
-      "durationMs": 0,
-      "outputChars": 1135,
-      "decisionParsed": true
+      "durationMs": 5597,
+      "outputChars": 932,
+      "decisionParsed": true,
+      "ollamaTelemetry": {
+        "totalDurationMs": 5586,
+        "loadDurationMs": 169,
+        "promptEvalCount": 1210,
+        "promptEvalDurationMs": 658,
+        "evalCount": 238,
+        "evalDurationMs": 4262
+      }
     }
   ]
 }

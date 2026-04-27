@@ -2,20 +2,16 @@
   "schemaVersion": "1",
   "workflow": "expert",
   "expert": "Evidence Reviewer",
-  "model": "local-reviewer",
-  "summary": "Bundle truncation hides a material review signal, so the wrapper needs missing evidence and a revised claim before reuse.",
-  "overallSeverity": "medium",
+  "model": "qwen3.5:27b",
+  "summary": "Bundle truncation hides material review signals and the wrapper claim incorrectly asserts completeness.",
+  "overallSeverity": "high",
   "findings": [
     {
       "key": "bundle-truncation-hides-signals",
       "title": "Bundle truncation hides material signals",
-      "summary": "The truncated review bundle omitted a material finding while the wrapper treated the shortened packet as complete.",
-      "severity": "medium",
-      "recommendation": "Collect the missing bundle segment and revise the artifact before relying on the review signal summary.",
-      "evidence": [
-        "Truncated review bundle",
-        "Hidden material finding"
-      ]
+      "summary": "The review bundle is visibly truncated but the wrapper claims completeness, hiding a material finding that must be reread.",
+      "severity": "high",
+      "evidence": []
     }
   ],
   "decision": {
@@ -23,37 +19,50 @@
     "verdict": "changes_requested",
     "confidence": "high",
     "blocking": false,
-    "max_severity": "medium",
-    "summary": "Bundle truncation hides a material review signal, so the wrapper needs missing evidence and a revised claim before reuse.",
+    "max_severity": "high",
+    "summary": "Bundle truncation hides material review signals and the wrapper claim incorrectly asserts completeness.",
     "blocking_findings": [],
     "non_blocking_findings": [
       {
         "key": "bundle-truncation-hides-signals",
         "title": "Bundle truncation hides material signals",
-        "summary": "The truncated review bundle omitted a material finding while the wrapper treated the shortened packet as complete.",
-        "severity": "medium",
-        "recommendation": "Collect the missing bundle segment and revise the artifact before relying on the review signal summary.",
-        "evidence": [
-          "Truncated review bundle",
-          "Hidden material finding"
-        ]
+        "summary": "The review bundle is visibly truncated but the wrapper claims completeness, hiding a material finding that must be reread.",
+        "severity": "high",
+        "evidence": []
       }
     ],
     "required_before_merge": [
       "collect_more_evidence",
       "revise_artifact"
     ],
-    "follow_up": [],
+    "follow_up": [
+      "track_follow_up"
+    ],
     "next_step_actions": [
       "collect_more_evidence",
-      "revise_artifact"
-    ]
+      "revise_artifact",
+      "track_follow_up"
+    ],
+    "evidence_requests": []
   },
   "provenance": [
     {
       "label": "Content source",
-      "value": "Synthetic recurring review-failure eval packet"
+      "value": "Local file path (.md file)"
     }
   ],
-  "markdown": "{\n  \"review_decision\": {\n    \"schema\": \"peer_review_decision_v1\",\n    \"verdict\": \"changes_requested\",\n    \"confidence\": \"high\",\n    \"blocking\": false,\n    \"max_severity\": \"medium\",\n    \"summary\": \"Bundle truncation hides a material review signal, so the wrapper needs missing evidence and a revised claim before reuse.\",\n    \"blocking_findings\": [],\n    \"non_blocking_findings\": [\n      {\n        \"severity\": \"medium\",\n        \"title\": \"Bundle truncation hides material signals\",\n        \"summary\": \"The truncated review bundle omitted a material finding while the wrapper treated the shortened packet as complete.\",\n        \"key\": \"bundle-truncation-hides-signals\"\n      }\n    ],\n    \"required_before_merge\": [\n      \"collect_more_evidence\",\n      \"revise_artifact\"\n    ],\n    \"follow_up\": [],\n    \"next_step_actions\": [\n      \"collect_more_evidence\",\n      \"revise_artifact\"\n    ]\n  }\n}"
+  "markdown": "{\n  \"review_decision\": {\n    \"schema\": \"peer_review_decision_v1\",\n    \"verdict\": \"changes_requested\",\n    \"confidence\": \"high\",\n    \"blocking\": false,\n    \"max_severity\": \"high\",\n    \"summary\": \"Bundle truncation hides material review signals and the wrapper claim incorrectly asserts completeness.\",\n    \"blocking_findings\": [],\n    \"non_blocking_findings\": [\n      {\n        \"severity\": \"high\",\n        \"title\": \"Bundle truncation hides material signals\",\n        \"summary\": \"The review bundle is visibly truncated but the wrapper claims completeness, hiding a material finding that must be reread.\",\n        \"key\": \"bundle-truncation-hides-signals\"\n      }\n    ],\n    \"required_before_merge\": [\n      \"collect_more_evidence\",\n      \"revise_artifact\"\n    ],\n    \"follow_up\": [\n      \"track_follow_up\"\n    ],\n    \"next_step_actions\": [\n      \"collect_more_evidence\",\n      \"revise_artifact\",\n      \"track_follow_up\"\n    ]\n  }\n}",
+  "diagnostics": {
+    "elapsedMs": 4948,
+    "outputChars": 928,
+    "decisionParsed": true,
+    "ollamaTelemetry": {
+      "totalDurationMs": 6074,
+      "loadDurationMs": 192,
+      "promptEvalCount": 1231,
+      "promptEvalDurationMs": 754,
+      "evalCount": 252,
+      "evalDurationMs": 4593
+    }
+  }
 }

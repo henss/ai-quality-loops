@@ -52,6 +52,11 @@ const ACTUAL_REPLAY_OUTPUTS = [
     structuredOutputPath:
       "reviews/recurring-review-failure-eval/json/recurring-failure-eval-source-audit-evidence-path-gap-expert-review.json",
   },
+  {
+    caseId: "unclassified-runtime-stderr",
+    structuredOutputPath:
+      "reviews/recurring-review-failure-eval/json/recurring-failure-eval-unclassified-runtime-stderr-expert-review.json",
+  },
 ] as const;
 
 const PUBLIC_SAFE_BLOCKLIST = [
@@ -100,6 +105,44 @@ async function evaluateActualReplayOutputs() {
     cases: actualReplayCases,
     observedResults,
   });
+}
+
+function expectActualReplayReportToMatchKnownMisses(
+  report: ReturnType<typeof evaluateRecurringReviewFailureHarness>,
+) {
+  expect(report).toEqual(
+    expect.objectContaining({
+      status: "failed",
+      total: 9,
+      passed: 7,
+      failed: 2,
+    }),
+  );
+  expect(report.results.map((result) => result.status)).toEqual([
+    "passed",
+    "passed",
+    "passed",
+    "failed",
+    "passed",
+    "passed",
+    "failed",
+    "passed",
+    "passed",
+  ]);
+  expect(
+    report.results.find((result) => result.caseId === "verification-wrapper-mismatch"),
+  ).toEqual(
+    expect.objectContaining({
+      missingNextStepActions: ["rerun_review"],
+    }),
+  );
+  expect(
+    report.results.find((result) => result.caseId === "bundle-truncation-hides-signals"),
+  ).toEqual(
+    expect.objectContaining({
+      missingSignalGroups: [["hidden", "omitted", "missing"]],
+    }),
+  );
 }
 
 describe("synthetic recurring review-failure eval public fixtures", () => {
@@ -197,26 +240,9 @@ describe("synthetic recurring review-failure eval public fixtures", () => {
   it("replays the checked-in local reviewer outputs through the harness", async () => {
     const report = await evaluateActualReplayOutputs();
 
-    expect(report).toEqual(
-      expect.objectContaining({
-        status: "passed",
-        total: 8,
-        passed: 8,
-        failed: 0,
-      }),
-    );
-    expect(report.results.map((result) => result.status)).toEqual([
-      "passed",
-      "passed",
-      "passed",
-      "passed",
-      "passed",
-      "passed",
-      "passed",
-      "passed",
-    ]);
+    expectActualReplayReportToMatchKnownMisses(report);
     expect(formatRecurringReviewFailureHarnessReport(report)).toContain(
-      "Recurring review-failure eval: 8 passed, 0 failed, 8 total.",
+      "Recurring review-failure eval: 7 passed, 2 failed, 9 total.",
     );
   });
 

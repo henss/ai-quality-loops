@@ -10,15 +10,16 @@ Public profile output excludes entities marked `private`, `internal`, or `restri
 
 ## Counts
 
-- Domains: 1
+- Domains: 2
 - Workflows: 2
 - Systems: 0
-- Components: 4
-- Relations: 38
+- Components: 5
+- Relations: 47
 
 ## Domains
 
 - `domain:ai-quality-loops` - AI Quality Loops: Public LLM review utilities for text, visual, batch, structured-result, and review-gate workflows.
+- `domain:ai-quality-loops-local` - ai-quality-loops Local Surface: Repo-local architecture, docs, and verification surfaces for ai-quality-loops.
 
 ## Major Workflows
 
@@ -27,6 +28,7 @@ Public profile output excludes entities marked `private`, `internal`, or `restri
 
 ## Systems And Components
 
+- `component:ai-quality-loops-source` - ai-quality-loops Source Surface: Main source, configuration, scripts, docs, and tests agents should inspect before broad repository search.
 - `component:cli-surfaces` - CLI Surfaces: Published command-line entrypoints for review, batch review, gates, screenshots, and vision utilities.
 - `component:review-workflows` - Review Workflows: Expert, batch, comparison, calibration, and gate workflows for local LLM-assisted review.
 - `component:structured-results` - Structured Results: Schemas, sanitizers, comparison helpers, and sponsor-facing result formats for review outputs.

@@ -1,0 +1,9 @@
+id: domain:ai-quality-loops-local
+kind: domain
+title: ai-quality-loops Local Surface
+summary: Repo-local architecture, docs, and verification surfaces for ai-quality-loops.
+status: active
+visibility: public
+relations:
+  - type: contains
+    target: repository:ai-quality-loops

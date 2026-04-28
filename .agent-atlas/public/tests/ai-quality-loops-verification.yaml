@@ -1,0 +1,22 @@
+id: test-scope:ai-quality-loops-verification
+kind: test-scope
+title: ai-quality-loops Verification
+summary: Narrow default verification commands for repo-local changes; prefer more specific tests when the task identifies them.
+status: active
+visibility: public
+commands:
+  - command: npm run verify:session
+    cwd: .
+    purpose: Repo-local verification candidate.
+  - command: npm run test
+    cwd: .
+    purpose: Repo-local verification candidate.
+  - command: npm run build
+    cwd: .
+    purpose: Repo-local verification candidate.
+  - command: npm run typecheck
+    cwd: .
+    purpose: Repo-local verification candidate.
+relations:
+  - type: verifies
+    target: component:ai-quality-loops-source

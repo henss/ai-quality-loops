@@ -6,7 +6,29 @@ Profile: `public`
 
 ## Test Scopes
 
+- `test-scope:ai-quality-loops-verification` - ai-quality-loops Verification: Narrow default verification commands for repo-local changes; prefer more specific tests when the task identifies them.
 - `test-scope:aiql-verification` - AIQL Verification: Repo-native TypeScript, Vitest, and agent-surface checks for public review utility changes.
+
+## ai-quality-loops Verification
+
+ID: `test-scope:ai-quality-loops-verification`
+
+Narrow default verification commands for repo-local changes; prefer more specific tests when the task identifies them.
+
+- command: `npm run verify:session`
+  purpose: Repo-local verification candidate.
+
+- command: `npm run test`
+  purpose: Repo-local verification candidate.
+
+- command: `npm run build`
+  purpose: Repo-local verification candidate.
+
+- command: `npm run typecheck`
+  purpose: Repo-local verification candidate.
+
+Verifies:
+- `component:ai-quality-loops-source`
 
 ## AIQL Verification
 

@@ -1,0 +1,14 @@
+id: repository:ai-quality-loops
+kind: repository
+title: ai-quality-loops
+summary: A collection of core LLM utilities and visual review tools for automated quality control.
+status: active
+visibility: public
+uri: repo://ai-quality-loops
+relations:
+  - type: related-to
+    target: domain:ai-quality-loops-local
+agent:
+  load_when:
+    - Orienting in this repository or building a repo-local context pack.
+  token_budget_hint: 300

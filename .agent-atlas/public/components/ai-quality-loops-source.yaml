@@ -1,0 +1,24 @@
+id: component:ai-quality-loops-source
+kind: component
+title: ai-quality-loops Source Surface
+summary: Main source, configuration, scripts, docs, and tests agents should inspect before broad repository search.
+status: active
+visibility: public
+code:
+  paths:
+    - src/**
+    - scripts/**
+    - docs/**
+    - package.json
+    - README.md
+relations:
+  - type: part-of
+    target: domain:ai-quality-loops-local
+  - type: tested-by
+    target: test-scope:ai-quality-loops-verification
+  - type: documented-in
+    target: document:ai-quality-loops-readme
+agent:
+  load_when:
+    - Changing source, scripts, docs, tests, or repo-level configuration.
+  token_budget_hint: 600

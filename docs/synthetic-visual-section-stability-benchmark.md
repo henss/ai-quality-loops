@@ -26,12 +26,11 @@ adapter.
 - Source material is limited to the repo-local synthetic HTML fixture and
   manifest; no private screenshots, customer data, or domain-specific packet
   details are part of the benchmark.
-- The required scout check was run from `D:/workspace/llm-orchestrator` for
-  category `visual-testing`, capability `synthetic section target stability
-  benchmark`, boundary `public`, and project `ai-quality-loops`. It returned
-  `build_local_with_recorded_rationale` with zero registry hits and zero live
-  npm candidates, so this stays a local fixture-and-test benchmark rather than a
-  new benchmark framework or dependency.
+- A build-vs-buy scout check was run for category `visual-testing`, capability
+  `synthetic section target stability benchmark`, boundary `public`, and project
+  `ai-quality-loops`. It returned `build_local_with_recorded_rationale` with
+  zero registry hits and zero live npm candidates, so this stays a local
+  fixture-and-test benchmark rather than a new benchmark framework or dependency.
 - The benchmark is intentionally prototype scoped: it exercises section
   discovery, manifest alignment, preview artifact naming, and capture planning
   order without invoking browser-debugging automation, UI fixes, private

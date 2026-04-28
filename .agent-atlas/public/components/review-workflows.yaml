@@ -1,0 +1,19 @@
+id: component:review-workflows
+kind: component
+title: Review Workflows
+summary: Expert, batch, comparison, calibration, and gate workflows for local LLM-assisted review.
+visibility: public
+code:
+  paths:
+    - src/review/**
+    - src/cli/*review*.ts
+    - src/cli/*gate*.ts
+  entrypoints:
+    - src/index.ts
+relations:
+  - type: part-of
+    target: domain:ai-quality-loops
+  - type: used-by
+    target: workflow:run-review
+  - type: tested-by
+    target: test-scope:aiql-verification

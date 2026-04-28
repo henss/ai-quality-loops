@@ -1,0 +1,20 @@
+id: component:cli-surfaces
+kind: component
+title: CLI Surfaces
+summary: Published command-line entrypoints for review, batch review, gates, screenshots, and vision utilities.
+visibility: public
+code:
+  paths:
+    - src/cli/**
+    - package.json
+  entrypoints:
+    - src/cli/batch-review.ts
+    - src/cli/expert-review.ts
+    - src/cli/vision-review.ts
+relations:
+  - type: part-of
+    target: domain:ai-quality-loops
+  - type: used-by
+    target: workflow:run-review
+  - type: used-by
+    target: workflow:run-vision-review

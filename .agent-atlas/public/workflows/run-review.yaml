@@ -1,0 +1,20 @@
+id: workflow:run-review
+kind: workflow
+title: Run Review
+summary: Runs text, batch, comparison, calibration, and review-gate checks while keeping caller policy and private evidence outside the library.
+visibility: public
+relations:
+  - type: part-of
+    target: domain:ai-quality-loops
+  - type: uses
+    target: component:review-workflows
+  - type: uses
+    target: component:structured-results
+  - type: documented-in
+    target: document:aiql-readme
+  - type: tested-by
+    target: test-scope:aiql-verification
+agent:
+  load_when:
+    - Changing review, batch-review, result, comparison, or gate behavior.
+  token_budget_hint: 1800

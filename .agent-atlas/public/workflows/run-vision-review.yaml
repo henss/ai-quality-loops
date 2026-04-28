@@ -1,0 +1,18 @@
+id: workflow:run-vision-review
+kind: workflow
+title: Run Vision Review
+summary: Captures public-safe page or screenshot targets and runs vision-model review with sanitized provenance.
+visibility: public
+relations:
+  - type: part-of
+    target: domain:ai-quality-loops
+  - type: uses
+    target: component:vision-review
+  - type: documented-in
+    target: document:aiql-readme
+  - type: tested-by
+    target: test-scope:aiql-verification
+agent:
+  load_when:
+    - Changing screenshot, section discovery, preview, or vision review behavior.
+  token_budget_hint: 1600

@@ -1,0 +1,18 @@
+id: component:structured-results
+kind: component
+title: Structured Results
+summary: Schemas, sanitizers, comparison helpers, and sponsor-facing result formats for review outputs.
+visibility: public
+code:
+  paths:
+    - src/review/*result*.ts
+    - src/review/*sanitizer*.ts
+    - schemas/**
+    - examples/*result*.json
+relations:
+  - type: part-of
+    target: domain:ai-quality-loops
+  - type: used-by
+    target: workflow:run-review
+  - type: tested-by
+    target: test-scope:aiql-verification

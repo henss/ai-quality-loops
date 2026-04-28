@@ -1,0 +1,17 @@
+id: test-scope:aiql-verification
+kind: test-scope
+title: AIQL Verification
+summary: Repo-native TypeScript, Vitest, and agent-surface checks for public review utility changes.
+visibility: public
+commands:
+  - command: pnpm verify:session
+    cwd: .
+    purpose: Run the repo verification wrapper for non-trivial changes.
+  - command: pnpm test
+    cwd: .
+    purpose: Run Vitest directly for focused behavior changes.
+relations:
+  - type: verifies
+    target: workflow:run-review
+  - type: verifies
+    target: workflow:run-vision-review

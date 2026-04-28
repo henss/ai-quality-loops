@@ -1,0 +1,9 @@
+id: document:aiql-readme
+kind: document
+title: AI Quality Loops README
+summary: Public overview, command inventory, examples, configuration, and caller-owned boundary notes.
+visibility: public
+uri: README.md
+relations:
+  - type: documents
+    target: domain:ai-quality-loops

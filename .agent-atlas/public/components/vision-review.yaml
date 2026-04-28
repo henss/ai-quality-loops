@@ -1,0 +1,17 @@
+id: component:vision-review
+kind: component
+title: Vision Review
+summary: Screenshot capture, section discovery, preview, and vision-model review surfaces.
+visibility: public
+code:
+  paths:
+    - src/review/vision-*.ts
+    - src/cli/vision*.ts
+    - src/cli/screenshot.ts
+relations:
+  - type: part-of
+    target: domain:ai-quality-loops
+  - type: used-by
+    target: workflow:run-vision-review
+  - type: tested-by
+    target: test-scope:aiql-verification

@@ -12,6 +12,22 @@ Runs text, batch, comparison, calibration, and review-gate checks while keeping 
 
 - visibility: `public`
 
+## Drill Down
+
+### Components
+
+- `component:cli-surfaces`
+- `component:review-workflows`
+- `component:structured-results`
+
+### Documents
+
+- `document:aiql-readme`
+
+### Tests
+
+- `test-scope:aiql-verification`
+
 ## Relations
 
 ### `documented-in`

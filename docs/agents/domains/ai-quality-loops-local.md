@@ -13,6 +13,13 @@ Repo-local architecture, docs, and verification surfaces for ai-quality-loops.
 - status: `active`
 - visibility: `public`
 
+## Drill Down
+
+### Components
+
+- `component:ai-quality-loops-source`
+
+
 ## Relations
 
 ### `contains`

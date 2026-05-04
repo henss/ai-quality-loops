@@ -12,6 +12,21 @@ Captures public-safe page or screenshot targets and runs vision-model review wit
 
 - visibility: `public`
 
+## Drill Down
+
+### Components
+
+- `component:cli-surfaces`
+- `component:vision-review`
+
+### Documents
+
+- `document:aiql-readme`
+
+### Tests
+
+- `test-scope:aiql-verification`
+
 ## Relations
 
 ### `documented-in`

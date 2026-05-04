@@ -12,6 +12,25 @@ Public LLM review utilities for text, visual, batch, structured-result, and revi
 
 - visibility: `public`
 
+## Drill Down
+
+### Workflows
+
+- `workflow:run-review`
+- `workflow:run-vision-review`
+
+### Components
+
+- `component:cli-surfaces`
+- `component:review-workflows`
+- `component:structured-results`
+- `component:vision-review`
+
+### Documents
+
+- `document:aiql-readme`
+
+
 ## Relations
 
 ### `contains`

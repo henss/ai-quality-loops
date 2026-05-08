@@ -34,7 +34,6 @@ describe("provider review", () => {
         "sonnet",
         "--max-budget-usd",
         "1",
-        "-",
       ],
     });
   });

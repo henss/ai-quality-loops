@@ -46,6 +46,7 @@
   },
   "scripts": {
     "build": "tsc",
+    "prepare": "pnpm build",
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
     "atlas": "pnpm dlx @agent-atlas/cli@0.18.0",

@@ -250,7 +250,6 @@ export function buildProviderCommand(
         "--model",
         model,
         ...(provider.extraArgs ?? []),
-        "-",
       ],
     };
   }

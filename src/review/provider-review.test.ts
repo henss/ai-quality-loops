@@ -41,7 +41,9 @@ describe("provider review", () => {
   it("runs a Codex-style review through an injected command runner", async () => {
     const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "aiql-provider-review-"));
     const outcomePath = path.join(tempDir, "outcome.md");
+    const changedPath = path.join(tempDir, "changed.ts");
     await fs.writeFile(outcomePath, "Implemented the requested change and ran tests.");
+    await fs.writeFile(changedPath, "export const changed = true;\n");
     const calls: Array<{ command: string; args: string[]; input: string }> = [];
     const runCommand: QualityReviewCommandRunner = async (command, args, options) => {
       calls.push({ command, args, input: options.input });
@@ -69,6 +71,7 @@ describe("provider review", () => {
         objective: "Check the slice outcome.",
         successCriteria: ["tests passed"],
         outcomePath,
+        changedPaths: [changedPath],
       },
       provider: {
         provider: "codex",
@@ -86,6 +89,7 @@ describe("provider review", () => {
       args: ["exec", "--cd", tempDir, "--model", "gpt-review", "-"],
     });
     expect(calls[0]?.input).toContain("Implemented the requested change");
+    expect(calls[0]?.input).toContain("export const changed = true");
   });
 
   it("maps missing structured output to process_failed", async () => {

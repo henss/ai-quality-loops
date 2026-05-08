@@ -193,7 +193,29 @@ async function buildSubjectContent(
   if (subject.outcomePath) {
     blocks.push(`## Outcome\n\n${await loadReviewContent(subject.outcomePath, cwd)}`);
   }
+  if (subject.changedPaths && subject.changedPaths.length > 0) {
+    blocks.push(`## Changed Path Content\n\n${await loadChangedPathContent(subject.changedPaths, cwd)}`);
+  }
   return blocks.join("\n\n").trim() || "[No review content supplied]";
+}
+
+async function loadChangedPathContent(paths: string[], cwd: string): Promise<string> {
+  const sections = [];
+  for (const changedPath of paths.slice(0, 10)) {
+    const content = await loadReviewContent(changedPath, cwd);
+    sections.push(`### ${changedPath}\n\n${truncateReviewContent(content, 12_000)}`);
+  }
+  if (paths.length > 10) {
+    sections.push(`[${paths.length - 10} changed path(s) omitted]`);
+  }
+  return sections.join("\n\n");
+}
+
+function truncateReviewContent(content: string, maxLength: number): string {
+  if (content.length <= maxLength) {
+    return content;
+  }
+  return `${content.slice(0, maxLength)}\n[truncated ${content.length - maxLength} chars]`;
 }
 
 async function runProviderPrompt(input: {

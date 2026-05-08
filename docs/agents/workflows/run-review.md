@@ -17,6 +17,7 @@ Runs text, batch, comparison, calibration, and review-gate checks while keeping 
 ### Components
 
 - `component:cli-surfaces`
+- `component:provider-review`
 - `component:review-workflows`
 - `component:structured-results`
 
@@ -34,6 +35,10 @@ Runs text, batch, comparison, calibration, and review-gate checks while keeping 
 
 - `document:aiql-readme`
 
+### `implemented-by`
+
+- `component:provider-review` _(generated)_
+
 ### `part-of`
 
 - `domain:ai-quality-loops`
@@ -45,6 +50,7 @@ Runs text, batch, comparison, calibration, and review-gate checks while keeping 
 ### `uses`
 
 - `component:cli-surfaces` _(generated)_
+- `component:provider-review`
 - `component:review-workflows`
 - `component:structured-results`
 
@@ -55,4 +61,5 @@ Runs text, batch, comparison, calibration, and review-gate checks while keeping 
 ## Agent Hints
 
 - load when: Changing review, batch-review, result, comparison, or gate behavior.
+- load when: Switching review execution between Ollama, Codex, or Claude providers.
 - token budget hint: 1800

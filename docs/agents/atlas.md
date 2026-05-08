@@ -21,7 +21,7 @@ Profile: `public`
 ### AI Quality Loops
 
 - `workflow:run-review` - Run Review: Runs text, batch, comparison, calibration, and review-gate checks while keeping caller policy and private evidence outside the library.
-  Components: `component:cli-surfaces`, `component:review-workflows`, `component:structured-results`
+  Components: `component:cli-surfaces`, `component:provider-review`, `component:review-workflows`, `component:structured-results`
 - `workflow:run-vision-review` - Run Vision Review: Captures public-safe page or screenshot targets and runs vision-model review with sanitized provenance.
   Components: `component:cli-surfaces`, `component:vision-review`
 
@@ -34,6 +34,7 @@ Profile: `public`
 ### AI Quality Loops
 
 - `component:cli-surfaces` - CLI Surfaces: Published command-line entrypoints for review, batch review, gates, screenshots, and vision utilities.
+- `component:provider-review` - Provider Review: Generic text review provider seam for Ollama, Codex CLI, and Claude CLI reviewers with a shared structured quality-review decision contract.
 - `component:review-workflows` - Review Workflows: Expert, batch, comparison, calibration, and gate workflows for local LLM-assisted review.
 - `component:structured-results` - Structured Results: Schemas, sanitizers, comparison helpers, and sponsor-facing result formats for review outputs.
 - `component:vision-review` - Vision Review: Screenshot capture, section discovery, preview, and vision-model review surfaces.

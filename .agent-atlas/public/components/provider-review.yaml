@@ -1,0 +1,24 @@
+id: component:provider-review
+kind: component
+title: Provider Review
+summary: Generic text review provider seam for Ollama, Codex CLI, and Claude CLI reviewers with a shared structured quality-review decision contract.
+status: pilot
+visibility: public
+code:
+  paths:
+    - src/review/provider-review.ts
+  entrypoints:
+    - src/review/provider-review.ts
+relations:
+  - type: part-of
+    target: domain:ai-quality-loops
+  - type: implements
+    target: workflow:run-review
+  - type: tested-by
+    target: test-scope:ai-quality-loops-verification
+agent:
+  load_when:
+    - Adding or debugging Codex, Claude, or Ollama text-review providers.
+    - Integrating external agent workflow review into ai-quality-loops.
+    - Mapping review provider output into quality_review_decision_v1.
+  token_budget_hint: 900

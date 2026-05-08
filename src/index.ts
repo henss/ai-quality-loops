@@ -92,6 +92,18 @@ export {
   type FormatSourceHandleReviewBundleDigestOptions,
 } from "./review/source-handle-review-bundle-digest.js";
 export * from "./review/preflight.js";
+export {
+  buildProviderCommand,
+  runQualityReview,
+  type QualityReviewCommandRunner,
+  type QualityReviewOllamaGenerator,
+  type QualityReviewProvider,
+  type QualityReviewProviderOptions,
+  type QualityReviewResult,
+  type QualityReviewStatus,
+  type QualityReviewSubject,
+  type RunQualityReviewOptions,
+} from "./review/provider-review.js";
 export * from "./review/review-gate.js";
 export * from "./review/review-focus-lint.js";
 export * from "./review/persona-catalog.js";

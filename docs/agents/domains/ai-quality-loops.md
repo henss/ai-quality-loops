@@ -22,6 +22,7 @@ Public LLM review utilities for text, visual, batch, structured-result, and revi
 ### Components
 
 - `component:cli-surfaces`
+- `component:provider-review`
 - `component:review-workflows`
 - `component:structured-results`
 - `component:vision-review`
@@ -36,6 +37,7 @@ Public LLM review utilities for text, visual, batch, structured-result, and revi
 ### `contains`
 
 - `component:cli-surfaces`
+- `component:provider-review` _(generated)_
 - `component:review-workflows`
 - `component:structured-results`
 - `component:vision-review`

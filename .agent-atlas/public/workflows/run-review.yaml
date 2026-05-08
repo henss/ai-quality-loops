@@ -7,6 +7,8 @@ relations:
   - type: part-of
     target: domain:ai-quality-loops
   - type: uses
+    target: component:provider-review
+  - type: uses
     target: component:review-workflows
   - type: uses
     target: component:structured-results
@@ -17,4 +19,5 @@ relations:
 agent:
   load_when:
     - Changing review, batch-review, result, comparison, or gate behavior.
+    - Switching review execution between Ollama, Codex, or Claude providers.
   token_budget_hint: 1800

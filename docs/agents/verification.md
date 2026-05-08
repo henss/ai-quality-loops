@@ -29,6 +29,7 @@ Narrow default verification commands for repo-local changes; prefer more specifi
 
 Verifies:
 - `component:ai-quality-loops-source`
+- `component:provider-review`
 
 ## AIQL Verification
 

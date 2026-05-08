@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import { cac } from "cac";
 import { runVisionReview } from "../review/vision-review.js";
 import * as dotenv from "dotenv";

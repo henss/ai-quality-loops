@@ -45,7 +45,8 @@
     "web-screenshot": "dist/cli/screenshot.js"
   },
   "scripts": {
-    "build": "tsc",
+    "clean": "node -e \"fs.rmSync('dist',{recursive:true,force:true})\"",
+    "build": "pnpm run clean && tsc -p tsconfig.build.json",
     "prepare": "pnpm build",
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
@@ -69,7 +70,8 @@
     "arch": "depcruise . --exclude \"(^|/)(dist|build|coverage|.runtime|.sandbox-tmp)/\" --config .dependency-cruiser.cjs --ignore-known .dependency-cruiser-known-violations.json --output-type err",
     "arch:baseline": "depcruise . --exclude \"(^|/)(dist|build|coverage|.runtime|.sandbox-tmp)/\" --config .dependency-cruiser.cjs --output-type baseline --output-to .dependency-cruiser-known-violations.json",
     "arch:graph": "depcruise . --exclude \"(^|/)(dist|build|coverage|.runtime|.sandbox-tmp)/\" --config .dependency-cruiser.cjs --ignore-known .dependency-cruiser-known-violations.json --output-type mermaid",
-    "lint:docs": "node scripts/docs-quality-lint.mjs"
+    "lint:docs": "node scripts/docs-quality-lint.mjs",
+    "release:package": "node scripts/release-package.mjs"
   },
   "dependencies": {
     "cac": "^7.0.0",

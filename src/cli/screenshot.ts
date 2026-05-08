@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import { cac } from "cac";
 import { takeScreenshot } from "../utils/screenshot.js";
 import * as dotenv from "dotenv";

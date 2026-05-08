@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import { cac } from "cac";
 import { runExpertReview } from "../review/expert-review.js";
 import * as dotenv from "dotenv";

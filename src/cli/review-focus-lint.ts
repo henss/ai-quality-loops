@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import { cac } from "cac";
 import * as dotenv from "dotenv";
 import { formatReviewFocusLintReport, runReviewFocusLint } from "../review/review-focus-lint.js";

@@ -6,7 +6,7 @@ ID: `document:aiql-readme`
 Kind: `document`
 Profile: `public`
 
-Public overview, command inventory, examples, configuration, and caller-owned boundary notes.
+Public overview, active local-first review/gate role, command inventory, examples, configuration, and caller-owned boundary notes.
 
 ## Metadata
 

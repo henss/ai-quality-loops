@@ -6,7 +6,7 @@ ID: `workflow:run-review`
 Kind: `workflow`
 Profile: `public`
 
-Runs text, batch, comparison, calibration, and review-gate checks while keeping caller policy and private evidence outside the library.
+Runs local text, batch, structured-result, comparison, calibration, recurring failure harness, and review-gate checks while keeping hosted observability, caller policy, and private evidence outside the library.
 
 ## Metadata
 
@@ -24,6 +24,7 @@ Runs text, batch, comparison, calibration, and review-gate checks while keeping 
 ### Documents
 
 - `document:aiql-readme`
+- `document:portfolio-role-and-roadmap`
 
 ### Tests
 
@@ -34,6 +35,7 @@ Runs text, batch, comparison, calibration, and review-gate checks while keeping 
 ### `documented-in`
 
 - `document:aiql-readme`
+- `document:portfolio-role-and-roadmap`
 
 ### `implemented-by`
 

@@ -1,7 +1,7 @@
 id: component:structured-results
 kind: component
 title: Structured Results
-summary: Schemas, sanitizers, comparison helpers, and sponsor-facing result formats for review outputs.
+summary: Local artifact contracts, schemas, sanitizers, comparison helpers, gate inputs, and sponsor-facing result formats for review outputs.
 visibility: public
 code:
   paths:

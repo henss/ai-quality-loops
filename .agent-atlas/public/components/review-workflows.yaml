@@ -1,7 +1,7 @@
 id: component:review-workflows
 kind: component
 title: Review Workflows
-summary: Expert, batch, comparison, calibration, and gate workflows for local LLM-assisted review.
+summary: Expert, batch, comparison, calibration, recurring failure harness, and gate workflows for local-first LLM-assisted review.
 visibility: public
 code:
   paths:

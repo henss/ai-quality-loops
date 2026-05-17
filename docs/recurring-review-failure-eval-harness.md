@@ -2,6 +2,8 @@
 
 This note defines the public-safe boundary for a small recurring review-failure eval harness. The goal is to rehearse repeated review-packet failure modes before another live packet run, without moving private repo state, tracker context, or domain routing into `ai-quality-loops`.
 
+In the portfolio strategy, this harness is an active AIQL build surface for local-first review reliability. It should catch recurring agent and review-packet failures using checked artifacts, not become a hosted eval dashboard, scheduler, trace store, or broad observability platform.
+
 ## Boundary
 
 AIQL owns a narrow reusable harness:
@@ -16,6 +18,7 @@ The embedding workflow still owns:
 - source retrieval, storage, and freshness checks
 - command execution, verification authority, and rerun policy
 - tracker routing, prioritization, approvals, and any real-world action
+- any hosted eval/observability adoption decision
 
 The checked-in sanitized regression corpus lives at `examples/synthetic-process-failed-peer-review-regression-corpus.fixture.json`. It mirrors the reusable failure-mode expectations without copying any private packet content or tracker detail.
 
@@ -81,3 +84,5 @@ Use the corpus fixture when a wrapper needs a human-readable list of the sanitiz
 The harness remains generic only while the eval cases stay synthetic or caller-sanitized and the pass/fail check reads only structured review-result artifacts. If a future slice needs repo-specific command policy, packet assembly rules, private tracker context, or domain-specific approval thresholds, keep that logic in the embedding repo instead of widening AIQL.
 
 The current sanitized corpus intentionally stops at the reusable patterns already normalized into the public eval pack. Bundle truncation and source-audit evidence-path gaps are included only as generic traceability failures; if a future case depends on bundle-specific packet assembly, private evidence routing, or domain policy that does not survive sanitization cleanly, leave it outside AIQL until a generic public-safe shape repeats.
+
+Before adding generic dashboards, trace history, scheduler behavior, or hosted experiment tracking around this harness, run a third-party eval/observability scout and keep the integration at the structured-artifact boundary unless local-first evidence proves otherwise.

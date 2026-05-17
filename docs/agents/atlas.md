@@ -6,7 +6,7 @@ Profile: `public`
 
 ## What this atlas represents
 
-- `domain:ai-quality-loops` - AI Quality Loops: Public LLM review utilities for text, visual, batch, structured-result, and review-gate workflows.
+- `domain:ai-quality-loops` - AI Quality Loops: Active local-first structured review and gate toolkit for text, visual, batch, review-gate, recurring failure harness, and read-efficiency measurement workflows; not a hosted eval dashboard or observability platform.
 - `domain:ai-quality-loops-local` - ai-quality-loops Local Surface: Repo-local architecture, docs, and verification surfaces for ai-quality-loops.
 
 ## Start here
@@ -20,9 +20,9 @@ Profile: `public`
 
 ### AI Quality Loops
 
-- `workflow:run-review` - Run Review: Runs text, batch, comparison, calibration, and review-gate checks while keeping caller policy and private evidence outside the library.
+- `workflow:run-review` - Run Review: Runs local text, batch, structured-result, comparison, calibration, recurring failure harness, and review-gate checks while keeping hosted observability, caller policy, and private evidence outside the library.
   Components: `component:cli-surfaces`, `component:provider-review`, `component:review-workflows`, `component:structured-results`
-- `workflow:run-vision-review` - Run Vision Review: Captures public-safe page or screenshot targets and runs vision-model review with sanitized provenance.
+- `workflow:run-vision-review` - Run Vision Review: Captures public-safe page or screenshot targets and runs local-first vision-model review with sanitized provenance and structured review artifacts.
   Components: `component:cli-surfaces`, `component:vision-review`
 
 ### ai-quality-loops Local Surface
@@ -35,8 +35,8 @@ Profile: `public`
 
 - `component:cli-surfaces` - CLI Surfaces: Published command-line entrypoints for review, batch review, gates, screenshots, and vision utilities.
 - `component:provider-review` - Provider Review: Generic text review provider seam for Ollama, Codex CLI, and Claude CLI reviewers with a shared structured quality-review decision contract.
-- `component:review-workflows` - Review Workflows: Expert, batch, comparison, calibration, and gate workflows for local LLM-assisted review.
-- `component:structured-results` - Structured Results: Schemas, sanitizers, comparison helpers, and sponsor-facing result formats for review outputs.
+- `component:review-workflows` - Review Workflows: Expert, batch, comparison, calibration, recurring failure harness, and gate workflows for local-first LLM-assisted review.
+- `component:structured-results` - Structured Results: Local artifact contracts, schemas, sanitizers, comparison helpers, gate inputs, and sponsor-facing result formats for review outputs.
 - `component:vision-review` - Vision Review: Screenshot capture, section discovery, preview, and vision-model review surfaces.
 
 ### ai-quality-loops Local Surface
@@ -57,5 +57,5 @@ Profile: `public`
 ## Other entities
 
 - `document:ai-quality-loops-readme` (document) - ai-quality-loops README: Primary repo entrypoint for setup, usage, architecture, and maintenance notes.
-- `repository:ai-quality-loops` (repository) - ai-quality-loops: A collection of core LLM utilities and visual review tools for automated quality control.
+- `repository:ai-quality-loops` (repository) - ai-quality-loops: Active local-first structured review and gating toolkit for text, visual, batch, review-gate, recurring failure harness, and downstream-agent read-efficiency workflows.
 - `test-scope:ai-quality-loops-verification` (test-scope) - ai-quality-loops Verification: Narrow default verification commands for repo-local changes; prefer more specific tests when the task identifies them.

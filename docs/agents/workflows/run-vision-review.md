@@ -6,7 +6,7 @@ ID: `workflow:run-vision-review`
 Kind: `workflow`
 Profile: `public`
 
-Captures public-safe page or screenshot targets and runs vision-model review with sanitized provenance.
+Captures public-safe page or screenshot targets and runs local-first vision-model review with sanitized provenance and structured review artifacts.
 
 ## Metadata
 
@@ -22,6 +22,7 @@ Captures public-safe page or screenshot targets and runs vision-model review wit
 ### Documents
 
 - `document:aiql-readme`
+- `document:portfolio-role-and-roadmap`
 
 ### Tests
 
@@ -32,6 +33,7 @@ Captures public-safe page or screenshot targets and runs vision-model review wit
 ### `documented-in`
 
 - `document:aiql-readme`
+- `document:portfolio-role-and-roadmap`
 
 ### `part-of`
 

@@ -1,7 +1,7 @@
 id: workflow:run-vision-review
 kind: workflow
 title: Run Vision Review
-summary: Captures public-safe page or screenshot targets and runs vision-model review with sanitized provenance.
+summary: Captures public-safe page or screenshot targets and runs local-first vision-model review with sanitized provenance and structured review artifacts.
 visibility: public
 relations:
   - type: part-of
@@ -10,6 +10,8 @@ relations:
     target: component:vision-review
   - type: documented-in
     target: document:aiql-readme
+  - type: documented-in
+    target: document:portfolio-role-and-roadmap
   - type: tested-by
     target: test-scope:aiql-verification
 agent:

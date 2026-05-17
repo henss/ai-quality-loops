@@ -1,7 +1,7 @@
 id: document:aiql-readme
 kind: document
 title: AI Quality Loops README
-summary: Public overview, command inventory, examples, configuration, and caller-owned boundary notes.
+summary: Public overview, active local-first review/gate role, command inventory, examples, configuration, and caller-owned boundary notes.
 visibility: public
 uri: README.md
 relations:

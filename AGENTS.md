@@ -46,6 +46,14 @@ This file is the repo-local agent entrypoint. It is generated from the shared po
 
 <!-- [LOCAL_START] -->
 
+## AIQL Portfolio Role
+
+- Treat AIQL as the active build toolkit for local-first structured review, batch review, visual review, `review-gate`, recurring failure harnesses, and downstream-agent read-efficiency measurement.
+- Do not expand AIQL into a hosted eval dashboard, hosted observability platform, LangSmith/Braintrust/Langfuse replacement, workflow runtime, tracker policy engine, or owner of downstream approval/routing.
+- Before adding dashboard-like, telemetry, experiment-tracking, prompt-management, or broad eval infrastructure, document a third-party eval/observability scout or keep the work at the local artifact boundary.
+- Dogfood AIQL on WorkLoop outcomes, Atlas context packs, ContextWeave context packs, venture concept briefs, and SMARTSEER beta packets only when source, IP, legal, data, and action boundaries are explicit and caller-owned.
+- Keep review outputs limited to evidence quality, caveat preservation, structured findings, local gates, and reviewability; embedding repos own retrieval, authority, approval, tracker writes, launch, publication, retention, and real-world action.
+
 <!-- [LOCAL_END] -->
 
 Managed by the portfolio guidance sync. Do not edit outside the local block.

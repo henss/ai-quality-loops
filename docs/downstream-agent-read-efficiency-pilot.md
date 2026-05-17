@@ -2,6 +2,8 @@
 
 This note defines a small product-learning pilot for measuring how much a downstream agent can avoid reading when a task packet gives it a narrow evidence registry, boundary constraints, and outcome requirements. It is generic on purpose: real tracker data, internal ledgers, customer facts, source URLs, private repository paths, approval policy, and routing decisions stay in the embedding workflow.
 
+In the portfolio strategy, this is part of AIQL's active local-first review and gate role: measure whether review packets, context packs, and outcome artifacts reduce unnecessary reads without turning AIQL into a hosted observability product.
+
 ## Classification
 
 Packet output: proposal and artifact.
@@ -45,6 +47,8 @@ Examples that should not be counted:
 ## Scope
 
 AIQL can host the generic measurement contract and public-safe examples. The embedding workflow owns real task selection, source registry semantics, tracker freshness, private context packaging, approval gates, and any downstream product decision.
+
+Recommended portfolio dogfood surfaces include WorkLoop outcomes, Agent Atlas context packs, ContextWeave context packs, venture concept briefs, and SMARTSEER beta packets when the caller has made source, data, IP, legal, and action boundaries explicit.
 
 ## Extraction Question
 

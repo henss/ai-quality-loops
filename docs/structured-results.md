@@ -2,6 +2,8 @@
 
 Structured results are the public contract for reusable AIQL review output. They let callers validate, compare, and gate review findings without scraping Markdown or copying private workflow policy into this package.
 
+In the portfolio strategy, this contract is AIQL's core durable surface: local-first review artifacts that downstream repos can validate, compare, gate, and archive. It is not a hosted eval dashboard, hosted observability trace, or replacement for LangSmith, Braintrust, Langfuse, or similar tools.
+
 ## Use This Contract For
 
 - Checking whether a review emitted valid JSON.
@@ -16,6 +18,7 @@ Structured results are the public contract for reusable AIQL review output. They
 - Private redaction rules and private examples.
 - Severity budgets and acceptance thresholds.
 - Tracker routing, remediation ownership, publication decisions, deployment decisions, retention policy, and real-world action.
+- Hosted trace storage, dashboards, prompt-management workflows, broad eval experiment history, and model observability decisions unless a caller explicitly adopts a third-party tool at the artifact boundary.
 
 ## Public Fixtures
 

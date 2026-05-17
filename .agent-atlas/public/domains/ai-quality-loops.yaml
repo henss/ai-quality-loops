@@ -1,7 +1,7 @@
 id: domain:ai-quality-loops
 kind: domain
 title: AI Quality Loops
-summary: Public LLM review utilities for text, visual, batch, structured-result, and review-gate workflows.
+summary: Active local-first structured review and gate toolkit for text, visual, batch, review-gate, recurring failure harness, and read-efficiency measurement workflows; not a hosted eval dashboard or observability platform.
 visibility: public
 relations:
   - type: contains
@@ -12,3 +12,5 @@ relations:
     target: component:structured-results
   - type: contains
     target: component:cli-surfaces
+  - type: documented-in
+    target: document:portfolio-role-and-roadmap

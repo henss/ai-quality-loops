@@ -1,7 +1,7 @@
 id: workflow:run-review
 kind: workflow
 title: Run Review
-summary: Runs text, batch, comparison, calibration, and review-gate checks while keeping caller policy and private evidence outside the library.
+summary: Runs local text, batch, structured-result, comparison, calibration, recurring failure harness, and review-gate checks while keeping hosted observability, caller policy, and private evidence outside the library.
 visibility: public
 relations:
   - type: part-of
@@ -14,6 +14,8 @@ relations:
     target: component:structured-results
   - type: documented-in
     target: document:aiql-readme
+  - type: documented-in
+    target: document:portfolio-role-and-roadmap
   - type: tested-by
     target: test-scope:aiql-verification
 agent:

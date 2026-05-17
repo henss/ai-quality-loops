@@ -6,7 +6,7 @@ ID: `domain:ai-quality-loops`
 Kind: `domain`
 Profile: `public`
 
-Public LLM review utilities for text, visual, batch, structured-result, and review-gate workflows.
+Active local-first structured review and gate toolkit for text, visual, batch, review-gate, recurring failure harness, and read-efficiency measurement workflows; not a hosted eval dashboard or observability platform.
 
 ## Metadata
 
@@ -30,6 +30,7 @@ Public LLM review utilities for text, visual, batch, structured-result, and revi
 ### Documents
 
 - `document:aiql-readme`
+- `document:portfolio-role-and-roadmap`
 
 
 ## Relations
@@ -47,3 +48,4 @@ Public LLM review utilities for text, visual, batch, structured-result, and revi
 ### `documented-in`
 
 - `document:aiql-readme` _(generated)_
+- `document:portfolio-role-and-roadmap`

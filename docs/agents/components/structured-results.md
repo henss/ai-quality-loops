@@ -6,7 +6,7 @@ ID: `component:structured-results`
 Kind: `component`
 Profile: `public`
 
-Schemas, sanitizers, comparison helpers, and sponsor-facing result formats for review outputs.
+Local artifact contracts, schemas, sanitizers, comparison helpers, gate inputs, and sponsor-facing result formats for review outputs.
 
 ## Metadata
 

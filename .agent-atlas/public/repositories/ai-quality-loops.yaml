@@ -1,13 +1,15 @@
 id: repository:ai-quality-loops
 kind: repository
 title: ai-quality-loops
-summary: A collection of core LLM utilities and visual review tools for automated quality control.
+summary: Active local-first structured review and gating toolkit for text, visual, batch, review-gate, recurring failure harness, and downstream-agent read-efficiency workflows.
 status: active
 visibility: public
 uri: repo://ai-quality-loops
 relations:
   - type: related-to
     target: domain:ai-quality-loops-local
+  - type: documented-in
+    target: document:portfolio-role-and-roadmap
 agent:
   load_when:
     - Orienting in this repository or building a repo-local context pack.

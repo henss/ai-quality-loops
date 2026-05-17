@@ -1,6 +1,10 @@
 # AI Quality Loops
 
-A collection of core LLM utilities and visual review tools for automated quality control.
+AIQL is an active build project for local-first structured review and gates.
+
+It provides repeatable text, visual, batch, structured-result, review-gate, and recurring failure-harness surfaces for repositories that need durable review artifacts without adopting a hosted eval dashboard.
+
+AIQL is not a LangSmith, Braintrust, or Langfuse replacement. It should actively evaluate third-party eval and observability tools where they help portfolio goals, while keeping local artifact contracts and gates where hosted observability is too heavy, too external, or not public-safe.
 
 ## Components
 
@@ -8,6 +12,10 @@ A collection of core LLM utilities and visual review tools for automated quality
 - **Screenshot Tool**: Headless browser wrapper (Edge/Chrome) for visual analysis and regression.
 - **Expert Review Engine**: Persona-driven analysis of text and code using specialized prompts.
 - **Vision Review**: Multi-persona visual audits for UI/UX consistency using vision-capable LLMs.
+- **Structured Review And Gates**: Structured review results, batch summaries, comparisons, sponsor memos, and explicit `review-gate` checks.
+- **Recurring Failure Harnesses**: Public-safe fixtures and harnesses for repeated review-packet and downstream-agent failure modes.
+
+See `docs/index.md` for the docs map and `docs/strategy/portfolio-role-and-roadmap.md` for the current portfolio role, dogfood surfaces, build-vs-buy boundary, and near-term roadmap.
 
 ## Installation
 
@@ -78,6 +86,7 @@ The package publishes copy-ready starter manifests under `examples/` so embeddin
 - `examples/ci-review-gate-check.md` for one generic CI check recipe that wires `batch-review`, structured outputs, and `review-gate`
 
 Use the companion notes in `examples/README.md` to decide which example to copy, which targets must be replaced, and when to use `vision-sections`, `vision-preview --manifest`, `batch-review`, and `review-gate` together.
+Use `docs/strategy/portfolio-role-and-roadmap.md` when you need the current strategy boundary: active local-first review/gating toolkit, not a hosted eval or observability platform.
 Use `docs/reviewer-contract.md` when you need the open-source-safe boundary for structured reviewer-contract examples.
 Use `docs/structured-results.md` when you need the open-source-safe boundary for validating, comparing, or gating structured review-result JSON.
 Use `docs/reviewer-disagreement-explainer.md` when you need the open-source-safe explainer for adjudicating two structured reviewer outputs into one bounded tie-break artifact.

@@ -1,0 +1,19 @@
+id: document:portfolio-role-and-roadmap
+kind: document
+title: AIQL Portfolio Strategy Card
+summary: Current portfolio strategy for AIQL as an active local-first structured review and gating toolkit, including dogfood surfaces, build-vs-buy boundaries, and near-term roadmap.
+visibility: public
+uri: docs/strategy/portfolio-role-and-roadmap.md
+relations:
+  - type: documents
+    target: domain:ai-quality-loops
+  - type: documents
+    target: workflow:run-review
+  - type: documents
+    target: workflow:run-vision-review
+agent:
+  load_when:
+    - Aligning AIQL work with portfolio strategy.
+    - Deciding whether a review, gate, harness, or eval/observability feature belongs in AIQL.
+    - Planning dogfood review of WorkLoop outcomes, Atlas context packs, ContextWeave packs, venture briefs, or SMARTSEER beta packets.
+  token_budget_hint: 900

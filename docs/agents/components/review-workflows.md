@@ -6,7 +6,7 @@ ID: `component:review-workflows`
 Kind: `component`
 Profile: `public`
 
-Expert, batch, comparison, calibration, and gate workflows for local LLM-assisted review.
+Expert, batch, comparison, calibration, recurring failure harness, and gate workflows for local-first LLM-assisted review.
 
 ## Metadata
 
